@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/cty/logic.py
-# hypothesis_version: 6.136.0
-
-['bool', 'dynamic', 'is_null', 'is_unknown', 'list', 'map', 'marks', 'number', 'object', 'set', 'string', 'tuple', 'type_name', 'value']

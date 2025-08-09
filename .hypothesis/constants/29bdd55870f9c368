@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/operations/__init__.py
-# hypothesis_version: 6.137.1
-
-['download_file', 'extract_archive', 'get_architecture', 'get_os_name', 'get_platform_info', 'make_executable', 'run_version_check', 'verify_checksum']

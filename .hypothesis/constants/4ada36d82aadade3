@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/harness_factory.py
-# hypothesis_version: 6.137.1
-
-[0.1, 5.0, 256, 384, 493, 521, 2048, 4096, '1', '127.0.0.1:50051', ':', 'BASIC_PLUGIN', 'DEBUG', 'ENABLE_MTLS', 'KV_CA_CERT', 'KV_SERVER_CERT', 'KV_SERVER_KEY', 'LOG_LEVEL', 'P-256', 'P-384', 'P-521', 'PYTHONUNBUFFERED', 'Server listening on', 'Server listening on ', 'auto', 'auto_mtls', 'ca_cert', 'delete', 'disabled', 'ec', 'ecdsa', 'get', 'go', 'go-rpc-client', 'hello', 'kv', 'put', 'python', 'pyvider', 'rpc', 'rsa', 'server-start', 'server_cert', 'server_info.py', 'server_key', 'soup-go', 'supported_auth_modes', 'supported_ec_curves', 'supported_key_types', 'supported_languages', 'supported_rsa_sizes', 'true', 'utf-8', 'w']

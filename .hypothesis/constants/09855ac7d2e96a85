@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/rpc/client.py
-# hypothesis_version: 6.137.1
-
-[5.0, 30.0, '%Y-%m-%d %H:%M:%S', '--auto-mtls=false', '--auto-mtls=true', '1', 'BASIC_PLUGIN', 'GODEBUG', 'INFO', 'LOG_LEVEL', 'PLUGIN_AUTO_MTLS', 'PLUGIN_CLIENT_CERT', 'PLUGIN_CLIENT_KEY', 'PLUGIN_MAGIC_COOKIE', 'PLUGIN_SERVER_CERT', 'PLUGIN_SERVER_KEY', 'PYTHONUNBUFFERED', 'ascii', 'client_cert_path', 'client_key_path', 'close', 'enable_mtls', 'env', 'false', 'hello', 'kv', 'level', 'plugins', 'replace', 'rsa', 'server_root_ca_path', 'true', 'utf-8']

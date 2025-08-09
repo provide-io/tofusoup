@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/hcl/logic.py
-# hypothesis_version: 6.136.0
-
-['hcl', 'json', 'msgpack', 'utf-8', 'w', 'wb']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/stir.py
-# hypothesis_version: 6.135.33
-
-[0.1, '%Y%m%d-%H%M', '*.tf', '-auto-approve', '-input=false', '-json', '-no-color', '-upgrade', '.', '.terraform*', '=', '@level', '@message', 'APPLYING', 'CLEANING', 'DESTROY (fail)', 'DESTROYING', 'Error Summary:\n', 'INIT', 'Last Log Message', 'SKIPPED', 'Status', 'TF_LOG', 'Test Suite', 'Thread', 'active', 'apply', 'blue', 'bold', 'bold green', 'bold red', 'center', 'cyan', 'debug', 'destroy', 'dim', 'dim green', 'dim red', 'dim yellow', 'error', 'init', 'last_log', 'left', 'log', 'monokai', 'output/', 'path', 'red', 'stir', 'style', 'terraform', 'terraform.tfstate*', 'text', 'thread_id', 'tofu', 'visible', 'wb', 'white', 'yellow', '⏳ PENDING', '✅ PASS', '❌ FAIL', '❌ INIT FAIL', '💥 ERROR']

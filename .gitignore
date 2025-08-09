@@ -429,3 +429,12 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp
 tfwire_compare/
+
+# Hypothesis test data
+.hypothesis/
+
+# UV lock file (can be regenerated)
+uv.lock
+
+# Downloaded scripts
+dotnet-install.sh

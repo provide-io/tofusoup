@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/souptest_cross_language_interop.py
-# hypothesis_version: 6.137.1
-
-[b'Data stored via Go server', b'Data stored via Python server', b'Hello from Python client to Go server!', b'Hello from Python client to Python server!', b'test-value', b'x', 256, 493, 10000, '--key', '--server', '--value', '.py', 'Go tests skipped', 'Hello 世界! 🌍', 'SKIP_GO_TESTS', '[::]:0', '__main__', 'binary-data', 'empty-value', 'go-server-key', 'go-to-python', 'large-value', 'non-existent-key', 'python-server-key', 'python-to-go', 'python-to-python', 'test-key', 'unicode-test', 'utf-8', 'w']

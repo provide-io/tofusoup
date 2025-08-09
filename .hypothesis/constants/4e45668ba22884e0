@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/souptest_rpc_pyclient_rbserver.py
-# hypothesis_version: 6.135.26
-
-['client_cert', 'client_key', 'debug_error_string', 'server_ca_cert', 'utf-8']

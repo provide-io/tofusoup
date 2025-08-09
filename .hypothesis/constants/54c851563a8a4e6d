@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cli_verification/souptest_cli_cty.py
-# hypothesis_version: 6.135.26
-
-['"anything"', '"hello"', '"text"', '--help', '--log-level', '--type-string', '--value-json', '123', 'Available Commands:', 'Usage:', 'Validation Failed', 'Validation Succeeded', '["a", "b"]', '["a", 123]', 'age', 'bool', 'callspec', 'debug', 'decode', 'dynamic', 'encode', 'error', 'get-type-schema', 'get_schema_bool', 'get_schema_dynamic', 'get_schema_number', 'get_schema_string', 'go-cty', 'invalidtype', 'list', 'list(invalid)', 'list(string)', 'map', 'map(number)', 'module', 'name', 'null', 'number', 'object', 'string', 'true', 'tuple', 'tuple([string,bool])', 'validate', 'validate_object_ok', 'validate_string_ok', '{"name":"test"}']

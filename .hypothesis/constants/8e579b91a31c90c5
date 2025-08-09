@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cli_verification/souptest_cli_hcl.py
-# hypothesis_version: 6.137.1
-
-[123, '--log-level', '--output-format', 'cty-json', 'debug', 'empty_file.hcl', 'go-hcl', 'hello', 'number_attr', 'parse', 'parse_empty_file', 'parse_simple_attrs', 'parse_syntax_error', 'simple_attrs.hcl', 'string_attr', 'syntax_error.hcl']

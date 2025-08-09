@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/proto/kv/kv_pb2_grpc.py
-# hypothesis_version: 6.137.1
-
-['/proto.KV/Get', '/proto.KV/Put', '1.73.1', 'Get', 'Put', 'proto.KV']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/operations/verify.py
-# hypothesis_version: 6.137.1
-
-[200, '--help', '--version', 'Binary not found', 'OpenTofu v', 'Terraform v', '\\n', 'bin', 'compatible', 'darwin', 'docker', 'error', 'go', 'linux', 'node', 'npm', 'on', 'platform', 'python', 'raw_output', 'returncode', 'stderr', 'stdout', 'terraform', 'tofu', 'tool', 'uv', 'version', 'windows']

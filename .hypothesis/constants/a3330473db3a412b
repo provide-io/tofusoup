@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/operations/platform.py
-# hypothesis_version: 6.137.1
-
-['.exe', '.tar.gz', '.zip', '386', '64', '_', 'aarch64', 'amd64', 'apple-darwin', 'arch', 'arm', 'arm64', 'bsd', 'darwin', 'freebsd', 'go', 'i386', 'i686', 'linux', 'machine', 'os', 'pc-windows-msvc', 'platform', 'python_platform', 'system', 'terraform', 'tofu', 'unknown', 'unknown-linux-gnu', 'uv', 'windows', 'x86', 'x86_64']
