@@ -48,6 +48,7 @@ dependencies = [
     "mypy>=1.10.0",
     "ruff>=0.2.0",
     "python-hcl2>=3.0.0",
+    "wrkenv @ file:///Users/tim/code/gh/provide-io/wrkenv",
     "pyvider-rpcplugin>=0.0.14",
     "pyvider-cty>=0.0.111",
     "pyvider-hcl>=0.0.113",
