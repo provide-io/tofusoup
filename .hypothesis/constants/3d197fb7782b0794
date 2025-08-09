@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/operations/install.py
+# hypothesis_version: 6.137.1
+
+[493, '.', '..', '.bat', '.cmd', '.exe', '.tar', '.tar.gz', '.tgz', '.zip', '/', 'r', 'r:gz', 'windows']

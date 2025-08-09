@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider-rpcplugin/src/pyvider/rpcplugin/protocol/service.py
+# hypothesis_version: 6.135.26
+
+[0.05, 0.1, 'Channel not found', 'StdioDoneWait', 'StdioGetMessage', 'getpid', 'incoming', 'kill', 'service_id', 'trace']

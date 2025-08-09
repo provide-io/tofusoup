@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider-cty/src/pyvider/cty/types/structural/object.py
+# hypothesis_version: 6.136.7
+
+['CtyType[Any]', 'CtyValue[Any]', 'NFC', '__attrs_attrs__', 'object']

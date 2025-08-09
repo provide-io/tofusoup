@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/managers/terraform.py
+# hypothesis_version: 6.137.1
+
+['.', '1.5', '1.6', '1.7', 'alpha', 'arch', 'beta', 'bin', 'compatible', 'conformance', 'go.cty', 'go.wire', 'harnesses', 'include_prereleases', 'not_installed', 'notes', 'os', 'pre', 'rc', 'status', 'terraform', 'terraform*', 'terraform.exe', 'terraform_mirror', 'version', 'versions']

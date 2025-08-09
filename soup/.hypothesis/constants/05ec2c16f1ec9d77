@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/ui/app.py
+# hypothesis_version: 6.135.32
+
+['/', 'Back to Search', 'Config Error', 'DummyRegistry', 'N/A', 'Unknown Registry', 'app.tcss', 'description', 'dummy:module:2', 'dummy:provider:1', 'error', 'error_message', 'escape', 'id', 'latest', 'module', 'modules', 'name', 'opentofu', 'pop_screen', 'provider', 'providers', 'registry_source', 'terraform', 'type', 'version']

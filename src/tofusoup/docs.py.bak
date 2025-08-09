@@ -1,0 +1,892 @@
+"""Documentation generation for Pyvider providers.
+
+This module implements a comprehensive documentation generation system modeled after
+HashiCorp's tfplugindocs tool. It extracts provider schemas, processes templates and
+examples, and generates Terraform Registry-compliant documentation.
+"""
+
+import ast
+import json
+import re
+import subprocess
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+import click
+from pathlib import Path
+import yaml
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+
+
+@dataclass
+class ProviderInfo:
+    """Information about a Pyvider provider."""
+    name: str
+    short_name: str
+    rendered_name: str
+    description: str
+    version: str
+    has_example: bool = False
+    example_file: str = ""
+
+
+@dataclass
+class ResourceInfo:
+    """Information about a resource or data source."""
+    name: str
+    type: str  # "Resource", "Data Source", or "Function"
+    description: str
+    schema_markdown: str
+    schema: Optional[Dict[str, Any]] = None
+    has_example: bool = False
+    example_file: str = ""
+    has_import: bool = False
+    import_file: str = ""
+    has_import_id_config: bool = False
+    import_id_config_file: str = ""
+    has_import_identity_config: bool = False
+    import_identity_config_file: str = ""
+    # Co-located documentation fields
+    examples: Dict[str, str] = None  # {example_name: example_content}
+    import_docs: str = ""
+    colocated_notes: str = ""
+    migration: str = ""
+
+    def __post_init__(self):
+        if self.examples is None:
+            self.examples = {}
+
+
+@dataclass
+class FunctionInfo:
+    """Information about a provider-defined function."""
+    name: str
+    type: str = "Function"
+    description: str = ""
+    summary: str = ""
+    has_example: bool = False
+    example_file: str = ""
+    signature_markdown: str = ""
+    arguments_markdown: str = ""
+    has_variadic: bool = False
+    variadic_argument_markdown: str = ""
+    # Co-located documentation fields
+    examples: Dict[str, str] = None  # {example_name: example_content}
+    import_docs: str = ""
+    colocated_notes: str = ""
+    migration: str = ""
+
+    def __post_init__(self):
+        if self.examples is None:
+            self.examples = {}
+
+
+class DocsGenerator:
+    """Main documentation generator class."""
+
+    def __init__(
+        self,
+        provider_dir: Path,
+        provider_name: Optional[str] = None,
+        rendered_provider_name: Optional[str] = None,
+        examples_dir: str = "examples",
+        templates_dir: str = "templates",
+        output_dir: str = "docs",
+        ignore_deprecated: bool = False,
+    ):
+        self.provider_dir = Path(provider_dir).resolve()
+        self.examples_dir = self.provider_dir / examples_dir
+        self.templates_dir = self.provider_dir / templates_dir
+        self.output_dir = self.provider_dir / output_dir
+        self.ignore_deprecated = ignore_deprecated
+
+        # Determine provider name
+        if provider_name:
+            self.provider_name = provider_name
+        else:
+            # Extract from directory name, removing terraform-provider- prefix
+            dir_name = self.provider_dir.name
+            if dir_name.startswith("terraform-provider-"):
+                self.provider_name = dir_name[19:]  # Remove "terraform-provider-"
+            else:
+                self.provider_name = dir_name
+
+        self.rendered_provider_name = rendered_provider_name or self.provider_name
+
+        # Internal state
+        self.provider_schema: Optional[Dict[str, Any]] = None
+        self.provider_info: Optional[ProviderInfo] = None
+        self.resources: Dict[str, ResourceInfo] = {}
+        self.data_sources: Dict[str, ResourceInfo] = {}
+        self.functions: Dict[str, FunctionInfo] = {}
+
+    def extract_provider_schema(self) -> Dict[str, Any]:
+        """Extract provider schema using the Terraform CLI."""
+        return {}
+
+
+    def _extract_schema_via_terraform(self) -> Dict[str, Any]:
+        """Fallback: Extract schema by building provider and using Terraform CLI."""
+        # Build the provider binary
+        print(f"Building provider in {self.provider_dir}")
+        build_result = subprocess.run(
+            ["python", "-m", "build"],
+            cwd=self.provider_dir,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        if build_result.returncode != 0:
+            print("---STDOUT---")
+            print(build_result.stdout)
+            print("---STDERR---")
+            print(build_result.stderr)
+            build_result.check_returncode()
+
+        # Find the built provider binary
+        provider_binary = self._find_provider_binary()
+
+        # Create a temporary directory for Terraform operations
+        temp_dir = self.provider_dir / ".pyvbuild_temp"
+        temp_dir.mkdir(exist_ok=True)
+
+        try:
+            # Create basic Terraform configuration
+            tf_config = f'''
+terraform {{
+  required_providers {{
+    {self.provider_name} = {{
+      source = "local/providers/{self.provider_name}"
+    }}
+  }}
+}}
+
+provider "{self.provider_name}" {{}}
+'''
+
+            tf_file = temp_dir / "main.tf"
+            tf_file.write_text(tf_config)
+
+            # Initialize Terraform
+            subprocess.run(
+                ["terraform", "init"],
+                cwd=temp_dir,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+
+            # Extract schema
+            schema_result = subprocess.run(
+                ["terraform", "providers", "schema", "-json"],
+                cwd=temp_dir,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+
+            schema_data = json.loads(schema_result.stdout)
+            return schema_data
+
+        finally:
+            # Clean up temporary directory
+            import shutil
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def _find_provider_binary(self) -> Path:
+        """Find the provider binary after building."""
+        # Look for common build output locations
+        potential_paths = [
+            self.provider_dir,
+            self.provider_dir / "dist",
+            self.provider_dir / "build",
+            self.provider_dir / f"terraform-provider-{self.provider_name}",
+        ]
+
+        print("🔍 Searching for provider binary in the following paths:")
+        for path in potential_paths:
+            print(f"  - {path}")
+            if path.exists() and path.is_file():
+                print(f"✅ Found provider binary at {path}")
+                return path
+            if path.is_dir():
+                for binary in path.glob(f"terraform-provider-{self.provider_name}*"):
+                    if binary.is_file():
+                        print(f"✅ Found provider binary at {binary}")
+                        return binary
+
+        raise FileNotFoundError(f"Could not find provider binary for {self.provider_name}")
+
+    def _parse_schema_to_markdown(self, schema: Dict[str, Any]) -> str:
+        """Convert a JSON schema to Terraform Registry markdown format."""
+        if not schema:
+            return ""
+
+        # Parse attributes into categories
+        required_attrs = []
+        optional_attrs = []
+        computed_attrs = []
+
+        if "attributes" in schema:
+            for attr_name, attr_data in schema["attributes"].items():
+                attr_type = attr_data.get("type", "unknown")
+                description = attr_data.get("description", "")
+                optional = attr_data.get("optional", False)
+                required = attr_data.get("required", False)
+                computed = attr_data.get("computed", False)
+                sensitive = attr_data.get("sensitive", False)
+
+                # Format type information
+                type_info = f"({attr_type.title()})"
+                if sensitive:
+                    type_info += ", Sensitive"
+
+                attr_line = f"- `{attr_name}` {type_info} {description}"
+
+                # Categorize attribute
+                if required:
+                    required_attrs.append(attr_line)
+                elif computed:
+                    computed_attrs.append(attr_line)
+                else:
+                    optional_attrs.append(attr_line)
+
+        # Build markdown sections
+        markdown_sections = []
+
+        if not required_attrs and not optional_attrs and not computed_attrs:
+            return ""
+
+        markdown_sections.append("## Schema")
+
+        if required_attrs:
+            markdown_sections.append("\n### Required")
+            markdown_sections.extend(required_attrs)
+
+        if optional_attrs:
+            markdown_sections.append("\n### Optional")
+            markdown_sections.extend(optional_attrs)
+
+        if computed_attrs:
+            markdown_sections.append("\n### Read-Only")
+            markdown_sections.extend(computed_attrs)
+
+        return "\n\n".join(markdown_sections)
+
+    def _parse_function_signature(self, func_schema: Dict[str, Any]) -> str:
+        """Parse function signature from schema and return tfplugindocs-style markdown."""
+        if not func_schema:
+            return ""
+
+        # Extract function information from schema
+        parameters = func_schema.get('parameters', [])
+        variadic_param = func_schema.get('variadic_parameter')
+        return_type = func_schema.get('return_type', {}).get('friendly_name', 'unknown')
+        func_name = func_schema.get('name', 'function')
+
+        # Build parameter list
+        param_strs = []
+        for param in parameters:
+            param_name = param.get('name', 'param')
+            param_type = param.get('type', {}).get('friendly_name', 'unknown')
+            param_strs.append(f"{param_name} {param_type}")
+
+        # Add variadic parameter if present
+        if variadic_param:
+            param_name = variadic_param.get('name', 'variadic')
+            param_type = variadic_param.get('type', {}).get('friendly_name', 'unknown')
+            param_strs.append(f"{param_name} {param_type}...")
+
+        # Format as tfplugindocs code block
+        params_str = ", ".join(param_strs)
+        return f"```text\n{func_name}({params_str}) {return_type}\n```"
+
+    def _parse_function_arguments(self, func_schema: Dict[str, Any]) -> str:
+        """Parse function arguments from schema and return tfplugindocs-style markdown."""
+        if not func_schema:
+            return ""
+
+        parameters = func_schema.get('parameters', [])
+        if not parameters:
+            return ""
+
+        # Build numbered argument list
+        arg_lines = []
+        for i, param in enumerate(parameters, 1):
+            param_name = param.get('name', 'param')
+            param_type = param.get('type', {}).get('friendly_name', 'String')
+            description = param.get('description', '').strip()
+
+            # Format as tfplugindocs numbered list
+            type_info = f"({param_type})"
+            if param.get('is_nullable'):
+                type_info = f"({param_type}, Nullable)"
+
+            arg_lines.append(f"{i}. `{param_name}` {type_info} {description}")
+
+        return "\n".join(arg_lines)
+
+    def _parse_variadic_argument(self, func_schema: Dict[str, Any]) -> str:
+        """Parse variadic argument from schema and return tfplugindocs-style markdown."""
+        if not func_schema:
+            return ""
+
+        variadic_param = func_schema.get('variadic_parameter')
+        if not variadic_param:
+            return ""
+
+        param_name = variadic_param.get('name', 'variadic')
+        param_type = variadic_param.get('type', {}).get('friendly_name', 'String')
+        description = variadic_param.get('description', '').strip()
+
+        # Format as tfplugindocs style
+        type_info = f"({param_type})"
+        if variadic_param.get('is_nullable'):
+            type_info = f"({param_type}, Nullable)"
+
+        return f"1. `{param_name}` {type_info} {description}"
+
+    def process_examples(self) -> None:
+        """Process example files and associate them with resources/data sources/functions."""
+        if not self.examples_dir.exists():
+            return
+
+        # Process provider examples
+        provider_example = self.examples_dir / "provider" / "provider.tf"
+        if provider_example.exists() and self.provider_info:
+            self.provider_info.has_example = True
+            self.provider_info.example_file = str(provider_example.relative_to(self.provider_dir))
+
+        # Process resource examples
+        resources_dir = self.examples_dir / "resources"
+        if resources_dir.exists():
+            for resource_dir in resources_dir.iterdir():
+                if resource_dir.is_dir():
+                    resource_name = resource_dir.name
+                    if resource_name in self.resources:
+                        resource_info = self.resources[resource_name]
+
+                        # Check for resource example
+                        resource_tf = resource_dir / "resource.tf"
+                        if resource_tf.exists():
+                            resource_info.has_example = True
+                            resource_info.example_file = str(resource_tf.relative_to(self.provider_dir))
+
+                        # Check for import examples
+                        import_sh = resource_dir / "import.sh"
+                        if import_sh.exists():
+                            resource_info.has_import = True
+                            resource_info.import_file = str(import_sh.relative_to(self.provider_dir))
+
+                        import_id_tf = resource_dir / "import-by-string-id.tf"
+                        if import_id_tf.exists():
+                            resource_info.has_import_id_config = True
+                            resource_info.import_id_config_file = str(import_id_tf.relative_to(self.provider_dir))
+
+                        import_identity_tf = resource_dir / "import-by-identity.tf"
+                        if import_identity_tf.exists():
+                            resource_info.has_import_identity_config = True
+                            resource_info.import_identity_config_file = str(import_identity_tf.relative_to(self.provider_dir))
+
+        # Process data source examples
+        data_sources_dir = self.examples_dir / "data-sources"
+        if data_sources_dir.exists():
+            for ds_dir in data_sources_dir.iterdir():
+                if ds_dir.is_dir():
+                    data_source_name = ds_dir.name
+                    if data_source_name in self.data_sources:
+                        ds_info = self.data_sources[data_source_name]
+
+                        data_source_tf = ds_dir / "data-source.tf"
+                        if data_source_tf.exists():
+                            ds_info.has_example = True
+                            ds_info.example_file = str(data_source_tf.relative_to(self.provider_dir))
+
+        # Process function examples
+        functions_dir = self.examples_dir / "functions"
+        if functions_dir.exists():
+            for func_dir in functions_dir.iterdir():
+                if func_dir.is_dir():
+                    function_name = func_dir.name
+                    if function_name in self.functions:
+                        func_info = self.functions[function_name]
+
+                        function_tf = func_dir / "function.tf"
+                        if function_tf.exists():
+                            func_info.has_example = True
+                            func_info.example_file = str(function_tf.relative_to(self.provider_dir))
+
+    def generate_missing_templates(self) -> None:
+        """Generate missing template files based on discovered resources."""
+        self.templates_dir.mkdir(parents=True, exist_ok=True)
+
+        # Generate index template if missing
+        index_template = self.templates_dir / "index.md"
+        if not index_template.exists():
+            self._generate_index_template()
+
+        # Generate resource templates
+        resources_template_dir = self.templates_dir / "resources"
+        resources_template_dir.mkdir(exist_ok=True)
+
+        for resource_name, resource_info in self.resources.items():
+            resource_template = resources_template_dir / f"{resource_name}.md"
+            if not resource_template.exists():
+                self._generate_resource_template(resource_name, resource_info)
+
+        # Generate data source templates
+        data_sources_template_dir = self.templates_dir / "data-sources"
+        data_sources_template_dir.mkdir(exist_ok=True)
+
+        for ds_name, ds_info in self.data_sources.items():
+            ds_template = data_sources_template_dir / f"{ds_name}.md"
+            if not ds_template.exists():
+                self._generate_data_source_template(ds_name, ds_info)
+
+        # Generate function templates
+        functions_template_dir = self.templates_dir / "functions"
+        functions_template_dir.mkdir(exist_ok=True)
+
+        for func_name, func_info in self.functions.items():
+            func_template = functions_template_dir / f"{func_name}.md"
+            if not func_template.exists():
+                self._generate_function_template(func_name, func_info)
+
+    def _generate_index_template(self) -> None:
+        """Generate the provider index template."""
+        template_content = f'''---
+page_title: "Provider: {self.rendered_provider_name}"
+description: |-
+  {self.provider_info.description if self.provider_info else f"The {self.rendered_provider_name} provider"}
+---
+
+# {self.rendered_provider_name} Provider
+
+{{{{ Description }}}}
+
+{{% if HasExample %}}
+
+## Example Usage
+
+{{{{ tffile(ExampleFile) }}}}
+
+{{% endif %}}
+
+{{{{ SchemaMarkdown }}}}
+'''
+
+        index_path = self.templates_dir / "index.md"
+        index_path.write_text(template_content)
+
+    def _generate_resource_template(self, resource_name: str, resource_info: ResourceInfo) -> None:
+        """Generate a resource template."""
+        clean_name = resource_name.replace(f"{self.provider_name}_", "")
+
+        template_content = f'''---
+page_title: "Resource: {resource_name}"
+description: |-
+  {resource_info.description}
+---
+
+# Resource: {resource_name}
+
+{resource_info.description}
+
+{{% if HasExample %}}
+
+## Example Usage
+
+{{{{ tffile(ExampleFile) }}}}
+
+{{% endif %}}
+
+{{{{ SchemaMarkdown }}}}
+
+{{% if HasImport %}}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{{{ codefile(ImportFile) }}}}
+
+{{% endif %}}
+'''
+
+        template_path = self.templates_dir / "resources" / f"{clean_name}.md"
+        template_path.write_text(template_content)
+
+    def _generate_data_source_template(self, ds_name: str, ds_info: ResourceInfo) -> None:
+        """Generate a data source template."""
+        clean_name = ds_name.replace(f"{self.provider_name}_", "")
+
+        template_content = f'''---
+page_title: "Data Source: {ds_name}"
+description: |-
+  {ds_info.description}
+---
+
+# Data Source: {ds_name}
+
+{ds_info.description}
+
+{{% if HasExample %}}
+
+## Example Usage
+
+{{{{ tffile(ExampleFile) }}}}
+
+{{% endif %}}
+
+{{{{ SchemaMarkdown }}}}
+'''
+
+        template_path = self.templates_dir / "data-sources" / f"{clean_name}.md"
+        template_path.write_text(template_content)
+
+    def _generate_function_template(self, func_name: str, func_info: FunctionInfo) -> None:
+        """Generate a function template."""
+        template_content = f'''---
+page_title: "Function: {func_name}"
+description: |-
+  {func_info.description}
+---
+
+# Function: {func_name}
+
+{func_info.description}
+
+{{% if HasExample %}}
+
+## Example Usage
+
+{{{{ tffile(ExampleFile) }}}}
+
+{{% endif %}}
+
+{{{{ FunctionSignatureMarkdown }}}}
+
+{{{{ FunctionArgumentsMarkdown }}}}
+
+{{% if HasVariadic %}}
+
+{{{{ FunctionVariadicArgumentMarkdown }}}}
+
+{{% endif %}}
+'''
+
+        template_path = self.templates_dir / "functions" / f"{func_name}.md"
+        template_path.write_text(template_content)
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def render_templates(self) -> None:
+        """Render the Jinja2 templates to produce documentation."""
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        env = Environment(
+            loader=FileSystemLoader(self.templates_dir),
+            autoescape=select_autoescape(['html', 'xml', 'md'])
+        )
+
+        # Render provider index
+        if self.provider_info:
+            template = env.get_template("index.md")
+            output_path = self.output_dir / "index.md"
+
+            # Create a dictionary for the provider info
+            provider_data = {
+                "Description": self.provider_info.description,
+                "HasExample": self.provider_info.has_example,
+                "ExampleFile": self.provider_info.example_file,
+                "SchemaMarkdown": self._parse_schema_to_markdown(self.provider_schema.get('provider_schemas', {}).get(self.provider_name, {}).get('provider', {})),
+            }
+
+            output_path.write_text(template.render(provider_data))
+
+        # Render resources
+        resources_output_dir = self.output_dir / "resources"
+        resources_output_dir.mkdir(exist_ok=True)
+        for resource_name, resource_info in self.resources.items():
+            template_name = f"resources/{resource_name}.md"
+            template = env.get_template(template_name)
+            output_path = resources_output_dir / f"{resource_name}.md"
+
+            # Create a dictionary for the resource info
+            resource_data = {
+                "Description": resource_info.description,
+                "HasExample": resource_info.has_example,
+                "ExampleFile": resource_info.example_file,
+                "SchemaMarkdown": resource_info.schema_markdown,
+                "HasImport": resource_info.has_import,
+                "ImportFile": resource_info.import_file,
+            }
+
+            output_path.write_text(template.render(resource_data))
+
+        # Render data sources
+        data_sources_output_dir = self.output_dir / "data-sources"
+        data_sources_output_dir.mkdir(exist_ok=True)
+        for ds_name, ds_info in self.data_sources.items():
+            template_name = f"data-sources/{ds_name}.md"
+            template = env.get_template(template_name)
+            output_path = data_sources_output_dir / f"{ds_name}.md"
+
+            # Create a dictionary for the data source info
+            ds_data = {
+                "Description": ds_info.description,
+                "HasExample": ds_info.has_example,
+                "ExampleFile": ds_info.example_file,
+                "SchemaMarkdown": ds_info.schema_markdown,
+            }
+
+            output_path.write_text(template.render(ds_data))
+
+        # Render functions
+        functions_output_dir = self.output_dir / "functions"
+        functions_output_dir.mkdir(exist_ok=True)
+        for func_name, func_info in self.functions.items():
+            template_name = f"functions/{func_name}.md"
+            template = env.get_template(template_name)
+            output_path = functions_output_dir / f"{func_name}.md"
+
+            # Create a dictionary for the function info
+            func_data = {
+                "Description": func_info.description,
+                "HasExample": func_info.has_example,
+                "ExampleFile": func_info.example_file,
+                "FunctionSignatureMarkdown": func_info.signature_markdown,
+                "FunctionArgumentsMarkdown": func_info.arguments_markdown,
+                "HasVariadic": func_info.has_variadic,
+                "FunctionVariadicArgumentMarkdown": func_info.variadic_argument_markdown,
+            }
+
+            output_path.write_text(template.render(func_data))
+
+
+    def _parse_provider_schema(self) -> None:
+        """Parse the extracted provider schema into our internal structures."""
+        if not self.provider_schema:
+            return
+
+        provider_schemas = self.provider_schema.get('provider_schemas', {})
+        provider_data = provider_schemas.get(self.provider_name, {})
+
+        # Parse provider info
+        provider_config = provider_data.get('provider', {})
+        self.provider_info = ProviderInfo(
+            name=f"terraform-provider-{self.provider_name}",
+            short_name=self.provider_name,
+            rendered_name=self.rendered_provider_name,
+            description=provider_config.get('description', ''),
+            version="",  # Would need to be extracted from elsewhere
+        )
+
+        # Parse resources
+        resource_schemas = provider_data.get('resource_schemas', {})
+        for resource_name, resource_schema in resource_schemas.items():
+            if self.ignore_deprecated and resource_schema.get('deprecated', False):
+                continue
+
+            # The actual schema is nested under the 'schema' key
+            actual_schema = resource_schema.get('schema', {})
+            schema_markdown = self._parse_schema_to_markdown(actual_schema)
+
+            self.resources[resource_name] = ResourceInfo(
+                name=resource_name,
+                type="Resource",
+                description=resource_schema.get('description', ''),
+                schema_markdown=schema_markdown,
+                schema=actual_schema,
+                examples=resource_schema.get('examples', {}),
+                import_docs=resource_schema.get('import_docs', ''),
+                colocated_notes=resource_schema.get('colocated_notes', ''),
+                migration=resource_schema.get('migration', ''),
+            )
+
+        # Parse data sources
+        data_source_schemas = provider_data.get('data_source_schemas', {})
+        for ds_name, ds_schema in data_source_schemas.items():
+            if self.ignore_deprecated and ds_schema.get('deprecated', False):
+                continue
+
+            # The actual schema is nested under the 'schema' key
+            actual_schema = ds_schema.get('schema', {})
+
+            self.data_sources[ds_name] = ResourceInfo(
+                name=ds_name,
+                type="Data Source",
+                description=ds_schema.get('description', ''),
+                schema_markdown=self._parse_schema_to_markdown(actual_schema),
+                schema=actual_schema,
+                examples=ds_schema.get('examples', {}),
+                import_docs=ds_schema.get('import_docs', ''),
+                colocated_notes=ds_schema.get('colocated_notes', ''),
+                migration=ds_schema.get('migration', ''),
+            )
+
+        # Parse functions (if available in schema)
+        function_schemas = provider_data.get('functions', {})
+        for func_name, func_schema in function_schemas.items():
+            self.functions[func_name] = FunctionInfo(
+                name=func_name,
+                description=func_schema.get('description', ''),
+                summary=func_schema.get('summary', ''),
+                signature_markdown=self._parse_function_signature(func_schema),
+                arguments_markdown=self._parse_function_arguments(func_schema),
+                has_variadic=bool(func_schema.get('variadic_parameter')),
+                variadic_argument_markdown=self._parse_variadic_argument(func_schema),
+                examples=func_schema.get('examples', {}),
+                import_docs=func_schema.get('import_docs', ''),
+                colocated_notes=func_schema.get('notes', ''),
+                migration=func_schema.get('migration', ''),
+            )
+
+    def generate(self) -> None:
+        """Main entry point to generate documentation."""
+        print(f"🔍 Generating documentation for {self.provider_name} provider...")
+
+        # Step 1: Extract provider schema
+        print("📋 Extracting provider schema...")
+        try:
+            self.provider_schema = self.extract_provider_schema()
+        except Exception as e:
+            print(f"⚠️  Warning: Could not extract provider schema: {e}")
+            print("📝 Proceeding with template-only generation...")
+
+        # Step 2: Parse schema information
+        self._parse_provider_schema()
+
+        # Step 3: Process examples
+        print("📁 Processing examples...")
+        self.process_examples()
+
+        # Step 4: Generate missing templates
+        print("📄 Generating missing templates...")
+        self.generate_missing_templates()
+
+        # Step 5: Render templates
+        print("🎨 Rendering templates...")
+        self.render_templates()
+
+        print(f"✅ Documentation generated successfully in {self.output_dir}")
+
+
+
+
+def generate_docs(
+    provider_dir: Path,
+    provider_name: Optional[str] = None,
+    rendered_provider_name: Optional[str] = None,
+    examples_dir: str = "examples",
+    templates_dir: str = "templates",
+    output_dir: str = "docs",
+    ignore_deprecated: bool = False,
+) -> None:
+    """Main function to generate documentation for a Pyvider provider."""
+    if not (provider_dir / "pyproject.toml").exists():
+        raise FileNotFoundError(
+            "A pyproject.toml file is required to generate documentation."
+            " Please run this command from the root of your provider project."
+        )
+    """Main function to generate documentation for a Pyvider provider.
+
+    This function provides the same interface as the HashiCorp tfplugindocs tool
+    but adapted for Pyvider providers.
+
+    Args:
+        provider_dir: Path to the provider directory
+        provider_name: Name of the provider (defaults to directory name)
+        rendered_provider_name: Display name for the provider
+        examples_dir: Directory containing examples (default: "examples")
+        templates_dir: Directory for templates (default: "templates")
+        output_dir: Output directory for generated docs (default: "docs")
+        ignore_deprecated: Skip deprecated resources/data sources
+    """
+    generator = DocsGenerator(
+        provider_dir=provider_dir,
+        provider_name=provider_name,
+        rendered_provider_name=rendered_provider_name,
+        examples_dir=examples_dir,
+        templates_dir=templates_dir,
+        output_dir=output_dir,
+        ignore_deprecated=ignore_deprecated,
+    )
+
+    generator.generate()
+
+
+@click.command("docs")
+@click.option(
+    "--provider-dir",
+    type=click.Path(exists=True, file_okay=False, resolve_path=True),
+    help="Path to the provider directory (defaults to current directory).",
+    default=".",
+)
+@click.option(
+    "--provider-name",
+    help="Provider name (defaults to directory name without terraform-provider- prefix).",
+)
+@click.option(
+    "--rendered-provider-name",
+    help="Display name for the provider in documentation.",
+)
+@click.option(
+    "--examples-dir",
+    default="examples",
+    help="Examples directory relative to provider directory.",
+)
+@click.option(
+    "--templates-dir",
+    default="templates",
+    help="Templates directory relative to provider directory.",
+)
+@click.option(
+    "--output-dir",
+    default="docs",
+    help="Output directory for generated documentation.",
+)
+@click.option(
+    "--ignore-deprecated",
+    is_flag=True,
+    help="Skip deprecated resources and data sources.",
+)
+@click.pass_context
+def docs_cli(
+    ctx: click.Context,
+    provider_dir: str,
+    provider_name: str | None,
+    rendered_provider_name: str | None,
+    examples_dir: str,
+    templates_dir: str,
+    output_dir: str,
+    ignore_deprecated: bool,
+) -> None:
+    """Generate provider documentation for Terraform Registry."""
+    try:
+        generate_docs(
+            provider_dir=Path(provider_dir),
+            provider_name=provider_name,
+            rendered_provider_name=rendered_provider_name,
+            examples_dir=examples_dir,
+            templates_dir=templates_dir,
+            output_dir=output_dir,
+            ignore_deprecated=ignore_deprecated,
+        )
+        click.secho("✅ Documentation generated successfully!", fg="green")
+    except Exception as e:
+        click.secho(f"❌ Documentation generation failed: {e}", fg="red", err=True)
+        raise click.Abort() from e

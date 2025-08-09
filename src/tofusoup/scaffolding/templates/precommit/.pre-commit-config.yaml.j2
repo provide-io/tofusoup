@@ -1,0 +1,44 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/terraform-linters/tflint
+    rev: v0.50.3
+    hooks:
+      - id: tflint
+        files: \.tf$
+        exclude: \.terraform/.*$
+
+  - repo: https://github.com/PowerShell/PSScriptAnalyzer
+    rev: 1.21.0
+    hooks:
+      - id: psscriptanalyzer
+        files: \.ps1$
+        language: docker_image
+        entry: mcr.microsoft.com/powershell/psscriptanalyzer:latest
+        args: [-ScriptDefinition]
+
+  - repo: local
+    hooks:
+      - id: verify-headers-footers
+        name: Verify file headers and footers
+        entry: {{ verify_script }}
+        language: {{ language }}
+        types_or: [python, shell, powershell, terraform]
+        pass_filenames: true
+        additional_dependencies: []

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/rpc/server.py
+# hypothesis_version: 6.137.1
+
+[86400, 'Invalid TLS mode', 'Manual TLS enabled', '[::]:0', '[::]:50051', '^[a-zA-Z0-9.-]+$', '__main__', 'auto', 'disabled', 'ec', 'manual', 'rb', 'wb']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/souptest_rpc_pyclient_goserver.py
+# hypothesis_version: 6.137.1
+
+[b'Hello from Python client to Go server!', 'py-to-go-key']

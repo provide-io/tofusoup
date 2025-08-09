@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider/src/pyvider/schema/types/enums.py
+# hypothesis_version: 6.135.32
+
+['GROUP', 'LIST', 'MAP', 'MARKDOWN', 'PLAIN', 'SET', 'SINGLE']

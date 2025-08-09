@@ -1,0 +1,125 @@
+# =============================================================================
+# TofuSoup Definitive Configuration (`soup.toml`)
+# =============================================================================
+# This file serves as the central configuration for the TofuSoup framework.
+# It allows for fine-grained control over test execution, harness behavior,
+# and CLI command defaults.
+#
+# Configuration Precedence (from lowest to highest):
+# 1. [global_settings]
+# 2. [harness_defaults] or [test_suite_defaults]
+# 3. [harness.*] or [test_suite.*] specific settings
+# 4. Command-line flags (always have the final say)
+# =============================================================================
+
+# --- Global Settings ---
+# These settings apply across the entire application unless overridden
+# by more specific sections below.
+[global_settings]
+# Default log level for the main Python application ('soup' CLI).
+# Options: "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+default_python_log_level = "INFO"
+
+# A default log level for all external Go harnesses.
+# Options: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+default_harness_log_level = "INFO"
+
+# A default timeout in seconds for running any external harness command.
+default_harness_timeout = 60
+
+
+# --- Harness Defaults ---
+# This section defines default settings for families of harnesses (e.g., all Go harnesses).
+[harness_defaults.go]
+# Default build flags passed to `go build` for all Go harnesses.
+build_flags = ["-v"]
+
+# Environment variables to be set for all Go harness processes.
+common_env_vars = { GO_COMMON_VAR = "default_go_value" }
+
+# Default log level for all Go harnesses (overrides global_settings.default_harness_log_level).
+default_log_level = "WARN"
+
+# Default timeout for all Go harnesses (overrides global_settings.default_harness_timeout).
+timeout_seconds = 45
+
+
+# --- Specific Harness Configuration ---
+# This section allows for overriding defaults for individual harness.
+# The format is [harness.<language>.<component_id>].
+[harness.go.cty]
+# Override the default build flags specifically for the 'go-cty' harness.
+build_flags = ["-v", "-ldflags=-X main.Version=1.2.3-cty"]
+
+# Override the default log level for 'go-cty'.
+log_level = "TRACE"
+
+# Override the default timeout for 'go-cty'.
+timeout_seconds = 70
+
+# Set or override environment variables specifically for 'go-cty'.
+# These are merged with `common_env_vars` from the defaults section.
+env_vars = { SPECIFIC_CTY = "active", GO_COMMON_VAR = "overridden_for_cty" }
+
+
+[harness.go.rpc]
+# Example of a minimal override, only changing the log level for the 'go-rpc' server.
+# It will inherit build_flags, timeout_seconds, and common_env_vars from [harness_defaults.go].
+log_level = "DEBUG"
+
+
+# --- Test Suite Defaults ---
+# This section defines default settings for all test suites run via `soup test`.
+[test_suite_defaults]
+# Environment variables to set for all test suite processes.
+env_vars = { TOFUSOUP_TEST_DEFAULT_ENV = "default_env_value_from_toml" }
+
+# A list of extra arguments to pass to `pytest` for all test suites.
+extra_pytest_args = ["--color=yes"]
+
+# A list of test names or markers to skip in all suites.
+# Example: skip_tests = ["test_some_flaky_feature"]
+skip_tests = []
+
+
+# --- Specific Test Suite Configuration ---
+# This section allows for overriding defaults for individual test suites.
+# The format is [test_suite.<suite_name>].
+[test_suite.cty]
+# Override or add environment variables specifically for the 'cty' test suite.
+env_vars = { TOFUSOUP_TEST_DEFAULT_ENV = "cty_override_default_env_from_toml", TOFUSOUP_CTY_SUITE_ENV = "cty_specific_env_value_from_toml" }
+
+# Skip specific tests only within the 'cty' suite.
+skip_tests = ["test_always_skip_me"]
+
+
+# --- CLI Command Options ---
+# This section provides default values for specific CLI command options,
+# allowing users to avoid repeatedly typing common flags.
+# The structure `[command_options.<group>.<subgroup>.<command>]` mirrors the CLI.
+
+# Defaults for the `soup cty convert` command.
+[command_options.cty.convert]
+default_input_format = "json"
+default_output_format = "msgpack"
+
+# Defaults for the `soup hcl convert` command.
+[command_options.hcl.convert]
+default_output_format = "json"
+
+# Defaults for the `soup rpc kv server-start` command.
+[command_options.rpc.kv.server-start]
+# Default crypto algorithm for the Go server's auto-generated mTLS certs.
+default_cert_algo = "ecdsa" # "ecdsa" or "rsa"
+# Default curve if algorithm is "ecdsa".
+default_cert_curve = "secp521r1" # "secp256r1", "secp384r1", or "secp521r1"
+# Default key size if algorithm is "rsa".
+default_cert_bits = 2048
+# Set to true to make the server start in insecure mode by default.
+default_no_mtls = false
+
+# Defaults for the `soup rpc kv get` and `put` client commands.
+[command_options.rpc.kv.client]
+# Default path to the server binary for the client to connect to.
+# This path is relative to the project root.
+# default_server_bin_path = "pyvider-builder/src/go/go-rpc/kv/plugin-go-server/main.go"

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/registry/cli.py
+# hypothesis_version: 6.137.1
+
+['-', '--latest', '--registry', '--type', '-r', '-t', '...', '/', '=', 'Available', 'N/A', 'NAMESPACE/NAME', 'Not found', 'Registry', 'Registry to query.', 'Registry to search.', 'all', 'both', 'compare', 'info', 'latest', 'module', 'opentofu', 'provider', 'registry', 'registry_name', 'resource', 'resource_type', 'search', 'term', 'terraform', 'versions', '✓', '✗', '🍲', '🏗️', '📦', '🔌', '🤝']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider-rpcplugin/src/pyvider/rpcplugin/crypto/constants.py
+# hypothesis_version: 6.135.26
+
+[2048, 3072, 4096, 'ecdsa', 'rsa', 'secp256r1', 'secp384r1', 'secp521r1']

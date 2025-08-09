@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/managers/tofu.py
+# hypothesis_version: 6.137.1
+
+['.', 'arch', 'bin', 'compatible', 'conformance', 'go.cty', 'go.wire', 'harness', 'include_prereleases', 'not_installed', 'notes', 'os', 'prerelease', 'status', 'tag_name', 'tofu', 'tofu*', 'tofu.exe', 'v', 'version']

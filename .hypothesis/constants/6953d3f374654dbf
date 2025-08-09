@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/registry/base.py
+# hypothesis_version: 6.135.26
+
+['BaseRegistry', 'User-Agent']

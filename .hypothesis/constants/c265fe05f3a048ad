@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/build.py
+# hypothesis_version: 6.137.1
+
+['-o', '.', 'LOG_LEVEL', 'bin', 'build', 'build_flags', 'common_env_vars', 'env_vars', 'go', 'go-', 'harness', 'harness_defaults', 'log_level', 'mod', 'output_name', 'source_dir', 'src', 'tidy', 'tofusoup']

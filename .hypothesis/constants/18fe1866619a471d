@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/operations/download.py
+# hypothesis_version: 6.137.1
+
+[100, 4096, '#', '*', 'checksums.txt', 'http', 'https', 'md5', 'r', 'rb', 'sha1', 'sha256']

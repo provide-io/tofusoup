@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/souptest_rpc_pyclient_servers.py
+# hypothesis_version: 6.135.26
+
+['1', 'SKIP_RUBY_RPC_TESTS', '_rpc_server_insecure', 'close', 'dummy_skipped_target', 'running_', 'utf-8']

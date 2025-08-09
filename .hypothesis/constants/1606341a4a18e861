@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cty/souptest_cty_interop.py
+# hypothesis_version: 6.137.1
+
+[100, '-', '--input-format', '--output-format', '--type', '<UNKNOWN>', 'a', 'b', 'bool_true', 'case_name', 'convert', 'cty', 'dynamic', 'go_fixtures', 'hello world', 'is_known_null', 'json', 'large_number', 'list_of_strings', 'map_simple', 'msgpack', 'null_string', 'number_lower_bound', 'number_simple', 'number_upper_bound', 'py_fixtures', 'set_of_numbers', 'soup-go', 'string_prefix', 'string_simple', 'unknown_unrefined', 'validate-value']

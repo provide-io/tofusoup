@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/garnish/cli.py
+# hypothesis_version: 6.137.1
+
+['--component-type', '--force', '--output-dir', '--provider-dir', '.', '.garnish', 'data_source', 'docs', 'function', 'garnish', 'green', 'name', 'project', 'pyproject.toml', 'pyvider', 'pyvider.toml', 'rb', 'red', 'render', 'resource', 'scaffold', 'templates', 'terraform-provider', 'tool']

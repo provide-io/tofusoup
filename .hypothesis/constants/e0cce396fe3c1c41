@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/config.py
+# hypothesis_version: 6.137.1
+
+[300, '.', '=', 'Available Profiles:', 'Configured Tools:', 'EDITOR', 'INFO', 'No soup.toml found', 'Settings:', 'auto_install_deps', 'cache_downloads', 'clean_on_failure', 'command_options', 'download_timeout', 'fail_fast', 'false', 'harness_requirements', 'include_prereleases', 'install_path', 'latest', 'log_level', 'nano', 'parallel_jobs', 'platform', 'profiles', 'rb', 'retry_attempts', 'retry_delay', 'settings', 'skip_verification', 'soup.toml', 'timeout_minutes', 'tools', 'true', 'verify_checksums', 'verify_signatures', 'wb', 'workenv', '~/.tofusoup/tools']

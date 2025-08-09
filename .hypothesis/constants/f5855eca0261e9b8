@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/ui/app.py
+# hypothesis_version: 6.136.0
+
+['Back', 'DEBUG', 'app.pop_screen', 'app.tcss', 'escape', 'tofusoup-tui']

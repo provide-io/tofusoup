@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/registry/opentofu.py
+# hypothesis_version: 6.135.33
+
+[404, '/', 'arch', 'description', 'id', 'items', 'limit', 'modules', 'modules/', 'os', 'platforms', 'protocols', 'providers/', 'q', 'tier', 'version', 'versions']

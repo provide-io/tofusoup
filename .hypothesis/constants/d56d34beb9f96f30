@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/conftest.py
+# hypothesis_version: 6.137.1
+
+['certs', 'client_ca_cert', 'client_cert', 'client_key', 'conformance', 'ec-secp256r1-mtls', 'ec-secp384r1-mtls', 'ec-secp521r1-mtls', 'openssl', 'pyproject.toml', 'rpc', 'rsa-2048-mtls', 'rsa-4096-mtls', 'server_ca_cert', 'server_cert', 'server_key', 'session']

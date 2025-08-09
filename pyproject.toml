@@ -1,0 +1,122 @@
+#
+# tofusoup/pyproject.toml
+#
+
+[project]
+name = "tofusoup"
+description = "Cross-language conformance test suite for OpenTofu tooling."
+version = "0.0.11"
+requires-python = ">=3.12"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Tim Perkins", email = "code@tim.life" },
+]
+maintainers = [
+    { name = "provide.io", email = "code@provide.io" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+dependencies = [
+    "pyvider-telemetry>=0.0.13",
+    "attrs>=23.0.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "msgpack>=1.0.0",
+    "pyyaml>=6.0",
+    "grpcio-tools>=1.60.0",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.2.1",
+    "pytest-xdist>=3.7.0",
+    "pytest-asyncio>=1.0.0",
+    "pytest-httpx>=0.35.0",
+    "pytest-json-report>=1.5.0",
+    "hypothesis>=6.100.0",
+    "httpx>=0.25.0",
+    "respx>=0.20.0",
+    "textual>=3.2.0",
+    "structlog>=23.0.0",
+    "aiosqlite>=0.19.0",
+    "semver>=3.0.0",
+    "mypy>=1.10.0",
+    "ruff>=0.2.0",
+    "python-hcl2>=3.0.0",
+    "pyvider-rpcplugin>=0.0.14",
+    "pyvider-cty>=0.0.111",
+    "pyvider-hcl>=0.0.113",
+    "jinja2>=3.1.6",
+    "tomli-w>=1.0.0",
+]
+
+[project.scripts]
+soup = "tofusoup.cli:entry_point"
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["tofusoup*"]
+namespaces = false
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+asyncio_mode = "auto"
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+markers = ["slow: marks tests as slow", "conformance: marks tests as conformance tests", "tdd: TDD contract test"]
+norecursedirs = [".git", "build", "dist", "*.egg-info", ".venv", "htmlcov", ".hypothesis", "conformance"]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "ANN", "B", "C90", "SIM", "PTH", "RUF"]
+ignore = ["ANN401", "B008", "E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["tofusoup", "flavor", "pyvider", "tests"]
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.13"
+mypy_path = "src"
+strict = true
+pretty = true
+show_error_codes = true
+show_column_numbers = true
+warn_unused_ignores = true
+warn_unused_configs = true
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = ["structlog.*", "google.*", "grpc.*", "pytest.*", "jq.*", "psutil.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["tofusoup"]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError", "if __name__ == .__main__.:", "if TYPE_CHECKING:", "def __repr__", "def __str__", "pass"]

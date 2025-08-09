@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/souptest_rpc_pyclient_goserver.py
+# hypothesis_version: 6.137.1
+
+[b'test', 'PLUGIN_SERVER_PATH', 'TestKey123', 'key with spaces', 'key#hash', 'key-with-dashes', 'key.with.dots', 'key/slash', 'key@symbol', 'put', 'r', 'test-key', 'test.key', 'utf-8']

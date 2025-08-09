@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/wire/souptest_wire_binary_compatibility.py
+# hypothesis_version: 6.137.1
+
+['soup-go']

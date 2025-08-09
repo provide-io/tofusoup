@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cli_verification/souptest_cli_cty.py
+# hypothesis_version: 6.137.1
+
+['--help', 'Available Commands:', 'Usage:', 'decode', 'go-cty']

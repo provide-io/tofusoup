@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/protos/kv_protocol.py
+# hypothesis_version: 6.135.26
+
+['Get', 'KV', 'Put']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/cli.py
+# hypothesis_version: 6.136.0
+
+['-', '--registry', '-r', '...', 'N/A', 'Registry to search.', 'SearchEngine closed.', 'TUI browser exited.', 'all', 'both', 'drink', 'module', 'opentofu', 'registry_name', 'search', 'term', 'terraform', 'tui', '🍲', '🏗️', '📦', '🔌', '🤝']

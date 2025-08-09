@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/conftest.py
+# hypothesis_version: 6.137.1
+
+['session', 'soup-go']

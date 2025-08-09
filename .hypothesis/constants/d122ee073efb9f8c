@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/wire/souptest_property_based.py
+# hypothesis_version: 6.137.1
+
+['age', 'name']

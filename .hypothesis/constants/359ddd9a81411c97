@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/utils/go_interaction.py
+# hypothesis_version: 6.135.26
+
+['--input-file', '--input-format', '--output-format', '--stdout', '--type', '--type-string', '--value-json', '.json', '.msgpack', '.tfw_b64', 'decode', 'encode', 'json', 'msgpack', 'type', 'utf-8', 'value', 'w', 'wb']
