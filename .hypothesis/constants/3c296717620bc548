@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/package/cli.py
+# hypothesis_version: 6.137.1
+
+['--manifest', '--out-dir', 'build', 'clean', 'green', 'init', 'keygen', 'keys', 'package', 'package_file', 'project_dir', 'pyproject.toml', 'red', 'verify', '✅ Cache cleaned.', '🧹 Cleaning cache...']

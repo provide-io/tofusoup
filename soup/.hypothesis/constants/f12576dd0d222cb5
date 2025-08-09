@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/cty/logic.py
+# hypothesis_version: 6.135.32
+
+['--type-string', '--value-json', 'Validation Succeeded', '__tofusoup_unknown__', 'attributes', 'conformance', 'cty', 'ctytool_testcases', 'element_type', 'error', 'go', 'go-cty-validate', 'hcl', 'is_null', 'is_unknown', 'json', 'list', 'map', 'marks', 'msgpack', 'not implemented', 'object', 'python', 'r', 'rb', 'set', 'status', 'testdata', 'tuple', 'type', 'type_name', 'unknown_primitive', 'utf-8', 'validate', 'value', 'w']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/docs/linting.py
+# hypothesis_version: 6.137.1
+
+[100, '#', '(?<!\\n)\\n```(\\w*)\\n', '(?<!\\n)\\n```\\n', '--config', '--fix', ':', 'Unknown error', '\\1- ', '\\1\\d+. ', '\\n\\1\\n\\n', '\\n\\n\\1\\n', '\\n\\n```\\1\\n', '\\n\\n```\\n', '\\n```(\\w*)\\n(?!\\n)', '\\n```\\n(?!\\n)', '\\n```\\n\\n', '^(\\s*)-  ', '^(\\s*)\\d+\\.  ', '```', 'column', 'errors', 'errors_by_file', 'errors_by_rule', 'file', 'line', 'markdownlint-cli2', 'message', 'rule', 'total_errors', 'unknown', 'w']

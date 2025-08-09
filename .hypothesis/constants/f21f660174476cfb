@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider-rpcplugin/src/pyvider/rpcplugin/server.py
+# hypothesis_version: 6.135.26
+
+[0.5, 1.0, 5.0, 365, '0.0.0.0:0', '127.0.0.1', 'PLUGIN_CLIENT_CERT', 'PLUGIN_SERVER_CERT', 'PLUGIN_SERVER_KEY', 'Rate limit exceeded.', '_HandlerT', '_ServerT', '_TransportT', 'file://', 'localhost', 'rb', 'service_name', 'tcp', 'unix', 'utf-8']

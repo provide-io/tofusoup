@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider-rpcplugin/src/pyvider/rpcplugin/factories.py
+# hypothesis_version: 6.135.26
+
+['127.0.0.1', 'T_Proto_fn', 'tcp', 'unary_unary', 'unix']

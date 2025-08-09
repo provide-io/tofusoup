@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/wire/conftest.py
+# hypothesis_version: 6.135.26
+
+['dummy_path', 'go-wire', 'session']

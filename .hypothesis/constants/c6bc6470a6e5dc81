@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/ui/widgets/search_view.py
+# hypothesis_version: 6.135.26
+
+['#results_list', '#search_input', 'results_list', 'search_input']

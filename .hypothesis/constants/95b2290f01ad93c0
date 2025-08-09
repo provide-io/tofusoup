@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/common/serialization.py
+# hypothesis_version: 6.136.0
+
+['r', 'rb', 'utf-8', 'w', 'wb']

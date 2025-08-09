@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cli_verification/souptest_cli_wire.py
+# hypothesis_version: 6.137.1
+
+['-', '--help', '--type', 'decode', 'encode', 'go-wire', 'go-wire-harness', 'pHRlc3Q=', 'string', 'test', 'type', 'value']

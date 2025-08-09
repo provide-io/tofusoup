@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cty/souptest_cty_interop.py
+# hypothesis_version: 6.137.1
+
+[100, 200, 443, '-d', '5s', 'PYTHONPATH', 'a', 'b', 'bool_true', 'case_name', 'config', 'deeply_nested_object', 'dynamic', 'enabled', 'extra', 'generate', 'go-cty', 'go_fixtures', 'hello world', 'id', 'key', 'large_number', 'list_of_strings', 'map_simple', 'metadata', 'null_string', 'number_simple', 'obj1', 'params', 'ports', 'py_fixtures', 'retries', 'set_of_numbers', 'src', 'start-', 'string_simple', 'timeout', 'unknown_refined_list', 'unknown_refined_num', 'unknown_refined_str', 'unknown_unrefined', 'value', 'verify']

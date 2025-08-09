@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cli_verification/souptest_cli_parity.py
+# hypothesis_version: 6.137.1
+
+['-', '-([a-z])\\b', '--([a-z-]+)', '--help', '-v', '.venv_darwin_arm64', 'Available Commands:', 'Commands:', 'Flags:', 'Options:', '__main__', 'bin', 'command', 'command_path', 'common_args', 'config', 'convert', 'cty', 'cty convert', 'cty validate-value', 'cty view', 'drink', 'expected_subcommands', 'garnish', 'generate', 'go', 'harness', 'hcl', 'hcl convert', 'hcl view', 'help', 'inputformat', 'kvget', 'kvput', 'loglevel', 'outputformat', 'protobuf', 'rpc', 'soup', 'soup-go', 'src', 'state', 'stir', 'test', 'tofusoup', 'type', 'validatevalue', 'version', 'view', 'which', 'wire', 'workenv']

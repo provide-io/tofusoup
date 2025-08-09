@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/pyvider-cty/src/pyvider/cty/exceptions/encoding.py
+# hypothesis_version: 6.135.32
+
+['DynamicValue', '__name__', 'json', 'msgpack', 'schema', 'target_type']

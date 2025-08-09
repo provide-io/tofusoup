@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider-rpcplugin/src/pyvider/rpcplugin/protocol/grpc_broker_pb2.py
+# hypothesis_version: 6.135.26
+
+[135, 185, 187, 254, '_CONNINFO', '_CONNINFO_KNOCK', '_GRPCBROKER', 'grpc_broker.proto', 'grpc_broker_pb2']

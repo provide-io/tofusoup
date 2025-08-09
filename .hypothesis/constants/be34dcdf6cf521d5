@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/wire/souptest_wire_python_vs_go.py
+# hypothesis_version: 6.135.26
+
+[123.45, 123, '789', '9876543210.123456789', 'a', 'a dynamic string', 'b', 'bool', 'bool_true', 'c', 'dynamic', 'dynamic_object', 'dynamic_string', 'enabled', 'hello', 'id', 'list', 'list_string', 'null_string', 'number', 'simple_float', 'simple_int', 'simple_string', 'string', 'test_name, payload', 'type', 'value']

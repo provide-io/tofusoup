@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/rpc/logic.py
+# hypothesis_version: 6.135.26
+
+[b'value_from_python_client_for_go_server', b'value_from_python_client_for_python_server', 'Go', 'Python (subprocess)', 'compat_test_key', 'go-rpc', 'rpc', 'server.py', 'src', 'tofusoup']

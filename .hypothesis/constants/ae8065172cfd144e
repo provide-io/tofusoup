@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/wire/souptest_codec.py
+# hypothesis_version: 6.137.1
+
+['30', 'Alice', 'Bob', 'age', 'name']

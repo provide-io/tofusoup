@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cli_verification/shared_cli_utils.py
+# hypothesis_version: 6.137.1
+
+['\n\n--- TIMEOUT ---', '\n--- STDIN ---\n', '-m', 'a', 'cli_runs', 'cmd.txt', 'harness_runs', 'output', 'replace', 'soup', 'stderr.txt', 'stdout.txt', 'tofusoup.cli', 'tofusoup_cli', 'utf-8', 'w']

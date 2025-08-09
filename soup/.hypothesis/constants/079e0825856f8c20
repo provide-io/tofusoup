@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/common/config.py
+# hypothesis_version: 6.135.32
+
+['rb', 'soup', 'soup.toml']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/cli.py
+# hypothesis_version: 6.137.1
+
+['--config-file', '--log-level', 'CRITICAL', 'Config Root', 'DEBUG', 'ERROR', 'INFO', 'NOTSET', 'TOFUSOUP_CONFIG', 'TOFUSOUP_LOG_LEVEL', 'TRACE', 'WARNING', '__main__', 'config', 'cty', 'cty_cli', 'drink', 'drink_cli', 'garnish', 'garnish_cli', 'harness', 'harness_cli', 'hcl', 'hcl_cli', 'package', 'package_cli_entry', 'provider', 'provider_cli', 'pyproject.toml', 'rpc', 'rpc_cli', 'show', 'state', 'state_cli', 'stir', 'stir_cli', 'test', 'test_cli', 'tofusoup', 'tofusoup-cli', 'tofusoup.browser.cli', 'tofusoup.cty.cli', 'tofusoup.garnish.cli', 'tofusoup.harness.cli', 'tofusoup.hcl.cli', 'tofusoup.package.cli', 'tofusoup.rpc.cli', 'tofusoup.state', 'tofusoup.stir', 'tofusoup.testing.cli', 'tofusoup.wire.cli', 'tofusoup.workenv.cli', 'wire', 'workenv', 'workenv_cli']

@@ -1,0 +1,109 @@
+// Copyright (c) Provide Technologies, Inc.
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package tofusoup.stock;
+
+option go_package = "github.com/provide-io/tofusoup/direct/proto";
+option java_package = "io.provide.tofusoup.stock";
+option java_outer_classname = "StockProto";
+option csharp_namespace = "TofuSoup.Stock";
+option ruby_package = "TofuSoup::Stock";
+option objc_class_prefix = "TSS";
+option php_namespace = "TofuSoup\\Stock";
+
+// Basic key-value operations (backwards compatible with existing KV)
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    bytes value = 1;
+}
+
+message PutRequest {
+    string key = 1;
+    bytes value = 2;
+}
+
+message Empty {}
+
+// Streaming operations
+message WatchRequest {
+    string key_prefix = 1;  // Watch all keys with this prefix
+}
+
+message WatchEvent {
+    enum EventType {
+        PUT = 0;
+        DELETE = 1;
+    }
+    EventType type = 1;
+    string key = 2;
+    bytes value = 3;
+    int64 timestamp = 4;
+}
+
+// Batch operations
+message BatchItem {
+    string key = 1;
+    bytes value = 2;
+}
+
+message BatchSummary {
+    int32 total_items = 1;
+    int32 successful = 2;
+    int32 failed = 3;
+    int64 bytes_written = 4;
+}
+
+// Bidirectional operations
+message TradeOrder {
+    enum OrderType {
+        BUY = 0;
+        SELL = 1;
+        QUERY = 2;
+    }
+    OrderType type = 1;
+    string symbol = 2;
+    int32 quantity = 3;
+}
+
+message TradeFill {
+    bool success = 1;
+    string symbol = 2;
+    int32 quantity_filled = 3;
+    string message = 4;
+    int64 timestamp = 5;
+}
+
+// Status/monitoring
+message InventoryRequest {}
+
+message InventoryStatus {
+    int64 total_items = 1;
+    int64 total_bytes = 2;
+    int64 uptime_seconds = 3;
+    string server_version = 4;
+    map<string, string> metadata = 5;
+}
+
+// The Stock service - a soup base with multiple meanings
+service Stock {
+    // Basic KV operations (unary)
+    rpc Get(GetRequest) returns (GetResponse);
+    rpc Put(PutRequest) returns (Empty);
+    
+    // Server streaming - monitor stock changes
+    rpc Monitor(WatchRequest) returns (stream WatchEvent);
+    
+    // Client streaming - batch operations
+    rpc Batch(stream BatchItem) returns (BatchSummary);
+    
+    // Bidirectional streaming - trading floor simulation
+    rpc Trade(stream TradeOrder) returns (stream TradeFill);
+    
+    // Status check
+    rpc Inventory(InventoryRequest) returns (InventoryStatus);
+}

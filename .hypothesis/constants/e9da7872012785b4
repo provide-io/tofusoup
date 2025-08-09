@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pyvider-rpcplugin/src/pyvider/rpcplugin/transport/types.py
+# hypothesis_version: 6.135.26
+
+[16384, 'ReaderT', 'TCPSocketT', 'TransportT', 'UnixSocketT', 'WriterT']

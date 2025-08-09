@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/docs/template_functions.py
+# hypothesis_version: 6.137.1
+
+['**Yes**', 'Data Source', 'Function', 'No', 'No (Computed)', 'Resource', 'String', '_current_context', 'attributes', 'blocks', 'computed', 'data_source', 'description', 'example', 'examples', 'function', 'get_schema', 'has_parameters', 'html', 'include', 'name', 'parameter_count', 'parameters', 'partials', 'render', 'required', 'resource', 'return_type', 'schema', 'type', 'xml']

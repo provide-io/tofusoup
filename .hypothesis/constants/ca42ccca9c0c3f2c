@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/docs/scaffolder.py
+# hypothesis_version: 6.137.1
+
+['__doc__', 'data_source', 'docs', 'example.tf', 'examples', 'function', 'resource']

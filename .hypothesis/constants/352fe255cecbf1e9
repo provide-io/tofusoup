@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/cert_manager.py
+# hypothesis_version: 6.137.1
+
+[256, 384, 420, 521, 2048, '*.pem', '127.0.0.1', '::1', 'TofuSoup Test CA', 'TofuSoup Test Client', 'TofuSoup Test Server', '__main__', 'ca', 'ca_cert', 'ca_key', 'certs', 'client', 'client_cert', 'client_key', 'ec', 'ecdsa', 'localhost', 'rsa', 'secp256r1', 'secp384r1', 'secp521r1', 'server', 'server_cert', 'server_key', 'w']

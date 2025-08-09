@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/proto/kv/kv_pb2.py
+# hypothesis_version: 6.137.1
+
+[b'Z\x07./proto', 116, 118, 125, 127, 217, 'DESCRIPTOR', '_EMPTY', '_GETREQUEST', '_GETRESPONSE', '_KV', '_PUTREQUEST', 'kv.proto', 'kv_pb2']

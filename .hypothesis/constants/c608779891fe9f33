@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/docs/garnish.py
+# hypothesis_version: 6.137.1
+
+['*', '*.garnish', '*.tf', '.garnish', 'data_source', 'data_sources', 'docs', 'examples', 'function', 'functions', 'pyvider.components', 'resource', 'resources', 'utf-8']

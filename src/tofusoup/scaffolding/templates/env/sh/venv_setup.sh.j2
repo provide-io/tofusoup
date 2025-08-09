@@ -1,0 +1,20 @@
+# --- Virtual Environment ---
+print_header "🐍 Setting Up Virtual Environment"
+echo "Directory: ${VENV_DIR}"
+
+if [ -d "${VENV_DIR}" ] && [ -f "${VENV_DIR}/bin/activate" ] && [ -f "${VENV_DIR}/bin/python" ]; then
+    print_success "Virtual environment exists"
+else
+    echo -n "Creating virtual environment..."
+    {% if use_spinner %}
+    uv venv "${VENV_DIR}" > /tmp/uv_venv.log 2>&1 &
+    spinner $!
+    {% else %}
+    uv venv "${VENV_DIR}"
+    {% endif %}
+    print_success "Virtual environment created"
+fi
+
+# Activate virtual environment
+source "${VENV_DIR}/bin/activate"
+export VIRTUAL_ENV="$(pwd)/${VENV_DIR}"

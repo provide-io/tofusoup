@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/pyvider-cty/src/pyvider/cty/types/primitives/number.py
+# hypothesis_version: 6.135.33
+
+['CtyType[Any]', 'CtyValue[Decimal]', 'number']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/pspf/src/pspf/packaging/orchestrator.py
+# hypothesis_version: 6.137.1
+
+['--launcher-bin', '--no-cache', '--out', '--package-key', '--payload-dir', '--public-key', '--python', '-e', '/opt/homebrew/bin/uv', '0.0.1', '1', '3.13', 'NO_COVERAGE', 'bin', 'build', 'cache', 'config.json', 'dependencies', 'entry_point', 'install', 'metadata', 'name', 'payload', 'payload.tgz', 'pip', 'provider_name', 'pspf-launcher', 'pspf-packager', 'pspf_build_', 'python', 'python_version', 'uv', 'venv', 'version', 'w:gz']

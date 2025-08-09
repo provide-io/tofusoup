@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/testing/matrix.py
+# hypothesis_version: 6.137.1
+
+[0.0, '--version', 'GOROOT', 'GO_BINARY', 'MatrixCombination', 'TERRAFORM_BINARY', 'TOFU_BINARY', 'UV_BINARY', 'combination', 'duration_seconds', 'error', 'error_message', 'failure_count', 'go', 'go.', 'go.cty', 'harness', 'harness_results', 'matrix_parallel_jobs', 'message', 'parallel_jobs', 'python.', 'python.cty', 'r', 'results', 'returncode', 'stderr', 'stdout', 'success', 'success_count', 'terraform', 'tofu', 'tools', 'total_combinations', 'uv', 'version', 'versions', 'w', '✅', '❌']

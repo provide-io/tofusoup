@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/docs/templates.py
+# hypothesis_version: 6.137.1
+
+['DocsGenerator', 'GarnishBundle', '_', 'arguments_markdown', 'bundle_name', 'bundle_type', 'data_source', 'description', 'example', 'examples', 'function', 'has_variadic', 'html', 'include', 'index.md', 'index.md.tmpl', 'main.tmpl.md', 'name', 'partials', 'render', 'resource', 'schema', 'schema_markdown', 'signature_markdown', 'summary', 'type', 'xml']

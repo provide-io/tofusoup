@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/cli.py
+# hypothesis_version: 6.137.1
+
+['--registry', '-r', 'TUI browser exited.', 'registry_name', 'sui', 'tui']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/souptest_rpc_pyclient_goserver.py
+# hypothesis_version: 6.135.26
+
+['PLUGIN_AUTO_MTLS', 'PLUGIN_CLIENT_CERT', 'PLUGIN_CLIENT_KEY', 'PLUGIN_SERVER_CERT', 'PLUGIN_SERVER_KEY', 'client_ca_cert', 'client_cert', 'client_key', 'debug_error_string', 'false', 'server_ca_cert', 'server_cert', 'server_key', 'utf-8']

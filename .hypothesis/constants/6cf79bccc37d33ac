@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/registry/terraform.py
+# hypothesis_version: 6.137.1
+
+[404, '/', '/v1/modules/search', '/v1/providers', 'arch', 'description', 'id', 'limit', 'modules', 'name', 'namespace', 'os', 'platforms', 'protocols', 'provider', 'providers', 'q', 'tier', 'version', 'versions']

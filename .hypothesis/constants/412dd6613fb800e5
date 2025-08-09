@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/logic.py
+# hypothesis_version: 6.137.1
+
+['build_flags', 'common_env_vars', 'env_vars', 'go', 'harness', 'harness_defaults', 'main.go', 'main_file', 'output_name', 'soup-go', 'source_dir']

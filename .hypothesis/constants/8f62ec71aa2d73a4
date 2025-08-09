@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cty/souptest_cty_yaml_driven_gencode.py
+# hypothesis_version: 6.135.26
+
+[123, '*.yaml', 'bool', 'cty', 'hello', 'id', 'inline_bool_true', 'inline_number_123', 'inline_string_hello', 'number', 'r', 'raw_input', 'string', 'type_definition', 'upstream_testdata', 'utf-8']

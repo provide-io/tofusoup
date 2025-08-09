@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/conformance/cty/souptest_cty_compat.py
+# hypothesis_version: 6.137.1
+
+['\'"hello"\'', '--type', '/path/to/soup-go', 'cty', 'go-cty', 'soup-go', 'string', 'validate-value']

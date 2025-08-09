@@ -1,0 +1,4 @@
+# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/docs/generator.py
+# hypothesis_version: 6.137.1
+
+['data-source.tf', 'data-sources', 'docs', 'examples', 'function.tf', 'functions', 'import.sh', 'provider', 'provider.tf', 'resource.tf', 'resources', 'templates', 'terraform-provider-']
