@@ -34,7 +34,7 @@ find . -name ".terraform.lock.hcl" -type f -delete 2>/dev/null || true
 # Remove log files
 echo "📝 Removing log files..."
 safe_remove "conformance/rpc/server.log"
-safe_remove "tofusoup.workenv.log"
+safe_remove "wrkenv.log"
 find . -name "*.log" -type f -delete 2>/dev/null || true
 
 # Remove generated test fixtures
