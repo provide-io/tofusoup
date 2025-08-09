@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/souptest_rpc_gogo_matrix.py
-# hypothesis_version: 6.135.26
-
-['--auto-mtls', '--client-cert', '--client-key', '--manual-mtls', '--server-ca-cert', 'HCLOG_LEVEL', 'LOG_LEVEL', 'PLUGIN_SERVER_PATH', 'TRACE', 'auto_mtls', 'client_ca_cert', 'client_cert', 'client_key', 'false', 'gogo-auto-mtls', 'gogo-insecure', 'insecure', 'put', 'putthenget', 'replace', 'server_ca_cert', 'server_cert', 'server_key', 'success', 'trace', 'true', 'utf-8']

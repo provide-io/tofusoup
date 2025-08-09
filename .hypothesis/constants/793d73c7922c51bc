@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/cli.py
-# hypothesis_version: 6.137.1
-
-['--all', '--force-rebuild', '--log-level', 'Clean all harnesses.', 'Go Harnesses', 'Name', 'Output Path', 'PROJECT_ROOT', 'Status', 'TOFUSOUP_CONFIG', '[green]Built[/green]', '[red]Not Built[/red]', 'bin', 'build', 'clean', 'clean_all', 'cyan', 'go', 'harness', 'harness_names', 'harnesses', 'info', 'list', 'magenta', 'output_name', 'src', 'tofusoup', 'yellow']

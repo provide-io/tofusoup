@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/workenv/cli.py
-# hypothesis_version: 6.137.1
-
-['--dry-run', '--force', '--harness-compat', '--latest', '--list', '--parallel', '--profile', '--rebuild', '--shell', '--timeout', '=', 'Timeout in minutes', '__main__', 'blue', 'clean', 'combination', 'compatible', 'config', 'conformance', 'container', 'cyan', 'delete', 'edit', 'enter', 'failure_count', 'go', 'go.cty', 'go.rpc', 'go.wire', 'green', 'harness-check', 'harness_name', 'list', 'list_versions', 'load', 'matrix-test', 'name', 'path', 'profile', 'python.cty', 'rebuild', 'red', 'results', 'save', 'scripts', 'show', 'start', 'status', 'stop', 'success', 'success_count', 'sync', 'terraform', 'tofu', 'uv', 'version', 'workenv', 'workenv-container.sh', 'yellow', 'zsh', '✅', '❌', '❌ Cancelled', '📊 Current Go status:', '📊 Current UV status:']

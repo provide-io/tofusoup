@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/logic.py
-# hypothesis_version: 6.135.26
-
-['-o', '.', './...', 'CRITICAL', 'DEBUG', 'ERROR', 'INFO', 'NOTSET', 'OFF', 'TRACE', 'WARN', 'WARNING', 'bin', 'build', 'build_flags', 'common_env_vars', 'custom_env_vars', 'default_log_level', 'env_vars', 'generate', 'global_settings', 'go', 'go-', 'go-cty', 'go-hcl', 'go-rpc', 'go-rpc-client', 'go-wire', 'go_cty_generator.go', 'harness', 'harness.go', 'harness_defaults', 'harnesses', 'harnesses/go/go-cty', 'harnesses/go/go-hcl', 'harnesses/go/go-wire', 'log_level', 'main.go', 'main_file', 'mod', 'output_name', 'source_dir', 'tidy', 'timeout_seconds', 'utf-8']

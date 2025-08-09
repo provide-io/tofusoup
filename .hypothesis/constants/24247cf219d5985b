@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/wire/souptest_wire_logic.py
-# hypothesis_version: 6.137.1
-
-['hello', 'test.json', 'test.msgpack', 'value', 'world']

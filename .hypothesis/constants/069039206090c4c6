@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/registry/opentofu.py
-# hypothesis_version: 6.135.26
-
-[404, '/', '/v1/modules/', '/v1/providers/', 'No response', 'No response content', 'OpenTofuRegistry', 'User-Agent', 'arch', 'content', 'dependencies', 'description', 'hits', 'id', 'inputs', 'items', 'license', 'limit', 'modules', 'modules.v1', 'modules/', 'name', 'namespace', 'os', 'outputs', 'platform_support', 'platforms', 'protocols', 'provider', 'providers.v1', 'providers/', 'published_at', 'q', 'readme', 'resources', 'results', 'root', 'source', 'source_url', 'tier', 'updated_at', 'utf-8', 'version', 'versions']

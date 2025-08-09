@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/models/__init__.py
-# hypothesis_version: 6.135.26
-
-['Module', 'ModuleVersion', 'Provider', 'ProviderVersion', 'VersionInfo']

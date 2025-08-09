@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/conftest.py
-# hypothesis_version: 6.135.26
-
-[',', '::', 'TOFUSOUP_SKIP_TESTS', 'bin', 'certs', 'client_ca_cert', 'client_cert', 'client_key', 'conformance', 'ec-secp256r1-mtls', 'ec-secp384r1-mtls', 'ec-secp521r1-mtls', 'harnesses', 'openssl', 'pyproject.toml', 'rpc', 'rsa-2048-mtls', 'rsa-4096-mtls', 'server_ca_cert', 'server_cert', 'server_key', 'session', 'src']

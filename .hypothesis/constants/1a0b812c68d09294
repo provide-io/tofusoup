@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/utils/__init__.py
-# hypothesis_version: 6.135.26
-
-['HarnessError', 'go_decode', 'go_encode']

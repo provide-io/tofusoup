@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/src/tofusoup/browser/registry/terraform.py
-# hypothesis_version: 6.135.26
-
-[404, '/', '/v1/modules/search', 'No response content', 'any', 'arch', 'content', 'default', 'description', 'hashicorp', 'id', 'inputs', 'license', 'limit', 'modules', 'name', 'namespace', 'os', 'outputs', 'owner', 'platform_support', 'platforms', 'protocols', 'provider', 'published_at', 'q', 'readme', 'required', 'resources', 'root', 'source', 'source_url', 'type', 'unknown', 'updated_at', 'utf-8', 'version', 'versions']

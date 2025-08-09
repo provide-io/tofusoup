@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/.venv/bin/pytest
-# hypothesis_version: 6.136.0
-
-['-script.pyw', '.exe', '__main__']

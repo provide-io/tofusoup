@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/pyvider-cty/src/pyvider/cty/types/primitives/bool.py
-# hypothesis_version: 6.135.26
-
-['0', '1', 'CtyType', 'bool', 'f', 'false', 'n', 'no', 't', 'true', 'y', 'yes']

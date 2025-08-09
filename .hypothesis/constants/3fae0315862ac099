@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/pyvider-hcl/src/pyvider/hcl/printer.py
-# hypothesis_version: 6.137.1
-
-[',\n', '[\n', ']', '{\n', '}']

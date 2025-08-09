@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/pyvider-cty/src/pyvider/cty/types/base.py
-# hypothesis_version: 6.136.0
-
-['CtyType[T]', 'CtyValue[T]', 'T']

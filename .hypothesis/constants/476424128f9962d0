@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/wire/souptest_wire_binary_compatibility.py
-# hypothesis_version: 6.135.26
-
-['bool', 'enabled', 'name', 'object', 'string', 'test']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/matrix_config.py
-# hypothesis_version: 6.137.1
-
-[256, 384, 521, 2048, 4096, '--auto-mtls=true', 'P-256', 'P-384', 'P-521', '__main__', 'auth_mode', 'auth_modes', 'auto_mtls', 'client_languages', 'crypto_configs', 'ec', 'ec_256', 'ec_384', 'ec_521', 'go', 'key_size', 'key_type', 'pyvider', 'rsa', 'rsa_2048', 'rsa_4096', 'server_languages', 'total_combinations']

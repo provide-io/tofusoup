@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/pyvider-rpcplugin/src/pyvider/rpcplugin/protocol/grpc_stdio_pb2_grpc.py
-# hypothesis_version: 6.135.26
-
-['1.73.0', 'StreamStdio', 'plugin.GRPCStdio']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/pspf/src/pspf/compiler.py
-# hypothesis_version: 6.137.1
-
-[0.2, 100, '-buildvcs=false', '-o', '.cache', '1', 'CGO_ENABLED', 'bin', 'build', 'go', 'go.mod', 'pspf', 'yellow']

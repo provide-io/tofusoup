@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/mono/tofusoup/conformance/rpc/conftest.py
-# hypothesis_version: 6.135.26
-
-[0.1, 0.2, 0.5, 1.0, 493, '1', '127.0.0.1', 'ASPNETCORE_URLS', 'BUNDLE_GEMFILE', 'DEBUG', 'Gemfile', 'LOG_LEVEL', 'PLUGIN_AUTO_MTLS', 'PLUGIN_CLIENT_CERT', 'PLUGIN_HOST_ADDRESS', 'PLUGIN_SERVER_CERT', 'PLUGIN_SERVER_KEY', 'SKIP_RUBY_RPC_TESTS', 'bundle', 'client_ca_cert', 'cs-rpc', 'dotnet', 'dummy_client_path', 'dummy_cs_path', 'dummy_fallback_path', 'dummy_path', 'dummy_path_rb', 'exec', 'false', 'function', 'go-rpc', 'go-rpc-client', 'harnesses', 'rb-rpc', 'rpc_test_target', 'ruby', 'server_cert', 'server_key', 'session', 'true']
