@@ -14,7 +14,7 @@ soup stir tests/stir_cases --matrix
 soup stir tests/stir_cases --matrix --matrix-output results.json
 ```
 
-This uses the matrix configuration from your `soup.toml` file.
+This uses the matrix configuration from your `wrkenv.toml` file.
 
 ## Manual Matrix Testing
 
@@ -24,20 +24,24 @@ You can also manually control matrix testing using wrkenv:
 
 The goal of matrix testing is to ensure your provider works correctly across the different IaC runtimes your users might have. The workflow is:
 
-1.  **Define Versions**: Use `workenv` profiles in `soup.toml` to define the matrix of Terraform/Tofu versions you want to test against.
-2.  **Switch Runtime**: Use `workenv` to switch the active `terraform` or `tofu` binary in the environment.
+1.  **Define Versions**: Use the matrix configuration in `wrkenv.toml` to define the Terraform/Tofu versions you want to test against.
+2.  **Switch Runtime**: Use `wrkenv` to switch the active `terraform` or `tofu` binary in the environment.
 3.  **Run Tests**: Use `soup stir` to execute the full suite of integration tests using the currently active runtime.
 4.  **Repeat**: Loop through all defined versions, switching the runtime and re-running the tests for each one.
 
-## Example `soup.toml` Configuration
+## Example `wrkenv.toml` Configuration
 
-First, define a `workenv` profile for your conformance tests. This tells `workenv` which versions to manage.
+First, configure the matrix settings in your `wrkenv.toml`. This tells the matrix testing system which versions to test.
 
 ```toml
-# In soup.toml
+# In wrkenv.toml
 
-[workenv.profiles.conformance]
-# A list of all versions to test against
+[matrix]
+parallel_jobs = 4
+timeout_minutes = 30
+
+[matrix.versions]
+# Additional versions to test against
 tofu = ["1.6.2", "1.7.0-alpha1"]
 terraform = ["1.5.7", "1.6.0"]
 ```
