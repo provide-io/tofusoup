@@ -14,7 +14,7 @@ soup stir tests/stir_cases --matrix
 soup stir tests/stir_cases --matrix --matrix-output results.json
 ```
 
-This uses the matrix configuration from your `wrkenv.toml` file.
+This uses the matrix configuration from your `soup.toml` file (under `[workenv.matrix]`) or `wrkenv.toml` file.
 
 ## Manual Matrix Testing
 
@@ -29,22 +29,24 @@ The goal of matrix testing is to ensure your provider works correctly across the
 3.  **Run Tests**: Use `soup stir` to execute the full suite of integration tests using the currently active runtime.
 4.  **Repeat**: Loop through all defined versions, switching the runtime and re-running the tests for each one.
 
-## Example `wrkenv.toml` Configuration
+## Example Configuration
 
-First, configure the matrix settings in your `wrkenv.toml`. This tells the matrix testing system which versions to test.
+You can configure matrix testing in your `soup.toml` file:
 
 ```toml
-# In wrkenv.toml
+# In soup.toml
 
-[matrix]
+[workenv.matrix]
 parallel_jobs = 4
 timeout_minutes = 30
 
-[matrix.versions]
+[workenv.matrix.versions]
 # Additional versions to test against
 tofu = ["1.6.2", "1.7.0-alpha1"]
 terraform = ["1.5.7", "1.6.0"]
 ```
+
+Note: You can alternatively use `wrkenv.toml` for this configuration, but soup.toml takes precedence.
 
 ## Example Test Execution Script
 
