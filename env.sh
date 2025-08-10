@@ -111,12 +111,8 @@ case "$TFARCH" in
 esac
 
 # Workenv directory setup
-PROFILE="${TOFUSOUP_WORKENV_PROFILE:-default}"
-if [ "$PROFILE" = "default" ]; then
-    VENV_DIR="workenv/soup_${TFOS}_${TFARCH}"
-else
-    VENV_DIR="workenv/${PROFILE}_${TFOS}_${TFARCH}"
-fi
+PROFILE="default"
+VENV_DIR="workenv/soup_${TFOS}_${TFARCH}"
 
 export UV_PROJECT_ENVIRONMENT="${VENV_DIR}"
 

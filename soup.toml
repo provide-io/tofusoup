@@ -1,16 +1,2 @@
-[workenv]
-terraform_flavor = "opentofu"
-
-[workenv.tools]
-
-[workenv.settings]
-verify_checksums = true
-cache_downloads = true
-
-[workenv.profiles.development]
-terraform = "1.8.5"
-tofu = "1.10.5"
-
-[workenv.profiles.dev]
-terraform = "1.8.5"
-tofu = "1.10.5"
+# TofuSoup configuration file
+# Add TofuSoup-specific configuration here
