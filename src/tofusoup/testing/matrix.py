@@ -22,6 +22,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeEl
 from rich.table import Table
 
 from wrkenv import WorkenvConfig, get_tool_manager
+from ..workenv_integration import create_workenv_config_with_soup
 
 
 console = Console()
@@ -78,10 +79,10 @@ class VersionMatrix:
             base_tools: Base tool versions (e.g., {"terraform": "1.5.7", "tofu": "1.6.2"})
             config: Optional WorkenvConfig. If not provided, creates one with soup compatibility.
         """
-        self.config = config or WorkenvConfig()
+        self.config = config or create_workenv_config_with_soup()
         self.base_tools = base_tools
         
-        # Get matrix configuration from soup.toml
+        # Get matrix configuration (from soup.toml or wrkenv.toml)
         self.matrix_config = self.config.get_setting("matrix", {})
         self.parallel_jobs = self.matrix_config.get("parallel_jobs", 4)
         self.timeout_minutes = self.matrix_config.get("timeout_minutes", 30)
@@ -378,7 +379,7 @@ async def run_matrix_stir_tests(
         Test results dictionary
     """
     if config is None:
-        config = WorkenvConfig()
+        config = create_workenv_config_with_soup()
     
     if tools is None:
         # Get tools from current configuration
