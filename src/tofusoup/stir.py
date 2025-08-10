@@ -660,7 +660,7 @@ def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool):
     Run multi-threaded Terraform tests against all subdirectories in a given PATH.
     
     When --matrix is used, runs tests across multiple Terraform/OpenTofu versions
-    as configured in wrkenv.toml's [matrix] section.
+    as configured in soup.toml's [workenv.matrix] section or wrkenv.toml's [matrix] section.
     """
     try:
         if matrix:
