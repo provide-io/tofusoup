@@ -1,6 +1,24 @@
 # Guide: Matrix Testing with `stir`
 
-The `soup stir` command is a powerful tool for running parallel integration tests for a provider. Its capabilities can be combined with `soup workenv` to perform **matrix testing**, where you validate your provider's behavior against multiple versions of Terraform or OpenTofu.
+The `soup stir` command is a powerful tool for running parallel integration tests for a provider. It now includes built-in **matrix testing** capabilities to validate your provider's behavior against multiple versions of Terraform or OpenTofu.
+
+## Built-in Matrix Testing (New!)
+
+As of the latest version, `soup stir` includes integrated matrix testing:
+
+```bash
+# Run tests across all configured tool versions
+soup stir tests/stir_cases --matrix
+
+# Save results to a file
+soup stir tests/stir_cases --matrix --matrix-output results.json
+```
+
+This uses the matrix configuration from your `soup.toml` file.
+
+## Manual Matrix Testing
+
+You can also manually control matrix testing using wrkenv:
 
 ## The Concept
 
@@ -57,9 +75,9 @@ for entry in "${TOOL_MATRIX[@]}"; do
     echo "➡️  Testing with ${TOOL_NAME} version ${VERSION}"
     echo "======================================================"
 
-    # Step 1: Install and switch to the target version using workenv
+    # Step 1: Install and switch to the target version using wrkenv
     echo "🔧 Setting up ${TOOL_NAME} ${VERSION}..."
-    soup workenv "${TOOL_NAME}" "${VERSION}"
+    wrkenv "${TOOL_NAME}" "${VERSION}"
 
     # Step 2: Run the stir test suite
     echo "🚀 Running 'stir' test suite..."

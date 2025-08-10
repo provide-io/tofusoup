@@ -639,12 +639,63 @@ async def main(target_path: str):
     default=".",
     type=click.Path(exists=True, file_okay=False, resolve_path=True),
 )
-def stir_cli(path: str):
+@click.option(
+    "--matrix",
+    is_flag=True,
+    help="Run tests across multiple tool version combinations defined in soup.toml",
+)
+@click.option(
+    "--matrix-output",
+    type=click.Path(dir_okay=False),
+    help="Save matrix test results to JSON file",
+)
+@click.option(
+    "--json",
+    "output_json",
+    is_flag=True,
+    help="Output results in JSON format",
+)
+def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool):
     """
     Run multi-threaded Terraform tests against all subdirectories in a given PATH.
+    
+    When --matrix is used, runs tests across multiple Terraform/OpenTofu versions
+    as configured in soup.toml's [workenv.matrix] section.
     """
     try:
-        asyncio.run(main(path))
+        if matrix:
+            # Run matrix testing
+            from tofusoup.testing.matrix import run_matrix_stir_tests
+            import pathlib
+            
+            results = asyncio.run(run_matrix_stir_tests(pathlib.Path(path)))
+            
+            if matrix_output:
+                # Save results to file
+                from tofusoup.testing.matrix import VersionMatrix
+                import json
+                with open(matrix_output, "w") as f:
+                    json.dump(results, f, indent=2)
+                console.print(f"[green]Matrix results saved to: {matrix_output}[/green]")
+            
+            if output_json:
+                # Output JSON to stdout
+                import json
+                print(json.dumps(results, indent=2))
+            else:
+                # Show summary
+                success = results["failure_count"] == 0
+                if success:
+                    console.print("\n[bold green]✅ All matrix combinations passed![/bold green]")
+                else:
+                    console.print(f"\n[bold red]❌ {results['failure_count']} combinations failed[/bold red]")
+            
+            # Exit with appropriate code
+            import sys
+            sys.exit(0 if success else 1)
+        else:
+            # Run normal stir tests
+            asyncio.run(main(path))
     except KeyboardInterrupt:
         console.print("\n\n[yellow]Test run interrupted by user.[/yellow]")
 
