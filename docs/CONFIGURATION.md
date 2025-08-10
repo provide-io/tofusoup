@@ -69,6 +69,28 @@ Specific settings for a named test suite (e.g., `[test_suite.rpc]`), overriding 
 
 ### `[workenv]`
 
-Configuration for the `soup workenv` tool management system.
+Configuration for tool management, powered by wrkenv.
 
--   See the `workenv` guide for detailed configuration options.
+-   `tools` (Table): Tool versions to use (e.g., `terraform = "1.5.7"`)
+-   `terraform_flavor` (String): Default terraform flavor - "terraform" or "opentofu"
+-   `install_path` (String): Where to install tools
+-   `verify_checksums` (Boolean): Whether to verify tool checksums
+
+### `[workenv.matrix]`
+
+Configuration for matrix testing with `soup stir --matrix`.
+
+-   `versions` (Table): Additional versions to test for each tool
+-   `parallel_jobs` (Integer): Number of parallel test jobs (default: 4)
+-   `timeout_minutes` (Integer): Timeout for each test run (default: 30)
+
+Example:
+```toml
+[workenv.matrix]
+parallel_jobs = 8
+timeout_minutes = 45
+
+[workenv.matrix.versions]
+terraform = ["1.5.7", "1.6.0", "1.6.1"]
+tofu = ["1.6.2", "1.7.0", "1.8.0"]
+```
