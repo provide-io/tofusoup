@@ -67,18 +67,42 @@ Specific settings for a named test suite (e.g., `[test_suite.rpc]`), overriding 
 
 -   `env_vars`, `extra_pytest_args`, `skip_tests`.
 
-### Tool Management
+### `[workenv]`
 
-TofuSoup uses wrkenv for tool management. Configure wrkenv by creating a `wrkenv.toml` file in your project root. See the wrkenv documentation for configuration options.
+Configuration for tool management, powered by wrkenv. When configured in soup.toml, these settings are injected into wrkenv, making wrkenv.toml optional.
 
-For matrix testing with `soup stir --matrix`, configure the matrix settings in your `wrkenv.toml`:
+-   `terraform_flavor` (String): Default terraform flavor - "terraform" or "opentofu"
+-   `tools` (Table): Tool versions to use (e.g., `terraform = "1.5.7"`)
+-   `settings` (Table): Various settings like `verify_checksums` and `cache_downloads`
 
+### `[workenv.matrix]`
+
+Configuration for matrix testing with `soup stir --matrix`.
+
+-   `versions` (Table): Additional versions to test for each tool
+-   `parallel_jobs` (Integer): Number of parallel test jobs (default: 4)
+-   `timeout_minutes` (Integer): Timeout for each test run (default: 30)
+
+Example:
 ```toml
-[matrix]
+[workenv]
+terraform_flavor = "opentofu"
+
+[workenv.tools]
+terraform = "1.8.5"
+tofu = "1.10.5"
+
+[workenv.settings]
+verify_checksums = true
+cache_downloads = true
+
+[workenv.matrix]
 parallel_jobs = 8
 timeout_minutes = 45
 
-[matrix.versions]
+[workenv.matrix.versions]
 terraform = ["1.5.7", "1.6.0", "1.6.1"]
 tofu = ["1.6.2", "1.7.0", "1.8.0"]
 ```
+
+Note: You can alternatively configure wrkenv using a `wrkenv.toml` file. Settings in soup.toml take precedence over wrkenv.toml.
