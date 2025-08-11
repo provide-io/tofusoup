@@ -438,3 +438,5 @@ uv.lock
 
 # Downloaded scripts
 dotnet-install.sh
+workenv/
+output/
