@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# env.sh - TofuSoup Development Environment Setup
+# env.sh - tofusoup Development Environment Setup
 #
-# This script sets up a clean, isolated development environment for TofuSoup
+# This script sets up a clean, isolated development environment for tofusoup
 # using 'uv' for high-performance virtual environment and dependency management.
 #
 # Usage: source ./env.sh
@@ -29,7 +29,6 @@ spinner() {
     done
     printf "    \b\b\b\b"
 }
-
 print_header() {
     echo -e "\n${COLOR_BLUE}--- ${1} ---${COLOR_NC}"
 }
@@ -45,7 +44,6 @@ print_error() {
 print_warning() {
     echo -e "${COLOR_YELLOW}⚠️  ${1}${COLOR_NC}"
 }
-
 # --- Cleanup Previous Environment ---
 print_header "🧹 Cleaning Previous Environment"
 
@@ -62,18 +60,14 @@ unset PYTHONPATH
 ORIGINAL_PATH="${PATH}"
 
 print_success "Cleared Python aliases and PYTHONPATH"
-
 # --- Project Validation ---
 if [ ! -f "pyproject.toml" ]; then
     print_error "No 'pyproject.toml' found in current directory"
-    echo "Please run this script from the TofuSoup root directory"
+    echo "Please run this script from the tofusoup root directory"
     return 1 2>/dev/null || exit 1
 fi
 
 PROJECT_NAME=$(basename "$(pwd)")
-if [ "$PROJECT_NAME" != "tofusoup" ]; then
-    print_warning "This script is optimized for TofuSoup but running in '${PROJECT_NAME}'"
-fi
 
 # --- UV Installation ---
 print_header "🚀 Checking UV Package Manager"
@@ -101,7 +95,6 @@ if ! command -v uv &> /dev/null; then
 else
     print_success "UV already installed"
 fi
-
 # --- Platform Detection ---
 TFOS=$(uname -s | tr '[:upper:]' '[:lower:]')
 TFARCH=$(uname -m)
@@ -111,11 +104,17 @@ case "$TFARCH" in
 esac
 
 # Workenv directory setup
-PROFILE="default"
-VENV_DIR="workenv/soup_${TFOS}_${TFARCH}"
+PROFILE="${TOFUSOUP_PROFILE:-default}"
+if [ "$PROFILE" = "default" ]; then
+    VENV_DIR="workenv/tofusoup_${TFOS}_${TFARCH}"
+else
+    VENV_DIR="workenv/${PROFILE}_${TFOS}_${TFARCH}"
+fi
 
-export UV_PROJECT_ENVIRONMENT="${VENV_DIR}"
-
+# Validate platform
+if [[ "$TFOS" != "darwin" && "$TFOS" != "linux" ]]; then
+    print_warning "Detected OS: $TFOS (only darwin and linux are fully tested)"
+fi
 # --- Virtual Environment ---
 print_header "🐍 Setting Up Virtual Environment"
 echo "Directory: ${VENV_DIR}"
@@ -132,7 +131,6 @@ fi
 # Activate virtual environment
 source "${VENV_DIR}/bin/activate"
 export VIRTUAL_ENV="$(pwd)/${VENV_DIR}"
-
 # --- Dependency Installation ---
 print_header "📦 Installing Dependencies"
 
@@ -151,32 +149,21 @@ else
     return 1 2>/dev/null || exit 1
 fi
 
-echo -n "Installing TofuSoup in editable mode..."
+echo -n "Installing tofusoup in editable mode..."
 uv pip install --no-deps -e . > /tmp/tofusoup_setup/install.log 2>&1 &
 spinner $!
-print_success "TofuSoup installed"
-
+print_success "tofusoup installed"
 # --- Sibling Packages ---
 print_header "🤝 Installing Sibling Packages"
 
 PARENT_DIR=$(dirname "$(pwd)")
 SIBLING_COUNT=0
 
-for dir in "${PARENT_DIR}"/pyvider* "${PARENT_DIR}"/flavor; do
-    if [ -d "${dir}" ]; then
-        SIBLING_NAME=$(basename "${dir}")
-        echo -n "Installing ${SIBLING_NAME}..."
-        uv pip install --no-deps -e "${dir}" > /tmp/tofusoup_setup/${SIBLING_NAME}.log 2>&1 &
-        spinner $!
-        print_success "${SIBLING_NAME} installed"
-        ((SIBLING_COUNT++))
-    fi
-done
+
 
 if [ $SIBLING_COUNT -eq 0 ]; then
     print_warning "No sibling packages found"
 fi
-
 # --- Environment Configuration ---
 print_header "🔧 Configuring Environment"
 
@@ -203,81 +190,55 @@ print_header "🔍 Verifying Installation"
 echo -e "\n${COLOR_GREEN}Tool Locations & Versions:${COLOR_NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# Python
+if command -v python &> /dev/null; then
+    PYTHON_PATH=$(command -v python 2>/dev/null || which python 2>/dev/null || echo "python")
+    printf "%-12s: %s\n" "Python" "$PYTHON_PATH"
+    printf "%-12s  %s\n" "" "$(python --version 2>&1)"
+fi
+
 # UV
 if command -v uv &> /dev/null; then
     UV_PATH=$(command -v uv 2>/dev/null || which uv 2>/dev/null || echo "uv")
     printf "%-12s: %s\n" "UV" "$UV_PATH"
-    printf "%-12s  %s\n" "" "$(uv --version 2>/dev/null || echo "not found")"
+    printf "%-12s  %s\n" "" "$(uv --version 2>&1)"
 fi
 
-# Python
-PYTHON_PATH="${VENV_DIR}/bin/python"
-if [ -f "$PYTHON_PATH" ]; then
-    printf "%-12s: %s\n" "Python" "$PYTHON_PATH"
-    printf "%-12s  %s\n" "" "$($PYTHON_PATH --version 2>&1)"
+# wrkenv
+if command -v wrkenv &> /dev/null; then
+    WRKENV_PATH=$(command -v wrkenv 2>/dev/null || which wrkenv 2>/dev/null || echo "wrkenv")
+    printf "%-12s: %s\n" "wrkenv" "$WRKENV_PATH"
+    printf "%-12s  %s\n" "" "$(wrkenv --version 2>&1 || echo 'No version info')"
 fi
 
-# Python3
-PYTHON3_PATH="${VENV_DIR}/bin/python3"
-if [ -f "$PYTHON3_PATH" ]; then
-    printf "%-12s: %s\n" "Python3" "$PYTHON3_PATH"
-    printf "%-12s  %s\n" "" "$($PYTHON3_PATH --version 2>&1)"
+# ibmtf
+if command -v ibmtf &> /dev/null; then
+    IBMTF_PATH=$(command -v ibmtf 2>/dev/null || which ibmtf 2>/dev/null || echo "ibmtf")
+    printf "%-12s: %s\n" "ibmtf" "$IBMTF_PATH"
+    printf "%-12s  %s\n" "" "$(ibmtf version 2>&1 | head -1 || echo 'Not installed')"
 fi
 
-# Pytest
-PYTEST_PATH="${VENV_DIR}/bin/pytest"
-if [ -f "$PYTEST_PATH" ]; then
-    printf "%-12s: %s\n" "Pytest" "$PYTEST_PATH"
-    PYTEST_VERSION=$($PYTEST_PATH --version 2>&1 | head -n1)
-    printf "%-12s  %s\n" "" "$PYTEST_VERSION"
+# tofu
+if command -v tofu &> /dev/null; then
+    TOFU_PATH=$(command -v tofu 2>/dev/null || which tofu 2>/dev/null || echo "tofu")
+    printf "%-12s: %s\n" "tofu" "$TOFU_PATH"
+    printf "%-12s  %s\n" "" "$(tofu version 2>&1 | head -1 || echo 'Not installed')"
 fi
 
-# Soup
-SOUP_PATH="${VENV_DIR}/bin/soup"
-if [ -f "$SOUP_PATH" ]; then
-    printf "%-12s: %s\n" "Soup" "$SOUP_PATH"
-    SOUP_VERSION=$($SOUP_PATH --version 2>&1 | grep -E "version|soup" | head -n1)
-    printf "%-12s  %s\n" "" "$SOUP_VERSION"
-fi
-
-# HCTF (HashiCorp Terraform)
-HCTF_PATH="${VENV_DIR}/bin/hctf"
-if [ -f "$HCTF_PATH" ]; then
-    printf "%-12s: %s\n" "HCTF" "$HCTF_PATH"
-    HCTF_VERSION=$($HCTF_PATH version 2>&1 | head -n1)
-    printf "%-12s  %s\n" "" "$HCTF_VERSION"
-fi
-
-# Terraform (Flavor-aware wrapper)
-TERRAFORM_PATH="${VENV_DIR}/bin/terraform"
-if [ -f "$TERRAFORM_PATH" ]; then
-    printf "%-12s: %s\n" "Terraform" "$TERRAFORM_PATH"
-    printf "%-12s  %s\n" "" "(wrapper → hctf or tofu)"
-fi
-
-# OpenTofu
-TOFU_PATH="${VENV_DIR}/bin/tofu"
-if [ -f "$TOFU_PATH" ]; then
-    printf "%-12s: %s\n" "OpenTofu" "$TOFU_PATH"
-    TOFU_VERSION=$($TOFU_PATH version 2>&1 | head -n1)
-    printf "%-12s  %s\n" "" "$TOFU_VERSION"
-fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
 # --- Final Summary ---
 print_header "✅ Environment Ready!"
 
-echo -e "\n${COLOR_GREEN}TofuSoup development environment activated${COLOR_NC}"
+echo -e "\n${COLOR_GREEN}tofusoup development environment activated${COLOR_NC}"
 echo "Virtual environment: ${VENV_DIR}"
 echo "Profile: ${PROFILE}"
 echo -e "\nUseful commands:"
-echo "  soup --help       # TofuSoup CLI"
-echo "  hctf --help       # HashiCorp Terraform"
-echo "  terraform --help  # Wrapper (uses hctf or tofu)"
-echo "  tofu --help       # OpenTofu (if installed)"
-echo "  pytest            # Run tests"
-echo "  deactivate        # Exit environment"
+echo "  tofusoup --help  # tofusoup CLI"
+echo "  wrkenv status  # Check tool versions"
+echo "  wrkenv container status  # Container status"
+echo "  pytest  # Run tests"
+echo "  deactivate  # Exit environment"
 
 # --- Cleanup ---
 # Remove temporary log files older than 1 day
@@ -285,5 +246,3 @@ find /tmp/tofusoup_setup -name "*.log" -mtime +1 -delete 2>/dev/null
 
 # Return success
 return 0 2>/dev/null || exit 0
-
-# 🍲🥄🌍🪄
