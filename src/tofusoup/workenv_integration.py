@@ -56,35 +56,15 @@ def create_workenv_config_with_soup(project_root: Optional[Path] = None) -> Work
         # No workenv config in soup.toml, just return standard WorkenvConfig
         return WorkenvConfig(project_root=project_root)
     
-    # Create a temporary config dict to inject
-    config_overrides = {}
+    # Create a custom ConfigSource for soup.toml
+    from wrkenv.env.config import FileConfigSource
     
-    # Map soup.toml workenv settings to WorkenvConfig format
-    if 'terraform_flavor' in workenv_section:
-        config_overrides['terraform_flavor'] = workenv_section['terraform_flavor']
+    # Create a soup.toml source
+    soup_source = FileConfigSource(project_root / "soup.toml" if project_root else Path.cwd() / "soup.toml", "workenv")
     
-    if 'tools' in workenv_section:
-        config_overrides['tools'] = workenv_section['tools']
-    
-    if 'settings' in workenv_section:
-        settings = workenv_section['settings']
-        if 'verify_checksums' in settings:
-            config_overrides['verify_checksums'] = settings['verify_checksums']
-        if 'cache_downloads' in settings:
-            config_overrides['cache_downloads'] = settings['cache_downloads']
-    
-    # Handle matrix configuration
-    if 'matrix' in workenv_section:
-        config_overrides['matrix'] = workenv_section['matrix']
-    
-    # Create WorkenvConfig with overrides
-    # Note: WorkenvConfig will still read wrkenv.toml if it exists,
-    # but soup.toml values will take precedence
+    # Create WorkenvConfig and add soup source with highest priority
     config = WorkenvConfig(project_root=project_root)
-    
-    # Apply overrides
-    for key, value in config_overrides.items():
-        config._config[key] = value
+    config.sources.insert(0, soup_source)  # Insert at beginning for highest priority
     
     return config
 

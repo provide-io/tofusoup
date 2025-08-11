@@ -1,0 +1,53 @@
+# Example soup.toml with profile-based matrix testing
+
+[workenv]
+terraform_flavor = "terraform"  # default flavor
+
+[workenv.tools]
+# Default/current versions
+terraform = "1.8.5"
+tofu = "1.10.5"
+
+# Define profiles for different test scenarios
+[workenv.profiles.tf-stable]
+# Latest stable HashiCorp Terraform
+terraform = "1.8.5"
+terraform_flavor = "terraform"
+
+[workenv.profiles.tf-previous]
+# Previous major version
+terraform = "1.7.5"
+terraform_flavor = "terraform"
+
+[workenv.profiles.tf-legacy]
+# Legacy version for compatibility testing
+terraform = "1.5.7"
+terraform_flavor = "terraform"
+
+[workenv.profiles.tofu-latest]
+# Latest OpenTofu
+tofu = "1.10.5"
+terraform_flavor = "opentofu"
+
+[workenv.profiles.tofu-stable]
+# Stable OpenTofu
+tofu = "1.8.0"
+terraform_flavor = "opentofu"
+
+[workenv.profiles.tofu-preview]
+# Preview/alpha versions
+tofu = "1.11.0-alpha1"
+terraform_flavor = "opentofu"
+
+# Matrix testing configuration
+[workenv.matrix]
+# Which profiles to test in matrix mode
+profiles = [
+    "tf-stable",
+    "tf-previous", 
+    "tf-legacy",
+    "tofu-latest",
+    "tofu-stable"
+]
+parallel_jobs = 4
+timeout_minutes = 30
