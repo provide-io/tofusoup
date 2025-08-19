@@ -40,7 +40,7 @@ LAZY_COMMANDS = {
     "we": ("wrkenv.env.cli", "workenv_cli"),  # Alias for workenv
     "test": ("tofusoup.testing.cli", "test_cli"),
     "wire": ("tofusoup.wire.cli", "wire"),
-    "garnish": ("tofusoup.garnish.cli", "garnish_cli"),
+    "garnish": ("garnish.cli", "main"),
 }
 
 
