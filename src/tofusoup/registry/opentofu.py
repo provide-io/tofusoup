@@ -13,13 +13,13 @@ from tofusoup.registry.models.provider import (
     ProviderVersion,
 )
 
-from .base import BaseTfRegistry, TfRegistryConfig
+from .base import BaseTfRegistry, RegistryConfig
 
 
 class OpenTofuRegistry(BaseTfRegistry):
-    def __init__(self, config: TfRegistryConfig | None = None):
+    def __init__(self, config: RegistryConfig | None = None):
         super().__init__(
-            config or TfRegistryConfig(base_url="https://registry.opentofu.org")
+            config or RegistryConfig(base_url="https://registry.opentofu.org")
         )
 
     async def _search_api_opentofu(self, query: str | None) -> list[dict[str, Any]]:

@@ -13,11 +13,11 @@ from tofusoup.registry.models.provider import (
     ProviderVersion,
 )
 
-from .base import BaseTfRegistry, TfRegistryConfig
+from .base import BaseTfRegistry, RegistryConfig
 
 
-class IbmTfRegistry(BaseTfRegistry):
-    def __init__(self, config: TfRegistryConfig):
+class IBMTerraformRegistry(BaseTfRegistry):
+    def __init__(self, config: RegistryConfig):
         super().__init__(config)
 
     async def list_providers(self, query: str | None = None) -> list[Provider]:

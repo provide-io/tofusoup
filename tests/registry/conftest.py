@@ -8,10 +8,10 @@ from tofusoup.registry.models.module import Module, ModuleVersion
 @pytest.fixture
 def mock_terraform_registry():
     """Create a mock Terraform registry."""
-    from tofusoup.registry.terraform import TerraformRegistry
+    from tofusoup.registry.terraform import IBMTerraformRegistry
     from tofusoup.registry.base import RegistryConfig
     
-    mock = AsyncMock(spec=TerraformRegistry)
+    mock = AsyncMock(spec=IBMTerraformRegistry)
     mock.config = RegistryConfig(base_url="https://registry.terraform.io")
     return mock
 
