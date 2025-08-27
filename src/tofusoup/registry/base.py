@@ -12,12 +12,12 @@ from tofusoup.registry.models.provider import Provider, ProviderVersion
 
 
 @define
-class TfRegistryConfig:
+class RegistryConfig:
     base_url: str
 
 
 class BaseTfRegistry(ABC):
-    def __init__(self, config: TfRegistryConfig):
+    def __init__(self, config: RegistryConfig):
         self.config = config
         self._client: httpx.AsyncClient | None = None
         logger.debug(f"BaseTfRegistry initialized for {config.base_url}")

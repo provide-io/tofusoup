@@ -12,7 +12,7 @@ from pyvider.telemetry.core import _set_log_stream_for_testing
 from tofusoup.browser.ui.widgets.detail_view import DetailView
 from tofusoup.browser.ui.widgets.log_viewer import LogViewer
 from tofusoup.browser.ui.widgets.search_view import SearchView
-from tofusoup.registry import OpenTofuRegistry, RegistryConfig, TerraformRegistry
+from tofusoup.registry import IBMTerraformRegistry, OpenTofuRegistry, RegistryConfig
 from tofusoup.registry.search.engine import SearchEngine, SearchQuery, SearchResult
 
 
@@ -61,7 +61,7 @@ class MainSearchScreen(Screen[None]):
         """The background worker that streams results."""
         try:
             registries = [
-                TerraformRegistry(
+                IBMTerraformRegistry(
                     config=RegistryConfig(base_url="https://registry.terraform.io")
                 ),
                 OpenTofuRegistry(),
