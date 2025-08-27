@@ -1,5 +1,5 @@
 import pytest
-from tofusoup.registry.terraform import TerraformRegistry
+from tofusoup.registry.terraform import IBMTerraformRegistry
 from tofusoup.registry.base import RegistryConfig
 
 
@@ -19,7 +19,7 @@ async def test_get_provider_details_success(httpx_mock):
         json=mock_response
     )
     
-    registry = TerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
+    registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
     async with registry:
         details = await registry.get_provider_details("hashicorp", "aws")
         assert details["id"] == "hashicorp/aws"
@@ -35,7 +35,7 @@ async def test_get_provider_details_not_found(httpx_mock):
         json={"errors": ["Not found"]}
     )
     
-    registry = TerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
+    registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
     async with registry:
         result = await registry.get_provider_details("nonexistent", "provider")
         assert result == {}  # Terraform registry returns empty dict for 404
@@ -57,7 +57,7 @@ async def test_get_module_details_success(httpx_mock):
         json=mock_response
     )
     
-    registry = TerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
+    registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
     async with registry:
         details = await registry.get_module_details("terraform-aws-modules", "vpc", "aws", "latest")
         assert details["name"] == "vpc"
@@ -73,7 +73,7 @@ async def test_get_module_details_not_found(httpx_mock):
         json={"errors": ["Not found"]}
     )
     
-    registry = TerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
+    registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
     async with registry:
         result = await registry.get_module_details("nonexistent", "module", "provider", "latest")
         assert result == {}  # Terraform registry returns empty dict for 404
@@ -99,7 +99,7 @@ async def test_list_providers_with_search(httpx_mock):
         json=mock_response
     )
     
-    registry = TerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
+    registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
     async with registry:
         providers = await registry.list_providers(query="aws")
         assert len(providers) == 1
@@ -122,7 +122,7 @@ async def test_list_provider_versions(httpx_mock):
         json=mock_response
     )
     
-    registry = TerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
+    registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
     async with registry:
         versions = await registry.list_provider_versions("hashicorp/aws")
         assert len(versions) == 3
