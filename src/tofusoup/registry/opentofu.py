@@ -16,7 +16,7 @@ from tofusoup.registry.models.provider import (
 from .base import BaseTfRegistry, TfRegistryConfig
 
 
-class OpenTofuTfRegistry(BaseTfRegistry):
+class OpenTofuRegistry(BaseTfRegistry):
     def __init__(self, config: TfRegistryConfig | None = None):
         super().__init__(
             config or TfRegistryConfig(base_url="https://registry.opentofu.org")
