@@ -16,7 +16,7 @@ from tofusoup.registry.models.provider import (
 from .base import BaseTfRegistry, TfRegistryConfig
 
 
-class TerraformTfRegistry(BaseTfRegistry):
+class TerraformRegistry(BaseTfRegistry):
     def __init__(self, config: TfRegistryConfig):
         super().__init__(config)
 
