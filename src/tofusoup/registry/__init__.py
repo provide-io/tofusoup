@@ -5,13 +5,13 @@
 
 from .base import BaseTfRegistry, TfRegistryConfig
 from .opentofu import OpenTofuRegistry
-from .terraform import TerraformRegistry
+from .terraform import IbmTfRegistry
 
 __all__ = [
     "BaseTfRegistry",
+    "IbmTfRegistry",
     "OpenTofuRegistry",
     "TfRegistryConfig",
-    "TerraformRegistry",
 ]
 
 # 🐍⚙️
