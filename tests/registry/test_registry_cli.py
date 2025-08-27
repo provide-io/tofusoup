@@ -120,13 +120,13 @@ class TestRegistrySearchCommand:
 
 
 class TestProviderCommands:
-    @patch('tofusoup.registry.cli.TerraformRegistry')
+    @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     @patch('tofusoup.registry.cli.OpenTofuRegistry')
     def test_provider_info_command(self, mock_tofu_reg, mock_tf_reg, runner, mock_provider_details):
         # Setup mocks
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
-        mock_tf_instance.__class__.__name__ = 'TerraformRegistry'
+        mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
         mock_tofu_instance = AsyncMock()
@@ -136,16 +136,16 @@ class TestProviderCommands:
         
         result = runner.invoke(registry_cli.registry_cli, ["provider", "info", "hashicorp/aws"])
         assert result.exit_code == 0
-        assert "=== Terraform Registry ===" in result.output
+        assert "=== IBMTerraform Registry ===" in result.output
         assert "Provider: hashicorp/aws" in result.output
         assert "terraform-provider-aws" in result.output
     
-    @patch('tofusoup.registry.cli.TerraformRegistry')
+    @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     def test_provider_versions_command(self, mock_tf_reg, runner, mock_provider_details, mock_provider_versions):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
         mock_tf_instance.list_provider_versions = AsyncMock(return_value=mock_provider_versions)
-        mock_tf_instance.__class__.__name__ = 'TerraformRegistry'
+        mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
         result = runner.invoke(registry_cli.registry_cli, ["provider", "versions", "hashicorp/aws", "-r", "terraform"])
@@ -154,12 +154,12 @@ class TestProviderCommands:
         assert "6.8.0" in result.output
         assert "Versions (3 total):" in result.output
     
-    @patch('tofusoup.registry.cli.TerraformRegistry')
+    @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     def test_provider_versions_latest_flag(self, mock_tf_reg, runner, mock_provider_details, mock_provider_versions):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
         mock_tf_instance.list_provider_versions = AsyncMock(return_value=mock_provider_versions)
-        mock_tf_instance.__class__.__name__ = 'TerraformRegistry'
+        mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
         result = runner.invoke(registry_cli.registry_cli, ["provider", "versions", "hashicorp/aws", "--latest", "-r", "terraform"])
@@ -174,23 +174,23 @@ class TestProviderCommands:
 
 
 class TestModuleCommands:
-    @patch('tofusoup.registry.cli.TerraformRegistry')
+    @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     def test_module_info_command(self, mock_tf_reg, runner, mock_module_details):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(return_value=mock_module_details)
-        mock_tf_instance.__class__.__name__ = 'TerraformRegistry'
+        mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
         result = runner.invoke(registry_cli.registry_cli, ["module", "info", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
         assert result.exit_code == 0
         assert "Module: terraform-aws-modules/vpc/aws" in result.output
     
-    @patch('tofusoup.registry.cli.TerraformRegistry')
+    @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     def test_module_versions_command(self, mock_tf_reg, runner, mock_module_details, mock_module_versions):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(return_value=mock_module_details)
         mock_tf_instance.list_module_versions = AsyncMock(return_value=mock_module_versions)
-        mock_tf_instance.__class__.__name__ = 'TerraformRegistry'
+        mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
         result = runner.invoke(registry_cli.registry_cli, ["module", "versions", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
@@ -205,14 +205,14 @@ class TestModuleCommands:
 
 
 class TestCompareCommand:
-    @patch('tofusoup.registry.cli.TerraformRegistry')
+    @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     @patch('tofusoup.registry.cli.OpenTofuRegistry')
     def test_compare_provider_command(self, mock_tofu_reg, mock_tf_reg, runner, mock_provider_details, mock_provider_versions):
         # Setup Terraform registry mock
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
         mock_tf_instance.list_provider_versions = AsyncMock(return_value=mock_provider_versions)
-        mock_tf_instance.__class__.__name__ = 'TerraformRegistry'
+        mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
         # Setup OpenTofu registry mock
