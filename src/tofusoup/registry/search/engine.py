@@ -195,9 +195,9 @@ async def async_search_runner(
     Returns:
         List of SearchResult objects
     """
-    from ..base import TfRegistryConfig
+    from ..base import RegistryConfig
     from ..opentofu import OpenTofuRegistry
-    from ..terraform import IbmTfRegistry
+    from ..terraform import IBMTerraformRegistry
 
     logger.debug(
         "async_search_runner started",
@@ -207,8 +207,8 @@ async def async_search_runner(
     registries_to_search: list[BaseTfRegistry] = []
 
     if registry_choice in ["terraform", "all"]:
-        tf_config = TfRegistryConfig(base_url="https://registry.terraform.io")
-        registries_to_search.append(IbmTfRegistry(config=tf_config))
+        tf_config = RegistryConfig(base_url="https://registry.terraform.io")
+        registries_to_search.append(IBMTerraformRegistry(config=tf_config))
         logger.debug("TerraformRegistry added to search targets.")
 
     if registry_choice in ["opentofu", "all"]:
