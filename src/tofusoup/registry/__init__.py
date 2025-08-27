@@ -3,14 +3,14 @@
 #
 """Registry component for tfbrowser."""
 
-from .base import BaseRegistry, RegistryConfig
+from .base import BaseTfRegistry, TfRegistryConfig
 from .opentofu import OpenTofuRegistry
 from .terraform import TerraformRegistry
 
 __all__ = [
-    "BaseRegistry",
+    "BaseTfRegistry",
     "OpenTofuRegistry",
-    "RegistryConfig",
+    "TfRegistryConfig",
     "TerraformRegistry",
 ]
 

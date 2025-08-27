@@ -8,7 +8,7 @@ from attrs import define, field
 import semver
 
 from pyvider.telemetry import logger
-from tofusoup.registry.base import BaseRegistry
+from tofusoup.registry.base import BaseTfRegistry
 
 
 @define
@@ -34,8 +34,8 @@ class SearchResult:
 
 
 class SearchEngine:
-    def __init__(self, registries: list[BaseRegistry]):
-        self.registries: list[BaseRegistry] = registries
+    def __init__(self, registries: list[BaseTfRegistry]):
+        self.registries: list[BaseTfRegistry] = registries
         logger.debug(
             f"SearchEngine initialized with {len(self.registries)} registries."
         )
@@ -70,7 +70,7 @@ class SearchEngine:
         logger.info("SearchEngine.search finished streaming results.")
 
     async def _search_single_registry(
-        self, registry: BaseRegistry, query: SearchQuery
+        self, registry: BaseTfRegistry, query: SearchQuery
     ) -> list[SearchResult]:
         registry_identifier = registry.__class__.__name__.replace(
             "Registry", ""
@@ -204,7 +204,7 @@ async def async_search_runner(
         search_term=search_term,
         registry_choice=registry_choice,
     )
-    registries_to_search: list[BaseRegistry] = []
+    registries_to_search: list[BaseTfRegistry] = []
 
     if registry_choice in ["terraform", "all"]:
         tf_config = RegistryConfig(base_url="https://registry.terraform.io")
