@@ -7,12 +7,12 @@ import asyncio
 import click
 
 from pyvider.telemetry import logger
-from tofusoup.registry.base import RegistryConfig
+from tofusoup.registry.base import TfRegistryConfig
 from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.search.engine import (
     async_search_runner,
 )
-from tofusoup.registry.terraform import TerraformRegistry
+from tofusoup.registry.terraform import IbmTfRegistry
 
 
 @click.group("registry")
@@ -52,8 +52,8 @@ def provider_info(ctx: click.Context, provider: str, registry: str):
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
-                TerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                IbmTfRegistry(
+                    TfRegistryConfig(base_url="https://registry.terraform.io")
                 )
             )
         if registry in ["opentofu", "both"]:
@@ -103,8 +103,8 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
-                TerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                IbmTfRegistry(
+                    TfRegistryConfig(base_url="https://registry.terraform.io")
                 )
             )
         if registry in ["opentofu", "both"]:
@@ -172,8 +172,8 @@ def module_info(ctx: click.Context, module: str, registry: str):
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
-                TerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                IbmTfRegistry(
+                    TfRegistryConfig(base_url="https://registry.terraform.io")
                 )
             )
         if registry in ["opentofu", "both"]:
@@ -224,8 +224,8 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
-                TerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                IbmTfRegistry(
+                    TfRegistryConfig(base_url="https://registry.terraform.io")
                 )
             )
         if registry in ["opentofu", "both"]:
@@ -412,8 +412,8 @@ def compare_command(resource: str):
         return
 
     async def compare_resources():
-        tf_registry = TerraformRegistry(
-            RegistryConfig(base_url="https://registry.terraform.io")
+        tf_registry = IbmTfRegistry(
+            TfRegistryConfig(base_url="https://registry.terraform.io")
         )
         tofu_registry = OpenTofuRegistry()
 
