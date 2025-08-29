@@ -212,6 +212,11 @@ async def run_terraform_command(
     env["TF_LOG"] = "JSON"
     env["TF_LOG_PATH"] = str(tf_log_path)
     env["PYVIDER_PRIVATE_STATE_SHARED_SECRET"] = "stir-test-secret"
+    
+    # Use plugin cache if available to avoid re-downloading providers
+    plugin_cache_dir = Path.home() / ".terraform.d" / "plugin-cache"
+    if plugin_cache_dir.exists():
+        env["TF_PLUGIN_CACHE_DIR"] = str(plugin_cache_dir)
 
     command = [TF_COMMAND, *args]
 
