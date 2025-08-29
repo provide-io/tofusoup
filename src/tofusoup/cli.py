@@ -31,7 +31,7 @@ LAZY_COMMANDS = {
     "cty": ("tofusoup.cty.cli", "cty_cli"),
     "hcl": ("tofusoup.hcl.cli", "hcl_cli"),
     "harness": ("tofusoup.harness.cli", "harness_cli"),
-    # Package commands removed - now handled by wrkenv
+    "package": ("tofusoup.package.cli", "package_cli"),
     "provider": ("tofusoup.provider.cli", "provider_cli"),
     "rpc": ("tofusoup.rpc.cli", "rpc_cli"),
     "state": ("tofusoup.state", "state_cli"),
@@ -40,7 +40,7 @@ LAZY_COMMANDS = {
     "we": ("wrkenv.env.cli", "workenv_cli"),  # Alias for workenv
     "test": ("tofusoup.testing.cli", "test_cli"),
     "wire": ("tofusoup.wire.cli", "wire"),
-    "garnish": ("garnish.cli", "main"),
+    # Note: garnish command has been moved to separate garnish package
 }
 
 
