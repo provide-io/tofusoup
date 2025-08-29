@@ -16,14 +16,15 @@ Commands:
 """
 
 # Re-export key components for clean API
-from flavor.models import FlavorFooter as PspfFooter
+# Note: flavor.models removed in newer flavor package
+# from flavor.models import FlavorFooter as PspfFooter
 
 from .exceptions import BuildError, PackageError, VerificationError
 
 __all__ = [
     "BuildError",
     "PackageError",
-    "PspfFooter",
+    # "PspfFooter",  # Removed - no longer available in flavor
     "VerificationError",
 ]
 
