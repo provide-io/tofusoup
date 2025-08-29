@@ -1,5 +1,0 @@
-#
-# tofusoup/package/logic.py
-#
-
-# 🍲🥄📄🪄
