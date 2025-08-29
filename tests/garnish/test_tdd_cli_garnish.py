@@ -38,6 +38,7 @@ class TestGarnishCliContract:
         mock_scaffold.assert_called_once()
         assert "Scaffolded 1 components" in result.output
 
+    @pytest.mark.skip(reason="garnish command moved to separate garnish package")
     @patch("tofusoup.garnish.cli.generate_docs")
     def test_garnish_render_invokes_correct_logic(self, mock_render, runner: CliRunner):
         """CONTRACT: `soup garnish render` must invoke the rendering logic."""

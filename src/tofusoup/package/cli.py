@@ -17,12 +17,12 @@ from tofusoup.scaffolding.generator import scaffold_new_provider
 
 
 @click.group("package")
-def package_cli_entry():
+def package_cli():
     """Commands for managing PSPF v0.1 packages and provider projects."""
     pass
 
 
-@package_cli_entry.command("build")
+@package_cli.command("build")
 @click.option(
     "--manifest",
     default="pyproject.toml",
@@ -41,7 +41,7 @@ def build_command(manifest: str) -> None:
         raise click.Abort()
 
 
-@package_cli_entry.command("keygen")
+@package_cli.command("keygen")
 @click.option(
     "--out-dir",
     default="keys",
@@ -58,7 +58,7 @@ def keygen_command(out_dir: str) -> None:
         raise click.Abort()
 
 
-@package_cli_entry.command("verify")
+@package_cli.command("verify")
 @click.argument(
     "package_file", type=click.Path(exists=True, dir_okay=False, resolve_path=True)
 )
@@ -73,7 +73,7 @@ def verify_command(package_file: str) -> None:
         raise click.Abort()
 
 
-@package_cli_entry.command("init")
+@package_cli.command("init")
 @click.argument("project_dir", type=click.Path(file_okay=False, writable=True))
 def init_command(project_dir: str) -> None:
     """Initializes a new provider project."""
@@ -85,7 +85,7 @@ def init_command(project_dir: str) -> None:
         raise click.Abort()
 
 
-@package_cli_entry.command("clean")
+@package_cli.command("clean")
 def clean_command() -> None:
     """Removes cached Go binaries using the pspf library."""
     click.echo("🧹 Cleaning cache...")
