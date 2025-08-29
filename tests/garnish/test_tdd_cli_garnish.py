@@ -15,6 +15,7 @@ class TestGarnishCliContract:
     def runner(self) -> CliRunner:
         return CliRunner()
 
+    @pytest.mark.skip(reason="garnish command moved to separate garnish package")
     def test_garnish_command_exists(self, runner: CliRunner):
         """CONTRACT: The `soup garnish` command group must exist."""
         result = runner.invoke(main_cli, ["garnish", "--help"])
@@ -29,6 +30,7 @@ class TestGarnishCliContract:
         assert result.exit_code != 0
         assert "No such command 'docs'" in result.output
 
+    @pytest.mark.skip(reason="garnish command moved to separate garnish package")
     @patch("tofusoup.garnish.cli.scaffold_garnish")
     def test_garnish_scaffold_invokes_correct_logic(self, mock_scaffold, runner: CliRunner):
         """CONTRACT: `soup garnish scaffold` must invoke the scaffolding logic."""
