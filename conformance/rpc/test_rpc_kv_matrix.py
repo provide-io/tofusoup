@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Dict, Any
 
 import pytest
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from .matrix_config import RPC_KV_MATRIX_PARAMS, CryptoConfig
 from .harness_factory import create_kv_server, create_kv_client

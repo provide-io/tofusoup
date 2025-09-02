@@ -7,7 +7,7 @@ import sys
 
 import click
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.common.exceptions import TofuSoupError
 
 from .logic import (

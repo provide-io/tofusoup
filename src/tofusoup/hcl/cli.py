@@ -13,7 +13,7 @@ import click
 from rich import print as rich_print
 from rich.tree import Tree
 
-from pyvider.telemetry import logger  # Changed import
+from provide.foundation import logger  # Changed import
 from tofusoup.common.exceptions import ConversionError, TofuSoupError
 
 # from tofusoup.common.rich_utils import build_rich_tree_from_cty_json_comparable # Moved to common

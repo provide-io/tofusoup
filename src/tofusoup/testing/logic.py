@@ -11,7 +11,7 @@ from typing import Any
 
 import attrs
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.common.exceptions import TofuSoupError
 from tofusoup.harness.logic import ensure_go_harness_build
 

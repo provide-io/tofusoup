@@ -5,7 +5,7 @@
 
 import click
 
-from pyvider.telemetry import logger, setup_telemetry
+from provide.foundation import logger, setup_telemetry
 from pyvider.telemetry.core import reset_pyvider_setup_for_testing
 from tofusoup.browser.ui.app import TFBrowserApp
 

@@ -9,7 +9,7 @@ import time
 
 import grpc
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 

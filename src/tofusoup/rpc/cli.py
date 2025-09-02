@@ -76,7 +76,7 @@ def server_start(
     tls_mode: str, tls_key_type: str, cert_file: str | None, key_file: str | None
 ):
     """Starts the KV plugin server."""
-    from pyvider.telemetry import logger
+    from provide.foundation import logger
 
     # Validate TLS configuration
     if tls_mode == "manual":
