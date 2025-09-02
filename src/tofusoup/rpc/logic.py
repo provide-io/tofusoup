@@ -11,7 +11,7 @@ import pathlib
 # from typing import Tuple, Any, Coroutine # Not used
 from rich import print as rich_print
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
 

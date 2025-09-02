@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from attrs import define
 import httpx
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import Provider, ProviderVersion
 

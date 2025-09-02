@@ -9,7 +9,7 @@ import pathlib
 import tomllib
 from typing import Any
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.common.exceptions import TofuSoupConfigError
 
 CONFIG_FILENAME = "soup.toml"

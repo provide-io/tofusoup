@@ -17,7 +17,7 @@ from typing import Any
 
 from pyvider.rpcplugin.factories import plugin_server
 from pyvider.rpcplugin.protocol.base import RPCPluginProtocol
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.harness.proto.kv import kv_pb2_grpc
 from tofusoup.rpc.server import KV
 

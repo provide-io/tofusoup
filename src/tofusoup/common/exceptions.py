@@ -5,8 +5,10 @@
 Common exceptions for the TofuSoup application.
 """
 
+from provide.foundation.errors import FoundationError
 
-class TofuSoupError(Exception):
+
+class TofuSoupError(FoundationError):
     """Base class for exceptions in TofuSoup."""
 
     pass

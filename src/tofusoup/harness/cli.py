@@ -9,7 +9,7 @@ import click
 from rich import print as rich_print
 from rich.table import Table
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.common.exceptions import TofuSoupError
 
 from .logic import (

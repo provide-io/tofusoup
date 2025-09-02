@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import (
     Provider,

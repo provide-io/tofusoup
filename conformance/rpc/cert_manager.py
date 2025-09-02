@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict
 
 from pyvider.rpcplugin.crypto import Certificate, KEY_TYPE_RSA, KEY_TYPE_ECDSA
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from .matrix_config import CryptoConfig
 
