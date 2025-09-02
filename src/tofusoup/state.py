@@ -22,7 +22,7 @@ from rich.table import Table
 from rich.tree import Tree
 
 from pyvider.common.encryption import decrypt
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 console = Console()
 

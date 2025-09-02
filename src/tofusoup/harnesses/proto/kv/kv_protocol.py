@@ -4,7 +4,7 @@
 from typing import Any
 
 from pyvider.rpcplugin.protocol import RPCPluginProtocol
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 # Import from the local proto files
 from . import kv_pb2_grpc

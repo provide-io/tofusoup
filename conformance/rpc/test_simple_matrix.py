@@ -14,7 +14,7 @@ import asyncio
 import uuid
 import pytest
 from pathlib import Path
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.rpc.client import KVClient
 
 

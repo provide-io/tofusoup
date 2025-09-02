@@ -7,7 +7,7 @@ from collections.abc import AsyncGenerator
 from attrs import define, field
 import semver
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.registry.base import BaseTfRegistry
 
 

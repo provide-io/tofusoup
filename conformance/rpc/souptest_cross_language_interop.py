@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Optional
 
 import pytest
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from tofusoup.rpc.client import KVClient
 from tofusoup.rpc.server import serve

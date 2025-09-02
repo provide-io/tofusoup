@@ -6,7 +6,7 @@ import asyncio
 
 import click
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.registry.base import RegistryConfig
 from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.search.engine import (

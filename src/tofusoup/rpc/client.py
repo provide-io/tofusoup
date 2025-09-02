@@ -10,7 +10,7 @@ import grpc
 
 from pyvider.rpcplugin.client import RPCPluginClient
 from pyvider.rpcplugin.config import rpcplugin_config
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.harness.proto.kv import KVProtocol, kv_pb2, kv_pb2_grpc
 
 logging.basicConfig(

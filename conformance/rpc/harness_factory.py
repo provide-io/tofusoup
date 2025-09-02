@@ -17,7 +17,7 @@ from typing import AsyncGenerator, Dict, Any, Optional
 import grpc
 from pyvider.rpcplugin.client import RPCPluginClient
 from pyvider.rpcplugin.config import rpcplugin_config
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from tofusoup.rpc.client import KVClient
 from tofusoup.rpc.server import serve

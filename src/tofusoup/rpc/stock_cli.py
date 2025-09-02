@@ -15,7 +15,7 @@ import click
 from rich.console import Console
 from rich.table import Table
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 console = Console()
 
