@@ -3,7 +3,7 @@
 #
 """Centralized logging configuration using Pyvider Telemetry."""
 
-from pyvider.telemetry import LoggingConfig, TelemetryConfig, setup_telemetry
+from provide.foundation import LoggingConfig, TelemetryConfig, setup_telemetry
 
 
 def configure_logging():

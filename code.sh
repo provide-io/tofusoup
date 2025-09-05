@@ -214,7 +214,7 @@ import os
 import shutil
 from typing import Any, Dict
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from tofusoup.common.exceptions import TofuSoupError
 
 class GoVersionError(TofuSoupError): pass
