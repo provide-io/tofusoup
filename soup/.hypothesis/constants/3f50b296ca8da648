@@ -1,4 +1,0 @@
-# file: /Users/tim/code/pyv/pyvider-cty/src/pyvider/cty/types/structural/object.py
-# hypothesis_version: 6.135.32
-
-['CtyType[Any]', 'CtyValue[Any]', '__attrs_attrs__', 'object']
