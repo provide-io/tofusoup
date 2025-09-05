@@ -10,7 +10,7 @@ import click
 from rich import print as rich_print_direct
 from rich.tree import Tree
 
-from pyvider.telemetry import LoggingConfig, TelemetryConfig, logger, setup_telemetry
+from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_telemetry
 from tofusoup.common.config import TofuSoupConfigError, load_tofusoup_config
 from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
