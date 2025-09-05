@@ -9,11 +9,60 @@ import pathlib
 import tomllib
 from typing import Any
 
+import attrs
 from provide.foundation import logger
+from provide.foundation.config import BaseConfig, field
+from provide.foundation.errors import ConfigurationError
 from tofusoup.common.exceptions import TofuSoupConfigError
 
 CONFIG_FILENAME = "soup.toml"
 DEFAULT_CONFIG_SUBDIR = "soup"
+
+
+@attrs.define
+class TofuSoupConfig(BaseConfig):
+    """Configuration for TofuSoup operations."""
+    
+    # File paths and directories
+    project_root: pathlib.Path | None = field(
+        default=None,
+        description="Project root directory"
+    )
+    config_file: str | None = field(
+        default=None,
+        description="Explicit configuration file path"
+    )
+    
+    # Test configuration
+    test_timeout: int = field(
+        default=300,
+        description="Test timeout in seconds",
+        env_var="TOFUSOUP_TEST_TIMEOUT"
+    )
+    
+    # Logging configuration
+    log_level: str = field(
+        default="INFO",
+        description="Logging level",
+        env_var="TOFUSOUP_LOG_LEVEL"
+    )
+    
+    @classmethod
+    def from_project_root(
+        cls, 
+        project_root: pathlib.Path, 
+        explicit_config_file: str | None = None
+    ) -> "TofuSoupConfig":
+        """Create config using the traditional TofuSoup loading logic."""
+        try:
+            config_data = load_tofusoup_config(project_root, explicit_config_file)
+            return cls.from_dict(config_data)
+        except Exception as e:
+            # Fallback to defaults with project info
+            return cls(
+                project_root=project_root,
+                config_file=explicit_config_file
+            )
 
 
 def _load_config_from_file(file_path: pathlib.Path) -> dict[str, Any] | None:
