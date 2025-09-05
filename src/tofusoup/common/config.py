@@ -11,7 +11,7 @@ from typing import Any
 
 import attrs
 from provide.foundation import logger
-from provide.foundation.config import BaseConfig, field
+from provide.foundation.config import EnvConfig, field
 from provide.foundation.errors import ConfigurationError
 from tofusoup.common.exceptions import TofuSoupConfigError
 
@@ -20,7 +20,7 @@ DEFAULT_CONFIG_SUBDIR = "soup"
 
 
 @attrs.define
-class TofuSoupConfig(BaseConfig):
+class TofuSoupConfig(EnvConfig):
     """Configuration for TofuSoup operations."""
     
     # File paths and directories
