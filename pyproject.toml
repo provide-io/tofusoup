@@ -66,11 +66,11 @@ package = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["tofusoup*"]
+namespaces = false
 
 [tool.setuptools.dynamic]
 version = {file = "VERSION"}
-include = ["tofusoup*"]
-namespaces = false
 
 [tool.pytest.ini_options]
 log_cli = true
