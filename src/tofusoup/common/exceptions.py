@@ -5,7 +5,7 @@
 Common exceptions for the TofuSoup application.
 """
 
-from provide.foundation.errors import FoundationError
+from provide.foundation.errors import FoundationError, ProcessError
 
 
 class TofuSoupError(FoundationError):
@@ -31,50 +31,31 @@ class TofuSoupConfigError(TofuSoupError):
 # but could also inherit from TofuSoupError if desired for a common hierarchy.
 
 
-class HarnessError(TofuSoupError):
+class HarnessError(ProcessError):
     """Custom exception for errors interacting with external test harness."""
 
     def __init__(
         self,
         message: str,
+        *,
         stderr: str | bytes | None = None,
         stdout: str | bytes | None = None,
         details: str | None = None,
+        command: str | list[str] | None = None,
+        return_code: int | None = None,
     ):
-        full_message = message
-        if details:
-            full_message += f"\nDetails: {details}"
-        if stdout:
-            stdout_str = (
-                stdout.decode("utf-8", "replace")
-                if isinstance(stdout, bytes)
-                else stdout
-            )
-            full_message += f"\n--- HARNESS STDOUT ---\n{stdout_str.strip()}"
-        if stderr:
-            stderr_str = (
-                stderr.decode("utf-8", "replace")
-                if isinstance(stderr, bytes)
-                else stderr
-            )
-            full_message += f"\n--- HARNESS STDERR ---\n{stderr_str.strip()}"
-
-        super().__init__(full_message)
-        self.stdout = (
-            stdout.decode("utf-8", "replace").strip()
-            if isinstance(stdout, bytes)
-            else stdout.strip()
-            if stdout
-            else None
-        )
-        self.stderr = (
-            stderr.decode("utf-8", "replace").strip()
-            if isinstance(stderr, bytes)
-            else stderr.strip()
-            if stderr
-            else None
-        )
+        # Store details separately for backward compatibility
         self.details = details
+        
+        # Pass to ProcessError which handles stdout/stderr formatting
+        super().__init__(
+            message,
+            command=command,
+            return_code=return_code,
+            stdout=stdout,
+            stderr=stderr,
+            harness_details=details  # Store in context
+        )
 
 
 # <3 🍲 🍜 🍥>
