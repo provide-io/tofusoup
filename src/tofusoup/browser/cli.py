@@ -6,7 +6,6 @@
 import click
 
 from provide.foundation import logger, setup_telemetry
-from pyvider.telemetry.core import reset_pyvider_setup_for_testing
 from tofusoup.browser.ui.app import TFBrowserApp
 
 
@@ -43,7 +42,6 @@ def tui_command(ctx: click.Context, registry_name: str | None) -> None:
         # FIX: Reset the logger to its default state (writing to stderr).
         # This is critical to prevent logging calls after the TUI has exited
         # from trying to write to a destroyed widget, which causes the NoActiveAppError.
-        reset_pyvider_setup_for_testing()
         setup_telemetry()  # Re-initialize to default stderr logging
         logger.info("TUI browser exited.")
 
