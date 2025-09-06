@@ -9,7 +9,7 @@ import pathlib
 import tomllib
 from typing import Any
 
-import attrs
+from attrs import define
 from provide.foundation import logger
 from provide.foundation.config import RuntimeConfig, field
 from provide.foundation.errors import ConfigurationError
@@ -19,7 +19,7 @@ CONFIG_FILENAME = "soup.toml"
 DEFAULT_CONFIG_SUBDIR = "soup"
 
 
-@attrs.define
+@define
 class TofuSoupConfig(RuntimeConfig):
     """Configuration for TofuSoup operations."""
     
