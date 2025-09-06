@@ -12,6 +12,7 @@ from typing import Any
 import attrs
 
 from provide.foundation import logger
+from provide.foundation.errors import error_boundary, ResourceError, ValidationError
 from tofusoup.common.exceptions import TofuSoupError
 from tofusoup.harness.logic import ensure_go_harness_build
 
@@ -93,12 +94,29 @@ async def _run_pytest_suite(
     )
     await process.wait()
 
-    try:
-        with open(report_path) as f:
-            report_content = f.read()
-            if not report_content:
-                raise json.JSONDecodeError("Expecting value", report_content, 0)
-            report = json.loads(report_content)
+    @error_boundary(
+        fallback_result=lambda: TestSuiteResult(
+            suite_name=suite_name,
+            success=False,
+            duration=0,
+            passed=0,
+            failed=1,
+            skipped=0,
+            errors=1,
+            failures=[{"nodeid": "runner_error", "longrepr": "Test report processing failed"}],
+        )
+    )
+    def _process_test_report() -> TestSuiteResult:
+        try:
+            with open(report_path) as f:
+                report_content = f.read()
+                if not report_content:
+                    raise ValidationError("Empty test report file")
+                report = json.loads(report_content)
+        except FileNotFoundError as e:
+            raise ResourceError(f"Test report file not found: {report_path}") from e
+        except json.JSONDecodeError as e:
+            raise ValidationError(f"Invalid JSON in test report: {e}") from e
 
         summary = report.get("summary", {})
         failures = [
@@ -116,17 +134,8 @@ async def _run_pytest_suite(
             errors=len(report.get("errors", [])),
             failures=failures,
         )
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        return TestSuiteResult(
-            suite_name=suite_name,
-            success=False,
-            duration=0,
-            passed=0,
-            failed=1,
-            skipped=0,
-            errors=1,
-            failures=[{"nodeid": "runner_error", "longrepr": f"Report error: {e}"}],
-        )
+
+    return _process_test_report()
     finally:
         if os.path.exists(report_path):
             os.unlink(report_path)
