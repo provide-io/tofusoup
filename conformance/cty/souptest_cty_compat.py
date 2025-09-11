@@ -2,6 +2,8 @@ import pytest
 import subprocess
 from pathlib import Path
 
+@pytest.mark.integration_cty
+@pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 def test_souptest_go_cty_validation(go_harness_executable: Path):
     """
