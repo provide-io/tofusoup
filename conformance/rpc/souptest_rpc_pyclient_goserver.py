@@ -5,6 +5,8 @@ import os
 
 from tofusoup.rpc.client import KVClient
 
+@pytest.mark.integration_rpc
+@pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 @pytest.mark.asyncio
 async def test_pyclient_goserver_put_get_string(go_harness_executable: Path):
