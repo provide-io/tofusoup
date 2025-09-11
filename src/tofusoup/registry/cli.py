@@ -8,6 +8,7 @@ import click
 
 from provide.foundation import logger
 from tofusoup.registry.base import RegistryConfig
+from config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
 from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.search.engine import (
     async_search_runner,
@@ -36,7 +37,7 @@ def provider_group():
     "-r",
     "--registry",
     type=click.Choice(["terraform", "opentofu", "both"], case_sensitive=False),
-    default="both",
+    default=DEFAULT_REGISTRY_SOURCE,
     help="Registry to query.",
 )
 @click.pass_context
@@ -53,7 +54,7 @@ def provider_info(ctx: click.Context, provider: str, registry: str):
         if registry in ["terraform", "both"]:
             registries.append(
                 IBMTerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
                 )
             )
         if registry in ["opentofu", "both"]:
@@ -86,7 +87,7 @@ def provider_info(ctx: click.Context, provider: str, registry: str):
     "-r",
     "--registry",
     type=click.Choice(["terraform", "opentofu", "both"], case_sensitive=False),
-    default="both",
+    default=DEFAULT_REGISTRY_SOURCE,
     help="Registry to query.",
 )
 @click.option("--latest", is_flag=True, help="Show only the latest version.")
@@ -104,7 +105,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
         if registry in ["terraform", "both"]:
             registries.append(
                 IBMTerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
                 )
             )
         if registry in ["opentofu", "both"]:
@@ -153,7 +154,7 @@ def module_group():
     "-r",
     "--registry",
     type=click.Choice(["terraform", "opentofu", "both"], case_sensitive=False),
-    default="both",
+    default=DEFAULT_REGISTRY_SOURCE,
     help="Registry to query.",
 )
 @click.pass_context
@@ -173,7 +174,7 @@ def module_info(ctx: click.Context, module: str, registry: str):
         if registry in ["terraform", "both"]:
             registries.append(
                 IBMTerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
                 )
             )
         if registry in ["opentofu", "both"]:
@@ -204,7 +205,7 @@ def module_info(ctx: click.Context, module: str, registry: str):
     "-r",
     "--registry",
     type=click.Choice(["terraform", "opentofu", "both"], case_sensitive=False),
-    default="both",
+    default=DEFAULT_REGISTRY_SOURCE,
     help="Registry to query.",
 )
 @click.option("--latest", is_flag=True, help="Show only the latest version.")
@@ -225,7 +226,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
         if registry in ["terraform", "both"]:
             registries.append(
                 IBMTerraformRegistry(
-                    RegistryConfig(base_url="https://registry.terraform.io")
+                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
                 )
             )
         if registry in ["opentofu", "both"]:

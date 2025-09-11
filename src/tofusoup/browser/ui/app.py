@@ -8,6 +8,7 @@ from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header
 
 from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_telemetry
+from config.defaults import TERRAFORM_REGISTRY_URL, TUI_SERVICE_NAME, TUI_LOG_LEVEL
 from tofusoup.browser.ui.widgets.detail_view import DetailView
 from tofusoup.browser.ui.widgets.log_viewer import LogViewer
 from tofusoup.browser.ui.widgets.search_view import SearchView
@@ -39,7 +40,7 @@ class MainSearchScreen(Screen[None]):
 
     def on_mount(self) -> None:
         telemetry_config = TelemetryConfig(
-            service_name="tofusoup-tui", logging=LoggingConfig(default_level="DEBUG")
+            service_name=TUI_SERVICE_NAME, logging=LoggingConfig(default_level=TUI_LOG_LEVEL)
         )
         setup_telemetry(telemetry_config)
         logger.info("TUI Logger Initialized. Ready for search.")
@@ -58,7 +59,7 @@ class MainSearchScreen(Screen[None]):
         try:
             registries = [
                 IBMTerraformRegistry(
-                    config=RegistryConfig(base_url="https://registry.terraform.io")
+                    config=RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
                 ),
                 OpenTofuRegistry(),
             ]

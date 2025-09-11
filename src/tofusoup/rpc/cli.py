@@ -11,6 +11,7 @@ import grpc
 # Use correct relative import for generated protobuf modules.
 from ..harness.proto.kv import kv_pb2, kv_pb2_grpc
 from .server import start_kv_server
+from config.defaults import DEFAULT_GRPC_ADDRESS
 
 
 @click.group("rpc")
@@ -21,7 +22,7 @@ def rpc_cli():
 
 @rpc_cli.command("kv-put")
 @click.option(
-    "--address", default="localhost:50051", help="Address of the gRPC server."
+    "--address", default=DEFAULT_GRPC_ADDRESS, help="Address of the gRPC server."
 )
 @click.argument("key")
 @click.argument("value")
@@ -40,7 +41,7 @@ def kv_put(address: str, key: str, value: str):
 
 @rpc_cli.command("kv-get")
 @click.option(
-    "--address", default="localhost:50051", help="Address of the gRPC server."
+    "--address", default=DEFAULT_GRPC_ADDRESS, help="Address of the gRPC server."
 )
 @click.argument("key")
 def kv_get(address: str, key: str):
