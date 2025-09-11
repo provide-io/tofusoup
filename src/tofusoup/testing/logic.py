@@ -135,7 +135,8 @@ async def _run_pytest_suite(
             failures=failures,
         )
 
-    return _process_test_report()
+    try:
+        return _process_test_report()
     finally:
         if os.path.exists(report_path):
             os.unlink(report_path)

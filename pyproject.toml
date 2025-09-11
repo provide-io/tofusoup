@@ -82,7 +82,7 @@ markers = ["slow: marks tests as slow", "conformance: marks tests as conformance
 norecursedirs = [".git", "build", "dist", "*.egg-info", ".venv", "htmlcov", ".hypothesis", "conformance"]
 
 [tool.ruff]
-line-length = 88
+line-length = 111
 indent-width = 4
 target-version = "py311"
 
