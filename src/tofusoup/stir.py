@@ -19,6 +19,7 @@ from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
+from config.defaults import STIR_TEST_SECRET, ENV_TF_LOG, ENV_TF_DATA_DIR, ENV_PYVIDER_PRIVATE_STATE_SHARED_SECRET
 
 # --- Configuration ---
 TF_COMMAND = shutil.which("tofu") or shutil.which("terraform") or "tofu"
@@ -208,10 +209,10 @@ async def run_terraform_command(
     )
 
     env = os.environ.copy()
-    env["TF_DATA_DIR"] = str(tf_data_dir)
-    env["TF_LOG"] = "JSON"
+    env[ENV_TF_DATA_DIR] = str(tf_data_dir)
+    env[ENV_TF_LOG] = "JSON"
     env["TF_LOG_PATH"] = str(tf_log_path)
-    env["PYVIDER_PRIVATE_STATE_SHARED_SECRET"] = "stir-test-secret"
+    env[ENV_PYVIDER_PRIVATE_STATE_SHARED_SECRET] = STIR_TEST_SECRET
     
     # Use plugin cache if available to avoid re-downloading providers
     plugin_cache_dir = Path.home() / ".terraform.d" / "plugin-cache"

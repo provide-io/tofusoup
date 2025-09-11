@@ -385,7 +385,7 @@ class KVClient:
                 f"KVClient: Sending Put - key='{key}', value_size={len(value)} bytes."
             )
             await asyncio.wait_for(
-                self._stub.Put(kv_pb2.PutRequest(key=key, value=value)), timeout=5.0
+                self._stub.Put(kv_pb2.PutRequest(key=key, value=value)), timeout=REQUEST_TIMEOUT
             )
             logger.info(f"KVClient: Put successful for key='{key}'.")
         except TimeoutError:
@@ -404,7 +404,7 @@ class KVClient:
         try:
             logger.debug(f"KVClient: Sending Get - key='{key}'.")
             response = await asyncio.wait_for(
-                self._stub.Get(kv_pb2.GetRequest(key=key)), timeout=5.0
+                self._stub.Get(kv_pb2.GetRequest(key=key)), timeout=REQUEST_TIMEOUT
             )
 
             if response is not None:
