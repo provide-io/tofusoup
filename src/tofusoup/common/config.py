@@ -12,22 +12,22 @@ from typing import Any
 from attrs import define
 from provide.foundation import logger
 from provide.foundation.config import RuntimeConfig, field
-from provide.foundation.errors import ConfigurationError
-from tofusoup.common.exceptions import TofuSoupConfigError
+
 from config.defaults import (
     CONFIG_FILENAME,
     DEFAULT_CONFIG_SUBDIR,
-    TEST_TIMEOUT_SECONDS,
     DEFAULT_LOG_LEVEL,
-    ENV_TOFUSOUP_TEST_TIMEOUT,
     ENV_TOFUSOUP_LOG_LEVEL,
+    ENV_TOFUSOUP_TEST_TIMEOUT,
+    TEST_TIMEOUT_SECONDS,
 )
+from tofusoup.common.exceptions import TofuSoupConfigError
 
 
 @define
 class TofuSoupConfig(RuntimeConfig):
     """Configuration for TofuSoup operations."""
-    
+
     # File paths and directories
     project_root: pathlib.Path | None = field(
         default=None,
@@ -37,32 +37,32 @@ class TofuSoupConfig(RuntimeConfig):
         default=None,
         description="Explicit configuration file path"
     )
-    
+
     # Test configuration
     test_timeout: int = field(
         default=TEST_TIMEOUT_SECONDS,
         description="Test timeout in seconds",
         env_var=ENV_TOFUSOUP_TEST_TIMEOUT
     )
-    
+
     # Logging configuration
     log_level: str = field(
         default=DEFAULT_LOG_LEVEL,
         description="Logging level",
         env_var=ENV_TOFUSOUP_LOG_LEVEL
     )
-    
+
     @classmethod
     def from_project_root(
-        cls, 
-        project_root: pathlib.Path, 
+        cls,
+        project_root: pathlib.Path,
         explicit_config_file: str | None = None
     ) -> "TofuSoupConfig":
         """Create config using the traditional TofuSoup loading logic."""
         try:
             config_data = load_tofusoup_config(project_root, explicit_config_file)
             return cls.from_dict(config_data)
-        except Exception as e:
+        except Exception:
             # Fallback to defaults with project info
             return cls(
                 project_root=project_root,

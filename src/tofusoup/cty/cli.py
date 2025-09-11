@@ -20,7 +20,7 @@ from ..common.rich_utils import print_json
 
 
 @click.group("cty")
-def cty_cli():
+def cty_cli() -> None:
     """Commands for working with cty values."""
     pass
 

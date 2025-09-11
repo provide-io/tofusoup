@@ -6,8 +6,8 @@ import asyncio
 import sys
 
 import click
-
 from provide.foundation import logger
+
 from tofusoup.common.exceptions import TofuSoupError
 
 from .logic import (
@@ -17,14 +17,14 @@ from .logic import (
 )
 
 
-def _print_results_report(results: list):
+def _print_results_report(results: list) -> None:
     """Prints a summary table and detailed failure report."""
     pass
 
 
 @click.group("test")
 @click.pass_context
-def test_cli(ctx):
+def test_cli(ctx) -> None:
     """A unified command to execute various conformance test suites."""
     if not ctx.obj:
         ctx.obj = {}
@@ -32,7 +32,7 @@ def test_cli(ctx):
 
 @test_cli.command("all")
 @click.pass_context
-def test_all_command(ctx):
+def test_all_command(ctx) -> None:
     """Runs all available conformance test suites (CTY, RPC, Wire, etc.)."""
     verbose = ctx.obj.get("VERBOSE", False)
     project_root = ctx.obj.get("PROJECT_ROOT")
@@ -53,7 +53,7 @@ def test_all_command(ctx):
 
 
 # Dynamically create subcommands for each test suite
-for suite_name_key in TEST_SUITE_CONFIG.keys():
+for suite_name_key in TEST_SUITE_CONFIG:
     suite_config_data = TEST_SUITE_CONFIG[suite_name_key]
 
     @test_cli.command(
@@ -63,7 +63,7 @@ for suite_name_key in TEST_SUITE_CONFIG.keys():
     )
     @click.argument("pytest_options", nargs=-1, type=click.UNPROCESSED)
     @click.pass_context
-    def _suite_command(ctx, pytest_options: tuple[str, ...], snk=suite_name_key):
+    def _suite_command(ctx, pytest_options: tuple[str, ...], snk=suite_name_key) -> None:
         verbose = ctx.obj.get("VERBOSE", False)
         project_root = ctx.obj.get("PROJECT_ROOT")
         if not project_root:

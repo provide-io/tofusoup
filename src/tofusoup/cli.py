@@ -7,14 +7,14 @@ import pathlib
 import sys
 
 import click
+from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_telemetry
 from rich import print as rich_print_direct
 from rich.tree import Tree
 
-from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_telemetry
+from config.defaults import DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL, LOG_LEVELS
 from tofusoup.common.config import TofuSoupConfigError, load_tofusoup_config
 from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
-from config.defaults import LOG_LEVELS, DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL
 
 telemetry_config = TelemetryConfig(
     service_name="tofusoup-cli",
@@ -66,7 +66,7 @@ LAZY_COMMANDS = {
 )
 def main_cli(
     ctx: click.Context, verbose: bool, log_level: str | None, config_file: str | None
-):
+) -> None:
     ctx.obj = ctx.obj or {}
 
     final_log_level = "DEBUG" if verbose else log_level
@@ -103,14 +103,14 @@ def main_cli(
 
 
 @click.group("config")
-def config_cli():
+def config_cli() -> None:
     """Commands for TofuSoup configuration management."""
     pass
 
 
 @config_cli.command("show")
 @click.pass_context
-def show_config_command(ctx: click.Context):
+def show_config_command(ctx: click.Context) -> None:
     """Displays the currently loaded TofuSoup configuration."""
     loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})
     if not loaded_config:
@@ -127,7 +127,7 @@ def show_config_command(ctx: click.Context):
 main_cli.add_command(config_cli)
 
 
-def entry_point():
+def entry_point() -> None:
     main_cli(obj={})
 
 

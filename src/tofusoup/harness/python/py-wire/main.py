@@ -8,13 +8,13 @@ import click
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
-def encode(input_file):
+def encode(input_file) -> None:
     """Encode data to JSON format."""
     data = json.load(input_file)
     print(json.dumps(data, indent=2))

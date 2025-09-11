@@ -5,8 +5,8 @@ from abc import ABC, abstractmethod
 
 from attrs import define
 import httpx
-
 from provide.foundation import logger
+
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import Provider, ProviderVersion
 
@@ -17,7 +17,7 @@ class RegistryConfig:
 
 
 class BaseTfRegistry(ABC):
-    def __init__(self, config: RegistryConfig):
+    def __init__(self, config: RegistryConfig) -> None:
         self.config = config
         self._client: httpx.AsyncClient | None = None
         logger.debug(f"BaseTfRegistry initialized for {config.base_url}")

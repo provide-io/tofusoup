@@ -5,9 +5,9 @@ import asyncio
 from collections.abc import AsyncGenerator
 
 from attrs import define, field
+from provide.foundation import logger
 import semver
 
-from provide.foundation import logger
 from tofusoup.registry.base import BaseTfRegistry
 
 
@@ -34,7 +34,7 @@ class SearchResult:
 
 
 class SearchEngine:
-    def __init__(self, registries: list[BaseTfRegistry]):
+    def __init__(self, registries: list[BaseTfRegistry]) -> None:
         self.registries: list[BaseTfRegistry] = registries
         logger.debug(
             f"SearchEngine initialized with {len(self.registries)} registries."
