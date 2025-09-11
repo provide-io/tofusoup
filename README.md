@@ -31,16 +31,11 @@ It provides:
     # Ensure uv is installed (see https://github.com/astral-sh/uv)
     # e.g., curl -LsSf https://astral.sh/uv/install.sh | sh
 
-    # Source the environment script (activates venv, installs dependencies)
-    # (From the root of the 'tofusoup' monorepo)
-    source env.sh
+    # Install the package in development mode
+    uv pip install -e .
     ```
-    The `env.sh` script will:
-    -   Create/activate a Python virtual environment (e.g., in `.venv/`).
-    -   Install `tofusoup` in editable mode along with its dependencies using `uv pip install -e .[dev]`.
-    -   Install any sibling `pyvider-*` packages found in the parent directory in editable mode.
 
-3.  **Verify Installation:** The `env.sh` script will output version information upon successful setup. You can also manually check:
+3.  **Verify Installation:**
     ```bash
     uv --version
     python3 --version
