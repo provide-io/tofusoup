@@ -15,7 +15,7 @@ import os
 import pathlib
 import tempfile
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Callable
 
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
@@ -31,7 +31,7 @@ console = Console()
 @dataclass
 class MatrixCombination:
     """Represents a specific combination of tool versions."""
-    tools: Dict[str, str] = field(default_factory=dict)
+    tools: dict[str, str] = field(default_factory=dict)
     
     def __str__(self) -> str:
         """String representation for display."""
@@ -54,8 +54,8 @@ class MatrixResult:
     combination: MatrixCombination
     success: bool
     duration_seconds: float = 0.0
-    error_message: Optional[str] = None
-    test_results: Dict[str, Any] = field(default_factory=dict)
+    error_message: str | None = None
+    test_results: dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
@@ -71,7 +71,7 @@ class MatrixResult:
 class VersionMatrix:
     """Manages version matrix testing for TofuSoup."""
     
-    def __init__(self, base_tools: Dict[str, str], config: Optional[WorkenvConfig] = None):
+    def __init__(self, base_tools: dict[str, str], config: WorkenvConfig | None = None):
         """
         Initialize the version matrix.
         
@@ -87,7 +87,7 @@ class VersionMatrix:
         self.parallel_jobs = self.matrix_config.get("parallel_jobs", 4)
         self.timeout_minutes = self.matrix_config.get("timeout_minutes", 30)
     
-    def generate_combinations(self) -> List[MatrixCombination]:
+    def generate_combinations(self) -> list[MatrixCombination]:
         """
         Generate all combinations for matrix testing.
         
@@ -131,8 +131,8 @@ class VersionMatrix:
     async def run_stir_tests(
         self, 
         stir_directory: pathlib.Path,
-        test_filter: Optional[Callable[[MatrixCombination], bool]] = None
-    ) -> Dict[str, Any]:
+        test_filter: Callable[[MatrixCombination], bool] | None = None
+    ) -> dict[str, Any]:
         """
         Run 'soup stir' tests across all matrix combinations.
         
@@ -269,7 +269,7 @@ class VersionMatrix:
         self, 
         combination: MatrixCombination,
         stir_directory: pathlib.Path
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run soup stir test for a specific combination."""
         import subprocess
         import json
@@ -326,7 +326,7 @@ class VersionMatrix:
         
         return result
     
-    def _display_results_table(self, results: List[MatrixResult]) -> None:
+    def _display_results_table(self, results: list[MatrixResult]) -> None:
         """Display results in a nice table."""
         table = Table(title="Matrix Test Results")
         
@@ -351,7 +351,7 @@ class VersionMatrix:
         
         console.print(table)
     
-    def save_results(self, results: Dict[str, Any], output_path: pathlib.Path) -> None:
+    def save_results(self, results: dict[str, Any], output_path: pathlib.Path) -> None:
         """Save matrix test results to a file."""
         with open(output_path, "w") as f:
             json.dump(results, f, indent=2)
@@ -362,9 +362,9 @@ class VersionMatrix:
 # Convenience function for soup stir integration
 async def run_matrix_stir_tests(
     stir_directory: pathlib.Path,
-    tools: Optional[Dict[str, str]] = None,
-    config: Optional[WorkenvConfig] = None
-) -> Dict[str, Any]:
+    tools: dict[str, str] | None = None,
+    config: WorkenvConfig | None = None
+) -> dict[str, Any]:
     """
     Run matrix testing for soup stir.
     
