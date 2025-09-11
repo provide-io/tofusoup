@@ -27,8 +27,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyvider-telemetry>=0.0.13",
-    "attrs>=23.0.0",
+    "provide-foundation[all]",
     "click>=8.1.0",
     "rich>=13.0.0",
     "msgpack>=1.0.0",
@@ -44,19 +43,18 @@ dependencies = [
     "httpx>=0.25.0",
     "respx>=0.20.0",
     "textual>=3.2.0",
-    "structlog>=23.0.0",
     "aiosqlite>=0.19.0",
     "semver>=3.0.0",
     "mypy>=1.10.0",
     "ruff>=0.2.0",
     "python-hcl2>=3.0.0",
-    "wrknv @ file:///Users/tim/code/gh/provide-io/wrknv",
     "jinja2>=3.1.6",
     "tomli-w>=1.0.0",
+    "plating>=0.0.0.dev0",
+    "pyvider-hcl>=0.0.113",
     "pyvider-cty>=0.0.113",
     "pyvider-rpcplugin>=0.0.112",
     "provide-foundation[all]",
-    "plating>=0.0.0.dev0",
 ]
 
 [project.scripts]
