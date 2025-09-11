@@ -7,13 +7,13 @@ from soup.toml into wrkenv, making wrkenv.toml optional for TofuSoup users.
 
 import os
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
 import toml
 
 from wrkenv import WorkenvConfig
 
 
-def load_soup_config(project_root: Optional[Path] = None) -> Dict[str, Any]:
+def load_soup_config(project_root: Path | None = None) -> dict[str, Any]:
     """
     Load the soup.toml configuration file.
     
@@ -35,7 +35,7 @@ def load_soup_config(project_root: Optional[Path] = None) -> Dict[str, Any]:
     return {}
 
 
-def create_workenv_config_with_soup(project_root: Optional[Path] = None) -> WorkenvConfig:
+def create_workenv_config_with_soup(project_root: Path | None = None) -> WorkenvConfig:
     """
     Create a WorkenvConfig instance that includes configuration from soup.toml.
     
@@ -69,7 +69,7 @@ def create_workenv_config_with_soup(project_root: Optional[Path] = None) -> Work
     return config
 
 
-def get_matrix_config_from_soup(project_root: Optional[Path] = None) -> Dict[str, Any]:
+def get_matrix_config_from_soup(project_root: Path | None = None) -> dict[str, Any]:
     """
     Get matrix configuration from soup.toml.
     

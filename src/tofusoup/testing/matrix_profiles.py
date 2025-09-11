@@ -8,7 +8,7 @@ to test against specific tool configurations.
 import asyncio
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
@@ -27,9 +27,9 @@ class ProfileTestResult:
     profile_name: str
     success: bool
     duration_seconds: float = 0.0
-    error_message: Optional[str] = None
-    test_results: Dict[str, Any] = field(default_factory=dict)
-    tools: Dict[str, str] = field(default_factory=dict)
+    error_message: str | None = None
+    test_results: dict[str, Any] = field(default_factory=dict)
+    tools: dict[str, str] = field(default_factory=dict)
     
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
@@ -46,7 +46,7 @@ class ProfileTestResult:
 class ProfileMatrix:
     """Manages profile-based matrix testing for TofuSoup."""
     
-    def __init__(self, config: Optional[WorkenvConfig] = None):
+    def __init__(self, config: WorkenvConfig | None = None):
         """
         Initialize the profile matrix.
         
@@ -61,7 +61,7 @@ class ProfileMatrix:
         self.parallel_jobs = self.matrix_config.get("parallel_jobs", 4)
         self.timeout_minutes = self.matrix_config.get("timeout_minutes", 30)
     
-    def get_test_profiles(self) -> List[str]:
+    def get_test_profiles(self) -> list[str]:
         """
         Get list of profiles to test.
         
@@ -78,8 +78,8 @@ class ProfileMatrix:
     async def run_profile_tests(
         self, 
         stir_directory: Path,
-        profiles: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        profiles: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Run 'soup stir' tests for each profile.
         
@@ -206,7 +206,7 @@ class ProfileMatrix:
                 error_message=str(e),
             )
     
-    async def _install_profile_tools(self, profile_name: str, profile: Dict[str, Any]) -> None:
+    async def _install_profile_tools(self, profile_name: str, profile: dict[str, Any]) -> None:
         """Install all tools for a specific profile."""
         # Determine which tools to install based on terraform_flavor
         terraform_flavor = profile.get("terraform_flavor", self.config.get_setting("terraform_flavor", "terraform"))
@@ -243,8 +243,8 @@ class ProfileMatrix:
         self, 
         profile_name: str,
         stir_directory: Path,
-        env: Dict[str, str]
-    ) -> Dict[str, Any]:
+        env: dict[str, str]
+    ) -> dict[str, Any]:
         """Run soup stir test for a specific profile."""
         import json
         
@@ -289,7 +289,7 @@ class ProfileMatrix:
         
         return result
     
-    def _display_results_table(self, results: List[ProfileTestResult]) -> None:
+    def _display_results_table(self, results: list[ProfileTestResult]) -> None:
         """Display results in a nice table."""
         table = Table(title="Profile Test Results")
         
@@ -319,7 +319,7 @@ class ProfileMatrix:
         
         console.print(table)
     
-    def save_results(self, results: Dict[str, Any], output_path: Path) -> None:
+    def save_results(self, results: dict[str, Any], output_path: Path) -> None:
         """Save profile test results to a file."""
         import json
         
@@ -332,9 +332,9 @@ class ProfileMatrix:
 # Convenience function for soup stir integration
 async def run_profile_matrix_tests(
     stir_directory: Path,
-    profiles: Optional[List[str]] = None,
-    config: Optional[WorkenvConfig] = None
-) -> Dict[str, Any]:
+    profiles: list[str] | None = None,
+    config: WorkenvConfig | None = None
+) -> dict[str, Any]:
     """
     Run profile-based matrix testing for soup stir.
     
