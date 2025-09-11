@@ -5,8 +5,11 @@ Tests the asymmetric behavior: Go→Python works, but Python→Go fails with aut
 """
 
 import asyncio
+import pytest
 from tofusoup.rpc.client import KVClient
 
+@pytest.mark.integration_rpc
+@pytest.mark.harness_go
 async def test_automtls_compatibility():
     print("🔐 AUTOMTLS COMPATIBILITY VERIFICATION")
     print("=" * 80)
