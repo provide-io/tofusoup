@@ -8,7 +8,6 @@ from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header
 
 from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_telemetry
-from provide.foundation.core import _set_log_stream_for_testing
 from tofusoup.browser.ui.widgets.detail_view import DetailView
 from tofusoup.browser.ui.widgets.log_viewer import LogViewer
 from tofusoup.browser.ui.widgets.search_view import SearchView
@@ -39,9 +38,6 @@ class MainSearchScreen(Screen[None]):
         yield Footer()
 
     def on_mount(self) -> None:
-        log_viewer = self.query_one(LogViewer)
-        _set_log_stream_for_testing(log_viewer)
-
         telemetry_config = TelemetryConfig(
             service_name="tofusoup-tui", logging=LoggingConfig(default_level="DEBUG")
         )
