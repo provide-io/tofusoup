@@ -25,6 +25,9 @@ from .harness_factory import create_kv_server, create_kv_client
 class TestRPCKVMatrix:
     """RPC K/V matrix testing across all language and crypto combinations."""
     
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.harness_python
     @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
     async def test_rpc_kv_basic_operations(
         self, 
@@ -95,6 +98,9 @@ class TestRPCKVMatrix:
                 
         logger.info(f"✅ {client_lang} → {server_lang} ({crypto_config.name}) test passed")
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.harness_python
     @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
     async def test_rpc_kv_multiple_keys(
         self,
@@ -153,6 +159,9 @@ class TestRPCKVMatrix:
                 
         logger.info(f"✅ Multiple keys test passed: {client_lang} → {server_lang} ({crypto_config.name})")
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.harness_python
     @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
     async def test_rpc_kv_overwrite_key(
         self,
@@ -216,6 +225,8 @@ class TestRPCKVMatrix:
                 
         logger.info(f"✅ Key overwrite test passed: {client_lang} → {server_lang} ({crypto_config.name})")
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_python
     @pytest.mark.parametrize("crypto_config", [
         config for param in RPC_KV_MATRIX_PARAMS for config in [param.values[2]]
     ])
@@ -267,6 +278,9 @@ class TestRPCKVMatrix:
                 
         logger.info(f"✅ Crypto validation passed for {crypto_config.name}")
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.harness_python
     @pytest.mark.parametrize("client_lang,server_lang,crypto_config", [
         # Test a representative subset for edge case testing
         param for param in RPC_KV_MATRIX_PARAMS[:4]  # First 4 combinations

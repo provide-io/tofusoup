@@ -80,6 +80,8 @@ class TestCrossLanguageInterop:
         logger.warning("Go client binary not found, skipping Go client tests")
         return None
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_python
     async def test_python_client_python_server(self, python_server_address: str):
         """Test: Python Client ↔ Python Server"""
         logger.info("🐍↔🐍 Testing Python Client ↔ Python Server")
@@ -105,6 +107,8 @@ class TestCrossLanguageInterop:
         await channel.close()
         logger.info("🐍↔🐍 ✅ Python Client ↔ Python Server: SUCCESS")
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
     async def test_python_client_go_server(self, go_server_path: str):
         """Test: Python Client ↔ Go Server"""
@@ -141,6 +145,9 @@ class TestCrossLanguageInterop:
             
         logger.info("🐍↔🐹 ✅ Python Client ↔ Go Server: SUCCESS")
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped") 
     async def test_go_client_python_server(self, go_client_path: str, python_server_address: str):
         """Test: Go Client ↔ Python Server"""
@@ -222,6 +229,7 @@ if __name__ == '__main__':
             
         logger.info("🐹↔🐍 Go Client ↔ Python Server: Test completed (compatibility proven at proto level)")
 
+    @pytest.mark.integration_rpc
     def test_proto_compatibility(self):
         """Test: Verify proto message compatibility"""
         logger.info("🔄 Testing Proto Message Compatibility")
@@ -248,6 +256,9 @@ if __name__ == '__main__':
         logger.info("✅ Proto message serialization/deserialization works")
         logger.info("🔄 ✅ Proto Message Compatibility: SUCCESS")
 
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_python
+    @pytest.mark.harness_go
     async def test_comprehensive_interop_scenario(self, python_server_address: str, go_server_path: Optional[str]):
         """Test: Comprehensive interoperability scenario"""
         logger.info("🌐 Testing Comprehensive Interoperability Scenario")
