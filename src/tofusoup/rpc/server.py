@@ -8,13 +8,13 @@ import sys
 import time
 
 import grpc
-
 from provide.foundation import logger
+
 from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 
 class KV(kv_pb2_grpc.KVServicer):
-    def __init__(self):
+    def __init__(self) -> None:
         # File-based storage pattern: /tmp/soup-kv-<key>
         self.key_pattern = re.compile(r"^[a-zA-Z0-9.-]+$")
 
@@ -114,7 +114,7 @@ def serve(server: grpc.Server) -> KV:
     return servicer
 
 
-def main():
+def main() -> None:
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     serve(server)
     port = server.add_insecure_port("[::]:50051")
@@ -149,7 +149,7 @@ def start_kv_server(
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     # Add the KV servicer
-    servicer = serve(server)
+    serve(server)
 
     # Configure TLS based on mode
     if tls_mode == "disabled":

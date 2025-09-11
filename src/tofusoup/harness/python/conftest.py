@@ -88,7 +88,7 @@ def go_kvstore_harness(request) -> Path:
         )  # Local import to avoid top-level issues if problematic
 
         # The name "kvstore-go" should match a key in GO_HARNESS_CONFIG in harness.logic
-        harness_bin_dir = ensure_go_harness_build(
+        ensure_go_harness_build(
             "kvstore-go", root_path
         )  # ensure_go_harness_build returns the bin dir
 

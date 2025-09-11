@@ -43,8 +43,6 @@ async def python_kv_server_process():
 
     # Let's try to run it as a subprocess.
     # This requires finding the tofusoup executable or using python -m tofusoup.cli
-    tofusoup_exe = "tofusoup"  # Or find path via shutil.which or sys.executable + "-m tofusoup.cli"
-    server_cmd = [tofusoup_exe, "rpc", "kv", "server-start", "--py"]
 
     # Using a temporary directory for KV store data, if server uses relative paths or specific tmp locations.
     # The current server uses /tmp/kv-data-*
@@ -53,8 +51,6 @@ async def python_kv_server_process():
     # Also need to manage PLUGIN_HOST_ADDRESS for the client if the server outputs it.
     # pyvider-rpcplugin server usually prints "plugin address" to stdout.
 
-    process = None
-    plugin_address = None
     try:
         # Start the server process
         # Redirect stdout to capture the plugin address
@@ -117,7 +113,7 @@ async def python_kv_server_process():
 
 
 @pytest.mark.asyncio
-async def test_pyclient_pyserver_put_get(tmp_path):
+async def test_pyclient_pyserver_put_get(tmp_path) -> None:
     """
     Tests Put and Get operations between Python KVClient and Python KVServer.
     This test assumes `tofusoup/src/tofusoup/rpc/server.py` can act as a server executable.

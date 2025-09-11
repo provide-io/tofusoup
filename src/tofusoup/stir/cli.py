@@ -3,17 +3,17 @@
 #
 
 import asyncio
-import sys
 from pathlib import Path
+import sys
 from time import monotonic
 
 import click
 
+from tofusoup.stir.config import MAX_CONCURRENT_TESTS
 from tofusoup.stir.display import console
 from tofusoup.stir.executor import execute_tests, initialize_tests
-from tofusoup.stir.reporting import print_failure_report, print_summary_panel
-from tofusoup.stir.config import MAX_CONCURRENT_TESTS
 from tofusoup.stir.models import TestResult
+from tofusoup.stir.reporting import print_failure_report, print_summary_panel
 
 
 def process_results(results: list[TestResult | Exception]) -> tuple[list[TestResult], int, bool]:
@@ -21,7 +21,7 @@ def process_results(results: list[TestResult | Exception]) -> tuple[list[TestRes
     failed_tests = []
     skipped_count = 0
     all_passed = True
-    
+
     for res in results:
         if isinstance(res, TestResult):
             if res.skipped:
@@ -96,7 +96,7 @@ async def main(target_path: str) -> None:
 def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool) -> None:
     """
     Run multi-threaded Terraform tests against all subdirectories in a given PATH.
-    
+
     When --matrix is used, runs tests across multiple Terraform/OpenTofu versions
     as configured in soup.toml's [workenv.matrix] section or wrkenv.toml's [matrix] section.
     """
@@ -104,22 +104,22 @@ def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool) -> 
         if matrix:
             # Run matrix testing
             from tofusoup.testing.matrix import run_matrix_stir_tests
-            
+
             results = asyncio.run(run_matrix_stir_tests(Path(path)))
-            
+
             if matrix_output:
                 import json
                 with open(matrix_output, "w") as f:
                     json.dump(results, f, indent=2, default=str)
                 console.print(f"✅ Matrix results saved to {matrix_output}")
-                
+
             if output_json:
                 import json
                 console.print(json.dumps(results, indent=2, default=str))
         else:
             # Run standard single-version testing
             asyncio.run(main(path))
-            
+
     except KeyboardInterrupt:
         console.print("\n[yellow]⚠️ Interrupted by user[/yellow]")
         sys.exit(130)

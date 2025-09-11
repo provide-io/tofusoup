@@ -4,11 +4,11 @@
 
 import asyncio
 import json
-import shutil
 from pathlib import Path
+import shutil
 from time import monotonic
 
-from tofusoup.stir.config import MAX_CONCURRENT_TESTS, LOGS_DIR
+from tofusoup.stir.config import LOGS_DIR, MAX_CONCURRENT_TESTS
 from tofusoup.stir.display import console, test_statuses
 from tofusoup.stir.models import TestResult
 from tofusoup.stir.terraform import run_terraform_command

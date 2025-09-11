@@ -6,6 +6,7 @@
 from typing import Any
 
 from attrs import define  # If using attrs for cache entry structure
+
 from config.defaults import CACHE_MAX_SIZE, CACHE_TTL_SECONDS
 
 # from .engine import SearchQuery, SearchResult # Types for cached items

@@ -4,6 +4,8 @@
 """Client and server classes corresponding to protobuf-defined services."""
 
 
+from typing import Never
+
 import grpc
 
 from . import kv_pb2 as kv__pb2
@@ -34,7 +36,7 @@ if _version_not_supported:
 class KVStub:
     """Missing associated documentation comment in .proto file."""
 
-    def __init__(self, channel):
+    def __init__(self, channel) -> None:
         """Constructor.
 
         Args:
@@ -57,20 +59,20 @@ class KVStub:
 class KVServicer:
     """Missing associated documentation comment in .proto file."""
 
-    def Get(self, request, context):
+    def Get(self, request, context) -> Never:
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
-    def Put(self, request, context):
+    def Put(self, request, context) -> Never:
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
 
-def add_KVServicer_to_server(servicer, server):
+def add_KVServicer_to_server(servicer, server) -> None:
     rpc_method_handlers = {
         "Get": grpc.unary_unary_rpc_method_handler(
             servicer.Get,

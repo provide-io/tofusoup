@@ -10,10 +10,10 @@ import pathlib
 import sys
 
 import click
+from provide.foundation import logger  # Changed import
 from rich import print as rich_print
 from rich.tree import Tree
 
-from provide.foundation import logger  # Changed import
 from tofusoup.common.exceptions import ConversionError, TofuSoupError
 
 # from tofusoup.common.rich_utils import build_rich_tree_from_cty_json_comparable # Moved to common
@@ -26,7 +26,7 @@ from .logic import convert_hcl_file_to_output_format, load_hcl_file_as_cty
 
 
 @click.group("hcl")
-def hcl_cli():
+def hcl_cli() -> None:
     """Commands for HCL (HashiCorp Configuration Language) operations."""
     pass
 
@@ -34,7 +34,7 @@ def hcl_cli():
 @hcl_cli.command("view")
 @click.argument("filepath", type=click.Path(exists=True, dir_okay=False, readable=True))
 @click.pass_context
-def view_command(ctx, filepath: str):
+def view_command(ctx, filepath: str) -> None:
     """Parses an HCL file and displays its structure as a CTY representation."""
     verbose = ctx.obj.get("VERBOSE", False)
     input_file_path = pathlib.Path(filepath)
@@ -83,9 +83,7 @@ def view_command(ctx, filepath: str):
     help='Format for the output. Inferred if not provided. Default can be set in soup.toml via command_options."hcl.convert".default_output_format.',
 )
 @click.pass_context
-def convert_command(
-    ctx, input_file: str, output_file: str, output_format_opt: str | None
-):
+def convert_command(ctx, input_file: str, output_file: str, output_format_opt: str | None) -> None:
     """
     Converts an HCL file to JSON or Msgpack (via CTY representation).
 
@@ -101,39 +99,12 @@ def convert_command(
     loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})
     cmd_opts = loaded_config.get("command_options", {}).get("hcl.convert", {})
 
-    # Determine output format: CLI > soup.toml > inference
-    actual_output_format = output_format_opt
-    if actual_output_format is None:
-        actual_output_format = cmd_opts.get("default_output_format")
-        if actual_output_format:
-            logger.debug(
-                f"Using default output format '{actual_output_format}' from soup.toml for hcl.convert"
-            )
-
-    if actual_output_format is None:  # Still None, try inference
-        if output_file == "-":
-            logger.error(
-                "Cannot infer output format when writing to stdout ('-'). Specify --output-format or set default_output_format in soup.toml for hcl.convert."
-            )
-            sys.exit(1)
-        output_file_path_obj = pathlib.Path(output_file)
-        ext_out = output_file_path_obj.suffix.lower()
-        if ext_out == ".json":
-            actual_output_format = "json"
-        elif ext_out in [".mpk", ".msgpack"]:
-            actual_output_format = "msgpack"
-        else:
-            logger.error(
-                f"Could not infer output format for '{output_file}' from extension '{ext_out}'. Supported: .json, .mpk, .msgpack. Specify --output-format or set default_output_format in soup.toml for hcl.convert."
-            )
-            sys.exit(1)
-        logger.debug(
-            f"Inferred output format for HCL conversion as: {actual_output_format}"
-        )
+    actual_output_format = _determine_output_format(output_format_opt, cmd_opts, output_file)
 
     if verbose:  # Log final decision
         logger.info(
-            f"Output: {output_file}, Using format: {actual_output_format} (CLI option: {output_format_opt}, Config: {cmd_opts.get('default_output_format')})"
+            f"Output: {output_file}, Using format: {actual_output_format} "
+            f"(CLI option: {output_format_opt}, Config: {cmd_opts.get('default_output_format')})"
         )
 
     try:
@@ -145,21 +116,11 @@ def convert_command(
         )
 
         if output_file == "-":
-            if isinstance(content_or_none, str):
-                click.echo(content_or_none, nl=False)
-                if not content_or_none.endswith("\n"):
-                    sys.stdout.write("\n")
-            elif isinstance(content_or_none, bytes):
-                if sys.stdout.isatty():
-                    rich_print(
-                        "[yellow]Warning:[/yellow] Msgpack output to TTY is binary. Consider saving to a file or piping."
-                    )
-                sys.stdout.buffer.write(content_or_none)
-                sys.stdout.buffer.flush()
-            # If None, an error would have been raised by the logic function
+            _handle_stdout_output(content_or_none)
         else:
             rich_print(
-                f"[green]HCL file '{input_file}' converted to {actual_output_format.upper()} and saved to '{output_file}'[/green]"
+                f"[green]HCL file '{input_file}' converted to {actual_output_format.upper()} "
+                f"and saved to '{output_file}'[/green]"
             )
 
     except ConversionError as e:
@@ -169,10 +130,72 @@ def convert_command(
         logger.error(f"Error: {e}", exc_info=verbose)
         sys.exit(1)
     except Exception as e:
+        logger.error(f"An unexpected error occurred during HCL conversion: {e}", exc_info=verbose)
+        sys.exit(1)
+
+
+def _determine_output_format(
+    output_format_opt: str | None,
+    cmd_opts: dict,
+    output_file: str
+) -> str:
+    """Determine the output format from CLI, config, or file extension inference."""
+    # CLI option takes precedence
+    if output_format_opt:
+        return output_format_opt
+
+    # Try configuration default
+    config_format = cmd_opts.get("default_output_format")
+    if config_format:
+        logger.debug(f"Using default output format '{config_format}' from soup.toml for hcl.convert")
+        return config_format
+
+    # Try inference from output file
+    return _infer_output_format(output_file)
+
+
+def _infer_output_format(output_file: str) -> str:
+    """Infer output format from file extension."""
+    if output_file == "-":
         logger.error(
-            f"An unexpected error occurred during HCL conversion: {e}", exc_info=verbose
+            "Cannot infer output format when writing to stdout ('-'). "
+            "Specify --output-format or set default_output_format in soup.toml for hcl.convert."
         )
         sys.exit(1)
+
+    output_file_path_obj = pathlib.Path(output_file)
+    ext_out = output_file_path_obj.suffix.lower()
+
+    if ext_out == ".json":
+        format_name = "json"
+    elif ext_out in [".mpk", ".msgpack"]:
+        format_name = "msgpack"
+    else:
+        logger.error(
+            f"Could not infer output format for '{output_file}' from extension '{ext_out}'. "
+            f"Supported: .json, .mpk, .msgpack. Specify --output-format or "
+            f"set default_output_format in soup.toml for hcl.convert."
+        )
+        sys.exit(1)
+
+    logger.debug(f"Inferred output format for HCL conversion as: {format_name}")
+    return format_name
+
+
+def _handle_stdout_output(content_or_none: str | bytes | None) -> None:
+    """Handle output to stdout."""
+    if isinstance(content_or_none, str):
+        click.echo(content_or_none, nl=False)
+        if not content_or_none.endswith("\n"):
+            sys.stdout.write("\n")
+    elif isinstance(content_or_none, bytes):
+        if sys.stdout.isatty():
+            rich_print(
+                "[yellow]Warning:[/yellow] Msgpack output to TTY is binary. "
+                "Consider saving to a file or piping."
+            )
+        sys.stdout.buffer.write(content_or_none)
+        sys.stdout.buffer.flush()
 
 
 # 🍲🥄🖥️🪄

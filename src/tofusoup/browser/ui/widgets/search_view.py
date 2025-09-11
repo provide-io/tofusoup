@@ -77,9 +77,8 @@ class SearchView(Vertical):
             self.post_message(self.SearchSubmitted(event.value))
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
-        if event.data_table.id == "results_table":
-            if result := self._results_map.get(event.row_key):
-                self.post_message(self.ResultSelected(result))
+        if event.data_table.id == "results_table" and (result := self._results_map.get(event.row_key)):
+            self.post_message(self.ResultSelected(result))
 
     def add_result(self, result: SearchResult) -> None:
         """Adds a single result to the table or updates an existing one."""

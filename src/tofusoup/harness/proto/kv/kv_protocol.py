@@ -3,8 +3,9 @@
 #
 from typing import Any
 
-from pyvider.rpcplugin.protocol import RPCPluginProtocol
 from provide.foundation import logger
+
+from pyvider.rpcplugin.protocol import RPCPluginProtocol
 
 from . import kv_pb2_grpc
 
