@@ -23,6 +23,7 @@ from rich.tree import Tree
 
 from pyvider.common.encryption import decrypt
 from provide.foundation import logger
+from config.defaults import DEFAULT_TFSTATE_FILE, DEFAULT_OUTPUT_FORMAT
 
 console = Console()
 
@@ -169,7 +170,7 @@ def state_cli():
 @click.argument(
     "state_file",
     type=click.Path(exists=True, dir_okay=False),
-    default="terraform.tfstate",
+    default=DEFAULT_TFSTATE_FILE,
 )
 @click.option(
     "--resource", "-r", help="Show details for a specific resource (format: type.name)"
@@ -281,7 +282,7 @@ def show_state(
     "--format",
     "-f",
     type=click.Choice(["json", "raw"]),
-    default="json",
+    default=DEFAULT_OUTPUT_FORMAT,
     help="Output format",
 )
 def decrypt_private_data(encrypted_data: str, format: str):
@@ -314,7 +315,7 @@ def decrypt_private_data(encrypted_data: str, format: str):
 @click.argument(
     "state_file",
     type=click.Path(exists=True, dir_okay=False),
-    default="terraform.tfstate",
+    default=DEFAULT_TFSTATE_FILE,
 )
 def validate_private_state(state_file: str):
     """

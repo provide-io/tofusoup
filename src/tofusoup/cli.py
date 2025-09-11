@@ -14,13 +14,12 @@ from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_tel
 from tofusoup.common.config import TofuSoupConfigError, load_tofusoup_config
 from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
-
-LOG_LEVELS = ["NOTSET", "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+from config.defaults import LOG_LEVELS, DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL
 
 telemetry_config = TelemetryConfig(
     service_name="tofusoup-cli",
     logging=LoggingConfig(
-        default_level=os.environ.get("TOFUSOUP_LOG_LEVEL", "INFO").upper()
+        default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper()
     ),
 )
 setup_telemetry(config=telemetry_config)

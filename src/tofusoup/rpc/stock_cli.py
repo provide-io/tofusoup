@@ -16,6 +16,7 @@ from rich.console import Console
 from rich.table import Table
 
 from provide.foundation import logger
+from config.defaults import DEFAULT_GRPC_PORT, DEFAULT_GRPC_ADDRESS, DEFAULT_TLS_MODE, DEFAULT_CLIENT_LANGUAGE
 
 console = Console()
 
@@ -59,9 +60,9 @@ def stock_cli():
 
 @stock_cli.command("server")
 @click.argument("language", type=click.Choice(SUPPORTED_LANGUAGES))
-@click.option("--port", default=50051, help="Port to listen on")
+@click.option("--port", default=DEFAULT_GRPC_PORT, help="Port to listen on")
 @click.option(
-    "--tls-mode", type=click.Choice(["none", "auto", "manual"]), default="none"
+    "--tls-mode", type=click.Choice(["none", "auto", "manual"]), default=DEFAULT_TLS_MODE
 )
 @click.option("--cert-file", help="TLS certificate file (manual mode)")
 @click.option("--key-file", help="TLS key file (manual mode)")
@@ -120,7 +121,7 @@ def server_cmd(
 @click.argument("language", type=click.Choice(SUPPORTED_LANGUAGES))
 @click.argument("operation", type=click.Choice(["get", "put", "monitor", "inventory"]))
 @click.argument("args", nargs=-1)
-@click.option("--server", default="localhost:50051", help="Server address")
+@click.option("--server", default=DEFAULT_GRPC_ADDRESS, help="Server address")
 @click.option("--tls/--no-tls", default=False, help="Use TLS")
 @click.option("--ca-file", help="CA certificate file for TLS")
 def client_cmd(
@@ -215,8 +216,8 @@ def matrix_cmd(client: tuple, server: tuple, quick: bool):
 # Convenience commands that map to the original KV interface
 @stock_cli.command("get")
 @click.argument("key")
-@click.option("--client", default="python", help="Client language to use")
-@click.option("--server", default="localhost:50051", help="Server address")
+@click.option("--client", default=DEFAULT_CLIENT_LANGUAGE, help="Client language to use")
+@click.option("--server", default=DEFAULT_GRPC_ADDRESS, help="Server address")
 def get_cmd(key: str, client: str, server: str):
     """Get a value using Stock service (convenience wrapper)."""
     ctx = click.get_current_context()
@@ -226,8 +227,8 @@ def get_cmd(key: str, client: str, server: str):
 @stock_cli.command("put")
 @click.argument("key")
 @click.argument("value")
-@click.option("--client", default="python", help="Client language to use")
-@click.option("--server", default="localhost:50051", help="Server address")
+@click.option("--client", default=DEFAULT_CLIENT_LANGUAGE, help="Client language to use")
+@click.option("--server", default=DEFAULT_GRPC_ADDRESS, help="Server address")
 def put_cmd(key: str, value: str, client: str, server: str):
     """Put a key-value pair using Stock service (convenience wrapper)."""
     ctx = click.get_current_context()
