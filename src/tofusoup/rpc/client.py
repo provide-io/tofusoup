@@ -16,8 +16,15 @@ from config.defaults import (
     ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH,
     REQUEST_TIMEOUT,
 )
-from pyvider.rpcplugin.client import RPCPluginClient
-from pyvider.rpcplugin.config import rpcplugin_config
+# Optional RPC integration
+try:
+    from pyvider.rpcplugin.client import RPCPluginClient
+    from pyvider.rpcplugin.config import rpcplugin_config
+    HAS_RPC = True
+except ImportError:
+    HAS_RPC = False
+    RPCPluginClient = None
+    rpcplugin_config = {}
 from tofusoup.harness.proto.kv import KVProtocol, kv_pb2, kv_pb2_grpc
 
 logging.basicConfig(
