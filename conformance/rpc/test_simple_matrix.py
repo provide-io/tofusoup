@@ -18,6 +18,8 @@ from provide.foundation import logger
 from tofusoup.rpc.client import KVClient
 
 
+@pytest.mark.integration_rpc
+@pytest.mark.harness_go
 @pytest.mark.asyncio
 async def test_pyclient_goserver_no_mtls(project_root: Path):
     """Test Python client -> Go server without mTLS (known working case)"""
@@ -44,6 +46,8 @@ async def test_pyclient_goserver_no_mtls(project_root: Path):
         await client.close()
 
 
+@pytest.mark.integration_rpc
+@pytest.mark.harness_go
 @pytest.mark.asyncio
 async def test_pyclient_goserver_with_mtls_auto(project_root: Path):
     """Test Python client -> Go server with auto mTLS"""
@@ -72,6 +76,8 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path):
         await client.close()
 
 
+@pytest.mark.integration_rpc
+@pytest.mark.harness_go
 @pytest.mark.asyncio 
 async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path):
     """Test Python client -> Go server with auto mTLS using ECDSA"""
@@ -100,6 +106,8 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path):
         await client.close()
 
 
+@pytest.mark.integration_rpc
+@pytest.mark.harness_python
 @pytest.mark.asyncio
 async def test_pyclient_pyserver_no_mtls(project_root: Path):
     """Test Python client -> Python server without mTLS"""
@@ -126,6 +134,8 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path):
         await client.close()
 
 
+@pytest.mark.integration_rpc
+@pytest.mark.harness_python
 @pytest.mark.asyncio
 async def test_pyclient_pyserver_with_mtls(project_root: Path):
     """Test Python client -> Python server with auto mTLS"""
