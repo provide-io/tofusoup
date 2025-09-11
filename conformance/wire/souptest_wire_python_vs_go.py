@@ -23,6 +23,7 @@ BIT_FOR_BIT_VECTORS = [
     ("dynamic_object", {"type": "dynamic", "value": {"id": "789", "enabled": True}}),
 ]
 
+@pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 @pytest.mark.parametrize("test_name, payload", BIT_FOR_BIT_VECTORS)
 def test_python_and_go_encoders_are_identical(test_name: str, payload: dict, go_harness_executable: Path, project_root: Path):
