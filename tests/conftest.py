@@ -1,3 +1,4 @@
+import importlib.util
 import pytest
 from pathlib import Path
 import sys
@@ -11,6 +12,21 @@ def pytest_configure(config):
     )
     config.addinivalue_line(
         "markers", "integration: marks tests as integration tests"
+    )
+    config.addinivalue_line(
+        "markers", "integration_cty: requires CTY integration (pyvider-cty)"
+    )
+    config.addinivalue_line(
+        "markers", "integration_hcl: requires HCL integration (pyvider-hcl + pyvider-cty)"
+    )
+    config.addinivalue_line(
+        "markers", "integration_rpc: requires RPC integration (pyvider-rpcplugin)"
+    )
+    config.addinivalue_line(
+        "markers", "harness_go: requires Go harness"
+    )
+    config.addinivalue_line(
+        "markers", "harness_python: requires Python harness"
     )
     config.addinivalue_line(
         "markers", "requires_textual: marks tests that require Textual app context"
@@ -42,6 +58,23 @@ def add_sibling_source_to_path(request):
         src_path = monorepo_root / project / "src"
         if src_path.is_dir() and str(src_path) not in sys.path:
             sys.path.insert(0, str(src_path))
+
+@pytest.fixture(autouse=True)
+def skip_integration_if_missing(request):
+    """Skip tests if optional dependencies are missing."""
+    marker_checks = {
+        "integration_cty": ("pyvider.cty", "cty"),
+        "integration_hcl": ("pyvider.hcl", "hcl"),
+        "integration_rpc": ("pyvider.rpcplugin", "rpc"),
+    }
+    
+    for marker_name, (module_name, package_name) in marker_checks.items():
+        if request.node.get_closest_marker(marker_name):
+            if importlib.util.find_spec(module_name) is None:
+                pytest.skip(
+                    f"Test requires '{package_name}' integration. "
+                    f"Install with: pip install tofusoup[{package_name}]"
+                )
 
 @pytest.fixture(autouse=True)
 def disable_textual_ui_in_tests(monkeypatch):
