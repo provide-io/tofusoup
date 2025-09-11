@@ -3,7 +3,9 @@
     "allow": [
       "Read(//Users/tim/code/gh/provide-io/pyvider-hcl/**)",
       "Bash(export TOFUSOUP_TEST_DEFAULT_ENV=\"cty_override_default_env_from_toml\" TOFUSOUP_CTY_SUITE_ENV=\"cty_specific_env_value_from_toml\")",
-      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/go-rpc:*)"
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/go-rpc:*)",
+      "Read(//Users/tim/code/gh/provide-io/provide-foundation/**)",
+      "Read(//Users/tim/code/gh/provide-io/flavorpack/**)"
     ],
     "deny": [],
     "ask": []
