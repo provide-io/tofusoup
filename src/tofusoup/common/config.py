@@ -14,9 +14,14 @@ from provide.foundation import logger
 from provide.foundation.config import RuntimeConfig, field
 from provide.foundation.errors import ConfigurationError
 from tofusoup.common.exceptions import TofuSoupConfigError
-
-CONFIG_FILENAME = "soup.toml"
-DEFAULT_CONFIG_SUBDIR = "soup"
+from config.defaults import (
+    CONFIG_FILENAME,
+    DEFAULT_CONFIG_SUBDIR,
+    TEST_TIMEOUT_SECONDS,
+    DEFAULT_LOG_LEVEL,
+    ENV_TOFUSOUP_TEST_TIMEOUT,
+    ENV_TOFUSOUP_LOG_LEVEL,
+)
 
 
 @define
@@ -35,16 +40,16 @@ class TofuSoupConfig(RuntimeConfig):
     
     # Test configuration
     test_timeout: int = field(
-        default=300,
+        default=TEST_TIMEOUT_SECONDS,
         description="Test timeout in seconds",
-        env_var="TOFUSOUP_TEST_TIMEOUT"
+        env_var=ENV_TOFUSOUP_TEST_TIMEOUT
     )
     
     # Logging configuration
     log_level: str = field(
-        default="INFO",
+        default=DEFAULT_LOG_LEVEL,
         description="Logging level",
-        env_var="TOFUSOUP_LOG_LEVEL"
+        env_var=ENV_TOFUSOUP_LOG_LEVEL
     )
     
     @classmethod

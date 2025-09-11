@@ -21,6 +21,7 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
 from rich.table import Table
 
+from config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTES
 from wrkenv import WorkenvConfig, get_tool_manager
 from ..workenv_integration import create_workenv_config_with_soup
 
@@ -84,8 +85,8 @@ class VersionMatrix:
         
         # Get matrix configuration (from soup.toml or wrkenv.toml)
         self.matrix_config = self.config.get_setting("matrix", {})
-        self.parallel_jobs = self.matrix_config.get("parallel_jobs", 4)
-        self.timeout_minutes = self.matrix_config.get("timeout_minutes", 30)
+        self.parallel_jobs = self.matrix_config.get("parallel_jobs", MATRIX_PARALLEL_JOBS)
+        self.timeout_minutes = self.matrix_config.get("timeout_minutes", MATRIX_TIMEOUT_MINUTES)
     
     def generate_combinations(self) -> list[MatrixCombination]:
         """
