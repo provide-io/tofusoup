@@ -3,14 +3,15 @@
 #
 
 import asyncio
+import contextlib
+from datetime import UTC, datetime
 import json
 import os
-import re
-from datetime import UTC, datetime
 from pathlib import Path
+import re
 from typing import Any
 
-from tofusoup.stir.config import LOGS_DIR, TF_COMMAND, ENV_VARS
+from tofusoup.stir.config import ENV_VARS, LOGS_DIR, TF_COMMAND
 from tofusoup.stir.display import console, test_statuses
 
 
@@ -132,10 +133,8 @@ async def run_terraform_command(
     if tf_log_path.exists():
         with open(tf_log_path) as f:
             for line in f:
-                try:
+                with contextlib.suppress(json.JSONDecodeError):
                     parsed_logs.append(json.loads(line))
-                except json.JSONDecodeError:
-                    pass
 
     final_stdout = stdout_data.decode("utf-8", errors="ignore") if capture_stdout else ""
     return (

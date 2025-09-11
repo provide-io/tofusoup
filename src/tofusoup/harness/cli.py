@@ -6,10 +6,10 @@ import os
 import sys
 
 import click
+from provide.foundation import logger
 from rich import print as rich_print
 from rich.table import Table
 
-from provide.foundation import logger
 from tofusoup.common.exceptions import TofuSoupError
 
 from .logic import (
@@ -21,7 +21,7 @@ from .logic import (
 
 
 @click.group("harness")
-def harness_cli():
+def harness_cli() -> None:
     """Commands to build, list, and clean test harnesses."""
     pass
 
@@ -30,7 +30,7 @@ def harness_cli():
 @click.argument("harness_names", nargs=-1)
 @click.option("--all", "clean_all", is_flag=True, help="Clean all harnesses.")
 @click.pass_context
-def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool):
+def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool) -> None:
     """Cleans (removes) specified test harnesses."""
     project_root = ctx.obj["PROJECT_ROOT"]
     harness_bin_dir = project_root / "src" / "tofusoup" / "harness" / "go" / "bin"
@@ -72,7 +72,7 @@ def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool):
 
 @harness_cli.command("list")
 @click.pass_context
-def list_harnesses_command(ctx):
+def list_harnesses_command(ctx) -> None:
     """Lists all available harnesses and their status."""
     project_root = ctx.obj["PROJECT_ROOT"]
     table = Table(title="Go Harnesses")
@@ -102,7 +102,7 @@ def list_harnesses_command(ctx):
 @click.pass_context
 def build_harness_command(
     ctx, harness_names: tuple[str, ...], force_rebuild: bool, log_level: str
-):
+) -> None:
     """Builds specified test harnesses."""
     project_root = ctx.obj["PROJECT_ROOT"]
     loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})

@@ -12,11 +12,11 @@ import subprocess
 import sys
 
 import click
+from provide.foundation import logger
 from rich.console import Console
 from rich.table import Table
 
-from provide.foundation import logger
-from config.defaults import DEFAULT_GRPC_PORT, DEFAULT_GRPC_ADDRESS, DEFAULT_TLS_MODE, DEFAULT_CLIENT_LANGUAGE
+from config.defaults import DEFAULT_CLIENT_LANGUAGE, DEFAULT_GRPC_ADDRESS, DEFAULT_GRPC_PORT, DEFAULT_TLS_MODE
 
 console = Console()
 
@@ -53,7 +53,7 @@ def get_stock_binary_path(language: str, role: str) -> Path:
 
 
 @click.group("stock")
-def stock_cli():
+def stock_cli() -> None:
     """Direct gRPC Stock service commands (no plugin handshake)."""
     pass
 
@@ -72,7 +72,7 @@ def server_cmd(
     tls_mode: str,
     cert_file: str | None,
     key_file: str | None,
-):
+) -> None:
     """Start a Stock server in the specified language."""
     binary_path = get_stock_binary_path(language, "server")
 
@@ -101,13 +101,13 @@ def server_cmd(
     try:
         # For interpreted languages, we might need to prepend the interpreter
         if language == "python":
-            cmd = ["python3"] + cmd
+            cmd = ["python3", *cmd]
         elif language == "ruby":
-            cmd = ["ruby"] + cmd
+            cmd = ["ruby", *cmd]
         elif language == "nodejs":
-            cmd = ["node"] + cmd
+            cmd = ["node", *cmd]
         elif language == "java":
-            cmd = ["java", "-jar"] + cmd
+            cmd = ["java", "-jar", *cmd]
 
         subprocess.run(cmd)
     except KeyboardInterrupt:
@@ -131,7 +131,7 @@ def client_cmd(
     server: str,
     tls: bool,
     ca_file: str | None,
-):
+) -> None:
     """Run a Stock client operation in the specified language."""
     binary_path = get_stock_binary_path(language, "client")
 
@@ -159,13 +159,13 @@ def client_cmd(
     try:
         # For interpreted languages, prepend interpreter
         if language == "python":
-            cmd = ["python3"] + cmd
+            cmd = ["python3", *cmd]
         elif language == "ruby":
-            cmd = ["ruby"] + cmd
+            cmd = ["ruby", *cmd]
         elif language == "nodejs":
-            cmd = ["node"] + cmd
+            cmd = ["node", *cmd]
         elif language == "java":
-            cmd = ["java", "-jar"] + cmd
+            cmd = ["java", "-jar", *cmd]
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.stdout:
@@ -182,7 +182,7 @@ def client_cmd(
 @click.option("--client", multiple=True, help="Client languages to test")
 @click.option("--server", multiple=True, help="Server languages to test")
 @click.option("--quick", is_flag=True, help="Run quick subset of tests")
-def matrix_cmd(client: tuple, server: tuple, quick: bool):
+def matrix_cmd(client: tuple, server: tuple, quick: bool) -> None:
     """Run Stock service matrix tests across languages."""
     clients = list(client) if client else SUPPORTED_LANGUAGES
     servers = list(server) if server else SUPPORTED_LANGUAGES
@@ -218,7 +218,7 @@ def matrix_cmd(client: tuple, server: tuple, quick: bool):
 @click.argument("key")
 @click.option("--client", default=DEFAULT_CLIENT_LANGUAGE, help="Client language to use")
 @click.option("--server", default=DEFAULT_GRPC_ADDRESS, help="Server address")
-def get_cmd(key: str, client: str, server: str):
+def get_cmd(key: str, client: str, server: str) -> None:
     """Get a value using Stock service (convenience wrapper)."""
     ctx = click.get_current_context()
     ctx.invoke(client_cmd, language=client, operation="get", args=(key,), server=server)
@@ -229,7 +229,7 @@ def get_cmd(key: str, client: str, server: str):
 @click.argument("value")
 @click.option("--client", default=DEFAULT_CLIENT_LANGUAGE, help="Client language to use")
 @click.option("--server", default=DEFAULT_GRPC_ADDRESS, help="Server address")
-def put_cmd(key: str, value: str, client: str, server: str):
+def put_cmd(key: str, value: str, client: str, server: str) -> None:
     """Put a key-value pair using Stock service (convenience wrapper)."""
     ctx = click.get_current_context()
     ctx.invoke(

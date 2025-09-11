@@ -16,7 +16,7 @@ class DetailView(VerticalScroll):
     }
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._markdown = Markdown()
         self._raw_markdown_content = ""
@@ -35,7 +35,7 @@ class DetailView(VerticalScroll):
     def compose(self):
         yield self._markdown
 
-    def update_content(self, result: SearchResult | None):
+    def update_content(self, result: SearchResult | None) -> None:
         """Update the content of the detail view. This is a synchronous method."""
         if result:
             name = f"{result.namespace}/{result.name}"

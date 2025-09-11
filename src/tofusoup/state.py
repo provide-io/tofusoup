@@ -15,15 +15,15 @@ from typing import Any
 
 import click
 import msgpack
+from provide.foundation import logger
 from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.tree import Tree
 
+from config.defaults import DEFAULT_OUTPUT_FORMAT, DEFAULT_TFSTATE_FILE
 from pyvider.common.encryption import decrypt
-from provide.foundation import logger
-from config.defaults import DEFAULT_TFSTATE_FILE, DEFAULT_OUTPUT_FORMAT
 
 console = Console()
 
@@ -119,8 +119,8 @@ def display_resource_details(
         attrs_tree = Tree("📋 [bold]Public Attributes[/bold]")
         for key, value in resource["attributes"].items():
             # Format value for display
-            if isinstance(value, (dict, list)):
-                value_str = json.dumps(value, indent=2)
+            if isinstance(value, dict | list):
+                json.dumps(value, indent=2)
                 attrs_tree.add(
                     f"[green]{key}[/green]: [dim]{type(value).__name__}[/dim]"
                 )
@@ -161,7 +161,7 @@ def display_resource_details(
 
 
 @click.group("state")
-def state_cli():
+def state_cli() -> None:
     """Commands for inspecting Terraform state with private state support."""
     pass
 
@@ -183,7 +183,7 @@ def state_cli():
 )
 def show_state(
     state_file: str, resource: str | None, show_encrypted: bool, private_only: bool
-):
+) -> None:
     """
     Display Terraform state with decrypted private state data.
 
@@ -285,7 +285,7 @@ def show_state(
     default=DEFAULT_OUTPUT_FORMAT,
     help="Output format",
 )
-def decrypt_private_data(encrypted_data: str, format: str):
+def decrypt_private_data(encrypted_data: str, format: str) -> None:
     """
     Decrypt a base64-encoded private state string.
 
@@ -317,7 +317,7 @@ def decrypt_private_data(encrypted_data: str, format: str):
     type=click.Path(exists=True, dir_okay=False),
     default=DEFAULT_TFSTATE_FILE,
 )
-def validate_private_state(state_file: str):
+def validate_private_state(state_file: str) -> None:
     """
     Validate that all private state in the state file can be decrypted.
 

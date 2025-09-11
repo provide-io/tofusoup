@@ -10,7 +10,6 @@ from rich.live import Live
 from rich.table import Table
 
 from tofusoup.stir.config import PHASE_EMOJI
-from tofusoup.stir.models import TestResult
 
 # Shared state for the live display
 test_statuses: dict[str, dict] = {}

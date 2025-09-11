@@ -10,9 +10,9 @@ import tempfile
 from typing import Any
 
 import attrs
-
 from provide.foundation import logger
-from provide.foundation.errors import error_boundary, ResourceError, ValidationError
+from provide.foundation.errors import ResourceError, ValidationError, error_boundary
+
 from tofusoup.common.exceptions import TofuSoupError
 from tofusoup.harness.logic import ensure_go_harness_build
 
@@ -72,16 +72,7 @@ async def _run_pytest_suite(
     # Corrected invocation: Use `-o` to override configuration for this specific run.
     # This is the correct way to tell this pytest session to only find `souptest_` files.
     command = (
-        [
-            sys.executable,
-            "-m",
-            "pytest",
-            f"--json-report-file={report_path}",
-            "-o",
-            "python_files=souptest_*.py",
-        ]
-        + pytest_args
-        + [str(pytest_target_path)]
+        [sys.executable, "-m", "pytest", f"--json-report-file={report_path}", "-o", "python_files=souptest_*.py", *pytest_args, str(pytest_target_path)]
     )
 
     current_env = os.environ.copy()

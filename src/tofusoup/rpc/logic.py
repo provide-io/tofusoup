@@ -8,10 +8,11 @@ Core logic for RPC operations, including test orchestration.
 import asyncio
 import pathlib
 
+from provide.foundation import logger
+
 # from typing import Tuple, Any, Coroutine # Not used
 from rich import print as rich_print
 
-from provide.foundation import logger
 from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
 

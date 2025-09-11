@@ -7,12 +7,18 @@ import os
 import time
 
 import grpc
+from provide.foundation import logger
 
+from config.defaults import (
+    CONNECTION_TIMEOUT,
+    ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH,
+    ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH,
+    ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH,
+    REQUEST_TIMEOUT,
+)
 from pyvider.rpcplugin.client import RPCPluginClient
 from pyvider.rpcplugin.config import rpcplugin_config
-from provide.foundation import logger
 from tofusoup.harness.proto.kv import KVProtocol, kv_pb2, kv_pb2_grpc
-from config.defaults import CONNECTION_TIMEOUT, REQUEST_TIMEOUT, ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH, ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH, ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH
 
 logging.basicConfig(
     level=logging.WARNING,
@@ -41,7 +47,7 @@ class KVClient:
             self.tls_mode = "auto" if enable_mtls else "disabled"
         else:
             self.tls_mode = tls_mode
-            
+
         # Handle backward compatibility for cert_algo/cert_bits/cert_curve
         if cert_algo == "rsa":
             self.tls_key_type = "rsa"
@@ -49,7 +55,7 @@ class KVClient:
             self.tls_key_type = "ec"
         else:
             self.tls_key_type = tls_key_type
-            
+
         self.server_path = server_path
         self.cert_file = cert_file
         self.key_file = key_file
@@ -332,7 +338,7 @@ class KVClient:
             return
         stderr_pipe = self._client._process.stderr
 
-        def read_stderr_thread():
+        def read_stderr_thread() -> None:
             logger.debug("stderr relay thread started.")
             while True:
                 try:

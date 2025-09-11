@@ -7,6 +7,7 @@ import subprocess
 from typing import Any
 
 from provide.foundation import logger
+
 from tofusoup.common.exceptions import TofuSoupError
 
 GO_HARNESS_CONFIG = {
@@ -113,7 +114,7 @@ def ensure_go_harness_build(
         )
 
 
-def clean_go_harness_artifacts(harness_name: str, project_root: pathlib.Path):
+def clean_go_harness_artifacts(harness_name: str, project_root: pathlib.Path) -> None:
     config = GO_HARNESS_CONFIG.get(harness_name)
     if not config:
         raise TofuSoupError(f"Configuration for Go harness '{harness_name}' not found.")

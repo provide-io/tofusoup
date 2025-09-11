@@ -12,7 +12,7 @@ from tofusoup.scaffolding.generator import scaffold_new_provider
 
 
 @click.group("provider")
-def provider_cli():
+def provider_cli() -> None:
     """Commands for managing provider projects."""
     pass
 

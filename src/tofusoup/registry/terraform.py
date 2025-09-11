@@ -4,8 +4,8 @@
 from typing import Any
 
 import httpx
-
 from provide.foundation import logger
+
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import (
     Provider,
@@ -17,7 +17,7 @@ from .base import BaseTfRegistry, RegistryConfig
 
 
 class IBMTerraformRegistry(BaseTfRegistry):
-    def __init__(self, config: RegistryConfig):
+    def __init__(self, config: RegistryConfig) -> None:
         super().__init__(config)
 
     async def list_providers(self, query: str | None = None) -> list[Provider]:

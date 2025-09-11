@@ -20,7 +20,7 @@ from tofusoup.rpc.client import KVClient
 
 
 @pytest.mark.asyncio
-async def test_pyclient_goserver_put_get(go_kvstore_harness: Path, tmp_path: Path):
+async def test_pyclient_goserver_put_get(go_kvstore_harness: Path, tmp_path: Path) -> None:
     """
     Tests Put and Get operations between Python KVClient and the Go KVServer harness.
     The go_kvstore_harness fixture provides the path to the compiled Go server executable.

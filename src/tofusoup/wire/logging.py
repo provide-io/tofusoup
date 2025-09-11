@@ -6,7 +6,7 @@
 from provide.foundation import LoggingConfig, TelemetryConfig, setup_telemetry
 
 
-def configure_logging():
+def configure_logging() -> None:
     """
     Configures Pyvider Telemetry for the library.
 

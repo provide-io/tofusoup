@@ -14,7 +14,7 @@ from rich.tree import Tree
 
 def build_rich_tree_from_cty_json_comparable(
     tree_node: Tree, data: dict[str, Any], name: str = "value"
-):
+) -> None:
     """
     Recursively builds a Rich Tree from a CTY JSON-comparable dictionary.
     """
@@ -60,7 +60,7 @@ def build_rich_tree_from_cty_json_comparable(
 
 def build_rich_tree_from_dict(
     tree_node: Tree, data: dict[str, Any], parent_name: str = "Config Root"
-):
+) -> None:
     """
     Recursively builds a Rich Tree from a generic dictionary.
     """

@@ -83,7 +83,7 @@ def dump_python_to_msgpack_bytes(data: Any) -> bytes:
 # --- File I/O Wrappers for Generic Dumpers ---
 
 
-def dump_python_to_json_file(data: Any, filepath: str, pretty: bool = True):
+def dump_python_to_json_file(data: Any, filepath: str, pretty: bool = True) -> None:
     try:
         json_string = dump_python_to_json_string(data, pretty=pretty)
         with open(filepath, "w", encoding="utf-8") as f:
@@ -98,7 +98,7 @@ def dump_python_to_json_file(data: Any, filepath: str, pretty: bool = True):
         ) from e
 
 
-def dump_python_to_msgpack_file(data: Any, filepath: str):
+def dump_python_to_msgpack_file(data: Any, filepath: str) -> None:
     try:
         msgpack_bytes = dump_python_to_msgpack_bytes(data)
         with open(filepath, "wb") as f:

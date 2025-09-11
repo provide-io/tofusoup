@@ -4,8 +4,8 @@
 from typing import Any, cast
 
 import httpx
-
 from provide.foundation import logger
+
 from config.defaults import OPENTOFU_REGISTRY_URL
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import (
@@ -18,7 +18,7 @@ from .base import BaseTfRegistry, RegistryConfig
 
 
 class OpenTofuRegistry(BaseTfRegistry):
-    def __init__(self, config: RegistryConfig | None = None):
+    def __init__(self, config: RegistryConfig | None = None) -> None:
         super().__init__(
             config or RegistryConfig(base_url=OPENTOFU_REGISTRY_URL)
         )

@@ -8,11 +8,12 @@ Core HCL processing and conversion logic.
 import pathlib
 from typing import Literal
 
+from provide.foundation import logger
+
 from pyvider.cty import CtyValue
 
 # FIX: Import common serializers and the native converter.
 from pyvider.cty.conversion import cty_to_native
-from provide.foundation import logger
 from tofusoup.common.exceptions import TofuSoupError
 from tofusoup.common.serialization import (
     dump_python_to_json_string,

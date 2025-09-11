@@ -15,9 +15,10 @@ import os
 import sys
 from typing import Any
 
+from provide.foundation import logger
+
 from pyvider.rpcplugin.factories import plugin_server
 from pyvider.rpcplugin.protocol.base import RPCPluginProtocol
-from provide.foundation import logger
 from tofusoup.harness.proto.kv import kv_pb2_grpc
 from tofusoup.rpc.server import KV
 
@@ -35,7 +36,7 @@ class KVProtocol(RPCPluginProtocol):
         logger.info("KV service registered with gRPC server")
 
 
-async def start_kv_server():
+async def start_kv_server() -> None:
     """Start the KV plugin server - this is the expected entry point"""
     logger.info("Starting KV plugin server...")
 
@@ -60,7 +61,7 @@ async def start_kv_server():
         logger.info("Plugin server shut down")
 
 
-async def main():
+async def main() -> None:
     """Main entry point for the plugin server executable"""
     # Check for magic cookie - this indicates it's being run by go-plugin
     magic_cookie_key = os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN")

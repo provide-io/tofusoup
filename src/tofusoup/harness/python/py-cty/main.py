@@ -11,13 +11,13 @@ import click
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
-def from_hcl_json(input_file):
+def from_hcl_json(input_file) -> None:
     """Convert a CTY-JSON file (from go-hcl) to a JSONComparableValue."""
     # TODO: Implement a proper conversion from CTY-JSON to a JSONComparableValue
     hcl_json = json.load(input_file)
@@ -26,7 +26,7 @@ def from_hcl_json(input_file):
 
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
-def to_hcl_json(input_file):
+def to_hcl_json(input_file) -> None:
     """Convert a JSONComparableValue file back to a CTY-JSON file."""
     # TODO: Implement a proper conversion from a JSONComparableValue to CTY-JSON
     comparable_value = json.load(input_file)

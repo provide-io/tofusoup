@@ -5,10 +5,10 @@
 import asyncio
 
 import click
-
 from provide.foundation import logger
-from tofusoup.registry.base import RegistryConfig
+
 from config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
+from tofusoup.registry.base import RegistryConfig
 from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.search.engine import (
     async_search_runner,
@@ -18,7 +18,7 @@ from tofusoup.registry.terraform import IBMTerraformRegistry
 
 @click.group("registry")
 @click.pass_context
-def registry_cli(ctx: click.Context):
+def registry_cli(ctx: click.Context) -> None:
     """Commands for querying and managing Terraform/OpenTofu registries."""
     logger.debug("TofuSoup 'registry' command group invoked.")
     pass
@@ -26,7 +26,7 @@ def registry_cli(ctx: click.Context):
 
 # Provider subcommands
 @registry_cli.group("provider")
-def provider_group():
+def provider_group() -> None:
     """Commands for working with providers."""
     pass
 
@@ -41,7 +41,7 @@ def provider_group():
     help="Registry to query.",
 )
 @click.pass_context
-def provider_info(ctx: click.Context, provider: str, registry: str):
+def provider_info(ctx: click.Context, provider: str, registry: str) -> None:
     """Get detailed information about a provider."""
     try:
         namespace, name = provider.split("/")
@@ -49,7 +49,7 @@ def provider_info(ctx: click.Context, provider: str, registry: str):
         click.echo("Error: Provider must be in format 'namespace/name'", err=True)
         return
 
-    async def fetch_info():
+    async def fetch_info() -> None:
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
@@ -92,7 +92,7 @@ def provider_info(ctx: click.Context, provider: str, registry: str):
 )
 @click.option("--latest", is_flag=True, help="Show only the latest version.")
 @click.pass_context
-def provider_versions(ctx: click.Context, provider: str, registry: str, latest: bool):
+def provider_versions(ctx: click.Context, provider: str, registry: str, latest: bool) -> None:
     """List all versions of a provider."""
     try:
         namespace, name = provider.split("/")
@@ -100,7 +100,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
         click.echo("Error: Provider must be in format 'namespace/name'", err=True)
         return
 
-    async def fetch_versions():
+    async def fetch_versions() -> None:
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
@@ -115,7 +115,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
             async with reg:
                 reg_name = reg.__class__.__name__.replace("Registry", "")
                 try:
-                    provider_data = await reg.get_provider_details(namespace, name)
+                    await reg.get_provider_details(namespace, name)
                     versions = await reg.list_provider_versions(f"{namespace}/{name}")
 
                     click.echo(f"\n=== {reg_name} Registry ===")
@@ -143,7 +143,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
 
 # Module subcommands
 @registry_cli.group("module")
-def module_group():
+def module_group() -> None:
     """Commands for working with modules."""
     pass
 
@@ -158,7 +158,7 @@ def module_group():
     help="Registry to query.",
 )
 @click.pass_context
-def module_info(ctx: click.Context, module: str, registry: str):
+def module_info(ctx: click.Context, module: str, registry: str) -> None:
     """Get detailed information about a module."""
     parts = module.split("/")
     if len(parts) != 3:
@@ -169,7 +169,7 @@ def module_info(ctx: click.Context, module: str, registry: str):
 
     namespace, name, provider_name = parts
 
-    async def fetch_info():
+    async def fetch_info() -> None:
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
@@ -210,7 +210,7 @@ def module_info(ctx: click.Context, module: str, registry: str):
 )
 @click.option("--latest", is_flag=True, help="Show only the latest version.")
 @click.pass_context
-def module_versions(ctx: click.Context, module: str, registry: str, latest: bool):
+def module_versions(ctx: click.Context, module: str, registry: str, latest: bool) -> None:
     """List all versions of a module."""
     parts = module.split("/")
     if len(parts) != 3:
@@ -221,7 +221,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
 
     namespace, name, provider_name = parts
 
-    async def fetch_versions():
+    async def fetch_versions() -> None:
         registries = []
         if registry in ["terraform", "both"]:
             registries.append(
@@ -236,7 +236,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
             async with reg:
                 reg_name = reg.__class__.__name__.replace("Registry", "")
                 try:
-                    module_data = await reg.get_module_details(
+                    await reg.get_module_details(
                         namespace, name, provider_name, "latest"
                     )
                     versions = await reg.list_module_versions(
@@ -286,7 +286,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
     default="all",
     help="Type of resource to search.",
 )
-def search_command(term: tuple[str, ...], registry_name: str, resource_type: str):
+def search_command(term: tuple[str, ...], registry_name: str, resource_type: str) -> None:
     """Search registries for providers and modules."""
     search_term = " ".join(term)
     if not search_term:
@@ -393,7 +393,7 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
 # Compare command
 @registry_cli.command("compare")
 @click.argument("resource", metavar="NAMESPACE/NAME[/PROVIDER]")
-def compare_command(resource: str):
+def compare_command(resource: str) -> None:
     """Compare a resource across Terraform and OpenTofu registries."""
     parts = resource.split("/")
 
@@ -412,7 +412,7 @@ def compare_command(resource: str):
         )
         return
 
-    async def compare_resources():
+    async def compare_resources() -> None:
         tf_registry = IBMTerraformRegistry(
             RegistryConfig(base_url="https://registry.terraform.io")
         )

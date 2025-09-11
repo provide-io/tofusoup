@@ -8,14 +8,15 @@ import sys
 import click
 import grpc
 
+from config.defaults import DEFAULT_GRPC_ADDRESS
+
 # Use correct relative import for generated protobuf modules.
 from ..harness.proto.kv import kv_pb2, kv_pb2_grpc
 from .server import start_kv_server
-from config.defaults import DEFAULT_GRPC_ADDRESS
 
 
 @click.group("rpc")
-def rpc_cli():
+def rpc_cli() -> None:
     """Commands for interacting with gRPC services."""
     pass
 
@@ -26,7 +27,7 @@ def rpc_cli():
 )
 @click.argument("key")
 @click.argument("value")
-def kv_put(address: str, key: str, value: str):
+def kv_put(address: str, key: str, value: str) -> None:
     """Puts a key-value pair into the KV store."""
     try:
         with grpc.insecure_channel(address) as channel:
@@ -44,7 +45,7 @@ def kv_put(address: str, key: str, value: str):
     "--address", default=DEFAULT_GRPC_ADDRESS, help="Address of the gRPC server."
 )
 @click.argument("key")
-def kv_get(address: str, key: str):
+def kv_get(address: str, key: str) -> None:
     """Gets a value from the KV store by key."""
     try:
         with grpc.insecure_channel(address) as channel:
@@ -75,7 +76,7 @@ def kv_get(address: str, key: str):
 @click.option("--key-file", help="Path to private key file (required for manual TLS)")
 def server_start(
     tls_mode: str, tls_key_type: str, cert_file: str | None, key_file: str | None
-):
+) -> None:
     """Starts the KV plugin server."""
     from provide.foundation import logger
 
@@ -87,13 +88,12 @@ def server_start(
                 err=True,
             )
             sys.exit(1)
-    elif tls_mode == "auto":
-        if tls_key_type not in ["ec", "rsa"]:
-            click.echo(
-                "Error: --tls-key-type must be 'ec' or 'rsa' when --tls-mode is 'auto'",
-                err=True,
-            )
-            sys.exit(1)
+    elif tls_mode == "auto" and tls_key_type not in ["ec", "rsa"]:
+        click.echo(
+            "Error: --tls-key-type must be 'ec' or 'rsa' when --tls-mode is 'auto'",
+            err=True,
+        )
+        sys.exit(1)
 
     # Check for magic cookie (required for go-plugin compatibility)
     magic_cookie_key = os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN")

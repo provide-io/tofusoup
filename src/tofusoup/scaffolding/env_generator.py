@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 class EnvScriptGenerator:
     """Generate environment setup scripts for both bash and PowerShell."""
 
-    def __init__(self, template_base_dir: Path | None = None):
+    def __init__(self, template_base_dir: Path | None = None) -> None:
         """Initialize the generator with template directory."""
         if template_base_dir is None:
             template_base_dir = Path(__file__).parent / "templates" / "env"

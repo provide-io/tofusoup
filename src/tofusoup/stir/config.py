@@ -3,10 +3,14 @@
 #
 
 import os
-import shutil
 from pathlib import Path
+import shutil
 
-from config.defaults import STIR_TEST_SECRET, ENV_TF_LOG, ENV_TF_DATA_DIR, ENV_PYVIDER_PRIVATE_STATE_SHARED_SECRET
+from config.defaults import (
+    ENV_PYVIDER_PRIVATE_STATE_SHARED_SECRET,
+    ENV_TF_DATA_DIR,
+    ENV_TF_LOG,
+)
 
 # Configuration constants
 TF_COMMAND = shutil.which("tofu") or shutil.which("terraform") or "tofu"

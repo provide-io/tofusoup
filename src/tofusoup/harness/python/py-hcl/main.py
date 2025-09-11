@@ -14,13 +14,13 @@ from pyvider import hcl
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
 @click.command()
 @click.argument("input_file", type=click.File("r"))
-def parse(input_file):
+def parse(input_file) -> None:
     """Parse an HCL file and print its structure as JSON."""
     hcl_dict = hcl.load(input_file)
     print(json.dumps(hcl_dict, indent=2))

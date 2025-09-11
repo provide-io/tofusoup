@@ -43,10 +43,10 @@ class HarnessError(ProcessError):
         details: str | None = None,
         command: str | list[str] | None = None,
         return_code: int | None = None,
-    ):
+    ) -> None:
         # Store details separately for backward compatibility
         self.details = details
-        
+
         # Pass to ProcessError which handles stdout/stderr formatting
         super().__init__(
             message,

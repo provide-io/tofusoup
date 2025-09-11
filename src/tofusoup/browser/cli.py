@@ -4,14 +4,14 @@
 #
 
 import click
-
 from provide.foundation import logger, setup_telemetry
+
 from tofusoup.browser.ui.app import TFBrowserApp
 
 
 @click.group("sui")
 @click.pass_context
-def sui_cli(ctx: click.Context):
+def sui_cli(ctx: click.Context) -> None:
     """Graphical UI for browsing Terraform and OpenTofu registries."""
     logger.debug("TofuSoup 'sui' command group invoked.")
     pass
