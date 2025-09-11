@@ -12,6 +12,7 @@ from pyvider.rpcplugin.client import RPCPluginClient
 from pyvider.rpcplugin.config import rpcplugin_config
 from provide.foundation import logger
 from tofusoup.harness.proto.kv import KVProtocol, kv_pb2, kv_pb2_grpc
+from config.defaults import CONNECTION_TIMEOUT, REQUEST_TIMEOUT, ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH, ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH, ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH
 
 logging.basicConfig(
     level=logging.WARNING,
@@ -39,7 +40,7 @@ class KVClient:
         self._client: RPCPluginClient | None = None
         self._stub: kv_pb2_grpc.KVStub | None = None
         self.is_started = False
-        self.connection_timeout = 30.0
+        self.connection_timeout = CONNECTION_TIMEOUT
 
         # Backwards compatibility - map old enable_mtls to new tls_mode
         self.enable_mtls = tls_mode != "disabled"
@@ -239,10 +240,10 @@ class KVClient:
             if self.enable_mtls:
                 # Tests use GRPC_DEFAULT_* env vars for client's mTLS materials.
                 # RPCPluginClient's explicit mTLS path expects these in its config dict.
-                client_cert_path_env = os.getenv("GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH")
-                client_key_path_env = os.getenv("GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH")
+                client_cert_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH)
+                client_key_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH)
                 server_ca_path_env = os.getenv(
-                    "GRPC_DEFAULT_SSL_ROOTS_FILE_PATH"
+                    ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH
                 )  # CA client uses to verify server
 
                 if client_cert_path_env and client_key_path_env and server_ca_path_env:
@@ -256,8 +257,8 @@ class KVClient:
                     )
                 else:
                     logger.warning(
-                        "KVClient: mTLS enabled for KVClient, but not all GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH, "
-                        "GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH, or GRPC_DEFAULT_SSL_ROOTS_FILE_PATH env vars are set. "
+                        f"KVClient: mTLS enabled for KVClient, but not all {ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH}, "
+                        f"{ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH}, or {ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH} env vars are set. "
                         "RPCPluginClient might not establish mTLS correctly if it relies on these config paths."
                     )
 
