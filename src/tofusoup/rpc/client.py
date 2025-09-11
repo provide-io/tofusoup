@@ -31,10 +31,26 @@ class KVClient:
         tls_key_type: str = "ec",
         cert_file: str | None = None,
         key_file: str | None = None,
+        enable_mtls: bool | None = None,  # Backward compatibility
+        cert_algo: str | None = None,  # Backward compatibility
+        cert_bits: int | None = None,  # Backward compatibility
+        cert_curve: str | None = None,  # Backward compatibility
     ) -> None:
+        # Handle backward compatibility for enable_mtls parameter
+        if enable_mtls is not None:
+            self.tls_mode = "auto" if enable_mtls else "disabled"
+        else:
+            self.tls_mode = tls_mode
+            
+        # Handle backward compatibility for cert_algo/cert_bits/cert_curve
+        if cert_algo == "rsa":
+            self.tls_key_type = "rsa"
+        elif cert_algo == "ecdsa" or cert_curve:
+            self.tls_key_type = "ec"
+        else:
+            self.tls_key_type = tls_key_type
+            
         self.server_path = server_path
-        self.tls_mode = tls_mode
-        self.tls_key_type = tls_key_type
         self.cert_file = cert_file
         self.key_file = key_file
         self._client: RPCPluginClient | None = None
@@ -43,7 +59,7 @@ class KVClient:
         self.connection_timeout = CONNECTION_TIMEOUT
 
         # Backwards compatibility - map old enable_mtls to new tls_mode
-        self.enable_mtls = tls_mode != "disabled"
+        self.enable_mtls = self.tls_mode != "disabled"
 
         go_server_expected_cookie_key = "BASIC_PLUGIN"
         go_server_expected_cookie_value = "hello"
