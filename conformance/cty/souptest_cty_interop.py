@@ -76,6 +76,8 @@ GO_TEST_CASES: dict[str, CtyValue] = {
     "dynamic_wrapped_string": CtyDynamic().validate("dynamic"),
 }
 
+@pytest.mark.integration_cty
+@pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 @pytest.mark.parametrize("case_name", GO_TEST_CASES.keys())
 def test_python_deserializes_go_fixtures(
@@ -122,6 +124,8 @@ def test_python_deserializes_go_fixtures(
         f"Got:      {deserialized_value!r}"
     )
 
+@pytest.mark.integration_cty
+@pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 def test_go_verifies_python_fixtures(
     go_harness_executable: Path,
