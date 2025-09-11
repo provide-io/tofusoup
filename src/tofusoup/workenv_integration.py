@@ -8,7 +8,7 @@ from soup.toml into wrkenv, making wrkenv.toml optional for TofuSoup users.
 import os
 from pathlib import Path
 from typing import Any
-import toml
+import tomllib
 
 from wrkenv import WorkenvConfig
 
@@ -29,8 +29,8 @@ def load_soup_config(project_root: Path | None = None) -> dict[str, Any]:
     soup_toml_path = project_root / "soup.toml"
     
     if soup_toml_path.exists():
-        with open(soup_toml_path, 'r') as f:
-            return toml.load(f)
+        with open(soup_toml_path, 'rb') as f:
+            return tomllib.load(f)
     
     return {}
 
