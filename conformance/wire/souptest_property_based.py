@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import given, strategies as st
 from pyvider.cty.conversion import cty_to_native
 from pyvider.cty.types import CtyObject, CtyString, CtyNumber
@@ -13,6 +14,7 @@ simple_schema_and_data = st.builds(
     age=st.integers() | st.floats(allow_nan=False, allow_infinity=False),
 )
 
+@pytest.mark.integration_cty
 @given(schema_data=simple_schema_and_data)
 def test_roundtrip_is_isomorphic(schema_data):
     """
