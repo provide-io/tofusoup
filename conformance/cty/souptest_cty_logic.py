@@ -1,8 +1,10 @@
+import pytest
 from decimal import Decimal
 from pyvider.cty.conversion import cty_to_native
 from pyvider.cty.types import CtyObject, CtyString, CtyNumber
 from pyvider.cty.values import CtyValue
 
+@pytest.mark.integration_cty
 def test_marshal_unmarshal_roundtrip():
     """
     Verify that marshalling and unmarshalling a CtyValue preserves it.
