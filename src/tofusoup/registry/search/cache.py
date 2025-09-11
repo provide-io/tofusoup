@@ -6,6 +6,7 @@
 from typing import Any
 
 from attrs import define  # If using attrs for cache entry structure
+from config.defaults import CACHE_MAX_SIZE, CACHE_TTL_SECONDS
 
 # from .engine import SearchQuery, SearchResult # Types for cached items
 
@@ -23,7 +24,7 @@ class CacheEntry:
 class SearchCache:
     """Handles caching of search queries and results."""
 
-    def __init__(self, max_size: int = 100, ttl_seconds: int = 3600) -> None:
+    def __init__(self, max_size: int = CACHE_MAX_SIZE, ttl_seconds: int = CACHE_TTL_SECONDS) -> None:
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
         self._cache: dict[str, CacheEntry] = {}  # In-memory cache for now

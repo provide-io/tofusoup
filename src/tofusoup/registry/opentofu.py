@@ -6,6 +6,7 @@ from typing import Any, cast
 import httpx
 
 from provide.foundation import logger
+from config.defaults import OPENTOFU_REGISTRY_URL
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import (
     Provider,
@@ -19,7 +20,7 @@ from .base import BaseTfRegistry, RegistryConfig
 class OpenTofuRegistry(BaseTfRegistry):
     def __init__(self, config: RegistryConfig | None = None):
         super().__init__(
-            config or RegistryConfig(base_url="https://registry.opentofu.org")
+            config or RegistryConfig(base_url=OPENTOFU_REGISTRY_URL)
         )
 
     async def _search_api_opentofu(self, query: str | None) -> list[dict[str, Any]]:
