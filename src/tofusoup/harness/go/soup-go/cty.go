@@ -251,14 +251,11 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 		return cty.NullVal(ty), nil
 	}
 
-	// Handle unknown values - this should only process the standard go-cty JSON format
-	// Check for the special marker that go-cty uses for unknown values in JSON
-	if m, ok := val.(map[string]interface{}); ok {
-		// Check if this is a CTY JSON unknown value marker
-		// go-cty doesn't actually support unknown values in JSON directly
-		// Unknown values can only be represented in msgpack format
-		// For JSON, we need to handle this at a higher level
-	}
+	// Note: go-cty does NOT support unknown values in JSON format
+	// Unknown values can only be properly represented in MessagePack
+	// Attempting to marshal an unknown value to JSON will result in an error:
+	// "value is not known"
+	// This matches Terraform's behavior exactly
 
 	// Handle primitive types
 	switch ty {

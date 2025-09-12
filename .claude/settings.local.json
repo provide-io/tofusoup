@@ -19,7 +19,8 @@
       "Bash(go build:*)",
       "Bash(../../../../bin/soup-go:*)",
       "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go cty convert --help)",
-      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go hcl parse:*)"
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go hcl parse:*)",
+      "Read(//private/tmp/**)"
     ],
     "deny": [],
     "ask": []
