@@ -1,36 +1,16 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"os"
-
-	"google.golang.org/grpc"
-	pb "github.com/provide-io/tofusoup/proto/kv"
 )
 
 const version = "0.1.0"
 
-type kvServer struct {
-	pb.UnimplementedKVServer
-	store map[string][]byte
-}
-
-func (s *kvServer) Get(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
-	value, exists := s.store[req.Key]
-	if !exists {
-		return &pb.GetResponse{Found: false}, nil
-	}
-	return &pb.GetResponse{Found: true, Value: value}, nil
-}
-
-func (s *kvServer) Put(ctx context.Context, req *pb.PutRequest) (*pb.PutResponse, error) {
-	s.store[req.Key] = req.Value
-	return &pb.PutResponse{Success: true}, nil
-}
+// Simple in-memory key-value store
+var kvStore = make(map[string]string)
 
 func main() {
 	var (

@@ -97,6 +97,7 @@ def main_cli(
         logger.error(f"Configuration Error: {e}. Aborting.")
         sys.exit(1)
     ctx.obj["TOFUSOUP_CONFIG"] = loaded_config
+    ctx.obj["PROJECT_ROOT"] = project_root_path
 
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
