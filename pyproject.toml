@@ -38,6 +38,7 @@ dependencies = [
     "pytest-asyncio>=1.0.0",
     "pytest-httpx>=0.35.0",
     "pytest-json-report>=1.5.0",
+    "pytest-benchmark>=4.0.0",
     "hypothesis>=6.100.0",
     "httpx>=0.25.0",
     "respx>=0.20.0",
@@ -81,25 +82,67 @@ namespaces = false
 version = {file = "VERSION"}
 
 [tool.pytest.ini_options]
+minversion = "6.0"
 log_cli = true
 log_cli_level = "DEBUG"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+asyncio_default_test_loop_scope = "function"
 pythonpath = ["src", "."]
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
+testpaths = ["tests", "conformance"]
+python_files = ["test_*.py", "*_test.py", "souptest_*.py"]
+python_classes = ["Test*", "*Tests"]
+python_functions = ["test_*", "*_test"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--color=yes",
+    "--benchmark-columns=min,max,mean,stddev,median,iqr,ops",
+    "--benchmark-sort=mean",
+    "--dist=loadscope",
+    "-m", "not integration",
+    "-rFE",
+]
 markers = [
-    "slow: marks tests as slow",
+    # Test speed/type markers
+    "serial: run tests serially to avoid event loop conflicts",
+    "async_unsafe: async tests that must run serially",
+    "unit: fast unit tests",
+    "fast: tests taking <100ms",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "benchmark: benchmark/performance tests using pytest-benchmark",
+    # TofuSoup specific markers
     "conformance: marks tests as conformance tests",
-    "tdd: TDD contract test",
+    "tdd: marks tests as TDD (test-driven development)",
+    "browser: marks tests that use the browser UI (Textual app)",
     # Integration markers
     "integration: marks tests requiring optional dependencies",
     "integration_cty: requires CTY integration (pyvider-cty)",
     "integration_hcl: requires HCL integration (pyvider-hcl + pyvider-cty)",
     "integration_rpc: requires RPC integration (pyvider-rpcplugin)",
+    # Harness markers
     "harness_go: requires Go harness",
     "harness_python: requires Python harness",
+    # Environment/dependency markers
+    "requires_textual: marks tests that require Textual app context",
+    "requires_docker: skip if docker not available",
+    "requires_network: skip if offline",
+    "skip_in_ci: marks tests to skip in CI environments",
 ]
-norecursedirs = [".git", "build", "dist", "*.egg-info", ".venv", "htmlcov", ".hypothesis", "conformance"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
+    "ignore:cannot collect test class 'Test.*' because it has a __init__ constructor:pytest.PytestCollectionWarning",
+    "ignore:cannot collect test class .* because it has a __init__ constructor:pytest.PytestCollectionWarning",
+    "ignore:.* KqueueSelector constructor:pytest.PytestCollectionWarning",
+    "ignore:coroutine .* was never awaited:RuntimeWarning",
+]
+norecursedirs = [
+    ".git", ".hg", ".svn", "*_build", "build", "dist", "*.egg-info",
+    ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
+]
 
 [tool.ruff]
 line-length = 111
