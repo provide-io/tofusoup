@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/spf13/cobra"
 )
 
@@ -15,6 +15,7 @@ var (
 	// Global flags
 	verbose  bool
 	logLevel string
+	logger   hclog.Logger
 )
 
 // Root command
@@ -37,6 +38,7 @@ var ctyValidateCmd = &cobra.Command{
 	Use:   "validate-value",
 	Short: "Validate a CTY value",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.Debug("validating CTY value")
 		// Placeholder for CTY validation
 		fmt.Println("Validation Succeeded")
 	},
@@ -46,6 +48,7 @@ var ctyConvertCmd = &cobra.Command{
 	Use:   "convert",
 	Short: "Convert CTY values between formats",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.Debug("converting CTY value")
 		// Placeholder for CTY conversion
 		fmt.Println(`{"status": "converted"}`)
 	},
@@ -62,6 +65,7 @@ var hclParseCmd = &cobra.Command{
 	Use:   "parse [file]",
 	Short: "Parse an HCL file",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.Debug("parsing HCL file", "args", args)
 		// Placeholder for HCL parsing
 		fmt.Println("{}")
 	},
@@ -71,6 +75,7 @@ var hclValidateCmd = &cobra.Command{
 	Use:   "validate [file]",
 	Short: "Validate HCL syntax",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.Debug("validating HCL syntax", "args", args)
 		fmt.Println(`{"valid": true}`)
 	},
 }
@@ -114,7 +119,10 @@ var rpcServerCmd = &cobra.Command{
 	Use:   "server-start",
 	Short: "Start an RPC server",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Printf("Starting RPC server on port %d (tls: %s, log: %s)", rpcPort, rpcTLSMode, logLevel)
+		logger.Info("starting RPC server", 
+			"port", rpcPort, 
+			"tls_mode", rpcTLSMode,
+			"log_level", logLevel)
 		fmt.Printf("RPC server would listen on :%d\n", rpcPort)
 		fmt.Println("Server ready (simulated)")
 		
@@ -244,8 +252,41 @@ func init() {
 }
 
 func main() {
+	// Initialize logger early
+	initLogger()
+	
 	if err := rootCmd.Execute(); err != nil {
+		logger.Error("command execution failed", "error", err)
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+func initLogger() {
+	// Parse log level from environment or default
+	level := hclog.Info
+	if envLevel := os.Getenv("LOG_LEVEL"); envLevel != "" {
+		logLevel = envLevel
+	}
+	
+	switch logLevel {
+	case "trace":
+		level = hclog.Trace
+	case "debug":
+		level = hclog.Debug
+	case "info":
+		level = hclog.Info
+	case "warn":
+		level = hclog.Warn
+	case "error":
+		level = hclog.Error
+	}
+	
+	// Create logger with nice formatting
+	logger = hclog.New(&hclog.LoggerOptions{
+		Name:       "soup-go",
+		Level:      level,
+		Color:      hclog.AutoColor,
+		TimeFormat: "15:04:05.000",
+	})
 }
