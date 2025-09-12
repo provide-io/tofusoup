@@ -7,7 +7,8 @@
       "Read(//Users/tim/code/gh/provide-io/provide-foundation/**)",
       "Read(//Users/tim/code/gh/provide-io/flavorpack/**)",
       "Read(//Users/tim/code/gh/provide-io/**)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(while read file)"
     ],
     "deny": [],
     "ask": []

@@ -9,7 +9,7 @@ import time
 import grpc
 from provide.foundation import logger
 
-from config.defaults import (
+from tofusoup.config.defaults import (
     CONNECTION_TIMEOUT,
     ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH,
     ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH,
