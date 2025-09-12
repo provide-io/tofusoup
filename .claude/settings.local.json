@@ -16,7 +16,8 @@
       "Bash(export TOFUSOUP_CTY_SUITE_ENV=\"cty_specific_env_value_from_toml\")",
       "Bash(go mod:*)",
       "Bash(go get:*)",
-      "Bash(go build:*)"
+      "Bash(go build:*)",
+      "Bash(../../../../bin/soup-go:*)"
     ],
     "deny": [],
     "ask": []
