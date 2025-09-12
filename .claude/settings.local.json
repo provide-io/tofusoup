@@ -6,7 +6,8 @@
       "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/go-rpc:*)",
       "Read(//Users/tim/code/gh/provide-io/provide-foundation/**)",
       "Read(//Users/tim/code/gh/provide-io/flavorpack/**)",
-      "Read(//Users/tim/code/gh/provide-io/**)"
+      "Read(//Users/tim/code/gh/provide-io/**)",
+      "Bash(pip install:*)"
     ],
     "deny": [],
     "ask": []
