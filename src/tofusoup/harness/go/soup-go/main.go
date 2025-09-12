@@ -41,25 +41,9 @@ var ctyCmd = &cobra.Command{
 	Long:  `Perform CTY (Complex Type) operations including validation and conversion.`,
 }
 
-var ctyValidateCmd = &cobra.Command{
-	Use:   "validate-value",
-	Short: "Validate a CTY value",
-	Run: func(cmd *cobra.Command, args []string) {
-		logger.Debug("validating CTY value")
-		// Placeholder for CTY validation
-		fmt.Println("Validation Succeeded")
-	},
-}
-
-var ctyConvertCmd = &cobra.Command{
-	Use:   "convert",
-	Short: "Convert CTY values between formats",
-	Run: func(cmd *cobra.Command, args []string) {
-		logger.Debug("converting CTY value")
-		// Placeholder for CTY conversion
-		fmt.Println(`{"status": "converted"}`)
-	},
-}
+// These will be initialized with real implementations
+var ctyValidateCmd *cobra.Command
+var ctyConvertCmd *cobra.Command
 
 // HCL command
 var hclCmd = &cobra.Command{
@@ -68,24 +52,9 @@ var hclCmd = &cobra.Command{
 	Long:  `Parse and process HashiCorp Configuration Language (HCL) files.`,
 }
 
-var hclParseCmd = &cobra.Command{
-	Use:   "parse [file]",
-	Short: "Parse an HCL file",
-	Run: func(cmd *cobra.Command, args []string) {
-		logger.Debug("parsing HCL file", "args", args)
-		// Placeholder for HCL parsing
-		fmt.Println("{}")
-	},
-}
-
-var hclValidateCmd = &cobra.Command{
-	Use:   "validate [file]",
-	Short: "Validate HCL syntax",
-	Run: func(cmd *cobra.Command, args []string) {
-		logger.Debug("validating HCL syntax", "args", args)
-		fmt.Println(`{"valid": true}`)
-	},
-}
+// These will be initialized with real implementations
+var hclParseCmd *cobra.Command
+var hclValidateCmd *cobra.Command
 
 // Wire command
 var wireCmd = &cobra.Command{
@@ -94,23 +63,9 @@ var wireCmd = &cobra.Command{
 	Long:  `Encode and decode data using the wire protocol format.`,
 }
 
-var wireEncodeCmd = &cobra.Command{
-	Use:   "encode [data]",
-	Short: "Encode data to wire format",
-	Run: func(cmd *cobra.Command, args []string) {
-		logger.Debug("encoding wire data", "args", args)
-		fmt.Println("Wire operation completed")
-	},
-}
-
-var wireDecodeCmd = &cobra.Command{
-	Use:   "decode [data]",
-	Short: "Decode data from wire format",
-	Run: func(cmd *cobra.Command, args []string) {
-		logger.Debug("decoding wire data", "args", args)
-		fmt.Println("Wire operation completed")
-	},
-}
+// These will be initialized with real implementations
+var wireEncodeCmd *cobra.Command
+var wireDecodeCmd *cobra.Command
 
 // RPC command
 var rpcCmd = &cobra.Command{
@@ -220,6 +175,14 @@ var configShowCmd = &cobra.Command{
 }
 
 func init() {
+	// Initialize commands with real implementations
+	ctyValidateCmd = initCtyValidateCmd()
+	ctyConvertCmd = initCtyConvertCmd()
+	hclParseCmd = initHclParseCmd()
+	hclValidateCmd = initHclValidateCmd()
+	wireEncodeCmd = initWireEncodeCmd()
+	wireDecodeCmd = initWireDecodeCmd()
+	
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "info", "Set log level (trace, debug, info, warn, error)")
