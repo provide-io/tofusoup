@@ -23,7 +23,9 @@
       "Read(//private/tmp/**)",
       "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go cty convert:*)",
       "Bash(xxd:*)",
-      "Bash(go run:*)"
+      "Bash(go run:*)",
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go wire encode:*)",
+      "Bash(terraform:*)"
     ],
     "deny": [],
     "ask": []

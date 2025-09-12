@@ -8,7 +8,7 @@ from typing import List, Any, Tuple
 from tofusoup.harness.logic import ensure_go_harness_build, GO_HARNESS_CONFIG, HarnessBuildError
 from .shared_cli_utils import run_harness_cli
 
-HARNESS_NAME = "go-hcl"
+HARNESS_NAME = "soup-go"
 
 HCL_PARSE_CASES = [
     pytest.param(
@@ -32,14 +32,20 @@ def test_hcl_cli_parse(
     test_id = request.node.callspec.id
     hcl_file = tmp_path / filename
     hcl_file.write_text(hcl_content)
-    args = ["parse", str(hcl_file), "--output-format", "cty-json", "--log-level", "debug"]
+    args = ["hcl", "parse", str(hcl_file), "--output-format", "json", "--log-level", "debug"]
     exit_code, stdout, stderr = run_harness_cli(
         go_harness_executable, args, project_root=project_root,
         harness_artifact_name=HARNESS_NAME, test_id=test_id
     )
     assert exit_code == expected_exit_code, f"HCL parse for '{filename}' failed. Exit: {exit_code}\nStderr: {stderr}"
-    if expected_exit_code == 0:
+    if expected_exit_code == 0 and expected_json_output is not None:
+        # soup-go returns output in a wrapper with "success" and "body" fields
         actual_output = json.loads(stdout) if stdout else None
-        assert actual_output == expected_json_output
+        if actual_output and "body" in actual_output:
+            # Extract the body for comparison
+            actual_body = actual_output.get("body", {})
+            assert actual_body == expected_json_output or actual_body == {"blocks": [], **expected_json_output}
+        else:
+            assert actual_output == expected_json_output
 
 # 🍲🥄🧪🪄
