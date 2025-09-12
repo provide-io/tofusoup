@@ -252,6 +252,7 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 	}
 
 	// Handle unknown values (special marker in JSON)
+	// First check for map-based marker (for complex unknown values)
 	if m, ok := val.(map[string]interface{}); ok {
 		if marker, exists := m["$pyvider-cty-special-value"]; exists && marker == "unknown" {
 			// Handle refined unknown values
@@ -260,6 +261,11 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 			}
 			return cty.UnknownVal(ty), nil
 		}
+	}
+	
+	// Also check for simple string marker "<UNKNOWN>"
+	if s, ok := val.(string); ok && s == "<UNKNOWN>" {
+		return cty.UnknownVal(ty), nil
 	}
 
 	// Handle primitive types

@@ -18,7 +18,8 @@
       "Bash(go get:*)",
       "Bash(go build:*)",
       "Bash(../../../../bin/soup-go:*)",
-      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go cty convert --help)"
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go cty convert --help)",
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go hcl parse:*)"
     ],
     "deny": [],
     "ask": []
