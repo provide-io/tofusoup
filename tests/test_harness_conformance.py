@@ -55,7 +55,7 @@ class TestHarnessConformance:
             text=True
         )
         assert result.returncode == 0
-        assert "TofuSoup Go test harness" in result.stdout
+        assert "unified Go harness for TofuSoup" in result.stdout
         assert "Flags:" in result.stdout
 
     @pytest.mark.integration_cty
