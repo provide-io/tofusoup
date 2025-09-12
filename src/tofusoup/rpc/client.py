@@ -197,8 +197,14 @@ class KVClient:
             # Note: self.subprocess_env contains PLUGIN_AUTO_MTLS which pyvider-rpcplugin client might read via rpcplugin_config
             # This is separate from how the server is told to configure its TLS.
 
-            # Add TLS configuration arguments that match the Go implementation
-            server_command.extend(["rpc", "server-start"])  # Add subcommands
+            # Add TLS configuration arguments
+            # Check if binary name suggests it needs subcommands
+            binary_name = os.path.basename(self.server_path)
+            if binary_name in ["soup-go", "go-harness"]:
+                # New harnesses expect rpc server-start subcommand
+                server_command.extend(["rpc", "server-start"])
+            # For existing go-rpc binary, just pass flags directly
+            
             server_command.extend(["--tls-mode", self.tls_mode])
 
             if self.tls_mode == "auto":
