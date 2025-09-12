@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import shutil
 
-from config.defaults import (
+from tofusoup.config.defaults import (
     ENV_PYVIDER_PRIVATE_STATE_SHARED_SECRET,
     ENV_TF_DATA_DIR,
     ENV_TF_LOG,

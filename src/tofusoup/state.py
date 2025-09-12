@@ -22,7 +22,7 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.tree import Tree
 
-from config.defaults import DEFAULT_OUTPUT_FORMAT, DEFAULT_TFSTATE_FILE
+from tofusoup.config.defaults import DEFAULT_OUTPUT_FORMAT, DEFAULT_TFSTATE_FILE
 from pyvider.common.encryption import decrypt
 
 console = Console()

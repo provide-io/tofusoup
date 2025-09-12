@@ -8,7 +8,7 @@ from textual.message import Message
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header
 
-from config.defaults import TERRAFORM_REGISTRY_URL, TUI_LOG_LEVEL, TUI_SERVICE_NAME
+from tofusoup.config.defaults import TERRAFORM_REGISTRY_URL, TUI_LOG_LEVEL, TUI_SERVICE_NAME
 from tofusoup.browser.ui.widgets.detail_view import DetailView
 from tofusoup.browser.ui.widgets.log_viewer import LogViewer
 from tofusoup.browser.ui.widgets.search_view import SearchView

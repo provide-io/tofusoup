@@ -7,7 +7,7 @@ import asyncio
 import click
 from provide.foundation import logger
 
-from config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
+from tofusoup.config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
 from tofusoup.registry.base import RegistryConfig
 from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.search.engine import (

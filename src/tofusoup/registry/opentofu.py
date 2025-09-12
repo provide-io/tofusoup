@@ -6,7 +6,7 @@ from typing import Any, cast
 import httpx
 from provide.foundation import logger
 
-from config.defaults import OPENTOFU_REGISTRY_URL
+from tofusoup.config.defaults import OPENTOFU_REGISTRY_URL
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import (
     Provider,

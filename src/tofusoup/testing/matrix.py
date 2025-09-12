@@ -22,7 +22,7 @@ from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeEl
 from rich.table import Table
 from wrkenv import WorkenvConfig, get_tool_manager
 
-from config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTES
+from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTES
 
 from ..workenv_integration import create_workenv_config_with_soup
 
