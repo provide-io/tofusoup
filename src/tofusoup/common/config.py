@@ -13,7 +13,7 @@ from attrs import define
 from provide.foundation import logger
 from provide.foundation.config import RuntimeConfig, field
 
-from config.defaults import (
+from tofusoup.config.defaults import (
     CONFIG_FILENAME,
     DEFAULT_CONFIG_SUBDIR,
     DEFAULT_LOG_LEVEL,
