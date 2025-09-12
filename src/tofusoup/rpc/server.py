@@ -10,6 +10,7 @@ import time
 import grpc
 from provide.foundation import logger
 
+from tofusoup.config.defaults import DEFAULT_GRPC_PORT
 from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 
@@ -117,7 +118,7 @@ def serve(server: grpc.Server) -> KV:
 def main() -> None:
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     serve(server)
-    port = server.add_insecure_port("[::]:50051")
+    port = server.add_insecure_port(f"[::]:{DEFAULT_GRPC_PORT}")
     logger.info(f"Server started on port {port}")
     server.start()
     try:
