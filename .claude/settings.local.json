@@ -8,7 +8,8 @@
       "Read(//Users/tim/code/gh/provide-io/flavorpack/**)",
       "Read(//Users/tim/code/gh/provide-io/**)",
       "Bash(pip install:*)",
-      "Bash(while read file)"
+      "Bash(while read file)",
+      "Bash(timeout 2 soup harness:*)"
     ],
     "deny": [],
     "ask": []
