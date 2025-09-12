@@ -15,7 +15,8 @@
       "Bash(export TOFUSOUP_TEST_DEFAULT_ENV=\"cty_override_default_env_from_toml\")",
       "Bash(export TOFUSOUP_CTY_SUITE_ENV=\"cty_specific_env_value_from_toml\")",
       "Bash(go mod:*)",
-      "Bash(go get:*)"
+      "Bash(go get:*)",
+      "Bash(go build:*)"
     ],
     "deny": [],
     "ask": []
