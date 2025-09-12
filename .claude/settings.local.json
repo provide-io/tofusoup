@@ -10,7 +10,8 @@
       "Bash(pip install:*)",
       "Bash(while read file)",
       "Bash(timeout 2 soup harness:*)",
-      "Bash(./bin/soup-go:*)"
+      "Bash(./bin/soup-go:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []
