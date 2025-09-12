@@ -251,21 +251,13 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 		return cty.NullVal(ty), nil
 	}
 
-	// Handle unknown values (special marker in JSON)
-	// First check for map-based marker (for complex unknown values)
+	// Handle unknown values - this should only process the standard go-cty JSON format
+	// Check for the special marker that go-cty uses for unknown values in JSON
 	if m, ok := val.(map[string]interface{}); ok {
-		if marker, exists := m["$pyvider-cty-special-value"]; exists && marker == "unknown" {
-			// Handle refined unknown values
-			if refinements, hasRefinements := m["refinements"]; hasRefinements {
-				return buildRefinedUnknown(ty, refinements)
-			}
-			return cty.UnknownVal(ty), nil
-		}
-	}
-	
-	// Also check for simple string marker "<UNKNOWN>"
-	if s, ok := val.(string); ok && s == "<UNKNOWN>" {
-		return cty.UnknownVal(ty), nil
+		// Check if this is a CTY JSON unknown value marker
+		// go-cty doesn't actually support unknown values in JSON directly
+		// Unknown values can only be represented in msgpack format
+		// For JSON, we need to handle this at a higher level
 	}
 
 	// Handle primitive types
