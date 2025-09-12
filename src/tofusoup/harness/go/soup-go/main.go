@@ -25,6 +25,13 @@ var rootCmd = &cobra.Command{
 	Long: `soup-go is a unified Go harness for TofuSoup that provides
 CTY, HCL, Wire, and RPC functionality for cross-language testing.`,
 	Version: version,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// Reinitialize logger if log level was changed via flag
+		if cmd.Flags().Changed("log-level") {
+			initLogger()
+		}
+		logger.Debug("executing command", "cmd", cmd.Name(), "args", args)
+	},
 }
 
 // CTY command
@@ -91,6 +98,7 @@ var wireEncodeCmd = &cobra.Command{
 	Use:   "encode [data]",
 	Short: "Encode data to wire format",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.Debug("encoding wire data", "args", args)
 		fmt.Println("Wire operation completed")
 	},
 }
@@ -99,6 +107,7 @@ var wireDecodeCmd = &cobra.Command{
 	Use:   "decode [data]",
 	Short: "Decode data from wire format",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.Debug("decoding wire data", "args", args)
 		fmt.Println("Wire operation completed")
 	},
 }
@@ -135,6 +144,7 @@ var rpcClientCmd = &cobra.Command{
 	Use:   "client",
 	Short: "RPC client operations",
 	Run: func(cmd *cobra.Command, args []string) {
+		logger.Info("RPC client operations")
 		fmt.Println("RPC client operations")
 	},
 }
@@ -155,8 +165,10 @@ var harnessListCmd = &cobra.Command{
 		}
 		
 		if outputJSON, _ := cmd.Flags().GetBool("json"); outputJSON {
+			logger.Debug("outputting harness list as JSON")
 			json.NewEncoder(os.Stdout).Encode(harnesses)
 		} else {
+			logger.Debug("outputting harness list as text")
 			fmt.Println("Available harnesses:")
 			for _, h := range harnesses {
 				fmt.Printf("  - %s (v%s) [%s]\n", h["name"], h["version"], h["status"])
@@ -174,6 +186,7 @@ var harnessTestCmd = &cobra.Command{
 		if len(args) > 0 {
 			harness = args[0]
 		}
+		logger.Info("testing harness", "harness", harness)
 		fmt.Printf("Testing harness: %s\n", harness)
 		fmt.Println("All tests passed")
 	},
