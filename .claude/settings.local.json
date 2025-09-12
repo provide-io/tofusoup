@@ -25,7 +25,8 @@
       "Bash(xxd:*)",
       "Bash(go run:*)",
       "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go wire encode:*)",
-      "Bash(terraform:*)"
+      "Bash(terraform:*)",
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go cty:*)"
     ],
     "deny": [],
     "ask": []
