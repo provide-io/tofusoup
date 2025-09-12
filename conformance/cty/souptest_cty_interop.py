@@ -97,6 +97,13 @@ def test_python_deserializes_go_fixtures(
     
     # The input to the 'convert' command is a JSON representation of the CtyValue
     cty_value = GO_TEST_CASES[case_name]
+    
+    # IMPORTANT: go-cty CANNOT accept unknown values via JSON input
+    # This is a fundamental limitation of the go-cty library that matches Terraform's behavior
+    # Skip tests for unknown values when using JSON input format
+    if cty_value.is_unknown:
+        pytest.skip(f"go-cty cannot accept unknown values via JSON input (case: {case_name})")
+    
     input_json = json.dumps(_cty_value_to_json_compatible_value(cty_value))
     type_json_for_go = json.dumps(encode_cty_type_to_wire_json(cty_value.type))
 
