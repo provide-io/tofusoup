@@ -9,7 +9,8 @@
       "Read(//Users/tim/code/gh/provide-io/**)",
       "Bash(pip install:*)",
       "Bash(while read file)",
-      "Bash(timeout 2 soup harness:*)"
+      "Bash(timeout 2 soup harness:*)",
+      "Bash(./bin/soup-go:*)"
     ],
     "deny": [],
     "ask": []
