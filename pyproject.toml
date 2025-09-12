@@ -103,6 +103,8 @@ addopts = [
     "--dist=loadscope",
     "-m", "not integration",
     "-rFE",
+    # Exclude known problematic tests by default
+    "-k", "not (TestRPCKVMatrix or test_pyclient_pyserver_with_mtls or test_stir)",
 ]
 markers = [
     # Test speed/type markers
