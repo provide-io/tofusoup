@@ -16,31 +16,6 @@ GO_HARNESS_CONFIG = {
         "main_file": "main.go",
         "output_name": "soup-go",
     },
-    "go-cty": {
-        "source_dir": "src/tofusoup/harness/go/go-cty",
-        "main_file": "main.go",
-        "output_name": "go-cty",
-    },
-    "go-hcl": {
-        "source_dir": "src/tofusoup/harness/go/go-hcl",
-        "main_file": "main.go",
-        "output_name": "go-hcl",
-    },
-    "go-wire": {
-        "source_dir": "src/tofusoup/harness/go/go-wire",
-        "main_file": "main.go",
-        "output_name": "go-wire",
-    },
-    "go-rpc": {
-        "source_dir": "src/tofusoup/harness/go/go-rpc",
-        "main_file": "main.go",
-        "output_name": "go-rpc",
-    },
-    "go-rpc-client": {
-        "source_dir": "src/tofusoup/harness/go/go-rpc-client",
-        "main_file": "main.go",
-        "output_name": "go-rpc-client",
-    },
     "pspf-packager": {
         "source_dir": "pspf/src/go/pspf-packager",
         "main_file": "main.go",
