@@ -73,7 +73,7 @@ async def _test_with_python_server(
             server_path=str(python_server_script_path),
             enable_mtls=True,  # Assuming mTLS for Py-Py tests too; adjust if needed
         )
-        # Note: KVClient needs `loaded_config` to pass to RPCPluginClient if mTLS paths are from config.
+        # Note: KVClient needs `loaded_config` to pass to RPCPluginClient if mTLS paths are from tofusoup.config.
         # However, KVClient's constructor doesn't take loaded_config directly.
         # This aspect might need refinement if Py-Py mTLS relies on config files via RPCPluginClient.
         # For now, this setup relies on pyvider-rpcplugin's defaults or env vars for its own certs.

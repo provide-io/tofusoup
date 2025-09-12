@@ -8,7 +8,7 @@ import sys
 import click
 import grpc
 
-from config.defaults import DEFAULT_GRPC_ADDRESS
+from tofusoup.config.defaults import DEFAULT_GRPC_ADDRESS
 
 # Use correct relative import for generated protobuf modules.
 from ..harness.proto.kv import kv_pb2, kv_pb2_grpc

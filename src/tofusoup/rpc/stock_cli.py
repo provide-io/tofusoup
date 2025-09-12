@@ -16,7 +16,7 @@ from provide.foundation import logger
 from rich.console import Console
 from rich.table import Table
 
-from config.defaults import DEFAULT_CLIENT_LANGUAGE, DEFAULT_GRPC_ADDRESS, DEFAULT_GRPC_PORT, DEFAULT_TLS_MODE
+from tofusoup.config.defaults import DEFAULT_CLIENT_LANGUAGE, DEFAULT_GRPC_ADDRESS, DEFAULT_GRPC_PORT, DEFAULT_TLS_MODE
 
 console = Console()
 
