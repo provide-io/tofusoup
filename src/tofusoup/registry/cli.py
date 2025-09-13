@@ -8,7 +8,7 @@ import os
 
 import click
 from provide.foundation import logger
-from provide.foundation.asynctools import async_run
+from provide.foundation.concurrency import async_run
 
 
 def safe_async_run(main):
