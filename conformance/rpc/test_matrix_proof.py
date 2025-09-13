@@ -8,7 +8,7 @@ async def comprehensive_matrix_test():
     
     # Test Case: Python Client → Go Server  
     print('\nTEST: Python Client → Go Server Plugin')
-    client1 = KVClient('/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/bin/soup-go', 'disabled')
+    client1 = KVClient('./bin/soup-go', 'disabled')
     
     try:
         await client1.start()

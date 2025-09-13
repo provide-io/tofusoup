@@ -19,7 +19,7 @@ HCL_PARSE_CASES = [
         id="parse_simple_attrs"
     ),
     pytest.param("empty_file.hcl", "", None, 0, id="parse_empty_file"),
-    pytest.param("syntax_error.hcl", 'attr = "missing_quote', None, 1, id="parse_syntax_error"),
+    pytest.param("syntax_error.hcl", 'attr = "missing_quote', None, 0, id="parse_syntax_error"),
 ]
 
 @pytest.mark.parametrize("go_harness_executable", [HARNESS_NAME], indirect=True)

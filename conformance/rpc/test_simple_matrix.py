@@ -23,7 +23,7 @@ from tofusoup.rpc.client import KVClient
 @pytest.mark.asyncio
 async def test_pyclient_goserver_no_mtls(project_root: Path):
     """Test Python client -> Go server without mTLS (known working case)"""
-    go_server_path = project_root / "bin" / "go-rpc"
+    go_server_path = project_root / "bin" / "soup-go"
     
     if not go_server_path.exists():
         pytest.skip(f"Go RPC server not found at {go_server_path}")
@@ -51,7 +51,7 @@ async def test_pyclient_goserver_no_mtls(project_root: Path):
 @pytest.mark.asyncio
 async def test_pyclient_goserver_with_mtls_auto(project_root: Path):
     """Test Python client -> Go server with auto mTLS"""
-    go_server_path = project_root / "bin" / "go-rpc"
+    go_server_path = project_root / "bin" / "soup-go"
     
     if not go_server_path.exists():
         pytest.skip(f"Go RPC server not found at {go_server_path}")
@@ -81,7 +81,7 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path):
 @pytest.mark.asyncio 
 async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path):
     """Test Python client -> Go server with auto mTLS using ECDSA"""
-    go_server_path = project_root / "bin" / "go-rpc"
+    go_server_path = project_root / "bin" / "soup-go"
     
     if not go_server_path.exists():
         pytest.skip(f"Go RPC server not found at {go_server_path}")

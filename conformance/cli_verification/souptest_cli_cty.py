@@ -28,7 +28,7 @@ def test_cty_cli_help(go_harness_executable: Path, project_root: Path, request: 
     )
     assert exit_code == 0, f"Expected exit code 0 for cty --help, got {exit_code}.\nStdout: {stdout}\nStderr: {stderr}"
     output_to_check = stderr if stderr else stdout
-    assert "CTY type and value operations" in output_to_check
+    assert "Perform CTY (Complex Type) operations including validation and conversion" in output_to_check
     assert "Available Commands:" in output_to_check
     assert "convert" in output_to_check
     assert "validate-value" in output_to_check
