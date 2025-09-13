@@ -83,15 +83,15 @@ var rpcServerCmd = &cobra.Command{
 	Use:   "server-start",
 	Short: "Start an RPC server",
 	Run: func(cmd *cobra.Command, args []string) {
-		logger.Info("starting RPC server", 
+		logger.Info("Starting RPC server", 
 			"port", rpcPort, 
 			"tls_mode", rpcTLSMode,
 			"log_level", logLevel)
-		fmt.Printf("RPC server would listen on :%d\n", rpcPort)
-		fmt.Println("Server ready (simulated)")
 		
-		// Keep running until interrupted
-		select {}
+		if err := startRPCServer(logger, rpcPort, rpcTLSMode); err != nil {
+			logger.Error("RPC server failed", "error", err)
+			os.Exit(1)
+		}
 	},
 }
 
