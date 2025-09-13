@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/x509"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strconv"
 	"strings"
@@ -67,9 +68,11 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode string) error {
 
 	config := &plugin.ServeConfig{
 		HandshakeConfig: Handshake,
-		Plugins: map[string]plugin.Plugin{
-			"kv_grpc": &KVGRPCPlugin{
-				Impl: kv,
+		VersionedPlugins: map[int]plugin.PluginSet{
+			1: {
+				"kv_grpc": &KVGRPCPlugin{
+					Impl: kv,
+				},
 			},
 		},
 		Logger: logger,
@@ -127,5 +130,81 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode string) error {
 func decodeAndLogCertificate(certPEM string, logger hclog.Logger) error {
 	// Simple certificate logging - in production you'd parse and display details
 	logger.Debug("🔐📜 Certificate loaded", "length", len(certPEM))
+	return nil
+}
+
+func testRPCClient(logger hclog.Logger, serverPath string) error {
+	logger.Info("🌐🧪 starting RPC client test", "server_path", serverPath)
+
+	// Create client
+	client := plugin.NewClient(&plugin.ClientConfig{
+		HandshakeConfig:  Handshake,
+		VersionedPlugins: map[int]plugin.PluginSet{
+			1: {
+				"kv_grpc": &KVGRPCPlugin{},
+			},
+		},
+		Cmd:             exec.Command(serverPath, "rpc", "server-start"),
+		Logger:          logger,
+		AutoMTLS:        true,
+		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
+	})
+	defer client.Kill()
+
+	// Connect via RPC
+	rpcClient, err := client.Client()
+	if err != nil {
+		logger.Error("🌐❌ failed to create RPC client", "error", err)
+		return err
+	}
+
+	// Request the plugin
+	raw, err := rpcClient.Dispense("kv_grpc")
+	if err != nil {
+		logger.Error("🌐❌ failed to dispense plugin", "error", err)
+		return err
+	}
+
+	// Cast to KV interface
+	kv := raw.(KV)
+
+	// Test Put operation
+	testKey := "go_client_test_key"
+	testValue := []byte("Hello from Go client to Go server!")
+	
+	logger.Info("🌐📤 testing Put operation", "key", testKey, "value_size", len(testValue))
+	err = kv.Put(testKey, testValue)
+	if err != nil {
+		logger.Error("🌐❌ Put operation failed", "error", err)
+		return err
+	}
+	logger.Info("🌐✅ Put operation successful")
+
+	// Test Get operation
+	logger.Info("🌐📥 testing Get operation", "key", testKey)
+	retrievedValue, err := kv.Get(testKey)
+	if err != nil {
+		logger.Error("🌐❌ Get operation failed", "error", err)
+		return err
+	}
+
+	if string(retrievedValue) != string(testValue) {
+		logger.Error("🌐❌ Retrieved value doesn't match", 
+			"expected", string(testValue), 
+			"got", string(retrievedValue))
+		return err
+	}
+	logger.Info("🌐✅ Get operation successful", "value", string(retrievedValue))
+
+	// Test Get non-existent key
+	logger.Info("🌐📥 testing Get operation for non-existent key")
+	_, err = kv.Get("non_existent_key")
+	if err != nil {
+		logger.Info("🌐✅ Get non-existent key properly returned error", "error", err)
+	} else {
+		logger.Warn("🌐⚠️ Get non-existent key should have returned error")
+	}
+
+	logger.Info("🌐🎉 RPC client test completed successfully")
 	return nil
 }
