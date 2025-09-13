@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/provide-io/tofusoup/proto/kv"
 )
@@ -162,6 +164,12 @@ func (m *GRPCServer) Get(ctx context.Context, req *proto.GetRequest) (*proto.Get
 
 	v, err := m.Impl.Get(req.Key)
 	if err != nil {
+		// Check if this is a file not found error (key doesn't exist)
+		if os.IsNotExist(err) {
+			m.logger.Debug("📡📥 key not found",
+				"key", req.Key)
+			return nil, status.Errorf(codes.NotFound, "key not found: %s", req.Key)
+		}
 		m.logger.Error("📡❌ Get operation failed",
 			"key", req.Key,
 			"error", err)
