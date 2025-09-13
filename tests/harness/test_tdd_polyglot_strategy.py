@@ -53,7 +53,8 @@ class TestPolyglotStrategyContract:
         # Mock successful build
         mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
         
-        result = runner.invoke(main_cli, ["harness", "build", "soup-go"], obj={"PROJECT_ROOT": tmp_path})
+        # Force rebuild to ensure subprocess.run is called
+        result = runner.invoke(main_cli, ["harness", "build", "soup-go", "--force-rebuild"], obj={"PROJECT_ROOT": tmp_path})
         assert result.exit_code == 0
         assert "Building harness: soup-go" in result.output
         mock_run.assert_called_once()

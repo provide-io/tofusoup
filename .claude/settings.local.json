@@ -26,7 +26,11 @@
       "Bash(go run:*)",
       "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go wire encode:*)",
       "Bash(terraform:*)",
-      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go cty:*)"
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go cty:*)",
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go wire decode - -)",
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go:*)",
+      "Read(//Users/tim/code/gh/**)",
+      "Bash(timeout 3 ./bin/soup-go rpc server-start:*)"
     ],
     "deny": [],
     "ask": []
