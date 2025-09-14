@@ -7,7 +7,7 @@ import pathlib
 import sys
 
 import click
-from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_telemetry
+from provide.foundation import LoggingConfig, TelemetryConfig, logger, get_hub
 from rich import print as rich_print_direct
 from rich.tree import Tree
 
@@ -22,7 +22,8 @@ telemetry_config = TelemetryConfig(
         default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper()
     ),
 )
-setup_telemetry(config=telemetry_config)
+hub = get_hub()
+hub.initialize_foundation(config=telemetry_config)
 
 LAZY_COMMANDS = {
     "sui": ("tofusoup.browser.cli", "sui_cli"),

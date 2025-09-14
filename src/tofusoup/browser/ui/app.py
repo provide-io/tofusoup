@@ -2,7 +2,7 @@
 # tofusoup/browser/ui/app.py
 #
 
-from provide.foundation import LoggingConfig, TelemetryConfig, logger, setup_telemetry
+from provide.foundation import LoggingConfig, TelemetryConfig, logger, get_hub
 from textual.app import App, ComposeResult
 from textual.message import Message
 from textual.screen import Screen
@@ -42,7 +42,8 @@ class MainSearchScreen(Screen[None]):
         telemetry_config = TelemetryConfig(
             service_name=TUI_SERVICE_NAME, logging=LoggingConfig(default_level=TUI_LOG_LEVEL)
         )
-        setup_telemetry(telemetry_config)
+        hub = get_hub()
+        hub.initialize_foundation(config=telemetry_config)
         logger.info("TUI Logger Initialized. Ready for search.")
 
     def on_search_view_search_submitted(
