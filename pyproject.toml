@@ -145,17 +145,7 @@ norecursedirs = [
     ".git", ".hg", ".svn", "*_build", "build", "dist", "*.egg-info",
     ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
 ]
-
-log_levels = [
-    "markdown_it = WARNING",
-    "asyncio = WARNING",
-]
-
-# [tool.pytest.ini_options]
-# log_levels = [
-#     "markdown_it = WARNING",
-#     "asyncio = WARNING",
-# ]
+log_levels = { markdown_it = "WARNING", asyncio = "WARNING" }
 
 [tool.ruff]
 line-length = 111
