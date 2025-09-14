@@ -11,7 +11,7 @@ certificates for all crypto configurations:
 from pathlib import Path
 from typing import Dict
 
-from pyvider.rpcplugin.crypto import Certificate, KEY_TYPE_RSA, KEY_TYPE_ECDSA
+from provide.foundation.crypto import Certificate
 from provide.foundation import logger
 
 from .matrix_config import CryptoConfig
@@ -94,7 +94,7 @@ class CertificateManager:
         """Convert CryptoConfig to pyvider-rpcplugin certificate parameters."""
         
         if crypto_config.key_type == "rsa":
-            return KEY_TYPE_RSA, crypto_config.key_size
+            return "rsa", crypto_config.key_size
         elif crypto_config.key_type == "ec":
             # Map EC key sizes to curve names expected by pyvider-rpcplugin
             curve_map = {
@@ -105,7 +105,7 @@ class CertificateManager:
             curve_name = curve_map.get(crypto_config.key_size)
             if not curve_name:
                 raise ValueError(f"Unsupported EC key size: {crypto_config.key_size}")
-            return KEY_TYPE_ECDSA, curve_name
+            return "ecdsa", curve_name
         else:
             raise ValueError(f"Unsupported key type: {crypto_config.key_type}")
     
