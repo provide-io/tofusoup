@@ -35,7 +35,9 @@
       "Bash(PYTHONPATH=/Users/tim/code/gh/provide-io/tofusoup/src:$PYTHONPATH python /Users/tim/code/gh/provide-io/tofusoup/src/tofusoup/rpc/server.py --help)",
       "Read(//Users/tim/.terraform.d/**)",
       "WebSearch",
-      "Read(//Users/tim/.tofusoup/**)"
+      "Read(//Users/tim/.tofusoup/**)",
+      "Bash(export PATH=\"workenv/tofusoup_darwin_arm64/bin:$PATH\")",
+      "Bash(timeout 10 soup:*)"
     ],
     "deny": [],
     "ask": [],

@@ -47,9 +47,22 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
     start_time = monotonic()
     base_dir = Path(target_path).resolve()
 
-    test_dirs = sorted([d for d in base_dir.iterdir() if d.is_dir() and (not d.name.startswith(".") or d.name.startswith(".garnish"))])
+    test_dirs = []
+
+    # Add regular test directories (non-hidden)
+    test_dirs.extend([d for d in base_dir.iterdir() if d.is_dir() and not d.name.startswith(".")])
+
+    # Handle .garnish-tests specially - add its subdirectories as test directories
+    garnish_dir = base_dir / ".garnish-tests"
+    if garnish_dir.is_dir():
+        garnish_test_dirs = [d for d in garnish_dir.iterdir() if d.is_dir()]
+        test_dirs.extend(garnish_test_dirs)
+
+    # Add base directory if it contains .tf files
     if any(base_dir.glob("*.tf")):
         test_dirs.append(base_dir)
+
+    test_dirs = sorted(test_dirs)
 
     if not test_dirs:
         console.print(f"🤷 No directories found in '{base_dir}'.")
