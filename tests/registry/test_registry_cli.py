@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 from unittest.mock import patch, AsyncMock, MagicMock, Mock
 
@@ -160,7 +161,8 @@ class TestModuleCommands:
         mock_tf_reg.return_value = mock_tf_instance
         
         with isolated_cli_runner() as runner:
-            result = runner.invoke(registry_cli.registry_cli, ["module", "info", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
+            with patch('tofusoup.registry.cli.async_run', side_effect=asyncio.run):
+                result = runner.invoke(registry_cli.registry_cli, ["module", "info", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
         assert result.exit_code == 0
         assert "Module: terraform-aws-modules/vpc/aws" in result.output
     
