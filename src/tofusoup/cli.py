@@ -36,8 +36,8 @@ LAZY_COMMANDS = {
     "rpc": ("tofusoup.rpc.cli", "rpc_cli"),
     "state": ("tofusoup.state", "state_cli"),
     "stir": ("tofusoup.stir", "stir_cli"),
-    "workenv": ("wrkenv.env.cli", "workenv_cli"),
-    "we": ("wrkenv.env.cli", "workenv_cli"),  # Alias for workenv
+    "workenv": ("wrknv.env.cli", "workenv_cli"),
+    "we": ("wrknv.env.cli", "workenv_cli"),  # Alias for workenv
     "test": ("tofusoup.testing.cli", "test_cli"),
     "wire": ("tofusoup.wire.cli", "wire"),
     # Note: garnish command has been moved to separate garnish package
