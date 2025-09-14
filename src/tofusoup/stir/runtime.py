@@ -95,19 +95,26 @@ class StirRuntime:
         """
         providers = set()
 
-        # Match terraform block with required_providers
-        terraform_block_pattern = r'terraform\s*\{[^{}]*required_providers\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}[^{}]*\}'
+        # Match terraform block with required_providers (handle both compact and expanded formats)
+        terraform_block_pattern = r'terraform\s*\{.*?required_providers\s*\{(.*?)\}.*?\}'
         terraform_matches = re.findall(terraform_block_pattern, content, re.DOTALL | re.MULTILINE)
 
         for match in terraform_matches:
-            # Extract provider declarations
-            # Pattern: provider_name = { source = "...", version = "..." }
-            provider_pattern = r'(\w+)\s*=\s*\{[^{}]*source\s*=\s*"([^"]+)"[^{}]*(?:version\s*=\s*"([^"]+)")?[^{}]*\}'
-            provider_matches = re.findall(provider_pattern, match, re.DOTALL)
+            # Extract provider declarations - handle compact format
+            # First try to find source and version separately
+            provider_entries = re.findall(r'(\w+)\s*=\s*\{([^}]+)\}', match)
 
-            for _, source, version in provider_matches:
-                version_constraint = version if version else ">= 0.0.0"
-                providers.add((source, version_constraint))
+            for provider_name, provider_config in provider_entries:
+                # Extract source
+                source_match = re.search(r'source\s*=\s*"([^"]+)"', provider_config)
+                if source_match:
+                    source = source_match.group(1)
+
+                    # Extract version (optional)
+                    version_match = re.search(r'version\s*=\s*"([^"]+)"', provider_config)
+                    version = version_match.group(1) if version_match else ">= 0.0.0"
+
+                    providers.add((source, version))
 
         # Also look for legacy provider syntax in provider blocks
         legacy_pattern = r'provider\s+"([^"]+)"\s*\{'
@@ -119,6 +126,9 @@ class StirRuntime:
             else:
                 source = provider_name
             providers.add((source, ">= 0.0.0"))
+
+        # Debug: print what we found
+        console.print(f"[blue]Found {len(providers)} providers: {providers}[/blue]")
 
         return providers
 
@@ -141,16 +151,19 @@ class StirRuntime:
             terraform_config = self._generate_provider_manifest(providers)
             manifest_file.write_text(terraform_config)
 
+            console.print(f"[blue]Generated terraform config:[/blue]\n{terraform_config}")
+
             # Run terraform init to download providers
             from tofusoup.stir.terraform import run_terraform_command
 
             console.print(f"[blue]📥 Downloading {len(providers)} providers to cache...[/blue]")
+            console.print(f"[blue]Cache directory: {self.plugin_cache_dir}[/blue]")
 
             init_args = ["init", "-no-color", "-input=false"]
             if self.force_upgrade:
                 init_args.append("-upgrade")
 
-            init_rc, _, _, _, _, _ = await run_terraform_command(
+            init_rc, _, stdout_log, stderr_log, _, _ = await run_terraform_command(
                 temp_path,
                 init_args,
                 runtime=None,  # Don't use runtime for provider preparation
@@ -158,6 +171,12 @@ class StirRuntime:
             )
 
             if init_rc != 0:
+                # Read logs to see what went wrong
+                stdout_content = stdout_log.read_text() if stdout_log.exists() else "No stdout"
+                stderr_content = stderr_log.read_text() if stderr_log.exists() else "No stderr"
+                console.print(f"[red]Terraform init failed with code {init_rc}[/red]")
+                console.print(f"[red]STDOUT:[/red] {stdout_content}")
+                console.print(f"[red]STDERR:[/red] {stderr_content}")
                 raise RuntimeError("Failed to download providers to cache")
 
     def _generate_provider_manifest(self, providers: set[tuple[str, str]]) -> str:
