@@ -145,17 +145,12 @@ norecursedirs = [
     ".git", ".hg", ".svn", "*_build", "build", "dist", "*.egg-info",
     ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
 ]
-# Disable specific loggers
-log_disable = [
-    "markdown_it",
-    "asyncio"
+
+[tool.pytest.ini_options]
+log_levels = [
+    "markdown_it = WARNING",
+    "asyncio = WARNING",
 ]
-
-# Set minimum levels for specific loggers
-#[tool.pytest.ini_options.log_level]
-#  "markdown_it" = "WARNING"
-#  "asyncio" = "WARNING"
-
 
 [tool.ruff]
 line-length = 111
