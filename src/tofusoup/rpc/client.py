@@ -111,9 +111,7 @@ class KVClient:
             logger.info(
                 f"Updating rpcplugin_config PLUGIN_MAGIC_COOKIE_KEY to '{go_server_expected_cookie_key}'"
             )
-            rpcplugin_config.set(
-                "PLUGIN_MAGIC_COOKIE_KEY", go_server_expected_cookie_key
-            )
+            rpcplugin_config.plugin_magic_cookie_key = go_server_expected_cookie_key
         else:
             logger.info(
                 f"rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY already '{go_server_expected_cookie_key}'"
@@ -126,9 +124,7 @@ class KVClient:
             logger.info(
                 f"Updating rpcplugin_config PLUGIN_MAGIC_COOKIE_VALUE to '{go_server_expected_cookie_value}'"
             )
-            rpcplugin_config.set(
-                "PLUGIN_MAGIC_COOKIE_VALUE", go_server_expected_cookie_value
-            )
+            rpcplugin_config.plugin_magic_cookie_value = go_server_expected_cookie_value
         else:
             logger.info(
                 f"rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE already '{go_server_expected_cookie_value}'"
@@ -152,7 +148,7 @@ class KVClient:
             logger.info(
                 f"Setting rpcplugin_config.PLUGIN_AUTO_MTLS to: {pyvider_client_mtls_mode}"
             )
-            rpcplugin_config.set("PLUGIN_AUTO_MTLS", pyvider_client_mtls_mode)
+            rpcplugin_config.plugin_auto_mtls = pyvider_client_mtls_mode
 
             if self.enable_mtls:
                 client_cert_env = os.getenv("PLUGIN_CLIENT_CERT")
@@ -163,17 +159,17 @@ class KVClient:
                     logger.info(
                         f"Updating rpcplugin_config with PLUGIN_CLIENT_CERT: {client_cert_env}"
                     )
-                    rpcplugin_config.set("PLUGIN_CLIENT_CERT", client_cert_env)
+                    rpcplugin_config.plugin_client_cert = client_cert_env
                 if client_key_env:
                     logger.info(
                         f"Updating rpcplugin_config with PLUGIN_CLIENT_KEY: {client_key_env}"
                     )
-                    rpcplugin_config.set("PLUGIN_CLIENT_KEY", client_key_env)
+                    rpcplugin_config.plugin_client_key = client_key_env
                 if server_ca_env:
                     logger.info(
                         f"Updating rpcplugin_config with PLUGIN_SERVER_CERT_CHAIN: {server_ca_env}"
                     )
-                    rpcplugin_config.set("PLUGIN_SERVER_CERT_CHAIN", server_ca_env)
+                    rpcplugin_config.plugin_server_cert_chain = server_ca_env
 
             logger.debug(f"KVClient attempting to start server: {self.server_path}")
 
