@@ -1,16 +1,12 @@
 import pytest
-from click.testing import CliRunner
 from unittest.mock import patch, AsyncMock, MagicMock, Mock
+
+from provide.testkit import isolated_cli_runner, click_testing_mode
 
 from tofusoup.registry import cli as registry_cli
 from tofusoup.registry.search.engine import SearchResult
 from tofusoup.registry.models.provider import Provider, ProviderVersion
 from tofusoup.registry.models.module import Module, ModuleVersion
-
-
-@pytest.fixture
-def runner():
-    return CliRunner()
 
 
 @pytest.fixture
@@ -55,44 +51,46 @@ def mock_module_versions():
 
 
 class TestRegistrySearchCommand:
-    def test_search_command_with_results(self, runner):
+    def test_search_command_with_results(self, click_testing_mode):
         mock_results = [
             SearchResult(
-                id="1", 
-                name="aws", 
-                namespace="hashicorp", 
-                type="provider", 
+                id="1",
+                name="aws",
+                namespace="hashicorp",
+                type="provider",
                 registry_source="terraform",
                 provider_name=None,
-                latest_version="6.8.0", 
+                latest_version="6.8.0",
                 total_versions=446,
                 description="terraform-provider-aws"
             ),
             SearchResult(
-                id="2", 
-                name="vpc", 
-                namespace="terraform-aws-modules", 
-                type="module", 
+                id="2",
+                name="vpc",
+                namespace="terraform-aws-modules",
+                type="module",
                 registry_source="terraform",
                 provider_name="aws",
-                latest_version="6.0.1", 
+                latest_version="6.0.1",
                 total_versions=231,
                 description="Terraform module to create AWS VPC resources"
             )
         ]
-        
-        with patch('asyncio.run', return_value=mock_results):
-            result = runner.invoke(registry_cli.registry_cli, ["search", "aws"])
-            assert result.exit_code == 0
-            assert "Found 2 results for 'aws':" in result.output
-            assert "hashicorp/aws" in result.output
-            assert "terraform-aws-modules/vpc/aws" in result.output
+
+        with isolated_cli_runner() as runner:
+            with patch('asyncio.run', return_value=mock_results):
+                result = runner.invoke(registry_cli.registry_cli, ["search", "aws"])
+                assert result.exit_code == 0
+                assert "Found 2 results for 'aws':" in result.output
+                assert "hashicorp/aws" in result.output
+                assert "terraform-aws-modules/vpc/aws" in result.output
     
-    def test_search_command_no_results(self, runner):
-        with patch('asyncio.run', return_value=[]):
-            result = runner.invoke(registry_cli.registry_cli, ["search", "nonexistent"])
-            assert result.exit_code == 0
-            assert "No results found for 'nonexistent'" in result.output
+    def test_search_command_no_results(self, click_testing_mode):
+        with isolated_cli_runner() as runner:
+            with patch('asyncio.run', return_value=[]):
+                result = runner.invoke(registry_cli.registry_cli, ["search", "nonexistent"])
+                assert result.exit_code == 0
+                assert "No results found for 'nonexistent'" in result.output
     
     def test_search_command_with_type_filter(self, runner):
         mock_results = [

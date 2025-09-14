@@ -5,6 +5,13 @@ import sys
 import os
 from unittest.mock import patch
 
+from provide.testkit import (
+    isolated_cli_runner,
+    click_testing_mode,
+    reset_foundation_setup_for_testing,
+    clean_event_loop,
+)
+
 def pytest_configure(config):
     """Register custom marks."""
     config.addinivalue_line(
@@ -85,6 +92,12 @@ def disable_textual_ui_in_tests(monkeypatch):
     # Set environment variable to disable any Textual UI features during testing
     monkeypatch.setenv("TOFUSOUP_DISABLE_UI", "1")
     monkeypatch.setenv("TEXTUAL_LOG", "none")
+
+@pytest.fixture(autouse=True)
+def reset_foundation_for_tests():
+    """Reset Foundation state between tests for proper isolation."""
+    yield
+    reset_foundation_setup_for_testing()
 
 @pytest.fixture(scope="session")
 def go_soup_harness_path() -> Path:
