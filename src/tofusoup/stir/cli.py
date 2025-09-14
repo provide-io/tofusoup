@@ -9,11 +9,12 @@ from time import monotonic
 
 import click
 
-from tofusoup.stir.config import MAX_CONCURRENT_TESTS
+from tofusoup.stir.config import MAX_CONCURRENT_TESTS, STIR_PLUGIN_CACHE_DIR
 from tofusoup.stir.display import console
 from tofusoup.stir.executor import execute_tests, initialize_tests
 from tofusoup.stir.models import TestResult
 from tofusoup.stir.reporting import print_failure_report, print_summary_panel
+from tofusoup.stir.runtime import StirRuntime
 
 
 def process_results(results: list[TestResult | Exception]) -> tuple[list[TestResult], int, bool]:
@@ -41,7 +42,7 @@ def process_results(results: list[TestResult | Exception]) -> tuple[list[TestRes
     return failed_tests, skipped_count, all_passed
 
 
-async def main(target_path: str) -> None:
+async def main(target_path: str, runtime: StirRuntime) -> None:
     """Main execution function for stir tests."""
     start_time = monotonic()
     base_dir = Path(target_path).resolve()
@@ -54,6 +55,10 @@ async def main(target_path: str) -> None:
         console.print(f"🤷 No directories found in '{base_dir}'.")
         return
 
+    # Phase 1: Provider preparation (serial)
+    await runtime.prepare_providers(test_dirs)
+
+    # Phase 2: Test execution (parallel)
     initialize_tests(test_dirs)
 
     console.print("[bold]🚀 Tofusoup Stir[/bold]")
@@ -61,7 +66,7 @@ async def main(target_path: str) -> None:
         f"Found {len(test_dirs)} test suites in '{base_dir}'. Running up to {MAX_CONCURRENT_TESTS} in parallel..."
     )
 
-    results = await execute_tests(test_dirs)
+    results = await execute_tests(test_dirs, runtime)
     failed_tests, skipped_count, all_passed = process_results(results)
 
     duration = monotonic() - start_time
@@ -93,7 +98,17 @@ async def main(target_path: str) -> None:
     is_flag=True,
     help="Output results in JSON format",
 )
-def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool) -> None:
+@click.option(
+    "--upgrade",
+    is_flag=True,
+    help="Force upgrade providers to latest versions",
+)
+@click.option(
+    "--no-cache",
+    is_flag=True,
+    help="Disable plugin caching (downloads providers for each test)",
+)
+def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool, upgrade: bool, no_cache: bool) -> None:
     """
     Run multi-threaded Terraform tests against all subdirectories in a given PATH.
 
@@ -101,6 +116,10 @@ def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool) -> 
     as configured in soup.toml's [workenv.matrix] section or wrkenv.toml's [matrix] section.
     """
     try:
+        # Initialize runtime with configuration
+        plugin_cache_dir = None if no_cache else STIR_PLUGIN_CACHE_DIR
+        runtime = StirRuntime(plugin_cache_dir=plugin_cache_dir, force_upgrade=upgrade)
+
         if matrix:
             # Run matrix testing
             from tofusoup.testing.matrix import run_matrix_stir_tests
@@ -117,8 +136,8 @@ def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool) -> 
                 import json
                 console.print(json.dumps(results, indent=2, default=str))
         else:
-            # Run standard single-version testing
-            asyncio.run(main(path))
+            # Run standard single-version testing with runtime
+            asyncio.run(main(path, runtime))
 
     except KeyboardInterrupt:
         console.print("\n[yellow]⚠️ Interrupted by user[/yellow]")
