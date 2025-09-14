@@ -35,6 +35,9 @@
       "Bash(PYTHONPATH=/Users/tim/code/gh/provide-io/tofusoup/src:$PYTHONPATH python /Users/tim/code/gh/provide-io/tofusoup/src/tofusoup/rpc/server.py --help)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "/Users/tim/code/gh/provide-io"
+    ]
   }
 }
