@@ -76,14 +76,18 @@ class StirRuntime:
 
         for test_dir in test_dirs:
             tf_files = list(test_dir.glob("*.tf"))
+            console.log(f"[{test_dir.name}] Found {len(tf_files)} .tf files")
             for tf_file in tf_files:
                 try:
                     content = tf_file.read_text(encoding="utf-8")
                     dir_providers = self._extract_providers_from_content(content)
+                    if dir_providers:
+                        console.log(f"[{test_dir.name}] Found providers in {tf_file.name}: {dir_providers}")
                     providers.update(dir_providers)
                 except Exception as e:
                     console.log(f"[{test_dir.name}] Warning: Could not read {tf_file.name}: {e}")
 
+        console.log(f"Total providers found: {providers}")
         return providers
 
     def _extract_providers_from_content(self, content: str) -> set[tuple[str, str]]:
