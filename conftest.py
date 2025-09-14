@@ -11,5 +11,7 @@
 # For now, this file establishes the correct location for such definitions.
 # Add any required top-level plugins here.
 
+# Import pytest hooks to suppress noisy loggers during tests
+from provide.testkit.logger.hooks import pytest_runtest_setup
 
 # 🍲🥄🧪🪄
