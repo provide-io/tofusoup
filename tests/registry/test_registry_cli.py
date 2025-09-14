@@ -146,9 +146,16 @@ class TestProviderCommands:
 
 class TestModuleCommands:
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
-    def test_module_info_command(self, mock_tf_reg, click_testing_mode, mock_module_details):
+    def test_module_info_command(self, mock_tf_reg, click_testing_mode, clean_event_loop, sample_module):
         mock_tf_instance = AsyncMock()
-        mock_tf_instance.get_module_details = AsyncMock(return_value=mock_module_details)
+        mock_tf_instance.get_module_details = AsyncMock(return_value={
+            "namespace": sample_module.namespace,
+            "name": sample_module.name,
+            "provider": sample_module.provider_name,
+            "description": sample_module.description,
+            "source": sample_module.source_url,
+            "download_count": sample_module.downloads
+        })
         mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         

@@ -11,23 +11,6 @@ from provide.foundation import logger
 from provide.foundation.concurrency import async_run
 
 
-def safe_async_run(main):
-    """
-    Safely run async function with Click testing compatibility.
-    
-    This handles the "I/O operation on closed file" error that occurs
-    when using asyncio.run() inside Click's CliRunner test environment.
-    """
-    import sys
-    
-    # Detect if we're in a pytest testing environment
-    if 'pytest' in sys.modules or 'PYTEST_CURRENT_TEST' in os.environ:
-        # In testing, just use asyncio.run directly without stream manipulation
-        # The issue is in Click's cleanup, not in the async execution itself
-        return asyncio.run(main())
-    else:
-        # In normal operation, use Foundation's async_run
-        return async_run(main)
 
 from tofusoup.config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
 from tofusoup.registry.base import RegistryConfig
@@ -100,7 +83,7 @@ def provider_info(ctx: click.Context, provider: str, registry: str) -> None:
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    safe_async_run(fetch_info)
+    async_run(fetch_info)
 
 
 @provider_group.command("versions")
@@ -160,7 +143,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    safe_async_run(fetch_versions)
+    async_run(fetch_versions)
 
 
 # Module subcommands
@@ -218,7 +201,7 @@ def module_info(ctx: click.Context, module: str, registry: str) -> None:
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    safe_async_run(fetch_info)
+    async_run(fetch_info)
 
 
 @module_group.command("versions")
@@ -285,7 +268,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    safe_async_run(fetch_versions)
+    async_run(fetch_versions)
 
 
 # Search command (moved from sui)
@@ -320,7 +303,7 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
     )
 
     try:
-        results = safe_async_run(lambda: async_search_runner(search_term, registry_name))
+        results = async_run(lambda: async_search_runner(search_term, registry_name))
 
         # Filter by type if specified
         if resource_type != "all":
@@ -529,7 +512,7 @@ def compare_command(resource: str) -> None:
                 if len(all_versions) > 10:
                     click.echo(f"  ... and {len(all_versions) - 10} more versions")
 
-    safe_async_run(compare_resources)
+    async_run(compare_resources)
 
 
 # 🍲🥄🖥️🪄
