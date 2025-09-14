@@ -146,11 +146,16 @@ norecursedirs = [
     ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
 ]
 
-[tool.pytest.ini_options]
 log_levels = [
     "markdown_it = WARNING",
     "asyncio = WARNING",
 ]
+
+# [tool.pytest.ini_options]
+# log_levels = [
+#     "markdown_it = WARNING",
+#     "asyncio = WARNING",
+# ]
 
 [tool.ruff]
 line-length = 111
