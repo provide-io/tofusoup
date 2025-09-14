@@ -47,7 +47,7 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
     start_time = monotonic()
     base_dir = Path(target_path).resolve()
 
-    test_dirs = sorted([d for d in base_dir.iterdir() if d.is_dir() and not d.name.startswith(".")])
+    test_dirs = sorted([d for d in base_dir.iterdir() if d.is_dir() and (not d.name.startswith(".") or d.name.startswith(".garnish"))])
     if any(base_dir.glob("*.tf")):
         test_dirs.append(base_dir)
 
