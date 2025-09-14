@@ -56,8 +56,11 @@ class StirRuntime:
             self._provider_cache_ready = True
             return
 
+        # Deduplicate providers by source, preferring higher versions
+        deduplicated_providers = self._deduplicate_providers(required_providers)
+
         # Create a temporary manifest to download all providers
-        await self._download_providers(required_providers)
+        await self._download_providers(deduplicated_providers)
 
         self._provider_cache_ready = True
         console.print(f"[bold green]✅ Providers prepared[/bold green] ({len(required_providers)} unique providers)")
@@ -95,42 +98,81 @@ class StirRuntime:
         """
         providers = set()
 
-        # Match terraform block with required_providers (handle both compact and expanded formats)
-        terraform_block_pattern = r'terraform\s*\{.*?required_providers\s*\{(.*?)\}.*?\}'
+        # Match required_providers block content
+        terraform_block_pattern = r'required_providers\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}'
         terraform_matches = re.findall(terraform_block_pattern, content, re.DOTALL | re.MULTILINE)
 
         for match in terraform_matches:
-            # Extract provider declarations - handle compact format
-            # First try to find source and version separately
-            provider_entries = re.findall(r'(\w+)\s*=\s*\{([^}]+)\}', match)
+            # Find provider name and extract everything between braces
+            # Handle compact format like: pyvider = { source = "...", version = "..." }
+            provider_pattern = r'(\w+)\s*=\s*\{\s*(.+?)\s*(?:\}|$)'
+            provider_match = re.search(provider_pattern, match.strip(), re.DOTALL)
 
-            for provider_name, provider_config in provider_entries:
+            if provider_match:
+                provider_name = provider_match.group(1)
+                provider_content = provider_match.group(2)
+
                 # Extract source
-                source_match = re.search(r'source\s*=\s*"([^"]+)"', provider_config)
+                source_match = re.search(r'source\s*=\s*"([^"]+)"', provider_content)
                 if source_match:
                     source = source_match.group(1)
 
+                    # Skip local providers - they can't be downloaded from registries
+                    if source.startswith("local/"):
+                        continue
+
                     # Extract version (optional)
-                    version_match = re.search(r'version\s*=\s*"([^"]+)"', provider_config)
+                    version_match = re.search(r'version\s*=\s*"([^"]+)"', provider_content)
                     version = version_match.group(1) if version_match else ">= 0.0.0"
 
                     providers.add((source, version))
 
-        # Also look for legacy provider syntax in provider blocks
-        legacy_pattern = r'provider\s+"([^"]+)"\s*\{'
-        legacy_matches = re.findall(legacy_pattern, content)
-        for provider_name in legacy_matches:
-            # For legacy syntax, assume hashicorp namespace if no explicit source
-            if "/" not in provider_name:
-                source = f"hashicorp/{provider_name}"
-            else:
-                source = provider_name
-            providers.add((source, ">= 0.0.0"))
-
-        # Debug: print what we found
-        console.print(f"[blue]Found {len(providers)} providers: {providers}[/blue]")
+        # Only look for legacy provider syntax if we didn't find any in required_providers
+        # AND if we're scanning files that don't have terraform blocks with required_providers
+        if not providers and 'required_providers' not in content:
+            legacy_pattern = r'provider\s+"([^"]+)"\s*\{'
+            legacy_matches = re.findall(legacy_pattern, content)
+            for provider_name in legacy_matches:
+                # For legacy syntax, assume hashicorp namespace if no explicit source
+                if "/" not in provider_name:
+                    source = f"hashicorp/{provider_name}"
+                else:
+                    source = provider_name
+                providers.add((source, ">= 0.0.0"))
 
         return providers
+
+    def _deduplicate_providers(self, providers: set[tuple[str, str]]) -> set[tuple[str, str]]:
+        """
+        Deduplicate providers by source, keeping the one with the highest version.
+
+        Args:
+            providers: Set of (source, version_constraint) tuples
+
+        Returns:
+            Deduplicated set of providers
+        """
+        # Group by source
+        by_source: dict[str, list[str]] = {}
+        for source, version in providers:
+            if source not in by_source:
+                by_source[source] = []
+            by_source[source].append(version)
+
+        # For each source, pick the best version constraint
+        result = set()
+        for source, versions in by_source.items():
+            # If we have ">= 0.0.0", prefer specific versions
+            specific_versions = [v for v in versions if not v.startswith(">=")]
+            if specific_versions:
+                # Use the first specific version found (they should all be the same for real projects)
+                version = specific_versions[0]
+            else:
+                # Use the first constraint found
+                version = versions[0]
+            result.add((source, version))
+
+        return result
 
     async def _download_providers(self, providers: set[tuple[str, str]]) -> None:
         """
@@ -151,13 +193,10 @@ class StirRuntime:
             terraform_config = self._generate_provider_manifest(providers)
             manifest_file.write_text(terraform_config)
 
-            console.print(f"[blue]Generated terraform config:[/blue]\n{terraform_config}")
-
             # Run terraform init to download providers
             from tofusoup.stir.terraform import run_terraform_command
 
             console.print(f"[blue]📥 Downloading {len(providers)} providers to cache...[/blue]")
-            console.print(f"[blue]Cache directory: {self.plugin_cache_dir}[/blue]")
 
             init_args = ["init", "-no-color", "-input=false"]
             if self.force_upgrade:
@@ -197,8 +236,8 @@ class StirRuntime:
         for i, (source, version) in enumerate(sorted(providers)):
             # Extract provider name from source (e.g., "hashicorp/aws" -> "aws")
             provider_name = source.split("/")[-1]
-            # Ensure unique names in case of conflicts
-            provider_key = f"{provider_name}_{i}" if i > 0 else provider_name
+            # Ensure unique names in case of conflicts - use dashes instead of underscores
+            provider_key = f"{provider_name}-{i}" if i > 0 else provider_name
 
             lines.append(f'    {provider_key} = {{')
             lines.append(f'      source  = "{source}"')
