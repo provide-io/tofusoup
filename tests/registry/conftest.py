@@ -57,10 +57,10 @@ def sample_module():
         id="terraform-aws-modules/vpc/aws",
         namespace="terraform-aws-modules",
         name="vpc",
-        provider="aws",
+        provider_name="aws",
         description="Terraform module to create AWS VPC resources",
         downloads=500000,
-        source="https://github.com/terraform-aws-modules/terraform-aws-vpc"
+        source_url="https://github.com/terraform-aws-modules/terraform-aws-vpc"
     )
 
 
