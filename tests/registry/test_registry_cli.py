@@ -83,10 +83,16 @@ class TestRegistrySearchCommand:
 class TestProviderCommands:
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     @patch('tofusoup.registry.cli.OpenTofuRegistry')
-    def test_provider_info_command(self, mock_tofu_reg, mock_tf_reg, click_testing_mode, mock_provider_details):
+    def test_provider_info_command(self, mock_tofu_reg, mock_tf_reg, click_testing_mode, sample_provider):
         # Setup mocks
         mock_tf_instance = AsyncMock()
-        mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
+        mock_tf_instance.get_provider_details = AsyncMock(return_value={
+            "namespace": sample_provider.namespace,
+            "name": sample_provider.name,
+            "description": sample_provider.description,
+            "source": sample_provider.source,
+            "download_count": sample_provider.downloads
+        })
         mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
