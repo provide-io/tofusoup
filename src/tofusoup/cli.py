@@ -40,7 +40,7 @@ LAZY_COMMANDS = {
     "we": ("wrknv.cli", "workenv_cli"),  # Alias for workenv
     "test": ("tofusoup.testing.cli", "test_cli"),
     "wire": ("tofusoup.wire.cli", "wire"),
-    # Note: garnish command has been moved to separate garnish package
+    # Note: plating command has been moved to separate plating package
 }
 
 
