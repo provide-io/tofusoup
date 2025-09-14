@@ -105,16 +105,18 @@ async def run_terraform_command(
     env["TF_LOG_PATH"] = str(tf_log_path)
     env[ENV_VARS["PYVIDER_PRIVATE_STATE_SHARED_SECRET"]] = "stir-test-secret"
 
-    # Always require runtime for proper environment management
-    if not runtime:
-        raise RuntimeError("StirRuntime is required for terraform command execution")
-
-    env = runtime.get_terraform_env(env)
-
-    # Support override for provider preparation phase
-    if override_cache_dir and override_cache_dir.exists():
-        env["TF_PLUGIN_CACHE_DIR"] = str(override_cache_dir)
-        env["TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE"] = "1"
+    # Handle provider preparation phase (runtime=None with override_cache_dir)
+    if runtime is None and override_cache_dir:
+        # Special case: provider preparation phase
+        if override_cache_dir.exists():
+            env["TF_PLUGIN_CACHE_DIR"] = str(override_cache_dir)
+            env["TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE"] = "1"
+    elif runtime:
+        # Normal execution: use runtime-managed environment
+        env = runtime.get_terraform_env(env)
+    else:
+        # Neither runtime nor override provided
+        raise RuntimeError("Either StirRuntime or override_cache_dir must be provided for terraform command execution")
 
     command = [TF_COMMAND, *args]
 
