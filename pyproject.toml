@@ -146,6 +146,12 @@ norecursedirs = [
     ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
 ]
 
+# Set minimum levels for specific loggers
+#[tool.pytest.ini_options.log_level]
+#  "markdown_it" = "WARNING"
+#  "asyncio" = "WARNING"
+
+
 [tool.ruff]
 line-length = 111
 indent-width = 4
