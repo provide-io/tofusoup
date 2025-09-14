@@ -37,7 +37,8 @@
       "WebSearch",
       "Read(//Users/tim/.tofusoup/**)",
       "Bash(export PATH=\"workenv/tofusoup_darwin_arm64/bin:$PATH\")",
-      "Bash(timeout 10 soup:*)"
+      "Bash(timeout 10 soup:*)",
+      "Bash(timeout 15 soup:*)"
     ],
     "deny": [],
     "ask": [],
