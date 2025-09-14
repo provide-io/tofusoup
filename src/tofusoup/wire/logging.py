@@ -3,7 +3,7 @@
 #
 """Centralized logging configuration using Pyvider Telemetry."""
 
-from provide.foundation import LoggingConfig, TelemetryConfig, setup_telemetry
+from provide.foundation import LoggingConfig, TelemetryConfig, get_hub
 from tofusoup.config.defaults import DEFAULT_LOG_LEVEL
 
 
@@ -22,7 +22,8 @@ def configure_logging() -> None:
             logger_name_emoji_prefix_enabled=False,
         )
     )
-    setup_telemetry(config)
+    hub = get_hub()
+    hub.initialize_foundation(config=config)
 
 
 # <3 🍲 🍜 🍥>

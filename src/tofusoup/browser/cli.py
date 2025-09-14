@@ -4,7 +4,7 @@
 #
 
 import click
-from provide.foundation import logger, setup_telemetry
+from provide.foundation import logger, get_hub
 
 from tofusoup.browser.ui.app import TFBrowserApp
 
@@ -42,7 +42,8 @@ def tui_command(ctx: click.Context, registry_name: str | None) -> None:
         # FIX: Reset the logger to its default state (writing to stderr).
         # This is critical to prevent logging calls after the TUI has exited
         # from trying to write to a destroyed widget, which causes the NoActiveAppError.
-        setup_telemetry()  # Re-initialize to default stderr logging
+        hub = get_hub()
+        hub.initialize_foundation()  # Re-initialize to default stderr logging
         logger.info("TUI browser exited.")
 
 
