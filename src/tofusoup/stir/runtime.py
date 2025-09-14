@@ -153,6 +153,7 @@ class StirRuntime:
             init_rc, _, _, _, _, _ = await run_terraform_command(
                 temp_path,
                 init_args,
+                runtime=None,  # Don't use runtime for provider preparation
                 override_cache_dir=self.plugin_cache_dir
             )
 
