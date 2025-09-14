@@ -17,6 +17,11 @@ TF_COMMAND = shutil.which("tofu") or shutil.which("terraform") or "tofu"
 MAX_CONCURRENT_TESTS = os.cpu_count() or 4
 LOGS_DIR = Path("output/")
 
+# Runtime configuration
+DEFAULT_PLUGIN_CACHE_DIR = Path.home() / ".terraform.d" / "plugin-cache"
+STIR_PLUGIN_CACHE_DIR = Path.home() / ".tofusoup" / "plugin-cache"
+PROVIDER_PREPARATION_TIMEOUT = 300  # 5 minutes
+
 # Environment variable names
 ENV_VARS = {
     "TF_LOG": ENV_TF_LOG,
