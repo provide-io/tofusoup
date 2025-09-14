@@ -13,6 +13,7 @@ from typing import Any
 
 from tofusoup.stir.config import ENV_VARS, LOGS_DIR, TF_COMMAND
 from tofusoup.stir.display import console, test_statuses
+from tofusoup.stir.runtime import StirRuntime
 
 
 async def _tail_tf_log(log_path: Path, process: asyncio.subprocess.Process, dir_name: str) -> None:
@@ -73,8 +74,10 @@ def _update_function_counts(message: str, dir_name: str) -> None:
 async def run_terraform_command(
     directory: Path,
     args: list[str],
+    runtime: StirRuntime | None = None,
     tail_log: bool = False,
     capture_stdout: bool = False,
+    override_cache_dir: Path | None = None,
 ) -> tuple[int, str, Path, Path, Path, list[dict[str, Any]]]:
     """
     A dedicated runner for Terraform commands that sets up the correct environment,
@@ -102,10 +105,16 @@ async def run_terraform_command(
     env["TF_LOG_PATH"] = str(tf_log_path)
     env[ENV_VARS["PYVIDER_PRIVATE_STATE_SHARED_SECRET"]] = "stir-test-secret"
 
-    # Use plugin cache if available to avoid re-downloading providers
-    plugin_cache_dir = Path.home() / ".terraform.d" / "plugin-cache"
-    if plugin_cache_dir.exists():
-        env["TF_PLUGIN_CACHE_DIR"] = str(plugin_cache_dir)
+    # Always require runtime for proper environment management
+    if not runtime:
+        raise RuntimeError("StirRuntime is required for terraform command execution")
+
+    env = runtime.get_terraform_env(env)
+
+    # Support override for provider preparation phase
+    if override_cache_dir and override_cache_dir.exists():
+        env["TF_PLUGIN_CACHE_DIR"] = str(override_cache_dir)
+        env["TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE"] = "1"
 
     command = [TF_COMMAND, *args]
 

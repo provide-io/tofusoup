@@ -11,10 +11,11 @@ from time import monotonic
 from tofusoup.stir.config import LOGS_DIR, MAX_CONCURRENT_TESTS
 from tofusoup.stir.display import console, test_statuses
 from tofusoup.stir.models import TestResult
+from tofusoup.stir.runtime import StirRuntime
 from tofusoup.stir.terraform import run_terraform_command
 
 
-async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore) -> TestResult:
+async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore, runtime: StirRuntime) -> TestResult:
     """Execute the full lifecycle of a Terraform test."""
     dir_name = directory.name
     start_time = monotonic()
@@ -54,8 +55,12 @@ async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore) -> T
                         await asyncio.to_thread(path.unlink, missing_ok=True)
 
             test_statuses[dir_name].update(text="INIT", style="yellow")
+
+            # Use providers that were pre-downloaded by runtime
+            runtime.validate_ready()
+
             init_rc, _, _, _, _, _ = await run_terraform_command(
-                directory, ["init", "-no-color", "-input=false", "-upgrade"]
+                directory, ["init", "-no-color", "-input=false"], runtime=runtime
             )
             if init_rc != 0:
                 end_time = monotonic()
@@ -83,13 +88,13 @@ async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore) -> T
                 tf_log,
                 parsed_logs,
             ) = await run_terraform_command(
-                directory, ["apply", "-input=false", "-auto-approve"], tail_log=True
+                directory, ["apply", "-input=false", "-auto-approve"], runtime=runtime, tail_log=True
             )
 
             if apply_rc == 0:
                 test_statuses[dir_name].update(text="ANALYZING", style="magenta")
                 show_rc, show_stdout, _, _, _, _ = await run_terraform_command(
-                    directory, ["show", "-json"], capture_stdout=True
+                    directory, ["show", "-json"], runtime=runtime, capture_stdout=True
                 )
 
                 if show_rc == 0:
@@ -113,6 +118,7 @@ async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore) -> T
                 await run_terraform_command(
                     directory,
                     ["destroy", "-auto-approve", "-input=false"],
+                    runtime=runtime,
                     tail_log=True,
                 )
                 end_time = monotonic()
@@ -148,6 +154,7 @@ async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore) -> T
                 await run_terraform_command(
                     directory,
                     ["destroy", "-auto-approve", "-input=false"],
+                    runtime=runtime,
                     tail_log=True,
                 )
                 end_time = monotonic()
@@ -221,8 +228,8 @@ def initialize_tests(test_dirs: list[Path]) -> None:
         }
 
 
-async def execute_tests(test_dirs: list[Path]) -> list[TestResult | Exception]:
+async def execute_tests(test_dirs: list[Path], runtime: StirRuntime) -> list[TestResult | Exception]:
     """Execute all tests concurrently."""
     semaphore = asyncio.Semaphore(MAX_CONCURRENT_TESTS)
-    tasks = [run_test_lifecycle(d, semaphore) for d in test_dirs]
+    tasks = [run_test_lifecycle(d, semaphore, runtime) for d in test_dirs]
     return await asyncio.gather(*tasks, return_exceptions=True)
