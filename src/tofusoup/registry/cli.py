@@ -5,10 +5,20 @@
 
 import asyncio
 import os
+import sys
 
 import click
 from provide.foundation import logger
 from provide.foundation.concurrency import async_run
+
+
+def safe_async_run(coro_func):
+    """
+    Safely run async function, handling both testing and production contexts.
+
+    Uses asyncio.run() directly to avoid event loop conflicts in testing.
+    """
+    return asyncio.run(coro_func())
 
 
 
@@ -83,7 +93,7 @@ def provider_info(ctx: click.Context, provider: str, registry: str) -> None:
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    async_run(fetch_info)
+    safe_async_run(fetch_info)
 
 
 @provider_group.command("versions")
@@ -143,7 +153,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    async_run(fetch_versions)
+    safe_async_run(fetch_versions)
 
 
 # Module subcommands
@@ -201,7 +211,7 @@ def module_info(ctx: click.Context, module: str, registry: str) -> None:
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    async_run(fetch_info)
+    safe_async_run(fetch_info)
 
 
 @module_group.command("versions")
@@ -268,7 +278,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
 
-    async_run(fetch_versions)
+    safe_async_run(fetch_versions)
 
 
 # Search command (moved from sui)
@@ -303,7 +313,7 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
     )
 
     try:
-        results = async_run(lambda: async_search_runner(search_term, registry_name))
+        results = safe_async_run(lambda: async_search_runner(search_term, registry_name))
 
         # Filter by type if specified
         if resource_type != "all":
@@ -512,7 +522,7 @@ def compare_command(resource: str) -> None:
                 if len(all_versions) > 10:
                     click.echo(f"  ... and {len(all_versions) - 10} more versions")
 
-    async_run(compare_resources)
+    safe_async_run(compare_resources)
 
 
 # 🍲🥄🖥️🪄
