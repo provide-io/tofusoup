@@ -9,45 +9,6 @@ from tofusoup.registry.models.provider import Provider, ProviderVersion
 from tofusoup.registry.models.module import Module, ModuleVersion
 
 
-@pytest.fixture
-def mock_provider_details():
-    return {
-        "namespace": "hashicorp",
-        "name": "aws",
-        "description": "terraform-provider-aws",
-        "source": "https://github.com/hashicorp/terraform-provider-aws",
-        "download_count": 1000000
-    }
-
-
-@pytest.fixture
-def mock_provider_versions():
-    return [
-        MagicMock(version="6.8.0"),
-        MagicMock(version="6.7.0"),
-        MagicMock(version="6.6.0")
-    ]
-
-
-@pytest.fixture
-def mock_module_details():
-    return {
-        "namespace": "terraform-aws-modules",
-        "name": "vpc",
-        "provider": "aws",
-        "description": "Terraform module to create AWS VPC resources",
-        "source": "https://github.com/terraform-aws-modules/terraform-aws-vpc",
-        "download_count": 500000
-    }
-
-
-@pytest.fixture
-def mock_module_versions():
-    return [
-        MagicMock(version="6.0.1", published_at="2024-01-15"),
-        MagicMock(version="6.0.0", published_at="2024-01-10"),
-        MagicMock(version="5.9.0", published_at="2023-12-20")
-    ]
 
 
 class TestRegistrySearchCommand:
@@ -92,7 +53,7 @@ class TestRegistrySearchCommand:
                 assert result.exit_code == 0
                 assert "No results found for 'nonexistent'" in result.output
     
-    def test_search_command_with_type_filter(self, runner):
+    def test_search_command_with_type_filter(self, click_testing_mode):
         mock_results = [
             SearchResult(
                 id="1", 
@@ -106,13 +67,15 @@ class TestRegistrySearchCommand:
             )
         ]
         
-        with patch('asyncio.run', return_value=mock_results):
-            result = runner.invoke(registry_cli.registry_cli, ["search", "aws", "-t", "provider"])
+        with isolated_cli_runner() as runner:
+            with patch('asyncio.run', return_value=mock_results):
+                result = runner.invoke(registry_cli.registry_cli, ["search", "aws", "-t", "provider"])
             assert result.exit_code == 0
             assert "hashicorp/aws" in result.output
     
-    def test_search_command_no_term(self, runner):
-        result = runner.invoke(registry_cli.registry_cli, ["search"])
+    def test_search_command_no_term(self, click_testing_mode):
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["search"])
         assert result.exit_code == 0  # Click doesn't exit with error for empty args
         assert "Please provide a search term" in result.output
 
@@ -120,7 +83,7 @@ class TestRegistrySearchCommand:
 class TestProviderCommands:
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     @patch('tofusoup.registry.cli.OpenTofuRegistry')
-    def test_provider_info_command(self, mock_tofu_reg, mock_tf_reg, runner, mock_provider_details):
+    def test_provider_info_command(self, mock_tofu_reg, mock_tf_reg, click_testing_mode, mock_provider_details):
         # Setup mocks
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
@@ -132,72 +95,79 @@ class TestProviderCommands:
         mock_tofu_instance.__class__.__name__ = 'OpenTofuRegistry'
         mock_tofu_reg.return_value = mock_tofu_instance
         
-        result = runner.invoke(registry_cli.registry_cli, ["provider", "info", "hashicorp/aws"])
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["provider", "info", "hashicorp/aws"])
         assert result.exit_code == 0
         assert "=== IBMTerraform Registry ===" in result.output
         assert "Provider: hashicorp/aws" in result.output
         assert "terraform-provider-aws" in result.output
     
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
-    def test_provider_versions_command(self, mock_tf_reg, runner, mock_provider_details, mock_provider_versions):
+    def test_provider_versions_command(self, mock_tf_reg, click_testing_mode, mock_provider_details, mock_provider_versions):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
         mock_tf_instance.list_provider_versions = AsyncMock(return_value=mock_provider_versions)
         mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
-        result = runner.invoke(registry_cli.registry_cli, ["provider", "versions", "hashicorp/aws", "-r", "terraform"])
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["provider", "versions", "hashicorp/aws", "-r", "terraform"])
         assert result.exit_code == 0
         assert "Provider: hashicorp/aws" in result.output
         assert "6.8.0" in result.output
         assert "Versions (3 total):" in result.output
     
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
-    def test_provider_versions_latest_flag(self, mock_tf_reg, runner, mock_provider_details, mock_provider_versions):
+    def test_provider_versions_latest_flag(self, mock_tf_reg, click_testing_mode, mock_provider_details, mock_provider_versions):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
         mock_tf_instance.list_provider_versions = AsyncMock(return_value=mock_provider_versions)
         mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
-        result = runner.invoke(registry_cli.registry_cli, ["provider", "versions", "hashicorp/aws", "--latest", "-r", "terraform"])
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["provider", "versions", "hashicorp/aws", "--latest", "-r", "terraform"])
         assert result.exit_code == 0
         assert "Latest version: 6.8.0" in result.output
         assert "Versions (3 total):" not in result.output
     
-    def test_provider_info_invalid_format(self, runner):
-        result = runner.invoke(registry_cli.registry_cli, ["provider", "info", "invalid-format"])
+    def test_provider_info_invalid_format(self, click_testing_mode):
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["provider", "info", "invalid-format"])
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code
         assert "Provider must be in format 'namespace/name'" in result.output
 
 
 class TestModuleCommands:
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
-    def test_module_info_command(self, mock_tf_reg, runner, mock_module_details):
+    def test_module_info_command(self, mock_tf_reg, click_testing_mode, mock_module_details):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(return_value=mock_module_details)
         mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
-        result = runner.invoke(registry_cli.registry_cli, ["module", "info", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["module", "info", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
         assert result.exit_code == 0
         assert "Module: terraform-aws-modules/vpc/aws" in result.output
     
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
-    def test_module_versions_command(self, mock_tf_reg, runner, mock_module_details, mock_module_versions):
+    def test_module_versions_command(self, mock_tf_reg, click_testing_mode, mock_module_details, mock_module_versions):
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(return_value=mock_module_details)
         mock_tf_instance.list_module_versions = AsyncMock(return_value=mock_module_versions)
         mock_tf_instance.__class__.__name__ = 'IBMTerraformRegistry'
         mock_tf_reg.return_value = mock_tf_instance
         
-        result = runner.invoke(registry_cli.registry_cli, ["module", "versions", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["module", "versions", "terraform-aws-modules/vpc/aws", "-r", "terraform"])
         assert result.exit_code == 0
         assert "Module: terraform-aws-modules/vpc/aws" in result.output
         assert "6.0.1" in result.output
     
-    def test_module_info_invalid_format(self, runner):
-        result = runner.invoke(registry_cli.registry_cli, ["module", "info", "invalid/format"])
+    def test_module_info_invalid_format(self, click_testing_mode):
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["module", "info", "invalid/format"])
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code
         assert "Module must be in format 'namespace/name/provider'" in result.output
 
@@ -205,7 +175,7 @@ class TestModuleCommands:
 class TestCompareCommand:
     @patch('tofusoup.registry.cli.IBMTerraformRegistry')
     @patch('tofusoup.registry.cli.OpenTofuRegistry')
-    def test_compare_provider_command(self, mock_tofu_reg, mock_tf_reg, runner, mock_provider_details, mock_provider_versions):
+    def test_compare_provider_command(self, mock_tofu_reg, mock_tf_reg, click_testing_mode, mock_provider_details, mock_provider_versions):
         # Setup Terraform registry mock
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
@@ -220,15 +190,17 @@ class TestCompareCommand:
         mock_tofu_instance.__class__.__name__ = 'OpenTofuRegistry'
         mock_tofu_reg.return_value = mock_tofu_instance
         
-        result = runner.invoke(registry_cli.registry_cli, ["compare", "hashicorp/aws"])
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["compare", "hashicorp/aws"])
         assert result.exit_code == 0
         assert "Comparing provider: hashicorp/aws" in result.output
         assert "Terraform Registry" in result.output
         assert "OpenTofu Registry" in result.output
         assert "Available" in result.output
     
-    def test_compare_invalid_format(self, runner):
-        result = runner.invoke(registry_cli.registry_cli, ["compare", "invalid"])
+    def test_compare_invalid_format(self, click_testing_mode):
+        with isolated_cli_runner() as runner:
+            result = runner.invoke(registry_cli.registry_cli, ["compare", "invalid"])
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code
         assert "Resource must be 'namespace/name' for providers" in result.output
 
