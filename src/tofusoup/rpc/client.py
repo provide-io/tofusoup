@@ -98,14 +98,14 @@ class KVClient:
             self.subprocess_env["PYVIDER_CLIENT_CERT_ALGO"] = "rsa"
 
         logger.info(
-            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.get('PLUGIN_MAGIC_COOKIE_KEY')}"
+            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.plugin_magic_cookie_key}"
         )
         logger.info(
-            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.get('PLUGIN_MAGIC_COOKIE_VALUE')}"
+            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.plugin_magic_cookie_value}"
         )
 
         if (
-            rpcplugin_config.get("PLUGIN_MAGIC_COOKIE_KEY")
+            rpcplugin_config.plugin_magic_cookie_key
             != go_server_expected_cookie_key
         ):
             logger.info(
@@ -120,7 +120,7 @@ class KVClient:
             )
 
         if (
-            rpcplugin_config.get("PLUGIN_MAGIC_COOKIE_VALUE")
+            rpcplugin_config.plugin_magic_cookie_value
             != go_server_expected_cookie_value
         ):
             logger.info(
@@ -135,10 +135,10 @@ class KVClient:
             )
 
         logger.info(
-            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.get('PLUGIN_MAGIC_COOKIE_KEY')}"
+            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.plugin_magic_cookie_key}"
         )
         logger.info(
-            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.get('PLUGIN_MAGIC_COOKIE_VALUE')}"
+            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.plugin_magic_cookie_value}"
         )
         logger.info(
             f"[KVClient.__init__] self.subprocess_env for plugin: {self.subprocess_env}"
