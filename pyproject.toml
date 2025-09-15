@@ -191,3 +191,10 @@ parallel = true
 show_missing = true
 skip_covered = true
 exclude_lines = ["pragma: no cover", "raise NotImplementedError", "if __name__ == .__main__.:", "if TYPE_CHECKING:", "def __repr__", "def __str__", "pass"]
+
+[tool.uv.sources]
+provide-foundation = { path = "../provide-foundation", editable = true }
+plating = { path = "../plating", editable = true }
+pyvider-cty = { path = "../pyvider-cty", editable = true }
+pyvider-hcl = { path = "../pyvider-hcl", editable = true }
+pyvider-rpcplugin = { path = "../pyvider-rpcplugin", editable = true }
