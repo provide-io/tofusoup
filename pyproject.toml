@@ -194,10 +194,3 @@ parallel = true
 show_missing = true
 skip_covered = true
 exclude_lines = ["pragma: no cover", "raise NotImplementedError", "if __name__ == .__main__.:", "if TYPE_CHECKING:", "def __repr__", "def __str__", "pass"]
-
-[tool.uv.sources]
-provide-foundation = { workspace = true }
-plating = { workspace = true }
-pyvider-cty = { workspace = true }
-pyvider-hcl = { workspace = true }
-pyvider-rpcplugin = { workspace = true }
