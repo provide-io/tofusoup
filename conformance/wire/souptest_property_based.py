@@ -1,8 +1,8 @@
-import pytest
 from hypothesis import given, strategies as st
+import pytest
+
 from pyvider.cty.conversion import cty_to_native
-from pyvider.cty.types import CtyObject, CtyString, CtyNumber
-from pyvider.cty.values import CtyValue
+from pyvider.cty.types import CtyNumber, CtyObject, CtyString
 
 # A hypothesis strategy to generate simple schemas and data that conforms to them.
 simple_schema_and_data = st.builds(
@@ -14,6 +14,7 @@ simple_schema_and_data = st.builds(
     age=st.integers() | st.floats(allow_nan=False, allow_infinity=False),
 )
 
+
 @pytest.mark.integration_cty
 @given(schema_data=simple_schema_and_data)
 def test_roundtrip_is_isomorphic(schema_data):
@@ -22,12 +23,13 @@ def test_roundtrip_is_isomorphic(schema_data):
     encoding and then decoding the data results in an equivalent CtyValue.
     """
     schema, data = schema_data
-    
+
     initial_value = schema.validate(data)
     encoded_data = cty_to_native(initial_value)
     roundtripped_value = schema.validate(encoded_data)
-    
+
     # FIX: Use standard equality operator.
     assert initial_value == roundtripped_value
+
 
 # 🍲🥄🧪🪄

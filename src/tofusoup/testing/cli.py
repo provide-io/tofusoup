@@ -72,18 +72,12 @@ for suite_name_key in TEST_SUITE_CONFIG:
 
         try:
             loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})
-            asyncio.run(
-                run_test_suite(
-                    snk, project_root, loaded_config, verbose, list(pytest_options)
-                )
-            )
+            asyncio.run(run_test_suite(snk, project_root, loaded_config, verbose, list(pytest_options)))
         except TofuSoupError as e:
             logger.error(f"Error running test suite '{snk}': {e}", exc_info=verbose)
             sys.exit(1)
         except Exception as e:
-            logger.error(
-                f"Unexpected error in test suite '{snk}': {e}", exc_info=verbose
-            )
+            logger.error(f"Unexpected error in test suite '{snk}': {e}", exc_info=verbose)
             sys.exit(1)
 
 

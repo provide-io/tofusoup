@@ -2,16 +2,16 @@
 # tofusoup/browser/ui/app.py
 #
 
-from provide.foundation import LoggingConfig, TelemetryConfig, logger, get_hub
+from provide.foundation import LoggingConfig, TelemetryConfig, get_hub, logger
 from textual.app import App, ComposeResult
 from textual.message import Message
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header
 
-from tofusoup.config.defaults import TERRAFORM_REGISTRY_URL, TUI_LOG_LEVEL, TUI_SERVICE_NAME
 from tofusoup.browser.ui.widgets.detail_view import DetailView
 from tofusoup.browser.ui.widgets.log_viewer import LogViewer
 from tofusoup.browser.ui.widgets.search_view import SearchView
+from tofusoup.config.defaults import TERRAFORM_REGISTRY_URL, TUI_LOG_LEVEL, TUI_SERVICE_NAME
 from tofusoup.registry import IBMTerraformRegistry, OpenTofuRegistry, RegistryConfig
 from tofusoup.registry.search.engine import SearchEngine, SearchQuery, SearchResult
 
@@ -46,9 +46,7 @@ class MainSearchScreen(Screen[None]):
         hub.initialize_foundation(config=telemetry_config)
         logger.info("TUI Logger Initialized. Ready for search.")
 
-    def on_search_view_search_submitted(
-        self, event: SearchView.SearchSubmitted
-    ) -> None:
+    def on_search_view_search_submitted(self, event: SearchView.SearchSubmitted) -> None:
         logger.info(f"Search submitted for query: '{event.query}'")
         search_view = self.query_one(SearchView)
         search_view.clear_table()
@@ -59,9 +57,7 @@ class MainSearchScreen(Screen[None]):
         """The background worker that streams results."""
         try:
             registries = [
-                IBMTerraformRegistry(
-                    config=RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
-                ),
+                IBMTerraformRegistry(config=RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)),
                 OpenTofuRegistry(),
             ]
             engine = SearchEngine(registries=registries)
@@ -72,9 +68,7 @@ class MainSearchScreen(Screen[None]):
 
             await engine.close()
         except Exception as e:
-            self.call_from_thread(
-                logger.error, f"Error during background search: {e}", exc_info=True
-            )
+            self.call_from_thread(logger.error, f"Error during background search: {e}", exc_info=True)
         finally:
             self.post_message(self.SearchComplete())
 
@@ -91,9 +85,7 @@ class MainSearchScreen(Screen[None]):
         # FIX: Move focus to the results table for immediate navigation.
         self.query_one(DataTable).focus()
 
-    async def on_search_view_result_selected(
-        self, event: SearchView.ResultSelected
-    ) -> None:
+    async def on_search_view_result_selected(self, event: SearchView.ResultSelected) -> None:
         logger.info(f"Result selected: {event.result.id}")
         self.app.push_screen(DetailScreen(item_details=event.result))
 

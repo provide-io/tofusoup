@@ -11,9 +11,7 @@ from google.protobuf import (
 )
 from google.protobuf.internal import builder as _builder
 
-_runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC, 6, 31, 0, "", "kv.proto"
-)
+_runtime_version.ValidateProtobufRuntimeVersion(_runtime_version.Domain.PUBLIC, 6, 31, 0, "", "kv.proto")
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()

@@ -1,9 +1,8 @@
-import json
-import msgpack
 from pathlib import Path
 from unittest.mock import MagicMock
 
 from click.testing import CliRunner
+import msgpack
 
 from tofusoup.wire.cli import to_json, to_msgpack
 
@@ -33,7 +32,7 @@ def test_to_json_command(monkeypatch):
         fs_path = Path(fs)
         input_file = fs_path / "test.msgpack"
         input_file.write_bytes(msgpack.packb({"valid": "msgpack"}))
-        
+
         # FIX: The mock must return a Path object that exists *within* the isolated filesystem.
         output_file_in_fs = fs_path / "output.json"
         mock_convert.return_value = output_file_in_fs

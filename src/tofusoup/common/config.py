@@ -13,6 +13,7 @@ from attrs import define
 from provide.foundation import logger
 from provide.foundation.config import RuntimeConfig, field
 
+from tofusoup.common.exceptions import TofuSoupConfigError
 from tofusoup.config.defaults import (
     CONFIG_FILENAME,
     DEFAULT_CONFIG_SUBDIR,
@@ -21,7 +22,6 @@ from tofusoup.config.defaults import (
     ENV_TOFUSOUP_TEST_TIMEOUT,
     TEST_TIMEOUT_SECONDS,
 )
-from tofusoup.common.exceptions import TofuSoupConfigError
 
 
 @define
@@ -29,34 +29,22 @@ class TofuSoupConfig(RuntimeConfig):
     """Configuration for TofuSoup operations."""
 
     # File paths and directories
-    project_root: pathlib.Path | None = field(
-        default=None,
-        description="Project root directory"
-    )
-    config_file: str | None = field(
-        default=None,
-        description="Explicit configuration file path"
-    )
+    project_root: pathlib.Path | None = field(default=None, description="Project root directory")
+    config_file: str | None = field(default=None, description="Explicit configuration file path")
 
     # Test configuration
     test_timeout: int = field(
-        default=TEST_TIMEOUT_SECONDS,
-        description="Test timeout in seconds",
-        env_var=ENV_TOFUSOUP_TEST_TIMEOUT
+        default=TEST_TIMEOUT_SECONDS, description="Test timeout in seconds", env_var=ENV_TOFUSOUP_TEST_TIMEOUT
     )
 
     # Logging configuration
     log_level: str = field(
-        default=DEFAULT_LOG_LEVEL,
-        description="Logging level",
-        env_var=ENV_TOFUSOUP_LOG_LEVEL
+        default=DEFAULT_LOG_LEVEL, description="Logging level", env_var=ENV_TOFUSOUP_LOG_LEVEL
     )
 
     @classmethod
     def from_project_root(
-        cls,
-        project_root: pathlib.Path,
-        explicit_config_file: str | None = None
+        cls, project_root: pathlib.Path, explicit_config_file: str | None = None
     ) -> "TofuSoupConfig":
         """Create config using the traditional TofuSoup loading logic."""
         try:
@@ -64,10 +52,7 @@ class TofuSoupConfig(RuntimeConfig):
             return cls.from_dict(config_data)
         except Exception:
             # Fallback to defaults with project info
-            return cls(
-                project_root=project_root,
-                config_file=explicit_config_file
-            )
+            return cls(project_root=project_root, config_file=explicit_config_file)
 
 
 def _load_config_from_file(file_path: pathlib.Path) -> dict[str, Any] | None:
@@ -81,18 +66,12 @@ def _load_config_from_file(file_path: pathlib.Path) -> dict[str, Any] | None:
         logger.info(f"🗣️ Parsing TofuSoup TOML configuration file: {file_path}")
         with open(file_path, "rb") as f:
             config = tomllib.load(f)
-        logger.info(
-            f"🗣️ Successfully loaded and parsed TOML configuration from {file_path}"
-        )
+        logger.info(f"🗣️ Successfully loaded and parsed TOML configuration from {file_path}")
         return config
     except tomllib.TOMLDecodeError as e:
-        raise TofuSoupConfigError(
-            f"Failed to parse TOML configuration file {file_path}: {e}"
-        ) from e
+        raise TofuSoupConfigError(f"Failed to parse TOML configuration file {file_path}: {e}") from e
     except Exception as e:
-        raise TofuSoupConfigError(
-            f"Unexpected error processing configuration file {file_path}: {e}"
-        ) from e
+        raise TofuSoupConfigError(f"Unexpected error processing configuration file {file_path}: {e}") from e
 
 
 def load_tofusoup_config(
@@ -107,9 +86,7 @@ def load_tofusoup_config(
         if exp_path.is_file():
             return _load_config_from_file(exp_path) or {}
         else:
-            raise TofuSoupConfigError(
-                f"Explicitly specified configuration file not found: {exp_path}"
-            )
+            raise TofuSoupConfigError(f"Explicitly specified configuration file not found: {exp_path}")
 
     # 2. Default path: <project_root>/soup/soup.toml
     default_path = project_root / DEFAULT_CONFIG_SUBDIR / CONFIG_FILENAME
@@ -123,9 +100,7 @@ def load_tofusoup_config(
     if config is not None:
         return config
 
-    logger.info(
-        "No TofuSoup configuration file found. Using empty default configuration."
-    )
+    logger.info("No TofuSoup configuration file found. Using empty default configuration.")
     return {}
 
 

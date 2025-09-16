@@ -1,8 +1,10 @@
-import pytest
 from decimal import Decimal
+
+import pytest
+
 from pyvider.cty.conversion import cty_to_native
-from pyvider.cty.types import CtyObject, CtyString, CtyNumber
-from pyvider.cty.values import CtyValue
+from pyvider.cty.types import CtyNumber, CtyObject, CtyString
+
 
 @pytest.mark.integration_cty
 def test_marshal_unmarshal_roundtrip():
@@ -16,18 +18,19 @@ def test_marshal_unmarshal_roundtrip():
 
     # 2. Unmarshal (validate) the raw data into a CtyValue
     cty_val = schema.validate(raw_data)
-    
+
     assert cty_val.vtype == schema
     assert cty_val.value["name"].value == "Alice"
     assert cty_val.value["age"].value == Decimal("30")
-    
+
     # 3. Marshal (encode) the CtyValue back to a native Python object
     native_data = cty_to_native(cty_val)
-    
+
     # 4. Unmarshal again from the native Python object
     roundtrip_val = schema.validate(native_data)
 
     # 5. Assert that the original and round-tripped values are equal
     assert cty_val == roundtrip_val
+
 
 # 🍲🥄🧪🪄

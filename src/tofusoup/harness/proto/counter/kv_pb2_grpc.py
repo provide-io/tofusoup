@@ -3,7 +3,6 @@
 #
 """Client and server classes corresponding to protobuf-defined services."""
 
-
 from typing import Never
 
 import grpc
@@ -17,9 +16,7 @@ _version_not_supported = False
 try:
     from grpc._utilities import first_version_is_lower
 
-    _version_not_supported = first_version_is_lower(
-        GRPC_VERSION, GRPC_GENERATED_VERSION
-    )
+    _version_not_supported = first_version_is_lower(GRPC_VERSION, GRPC_GENERATED_VERSION)
 except ImportError:
     _version_not_supported = True
 
@@ -85,9 +82,7 @@ def add_CounterServicer_to_server(servicer, server) -> None:
             response_serializer=kv__pb2.Empty.SerializeToString,
         ),
     }
-    generic_handler = grpc.method_handlers_generic_handler(
-        "proto.Counter", rpc_method_handlers
-    )
+    generic_handler = grpc.method_handlers_generic_handler("proto.Counter", rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers("proto.Counter", rpc_method_handlers)
 
@@ -192,9 +187,7 @@ def add_AddHelperServicer_to_server(servicer, server) -> None:
             response_serializer=kv__pb2.SumResponse.SerializeToString,
         ),
     }
-    generic_handler = grpc.method_handlers_generic_handler(
-        "proto.AddHelper", rpc_method_handlers
-    )
+    generic_handler = grpc.method_handlers_generic_handler("proto.AddHelper", rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers("proto.AddHelper", rpc_method_handlers)
 

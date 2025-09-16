@@ -36,9 +36,7 @@ class SearchResult:
 class SearchEngine:
     def __init__(self, registries: list[BaseTfRegistry]) -> None:
         self.registries: list[BaseTfRegistry] = registries
-        logger.debug(
-            f"SearchEngine initialized with {len(self.registries)} registries."
-        )
+        logger.debug(f"SearchEngine initialized with {len(self.registries)} registries.")
 
     async def search(self, query: SearchQuery) -> AsyncGenerator[SearchResult]:
         """
@@ -49,32 +47,25 @@ class SearchEngine:
         logger.info("SearchEngine.search started", query_term=query.term)
 
         search_tasks = [
-            asyncio.create_task(self._search_single_registry(registry, query))
-            for registry in self.registries
+            asyncio.create_task(self._search_single_registry(registry, query)) for registry in self.registries
         ]
 
         # Use asyncio.as_completed to process results as they finish
         for task in asyncio.as_completed(search_tasks):
             try:
                 results_from_registry = await task
-                logger.debug(
-                    f"Received {len(results_from_registry)} results from a registry."
-                )
+                logger.debug(f"Received {len(results_from_registry)} results from a registry.")
                 for result in results_from_registry:
                     yield result
             except Exception as e:
-                logger.error(
-                    f"Error processing a registry's search results: {e}", exc_info=True
-                )
+                logger.error(f"Error processing a registry's search results: {e}", exc_info=True)
 
         logger.info("SearchEngine.search finished streaming results.")
 
     async def _search_single_registry(
         self, registry: BaseTfRegistry, query: SearchQuery
     ) -> list[SearchResult]:
-        registry_identifier = registry.__class__.__name__.replace(
-            "Registry", ""
-        ).lower()
+        registry_identifier = registry.__class__.__name__.replace("Registry", "").lower()
         logger.info(
             f"Enter _search_single_registry for {registry_identifier}",
             query_term=query.term,
@@ -88,9 +79,7 @@ class SearchEngine:
                 modules = await registry.list_modules(query=effective_query_term)
                 if modules is None:
                     modules = []
-                logger.debug(
-                    f"{registry_identifier}.list_modules returned {len(modules)} modules."
-                )
+                logger.debug(f"{registry_identifier}.list_modules returned {len(modules)} modules.")
                 for mod in modules:
                     versions = await registry.list_module_versions(
                         f"{mod.namespace}/{mod.name}/{mod.provider_name}"
@@ -119,9 +108,7 @@ class SearchEngine:
                             type="module",
                             registry_source=registry_identifier,
                             description=mod.description,
-                            latest_version=str(latest_version)
-                            if latest_version
-                            else None,
+                            latest_version=str(latest_version) if latest_version else None,
                             total_versions=len(versions),
                         )
                     )
@@ -129,13 +116,9 @@ class SearchEngine:
                 providers = await registry.list_providers(query=effective_query_term)
                 if providers is None:
                     providers = []
-                logger.debug(
-                    f"{registry_identifier}.list_providers returned {len(providers)} providers."
-                )
+                logger.debug(f"{registry_identifier}.list_providers returned {len(providers)} providers.")
                 for prov in providers:
-                    versions = await registry.list_provider_versions(
-                        f"{prov.namespace}/{prov.name}"
-                    )
+                    versions = await registry.list_provider_versions(f"{prov.namespace}/{prov.name}")
                     if versions is None:
                         versions = []
 
@@ -159,30 +142,22 @@ class SearchEngine:
                             type="provider",
                             registry_source=registry_identifier,
                             description=prov.description,
-                            latest_version=str(latest_version)
-                            if latest_version
-                            else None,
+                            latest_version=str(latest_version) if latest_version else None,
                             total_versions=len(versions),
                         )
                     )
             logger.debug(f"Registry context exited for {registry_identifier}.")
             return registry_results
         except Exception as e:
-            logger.error(
-                f"Error searching registry {registry_identifier}: {e}", exc_info=True
-            )
+            logger.error(f"Error searching registry {registry_identifier}: {e}", exc_info=True)
             raise
 
     async def close(self) -> None:
-        logger.debug(
-            "SearchEngine.close called, no specific resources to clean up here."
-        )
+        logger.debug("SearchEngine.close called, no specific resources to clean up here.")
         pass
 
 
-async def async_search_runner(
-    search_term: str, registry_choice: str
-) -> list[SearchResult]:
+async def async_search_runner(search_term: str, registry_choice: str) -> list[SearchResult]:
     """Asynchronously performs the search operation against specified registries.
 
     This is a convenience function that sets up registries based on the choice,
@@ -224,9 +199,7 @@ async def async_search_runner(
 
     results: list[SearchResult] = []
     try:
-        logger.info(
-            f"Executing search with SearchEngine for term: '{search_term}' on '{registry_choice}'"
-        )
+        logger.info(f"Executing search with SearchEngine for term: '{search_term}' on '{registry_choice}'")
         async for result in engine.search(query):
             results.append(result)
         logger.info(f"SearchEngine returned {len(results)} results.")

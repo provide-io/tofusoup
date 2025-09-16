@@ -54,7 +54,7 @@ class HarnessError(ProcessError):
             return_code=return_code,
             stdout=stdout,
             stderr=stderr,
-            harness_details=details  # Store in context
+            harness_details=details,  # Store in context
         )
 
 

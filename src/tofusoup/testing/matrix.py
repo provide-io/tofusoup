@@ -32,6 +32,7 @@ console = Console()
 @dataclass
 class MatrixCombination:
     """Represents a specific combination of tool versions."""
+
     tools: dict[str, str] = field(default_factory=dict)
 
     def __str__(self) -> str:
@@ -52,6 +53,7 @@ class MatrixCombination:
 @dataclass
 class MatrixResult:
     """Result from testing a matrix combination."""
+
     combination: MatrixCombination
     success: bool
     duration_seconds: float = 0.0
@@ -130,9 +132,7 @@ class VersionMatrix:
         return combinations
 
     async def run_stir_tests(
-        self,
-        stir_directory: pathlib.Path,
-        test_filter: Callable[[MatrixCombination], bool] | None = None
+        self, stir_directory: pathlib.Path, test_filter: Callable[[MatrixCombination], bool] | None = None
     ) -> dict[str, Any]:
         """
         Run 'soup stir' tests across all matrix combinations.
@@ -207,9 +207,7 @@ class VersionMatrix:
         }
 
     async def _test_single_combination(
-        self,
-        combination: MatrixCombination,
-        stir_directory: pathlib.Path
+        self, combination: MatrixCombination, stir_directory: pathlib.Path
     ) -> MatrixResult:
         """Test a single tool version combination."""
         import time
@@ -266,16 +264,15 @@ class VersionMatrix:
             )
 
     async def _run_stir_test(
-        self,
-        combination: MatrixCombination,
-        stir_directory: pathlib.Path
+        self, combination: MatrixCombination, stir_directory: pathlib.Path
     ) -> dict[str, Any]:
         """Run soup stir test for a specific combination."""
         import json
 
         # Build the soup stir command
         cmd = [
-            "soup", "stir",
+            "soup",
+            "stir",
             str(stir_directory),
             "--json",  # Get JSON output for parsing
         ]
@@ -299,10 +296,7 @@ class VersionMatrix:
             stderr=asyncio.subprocess.PIPE,
         )
 
-        stdout, stderr = await asyncio.wait_for(
-            process.communicate(),
-            timeout=self.timeout_minutes * 60
-        )
+        stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=self.timeout_minutes * 60)
 
         if process.returncode == 0:
             # Parse JSON output if available
@@ -360,9 +354,7 @@ class VersionMatrix:
 
 # Convenience function for soup stir integration
 async def run_matrix_stir_tests(
-    stir_directory: pathlib.Path,
-    tools: dict[str, str] | None = None,
-    config: WorkenvConfig | None = None
+    stir_directory: pathlib.Path, tools: dict[str, str] | None = None, config: WorkenvConfig | None = None
 ) -> dict[str, Any]:
     """
     Run matrix testing for soup stir.

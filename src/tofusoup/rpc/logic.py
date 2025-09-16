@@ -27,18 +27,14 @@ TEST_VALUE_PY = b"value_from_python_client_for_python_server"
 TEST_VALUE_GO = b"value_from_python_client_for_go_server"
 
 
-async def _run_client_operations(
-    client: KVClient, key: str, value_to_put: bytes, server_type: str
-) -> bool:
+async def _run_client_operations(client: KVClient, key: str, value_to_put: bytes, server_type: str) -> bool:
     """Helper to run Put and Get operations and verify."""
     try:
         await client.put(key, value_to_put)
         logger.info(f"Client PUT '{key}' to {server_type} server successful.")
         retrieved_value = await client.get(key)
         if retrieved_value == value_to_put:
-            logger.info(
-                f"Client GET '{key}' from {server_type} server successful and value matches."
-            )
+            logger.info(f"Client GET '{key}' from {server_type} server successful and value matches.")
             return True
         else:
             logger.error(
@@ -46,21 +42,15 @@ async def _run_client_operations(
             )
             return False
     except Exception as e:
-        logger.error(
-            f"Client operations against {server_type} server failed: {e}", exc_info=True
-        )
+        logger.error(f"Client operations against {server_type} server failed: {e}", exc_info=True)
         return False
 
 
-async def _test_with_python_server(
-    project_root: pathlib.Path, loaded_config: dict
-) -> bool:
+async def _test_with_python_server(project_root: pathlib.Path, loaded_config: dict) -> bool:
     logger.info("Starting Python KV server for testing...")
     python_server_script_path = project_root / "src" / "tofusoup" / "rpc" / "server.py"
     if not python_server_script_path.exists():
-        logger.error(
-            f"Python KV server script not found at {python_server_script_path}."
-        )
+        logger.error(f"Python KV server script not found at {python_server_script_path}.")
         return False
 
     client = None
@@ -80,9 +70,7 @@ async def _test_with_python_server(
 
         await client.start()
         logger.info("Python client connected to Python KV server (via subprocess).")
-        success = await _run_client_operations(
-            client, TEST_KEY, TEST_VALUE_PY, "Python (subprocess)"
-        )
+        success = await _run_client_operations(client, TEST_KEY, TEST_VALUE_PY, "Python (subprocess)")
     except Exception as e:
         logger.error(f"Python Client vs Python Server test failed: {e}", exc_info=True)
         success = False
@@ -121,9 +109,7 @@ async def _test_with_go_server(
     return success
 
 
-def run_rpc_compatibility_tests(
-    project_root: pathlib.Path, loaded_config: dict
-) -> bool:
+def run_rpc_compatibility_tests(project_root: pathlib.Path, loaded_config: dict) -> bool:
     """
     Runs RPC compatibility tests:
     - Python Client vs Go Server
@@ -133,13 +119,9 @@ def run_rpc_compatibility_tests(
     overall_success = True
 
     # --- Test Python Client vs Go Server ---
-    rich_print(
-        "\n[bold cyan]--- Testing: Python Client vs. Go KV Server ---[/bold cyan]"
-    )
+    rich_print("\n[bold cyan]--- Testing: Python Client vs. Go KV Server ---[/bold cyan]")
     try:
-        go_server_executable = ensure_go_harness_build(
-            GO_KV_HARNESS_NAME, project_root, loaded_config
-        )
+        go_server_executable = ensure_go_harness_build(GO_KV_HARNESS_NAME, project_root, loaded_config)
         if not go_server_executable or not go_server_executable.exists():
             logger.error(
                 f"Go KV server executable (from harness '{GO_KV_HARNESS_NAME}') not found or build failed."
@@ -151,9 +133,7 @@ def run_rpc_compatibility_tests(
                 _test_with_go_server(project_root, go_server_executable, loaded_config)
             )
     except Exception as e:
-        logger.error(
-            f"Failed to build or locate Go KV server harness: {e}", exc_info=True
-        )
+        logger.error(f"Failed to build or locate Go KV server harness: {e}", exc_info=True)
         py_client_vs_go_server_success = False
 
     if py_client_vs_go_server_success:
@@ -163,17 +143,11 @@ def run_rpc_compatibility_tests(
         overall_success = False
 
     # --- Test Python Client vs Python Server ---
-    rich_print(
-        "\n[bold cyan]--- Testing: Python Client vs. Python KV Server ---[/bold cyan]"
-    )
+    rich_print("\n[bold cyan]--- Testing: Python Client vs. Python KV Server ---[/bold cyan]")
     try:
-        py_client_vs_py_server_success = asyncio.run(
-            _test_with_python_server(project_root, loaded_config)
-        )
+        py_client_vs_py_server_success = asyncio.run(_test_with_python_server(project_root, loaded_config))
     except Exception as e:
-        logger.error(
-            f"Python Client vs Python Server test execution failed: {e}", exc_info=True
-        )
+        logger.error(f"Python Client vs Python Server test execution failed: {e}", exc_info=True)
         py_client_vs_py_server_success = False
 
     if py_client_vs_py_server_success:

@@ -120,9 +120,7 @@ async def test_pyclient_pyserver_put_get(tmp_path) -> None:
     It further assumes that the `RPCPluginServer` started by `server.py`
     and `RPCPluginClient` used by `KVClient` can communicate (e.g. mTLS auto-negotiation).
     """
-    python_server_script_path = (
-        Path(__file__).resolve().parents[4] / "src/tofusoup/rpc/server.py"
-    )
+    python_server_script_path = Path(__file__).resolve().parents[4] / "src/tofusoup/rpc/server.py"
     if not python_server_script_path.exists():
         pytest.skip(f"Python KV server script not found at {python_server_script_path}")
 
@@ -169,9 +167,7 @@ async def test_pyclient_pyserver_put_get(tmp_path) -> None:
             and hasattr(client._client._process, "stderr_output_for_test")
         ):
             stderr_output = client._client._process.stderr_output_for_test  # type: ignore
-        pytest.fail(
-            f"PyClient-PyServer test failed: {e}\nServer stderr:\n{stderr_output}"
-        )
+        pytest.fail(f"PyClient-PyServer test failed: {e}\nServer stderr:\n{stderr_output}")
     finally:
         if client:
             await client.close()

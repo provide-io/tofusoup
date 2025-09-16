@@ -19,9 +19,7 @@ from .base import BaseTfRegistry, RegistryConfig
 
 class OpenTofuRegistry(BaseTfRegistry):
     def __init__(self, config: RegistryConfig | None = None) -> None:
-        super().__init__(
-            config or RegistryConfig(base_url=OPENTOFU_REGISTRY_URL)
-        )
+        super().__init__(config or RegistryConfig(base_url=OPENTOFU_REGISTRY_URL))
 
     async def _search_api_opentofu(self, query: str | None) -> list[dict[str, Any]]:
         if not self._client:
@@ -162,11 +160,7 @@ class OpenTofuRegistry(BaseTfRegistry):
             response.raise_for_status()
             data = response.json()
             versions_data = data.get("modules", [{}])[0].get("versions", [])
-            return [
-                ModuleVersion(version=v.get("version", ""))
-                for v in versions_data
-                if v.get("version")
-            ]
+            return [ModuleVersion(version=v.get("version", "")) for v in versions_data if v.get("version")]
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
             logger.error(
                 f"Error fetching OpenTofu module versions for '{module_id}'",

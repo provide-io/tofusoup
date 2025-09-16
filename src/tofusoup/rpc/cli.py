@@ -22,9 +22,7 @@ def rpc_cli() -> None:
 
 
 @rpc_cli.command("kv-put")
-@click.option(
-    "--address", default=DEFAULT_GRPC_ADDRESS, help="Address of the gRPC server."
-)
+@click.option("--address", default=DEFAULT_GRPC_ADDRESS, help="Address of the gRPC server.")
 @click.argument("key")
 @click.argument("value")
 def kv_put(address: str, key: str, value: str) -> None:
@@ -41,9 +39,7 @@ def kv_put(address: str, key: str, value: str) -> None:
 
 
 @rpc_cli.command("kv-get")
-@click.option(
-    "--address", default=DEFAULT_GRPC_ADDRESS, help="Address of the gRPC server."
-)
+@click.option("--address", default=DEFAULT_GRPC_ADDRESS, help="Address of the gRPC server.")
 @click.argument("key")
 def kv_get(address: str, key: str) -> None:
     """Gets a value from the KV store by key."""
@@ -74,9 +70,7 @@ def kv_get(address: str, key: str) -> None:
 )
 @click.option("--cert-file", help="Path to certificate file (required for manual TLS)")
 @click.option("--key-file", help="Path to private key file (required for manual TLS)")
-def server_start(
-    tls_mode: str, tls_key_type: str, cert_file: str | None, key_file: str | None
-) -> None:
+def server_start(tls_mode: str, tls_key_type: str, cert_file: str | None, key_file: str | None) -> None:
     """Starts the KV plugin server."""
     from provide.foundation import logger
 

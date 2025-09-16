@@ -1,4 +1,5 @@
 import pytest
+
 from tofusoup.registry.opentofu import OpenTofuRegistry
 
 
@@ -6,18 +7,15 @@ from tofusoup.registry.opentofu import OpenTofuRegistry
 async def test_get_provider_details_success(httpx_mock):
     """Test successful provider details retrieval from OpenTofu Registry."""
     mock_response = {
-        "id": "opentofu/aws", 
+        "id": "opentofu/aws",
         "namespace": "opentofu",
         "name": "aws",
         "description": "AWS Provider for OpenTofu",
-        "source": "https://github.com/opentofu/terraform-provider-aws"
+        "source": "https://github.com/opentofu/terraform-provider-aws",
     }
-    
-    httpx_mock.add_response(
-        url="https://registry.opentofu.org/v1/providers/opentofu/aws",
-        json=mock_response
-    )
-    
+
+    httpx_mock.add_response(url="https://registry.opentofu.org/v1/providers/opentofu/aws", json=mock_response)
+
     registry = OpenTofuRegistry()
     async with registry:
         details = await registry.get_provider_details("opentofu", "aws")
@@ -25,15 +23,15 @@ async def test_get_provider_details_success(httpx_mock):
         assert details["namespace"] == "opentofu"
 
 
-@pytest.mark.asyncio 
+@pytest.mark.asyncio
 async def test_get_provider_details_not_found(httpx_mock):
     """Test provider not found scenario."""
     httpx_mock.add_response(
         url="https://registry.opentofu.org/v1/providers/nonexistent/provider",
         status_code=404,
-        json={"errors": ["Not found"]}
+        json={"errors": ["Not found"]},
     )
-    
+
     registry = OpenTofuRegistry()
     async with registry:
         result = await registry.get_provider_details("nonexistent", "provider")
@@ -46,16 +44,15 @@ async def test_get_module_details_success(httpx_mock):
     mock_response = {
         "id": "aws-ia/vpc/aws",
         "namespace": "aws-ia",
-        "name": "vpc", 
+        "name": "vpc",
         "provider": "aws",
-        "description": "AWS VPC Module"
+        "description": "AWS VPC Module",
     }
-    
+
     httpx_mock.add_response(
-        url="https://registry.opentofu.org/v1/modules/aws-ia/vpc/aws/latest",
-        json=mock_response
+        url="https://registry.opentofu.org/v1/modules/aws-ia/vpc/aws/latest", json=mock_response
     )
-    
+
     registry = OpenTofuRegistry()
     async with registry:
         details = await registry.get_module_details("aws-ia", "vpc", "aws", "latest")
@@ -74,11 +71,11 @@ async def test_list_modules_with_search(httpx_mock):
                 "name": "vpc",
                 "provider": "aws",
                 "description": "AWS VPC Module",
-                "downloads": 1000
+                "downloads": 1000,
             }
         ]
     }
-    
+
     # OpenTofu uses a different search API endpoint
     httpx_mock.add_response(
         url="https://api.opentofu.org/registry/docs/search?limit=20&q=vpc",
@@ -89,11 +86,11 @@ async def test_list_modules_with_search(httpx_mock):
                 "name": "vpc",
                 "provider": "aws",
                 "description": "AWS VPC Module",
-                "downloads": 1000
+                "downloads": 1000,
             }
-        ]
+        ],
     )
-    
+
     registry = OpenTofuRegistry()
     async with registry:
         modules = await registry.list_modules(query="vpc")
@@ -106,20 +103,13 @@ async def test_list_modules_with_search(httpx_mock):
 async def test_list_module_versions(httpx_mock):
     """Test listing module versions."""
     mock_response = {
-        "modules": [{
-            "versions": [
-                {"version": "4.5.0"},
-                {"version": "4.4.0"},
-                {"version": "4.3.0"}
-            ]
-        }]
+        "modules": [{"versions": [{"version": "4.5.0"}, {"version": "4.4.0"}, {"version": "4.3.0"}]}]
     }
-    
+
     httpx_mock.add_response(
-        url="https://registry.opentofu.org/v1/modules/aws-ia/vpc/aws/versions",
-        json=mock_response
+        url="https://registry.opentofu.org/v1/modules/aws-ia/vpc/aws/versions", json=mock_response
     )
-    
+
     registry = OpenTofuRegistry()
     async with registry:
         versions = await registry.list_module_versions("aws-ia/vpc/aws")

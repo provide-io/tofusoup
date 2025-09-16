@@ -11,24 +11,19 @@ def run_harness_cli(
     project_root: Path,
     harness_artifact_name: str,
     test_id: str,
-    stdin_input: str | bytes | None = None
+    stdin_input: str | bytes | None = None,
 ) -> tuple[int, str, str]:
     """
     Runs a test harness CLI command, saves artifacts, and returns results.
     """
     runner = HarnessRunner(project_root / "soup" / "output")
     return runner.run(
-        [str(executable)] + args,
-        f"harness_runs/{harness_artifact_name}/{test_id}",
-        stdin=stdin_input
+        [str(executable)] + args, f"harness_runs/{harness_artifact_name}/{test_id}", stdin=stdin_input
     )
 
 
 def run_tofusoup_cli(
-    args: list[str],
-    project_root: Path,
-    test_id: str,
-    stdin_content: str | bytes | None = None
+    args: list[str], project_root: Path, test_id: str, stdin_content: str | bytes | None = None
 ) -> tuple[int, str, str]:
     """
     Runs the tofusoup CLI command, saves artifacts, and returns results.
@@ -38,7 +33,8 @@ def run_tofusoup_cli(
         [sys.executable, "-m", "tofusoup.cli"] + args,
         f"cli_runs/tofusoup_cli/{test_id}",
         stdin=stdin_content,
-        cwd=project_root
+        cwd=project_root,
     )
+
 
 # 🍲🥄🖥️🪄

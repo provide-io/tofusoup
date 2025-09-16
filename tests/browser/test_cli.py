@@ -1,13 +1,12 @@
-import pytest
-from unittest.mock import patch, AsyncMock
 
-from provide.testkit import isolated_cli_runner, click_testing_mode
+from provide.testkit import isolated_cli_runner
+import pytest
 
 from tofusoup.browser import cli as browser_cli
-from tofusoup.registry.search.engine import SearchResult
 
 # Mark all tests in this module as browser tests
 pytestmark = pytest.mark.browser
+
 
 def test_sui_tui_command_exists(click_testing_mode):
     """Test that the sui tui command exists and has correct help text."""

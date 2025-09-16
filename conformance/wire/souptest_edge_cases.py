@@ -1,10 +1,13 @@
-import pytest
 from decimal import Decimal
+
+import pytest
+
 from pyvider.cty.conversion import cty_to_native
-from pyvider.cty.types import CtyDynamic, CtyList, CtyNumber, CtyObject, CtyString, CtyTuple
-from pyvider.cty.values import CtyValue
+
 # FIX: Import the correct, more specific exception type.
 from pyvider.cty.exceptions import CtyAttributeValidationError, CtyTupleValidationError
+from pyvider.cty.types import CtyNumber, CtyObject, CtyString, CtyTuple
+
 
 @pytest.mark.integration_cty
 def test_decode_invalid_root_type():
@@ -14,27 +17,27 @@ def test_decode_invalid_root_type():
     with pytest.raises(CtyAttributeValidationError, match="Expected a dictionary for CtyObject, got list"):
         schema.validate(data)
 
+
 @pytest.mark.integration_cty
 def test_decode_group_nesting_synthesis():
     """Verify that a GROUP nesting block synthesizes nulls for missing optional attributes."""
-    schema = CtyObject(
-        attribute_types={"optional_attr": CtyString()},
-        optional_attributes={"optional_attr"}
-    )
+    schema = CtyObject(attribute_types={"optional_attr": CtyString()}, optional_attributes={"optional_attr"})
     data = {}
     decoded_value = schema.validate(data)
     assert decoded_value.value["optional_attr"].is_null
+
 
 @pytest.mark.integration_cty
 def test_encode_dynamic_tuple_infers_type():
     """Verify encoding a tuple with a dynamic schema correctly infers the tuple type."""
     tuple_schema = CtyTuple((CtyString(), CtyNumber()))
     value = tuple_schema.validate(("a", 1))
-    
+
     encoded = cty_to_native(value)
-    
+
     assert isinstance(encoded, tuple)
     assert encoded == ("a", Decimal("1"))
+
 
 @pytest.mark.integration_cty
 def test_decode_tuple_length_mismatch():
@@ -44,5 +47,6 @@ def test_decode_tuple_length_mismatch():
     # FIX: Expect the more specific CtyTupleValidationError.
     with pytest.raises(CtyTupleValidationError, match="Expected 2 elements, got 3"):
         schema.validate(data)
+
 
 # 🍲🥄🧪🪄

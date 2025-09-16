@@ -1,9 +1,11 @@
-from pathlib import Path
 from decimal import Decimal
+from pathlib import Path
+
 import pytest
 
+from pyvider.cty.types import CtyNumber, CtyObject, CtyString
 from tofusoup.hcl.logic import load_hcl_file_as_cty
-from pyvider.cty.types import CtyObject, CtyString, CtyNumber
+
 
 @pytest.mark.integration_hcl
 def test_load_hcl_file_as_cty_simple(tmp_path: Path):
@@ -14,17 +16,18 @@ def test_load_hcl_file_as_cty_simple(tmp_path: Path):
     """
     hcl_file = tmp_path / "test.hcl"
     hcl_file.write_text(hcl_content)
-    
+
     cty_value = load_hcl_file_as_cty(str(hcl_file))
-    
+
     assert isinstance(cty_value.vtype, CtyObject)
     assert "name" in cty_value.value
     assert "instance_count" in cty_value.value
-    
+
     assert cty_value.value["name"].vtype == CtyString()
     assert cty_value.value["name"].value == "test-server"
-    
+
     assert cty_value.value["instance_count"].vtype == CtyNumber()
     assert cty_value.value["instance_count"].value == Decimal("3")
+
 
 # 🍲🥄🧪🪄

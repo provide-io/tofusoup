@@ -42,9 +42,7 @@ def view_command(input_file: TextIO, input_format: str, type_spec: str) -> None:
         if type_spec:
             # Parse the type specification - Go expects JSON format
             # So we need to parse it the same way: as JSON bytes
-            type_data = (
-                json.loads(type_spec) if type_spec.startswith('"') else type_spec
-            )
+            type_data = json.loads(type_spec) if type_spec.startswith('"') else type_spec
             cty_type = parse_tf_type_to_ctytype(type_data)
         else:
             # Try to infer type from JSON structure
@@ -70,9 +68,7 @@ def view_command(input_file: TextIO, input_format: str, type_spec: str) -> None:
             "value": cty_value.value if not cty_value.is_unknown else "<unknown>",
             "is_null": cty_value.is_null,
             "is_unknown": cty_value.is_unknown,
-            "marks": list(str(mark) for mark in cty_value.marks)
-            if cty_value.marks
-            else [],
+            "marks": list(str(mark) for mark in cty_value.marks) if cty_value.marks else [],
         }
 
         print_json(output)
@@ -97,9 +93,7 @@ def view_command(input_file: TextIO, input_format: str, type_spec: str) -> None:
     default="json",
     help="Format for the output file.",
 )
-@click.option(
-    "--type", "type_spec", required=True, help="CTY type specification (JSON format)."
-)
+@click.option("--type", "type_spec", required=True, help="CTY type specification (JSON format).")
 def convert_command(
     input_file: TextIO,
     output_file: str,
@@ -146,9 +140,7 @@ def convert_command(
 
 @cty_cli.command("validate-value")
 @click.argument("value")
-@click.option(
-    "--type", "type_spec", required=True, help="CTY type specification (JSON format)."
-)
+@click.option("--type", "type_spec", required=True, help="CTY type specification (JSON format).")
 def validate_value_command(value: str, type_spec: str) -> None:
     """Validate a CTY value against a type specification."""
     try:
@@ -165,16 +157,12 @@ def validate_value_command(value: str, type_spec: str) -> None:
 
         # Show some details about the validated value
         details = {
-            "parsed_value": cty_value.value
-            if not cty_value.is_unknown
-            else "<unknown>",
+            "parsed_value": cty_value.value if not cty_value.is_unknown else "<unknown>",
             "is_null": cty_value.is_null,
             "is_unknown": cty_value.is_unknown,
         }
 
-        if click.get_current_context().obj and click.get_current_context().obj.get(
-            "verbose"
-        ):
+        if click.get_current_context().obj and click.get_current_context().obj.get("verbose"):
             print_json(details)
 
     except Exception as e:

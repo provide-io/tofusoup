@@ -13,9 +13,7 @@ import semver  # Using a library for robust semver parsing/comparison
 class VersionInfo:
     """Represents a semantic version, potentially with build metadata or other info."""
 
-    raw_version: str = (
-        field()
-    )  # The original version string, e.g., "1.2.3-alpha+build.123"
+    raw_version: str = field()  # The original version string, e.g., "1.2.3-alpha+build.123"
     semantic_version: semver.Version = field(init=False)  # Parsed semver object
     published_at: datetime | None = field(default=None)
     # Add other generic version metadata if applicable
@@ -29,9 +27,7 @@ class VersionInfo:
             # For now, re-raise or log, depending on desired strictness
             # This example assumes strict parsing is desired.
             # Consider using semver.VersionInfo for the type if you don't need to re-parse often.
-            print(
-                f"Error parsing version '{self.raw_version}': {e}"
-            )  # Or use structlog
+            print(f"Error parsing version '{self.raw_version}': {e}")  # Or use structlog
             # Fallback or error state for semantic_version if parsing fails
             # For simplicity in stub, we might let it raise or set to a known invalid state
             # For a robust app, you'd want a clear strategy here.

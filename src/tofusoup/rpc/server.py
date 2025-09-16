@@ -27,9 +27,7 @@ class KV(kv_pb2_grpc.KVServicer):
         """Get the file path for a given key"""
         return f"/tmp/soup-kv-{key}"
 
-    def Get(
-        self, request: kv_pb2.GetRequest, context: grpc.ServicerContext
-    ) -> kv_pb2.GetResponse:
+    def Get(self, request: kv_pb2.GetRequest, context: grpc.ServicerContext) -> kv_pb2.GetResponse:
         logger.info("🔌➡️📥 Received Get request", key=request.key)
 
         if not self._validate_key(request.key):
@@ -54,9 +52,7 @@ class KV(kv_pb2_grpc.KVServicer):
             )
             return kv_pb2.GetResponse(value=value)
         except FileNotFoundError:
-            logger.warn(
-                "Key not found during Get operation", key=request.key, file=file_path
-            )
+            logger.warn("Key not found during Get operation", key=request.key, file=file_path)
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Key not found: {request.key}")
             return kv_pb2.GetResponse()
@@ -71,9 +67,7 @@ class KV(kv_pb2_grpc.KVServicer):
             context.set_details(f'Failed to read key "{request.key}" from file: {e}')
             return kv_pb2.GetResponse()
 
-    def Put(
-        self, request: kv_pb2.PutRequest, context: grpc.ServicerContext
-    ) -> kv_pb2.Empty:
+    def Put(self, request: kv_pb2.PutRequest, context: grpc.ServicerContext) -> kv_pb2.Empty:
         logger.info("🔌➡️📥 Received Put request", key=request.key)
 
         if not self._validate_key(request.key):
@@ -159,9 +153,7 @@ def start_kv_server(
         logger.info(f"Server listening on insecure port {port}")
 
     elif tls_mode == "auto":
-        logger.info(
-            "Auto TLS mode not fully implemented in Python server - falling back to insecure"
-        )
+        logger.info("Auto TLS mode not fully implemented in Python server - falling back to insecure")
         logger.warning(
             "Python server does not yet support auto-generated certificates like Go's go-plugin framework"
         )

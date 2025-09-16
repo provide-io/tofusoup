@@ -16,7 +16,12 @@ from provide.foundation import logger
 from rich.console import Console
 from rich.table import Table
 
-from tofusoup.config.defaults import DEFAULT_CLIENT_LANGUAGE, DEFAULT_GRPC_ADDRESS, DEFAULT_GRPC_PORT, DEFAULT_TLS_MODE
+from tofusoup.config.defaults import (
+    DEFAULT_CLIENT_LANGUAGE,
+    DEFAULT_GRPC_ADDRESS,
+    DEFAULT_GRPC_PORT,
+    DEFAULT_TLS_MODE,
+)
 
 console = Console()
 
@@ -61,9 +66,7 @@ def stock_cli() -> None:
 @stock_cli.command("server")
 @click.argument("language", type=click.Choice(SUPPORTED_LANGUAGES))
 @click.option("--port", default=DEFAULT_GRPC_PORT, help="Port to listen on")
-@click.option(
-    "--tls-mode", type=click.Choice(["none", "auto", "manual"]), default=DEFAULT_TLS_MODE
-)
+@click.option("--tls-mode", type=click.Choice(["none", "auto", "manual"]), default=DEFAULT_TLS_MODE)
 @click.option("--cert-file", help="TLS certificate file (manual mode)")
 @click.option("--key-file", help="TLS key file (manual mode)")
 def server_cmd(
@@ -78,25 +81,19 @@ def server_cmd(
 
     if not binary_path.exists():
         console.print(f"[red]Error: {language} server not found at {binary_path}[/red]")
-        console.print(
-            f"[yellow]Run 'soup harness build stock-{language}' first[/yellow]"
-        )
+        console.print(f"[yellow]Run 'soup harness build stock-{language}' first[/yellow]")
         sys.exit(1)
 
     cmd = [str(binary_path), "--port", str(port), "--tls-mode", tls_mode]
 
     if tls_mode == "manual":
         if not cert_file or not key_file:
-            console.print(
-                "[red]Error: --cert-file and --key-file required for manual TLS[/red]"
-            )
+            console.print("[red]Error: --cert-file and --key-file required for manual TLS[/red]")
             sys.exit(1)
         cmd.extend(["--cert-file", cert_file, "--key-file", key_file])
 
     console.print(f"[green]Starting {language} Stock server on port {port}...[/green]")
-    logger.info(
-        "Starting Stock server", language=language, port=port, tls_mode=tls_mode
-    )
+    logger.info("Starting Stock server", language=language, port=port, tls_mode=tls_mode)
 
     try:
         # For interpreted languages, we might need to prepend the interpreter
@@ -137,9 +134,7 @@ def client_cmd(
 
     if not binary_path.exists():
         console.print(f"[red]Error: {language} client not found at {binary_path}[/red]")
-        console.print(
-            f"[yellow]Run 'soup harness build stock-{language}' first[/yellow]"
-        )
+        console.print(f"[yellow]Run 'soup harness build stock-{language}' first[/yellow]")
         sys.exit(1)
 
     cmd = [str(binary_path), operation, "--server", server]
@@ -152,9 +147,7 @@ def client_cmd(
     # Add operation-specific arguments
     cmd.extend(args)
 
-    logger.info(
-        "Running Stock client", language=language, operation=operation, server=server
-    )
+    logger.info("Running Stock client", language=language, operation=operation, server=server)
 
     try:
         # For interpreted languages, prepend interpreter
@@ -232,9 +225,7 @@ def get_cmd(key: str, client: str, server: str) -> None:
 def put_cmd(key: str, value: str, client: str, server: str) -> None:
     """Put a key-value pair using Stock service (convenience wrapper)."""
     ctx = click.get_current_context()
-    ctx.invoke(
-        client_cmd, language=client, operation="put", args=(key, value), server=server
-    )
+    ctx.invoke(client_cmd, language=client, operation="put", args=(key, value), server=server)
 
 
 # 🍲🥄🖥️🪄

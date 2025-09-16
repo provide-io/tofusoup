@@ -1,22 +1,26 @@
-import pytest
-import subprocess
-import sys
-import os
-import json
-import msgpack
-from pathlib import Path
 from decimal import Decimal
+import json
+from pathlib import Path
 from typing import Any
 
+import pytest
+
 from pyvider.cty import (
-    CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyObject, CtySet,
-    CtyString, CtyTuple, CtyValue
+    CtyBool,
+    CtyDynamic,
+    CtyList,
+    CtyMap,
+    CtyNumber,
+    CtySet,
+    CtyString,
+    CtyValue,
 )
-from pyvider.cty.codec import cty_from_msgpack, cty_to_msgpack, _convert_value_to_serializable
+from pyvider.cty.codec import _convert_value_to_serializable, cty_from_msgpack, cty_to_msgpack
 from pyvider.cty.conversion import encode_cty_type_to_wire_json
-from pyvider.cty.values.markers import UnknownValue, RefinedUnknownValue
+from pyvider.cty.values.markers import RefinedUnknownValue
 
 from ..cli_verification.shared_cli_utils import run_harness_cli
+
 
 def _cty_value_to_json_compatible_value(cty_value: CtyValue) -> Any:
     """
@@ -34,12 +38,16 @@ def _cty_value_to_json_compatible_value(cty_value: CtyValue) -> Any:
             return {
                 "is_known_null": cty_value.value.is_known_null,
                 "string_prefix": cty_value.value.string_prefix,
-                "number_lower_bound": str(cty_value.value.number_lower_bound[0]) if cty_value.value.number_lower_bound else None,
-                "number_upper_bound": str(cty_value.value.number_upper_bound[0]) if cty_value.value.number_upper_bound else None,
+                "number_lower_bound": str(cty_value.value.number_lower_bound[0])
+                if cty_value.value.number_lower_bound
+                else None,
+                "number_upper_bound": str(cty_value.value.number_upper_bound[0])
+                if cty_value.value.number_upper_bound
+                else None,
                 "collection_length_lower_bound": cty_value.value.collection_length_lower_bound,
                 "collection_length_upper_bound": cty_value.value.collection_length_upper_bound,
             }
-        return "<UNKNOWN>" # Simple representation for unrefined unknown
+        return "<UNKNOWN>"  # Simple representation for unrefined unknown
 
     if isinstance(cty_value.type, CtyDynamic):
         # For CtyDynamic, its value is another CtyValue. Recursively convert it.
@@ -47,18 +55,25 @@ def _cty_value_to_json_compatible_value(cty_value: CtyValue) -> Any:
 
     # For other types, _convert_value_to_serializable should return a JSON-compatible type
     serializable_data = _convert_value_to_serializable(cty_value, cty_value.type)
-    
+
     # Handle Decimal conversion to string for JSON compatibility
     if isinstance(serializable_data, Decimal):
         return str(serializable_data)
-    
+
     # Recursively handle lists and dicts to ensure all nested Decimals are converted
     if isinstance(serializable_data, dict):
-        return {k: _cty_value_to_json_compatible_value(v) if isinstance(v, CtyValue) else v for k, v in serializable_data.items()}
+        return {
+            k: _cty_value_to_json_compatible_value(v) if isinstance(v, CtyValue) else v
+            for k, v in serializable_data.items()
+        }
     if isinstance(serializable_data, list):
-        return [_cty_value_to_json_compatible_value(item) if isinstance(item, CtyValue) else item for item in serializable_data]
+        return [
+            _cty_value_to_json_compatible_value(item) if isinstance(item, CtyValue) else item
+            for item in serializable_data
+        ]
 
     return serializable_data
+
 
 # This dictionary now serves a dual purpose:
 # 1. The *source* for generating Python fixtures to be validated by Go.
@@ -75,6 +90,7 @@ GO_TEST_CASES: dict[str, CtyValue] = {
     "map_simple": CtyMap(element_type=CtyBool()).validate({"a": True, "b": False}),
     "dynamic_wrapped_string": CtyDynamic().validate("dynamic"),
 }
+
 
 @pytest.mark.integration_cty
 @pytest.mark.harness_go
@@ -94,26 +110,37 @@ def test_python_deserializes_go_fixtures(
     go_fixture_dir = tmp_path / "go_fixtures"
     go_fixture_dir.mkdir()
     output_file = go_fixture_dir / f"{case_name}.msgpack"
-    
+
     # The input to the 'convert' command is a JSON representation of the CtyValue
     cty_value = GO_TEST_CASES[case_name]
-    
+
     # IMPORTANT: go-cty CANNOT accept unknown values via JSON input
     # This is a fundamental limitation of the go-cty library that matches Terraform's behavior
     # Skip tests for unknown values when using JSON input format
     if cty_value.is_unknown:
         pytest.skip(f"go-cty cannot accept unknown values via JSON input (case: {case_name})")
-    
+
     input_json = json.dumps(_cty_value_to_json_compatible_value(cty_value))
     type_json_for_go = json.dumps(encode_cty_type_to_wire_json(cty_value.type))
 
     exit_code, _, stderr = run_harness_cli(
         executable=go_harness_executable,
-        args=["cty", "convert", "-", str(output_file), "--input-format", "json", "--output-format", "msgpack", "--type", type_json_for_go],
+        args=[
+            "cty",
+            "convert",
+            "-",
+            str(output_file),
+            "--input-format",
+            "json",
+            "--output-format",
+            "msgpack",
+            "--type",
+            type_json_for_go,
+        ],
         project_root=project_root,
         harness_artifact_name="soup-go",
         test_id=f"generate_fixture_{case_name}",
-        stdin_input=input_json
+        stdin_input=input_json,
     )
     assert exit_code == 0, f"soup-go cty convert failed: {stderr}"
 
@@ -126,10 +153,9 @@ def test_python_deserializes_go_fixtures(
 
     # 4. Assert equality
     assert deserialized_value == cty_value, (
-        f"Mismatch for case '{case_name}'.\n"
-        f"Expected: {cty_value!r}\n"
-        f"Got:      {deserialized_value!r}"
+        f"Mismatch for case '{case_name}'.\nExpected: {cty_value!r}\nGot:      {deserialized_value!r}"
     )
+
 
 @pytest.mark.integration_cty
 @pytest.mark.harness_go
@@ -154,10 +180,10 @@ def test_go_verifies_python_fixtures(
     # 2. Verify each fixture using soup-go cty validate-value
     for case_name, cty_value in GO_TEST_CASES.items():
         fixture_file = py_fixture_dir / f"{case_name}.msgpack"
-        
+
         # We need the CTY type string for the --type flag
         type_json_for_go = json.dumps(encode_cty_type_to_wire_json(cty_value.type))
-        
+
         # The value for validate-value is a JSON string
         value_json = json.dumps(_cty_value_to_json_compatible_value(cty_value))
 
@@ -166,8 +192,9 @@ def test_go_verifies_python_fixtures(
             args=["cty", "validate-value", value_json, "--type", type_json_for_go],
             project_root=project_root,
             harness_artifact_name="soup-go",
-            test_id=f"verify_fixture_{case_name}"
+            test_id=f"verify_fixture_{case_name}",
         )
         assert exit_code == 0, f"soup-go cty validate-value failed for {case_name}: {stderr}"
+
 
 # 🍲🥄🧪🪄

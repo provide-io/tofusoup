@@ -28,9 +28,7 @@ def scaffold_new_provider(project_dir: Path) -> Path:
 
     provider_name_match = re.search(r"terraform-provider-([\w-]+)", project_dir.name)
     if not provider_name_match:
-        raise ValueError(
-            "Project directory name must be in the format 'terraform-provider-<name>'"
-        )
+        raise ValueError("Project directory name must be in the format 'terraform-provider-<name>'")
     provider_name = provider_name_match.group(1)
 
     src_root = project_dir / "src"

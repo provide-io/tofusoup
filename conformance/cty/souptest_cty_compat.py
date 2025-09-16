@@ -1,6 +1,8 @@
-import pytest
-import subprocess
 from pathlib import Path
+import subprocess
+
+import pytest
+
 
 @pytest.mark.integration_cty
 @pytest.mark.harness_go
@@ -30,5 +32,6 @@ def test_souptest_go_cty_validation(go_harness_executable: Path):
 
     assert result.returncode == 0, f"Go harness failed.\nStderr: {result.stderr}"
     assert "Validation Succeeded" in result.stdout
+
 
 # 🍲🥄🧪🪄
