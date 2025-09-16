@@ -15,7 +15,9 @@ from tofusoup.stir.runtime import StirRuntime
 from tofusoup.stir.terraform import run_terraform_command
 
 
-async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore, runtime: StirRuntime) -> TestResult:
+async def run_test_lifecycle(
+    directory: Path, semaphore: asyncio.Semaphore, runtime: StirRuntime
+) -> TestResult:
     """Execute the full lifecycle of a Terraform test."""
     dir_name = directory.name
     start_time = monotonic()
@@ -102,12 +104,8 @@ async def run_test_lifecycle(directory: Path, semaphore: asyncio.Semaphore, runt
                         state = json.loads(show_stdout)
                         test_statuses[dir_name]["providers"] = len(state.get("provider_configs", {}))
                         root_module = state.get("values", {}).get("root_module", {})
-                        resources = [
-                            r for r in root_module.get("resources", []) if r.get("mode") == "managed"
-                        ]
-                        data_sources = [
-                            r for r in root_module.get("resources", []) if r.get("mode") == "data"
-                        ]
+                        resources = [r for r in root_module.get("resources", []) if r.get("mode") == "managed"]
+                        data_sources = [r for r in root_module.get("resources", []) if r.get("mode") == "data"]
                         test_statuses[dir_name]["resources"] = len(resources)
                         test_statuses[dir_name]["data_sources"] = len(data_sources)
                         test_statuses[dir_name]["outputs"] = len(state.get("values", {}).get("outputs", {}))

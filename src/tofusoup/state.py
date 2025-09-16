@@ -22,8 +22,8 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.tree import Tree
 
-from tofusoup.config.defaults import DEFAULT_OUTPUT_FORMAT, DEFAULT_TFSTATE_FILE
 from pyvider.common.encryption import decrypt
+from tofusoup.config.defaults import DEFAULT_OUTPUT_FORMAT, DEFAULT_TFSTATE_FILE
 
 console = Console()
 
@@ -105,9 +105,7 @@ def display_resource_overview(resources: list[dict[str, Any]]) -> None:
     console.print(table)
 
 
-def display_resource_details(
-    resource: dict[str, Any], show_encrypted: bool = False
-) -> None:
+def display_resource_details(resource: dict[str, Any], show_encrypted: bool = False) -> None:
     """Display detailed information about a resource including private state."""
 
     # Resource header
@@ -121,9 +119,7 @@ def display_resource_details(
             # Format value for display
             if isinstance(value, dict | list):
                 json.dumps(value, indent=2)
-                attrs_tree.add(
-                    f"[green]{key}[/green]: [dim]{type(value).__name__}[/dim]"
-                )
+                attrs_tree.add(f"[green]{key}[/green]: [dim]{type(value).__name__}[/dim]")
             else:
                 attrs_tree.add(f"[green]{key}[/green]: [white]{value}[/white]")
         console.print(attrs_tree)
@@ -151,9 +147,7 @@ def display_resource_details(
         else:
             console.print("[red]❌ Failed to decrypt private state[/red]")
             console.print("[dim]This could be due to:[/dim]")
-            console.print(
-                "[dim]• Missing PYVIDER_PRIVATE_STATE_SHARED_SECRET environment variable[/dim]"
-            )
+            console.print("[dim]• Missing PYVIDER_PRIVATE_STATE_SHARED_SECRET environment variable[/dim]")
             console.print("[dim]• Incorrect shared secret[/dim]")
             console.print("[dim]• Corrupted private state data[/dim]")
     else:
@@ -172,18 +166,10 @@ def state_cli() -> None:
     type=click.Path(exists=True, dir_okay=False),
     default=DEFAULT_TFSTATE_FILE,
 )
-@click.option(
-    "--resource", "-r", help="Show details for a specific resource (format: type.name)"
-)
-@click.option(
-    "--show-encrypted", is_flag=True, help="Also show encrypted private state data"
-)
-@click.option(
-    "--private-only", is_flag=True, help="Only show resources that have private state"
-)
-def show_state(
-    state_file: str, resource: str | None, show_encrypted: bool, private_only: bool
-) -> None:
+@click.option("--resource", "-r", help="Show details for a specific resource (format: type.name)")
+@click.option("--show-encrypted", is_flag=True, help="Also show encrypted private state data")
+@click.option("--private-only", is_flag=True, help="Only show resources that have private state")
+def show_state(state_file: str, resource: str | None, show_encrypted: bool, private_only: bool) -> None:
     """
     Display Terraform state with decrypted private state data.
 
@@ -227,22 +213,16 @@ def show_state(
     # Header
     console.print("[bold blue]🗂️  Terraform State Analysis[/bold blue]")
     console.print(f"[dim]State file: {state_path}[/dim]")
-    console.print(
-        f"[dim]Terraform version: {state.get('terraform_version', 'unknown')}[/dim]"
-    )
+    console.print(f"[dim]Terraform version: {state.get('terraform_version', 'unknown')}[/dim]")
     console.print(f"[dim]Serial: {state.get('serial', 'unknown')}[/dim]\n")
 
     if resource:
         # Show specific resource
-        resource_type, resource_name = (
-            resource.split(".", 1) if "." in resource else (resource, "")
-        )
+        resource_type, resource_name = resource.split(".", 1) if "." in resource else (resource, "")
         found_resource = None
 
         for res in target_resources:
-            if res["type"] == resource_type and (
-                not resource_name or res["name"] == resource_name
-            ):
+            if res["type"] == resource_type and (not resource_name or res["name"] == resource_name):
                 found_resource = res
                 break
 
@@ -255,17 +235,13 @@ def show_state(
     else:
         # Show overview
         if private_only:
-            console.print(
-                f"[bold]Found {len(resources_with_private)} resources with private state:[/bold]\n"
-            )
+            console.print(f"[bold]Found {len(resources_with_private)} resources with private state:[/bold]\n")
         else:
             console.print(
                 f"[bold]Found {len(target_resources)} total resources ({len(resources_with_private)} with private state):[/bold]\n"
             )
 
-        display_resource_overview(
-            target_resources if not private_only else resources_with_private
-        )
+        display_resource_overview(target_resources if not private_only else resources_with_private)
 
         if resources_with_private:
             console.print(
@@ -306,9 +282,7 @@ def decrypt_private_data(encrypted_data: str, format: str) -> None:
             console.print(decrypted)
     else:
         console.print("[red]❌ Failed to decrypt data[/red]")
-        console.print(
-            "[dim]Ensure PYVIDER_PRIVATE_STATE_SHARED_SECRET is set correctly[/dim]"
-        )
+        console.print("[dim]Ensure PYVIDER_PRIVATE_STATE_SHARED_SECRET is set correctly[/dim]")
 
 
 @state_cli.command("validate")
@@ -333,9 +307,7 @@ def validate_private_state(state_file: str) -> None:
         console.print("[green]✅ No resources with private state found[/green]")
         return
 
-    console.print(
-        f"[bold]Validating private state for {len(resources_with_private)} resources...[/bold]\n"
-    )
+    console.print(f"[bold]Validating private state for {len(resources_with_private)} resources...[/bold]\n")
 
     valid_count = 0
     invalid_count = 0
@@ -361,15 +333,11 @@ def validate_private_state(state_file: str) -> None:
             table.add_row(resource_name, "[red]❌ Invalid[/red]", "Failed to decrypt")
 
     console.print(table)
-    console.print(
-        f"\n[bold]Summary:[/bold] {valid_count} valid, {invalid_count} invalid"
-    )
+    console.print(f"\n[bold]Summary:[/bold] {valid_count} valid, {invalid_count} invalid")
 
     if invalid_count > 0:
         console.print("\n[red]❌ Some private state data could not be decrypted[/red]")
-        console.print(
-            "[dim]Check that PYVIDER_PRIVATE_STATE_SHARED_SECRET is correct[/dim]"
-        )
+        console.print("[dim]Check that PYVIDER_PRIVATE_STATE_SHARED_SECRET is correct[/dim]")
         raise click.Abort()
     else:
         console.print("\n[green]✅ All private state data is valid[/green]")

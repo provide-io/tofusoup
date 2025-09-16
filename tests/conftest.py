@@ -1,46 +1,25 @@
 import importlib.util
-import pytest
 from pathlib import Path
 import sys
-import os
-from unittest.mock import patch
 
 from provide.testkit import (
-    isolated_cli_runner,
-    click_testing_mode,
     reset_foundation_setup_for_testing,
-    clean_event_loop,
 )
+import pytest
+
 
 def pytest_configure(config):
     """Register custom marks."""
-    config.addinivalue_line(
-        "markers", "tdd: marks tests as TDD (test-driven development)"
-    )
-    config.addinivalue_line(
-        "markers", "integration: marks tests as integration tests"
-    )
-    config.addinivalue_line(
-        "markers", "integration_cty: requires CTY integration (pyvider-cty)"
-    )
-    config.addinivalue_line(
-        "markers", "integration_hcl: requires HCL integration (pyvider-hcl + pyvider-cty)"
-    )
-    config.addinivalue_line(
-        "markers", "integration_rpc: requires RPC integration (pyvider-rpcplugin)"
-    )
-    config.addinivalue_line(
-        "markers", "harness_go: requires Go harness"
-    )
-    config.addinivalue_line(
-        "markers", "harness_python: requires Python harness"
-    )
-    config.addinivalue_line(
-        "markers", "requires_textual: marks tests that require Textual app context"
-    )
-    config.addinivalue_line(
-        "markers", "skip_in_ci: marks tests to skip in CI environments"
-    )
+    config.addinivalue_line("markers", "tdd: marks tests as TDD (test-driven development)")
+    config.addinivalue_line("markers", "integration: marks tests as integration tests")
+    config.addinivalue_line("markers", "integration_cty: requires CTY integration (pyvider-cty)")
+    config.addinivalue_line("markers", "integration_hcl: requires HCL integration (pyvider-hcl + pyvider-cty)")
+    config.addinivalue_line("markers", "integration_rpc: requires RPC integration (pyvider-rpcplugin)")
+    config.addinivalue_line("markers", "harness_go: requires Go harness")
+    config.addinivalue_line("markers", "harness_python: requires Python harness")
+    config.addinivalue_line("markers", "requires_textual: marks tests that require Textual app context")
+    config.addinivalue_line("markers", "skip_in_ci: marks tests to skip in CI environments")
+
 
 @pytest.fixture(scope="session", autouse=True)
 def add_sibling_source_to_path(request):
@@ -66,6 +45,7 @@ def add_sibling_source_to_path(request):
         if src_path.is_dir() and str(src_path) not in sys.path:
             sys.path.insert(0, str(src_path))
 
+
 @pytest.fixture(autouse=True)
 def skip_integration_if_missing(request):
     """Skip tests if optional dependencies are missing."""
@@ -74,7 +54,7 @@ def skip_integration_if_missing(request):
         "integration_hcl": ("pyvider.hcl", "hcl"),
         "integration_rpc": ("pyvider.rpcplugin", "rpc"),
     }
-    
+
     for marker_name, (module_name, package_name) in marker_checks.items():
         if request.node.get_closest_marker(marker_name):
             if importlib.util.find_spec(module_name) is None:
@@ -82,6 +62,7 @@ def skip_integration_if_missing(request):
                     f"Test requires '{package_name}' integration. "
                     f"Install with: pip install tofusoup[{package_name}]"
                 )
+
 
 @pytest.fixture(autouse=True)
 def disable_textual_ui_in_tests(monkeypatch):
@@ -93,11 +74,13 @@ def disable_textual_ui_in_tests(monkeypatch):
     monkeypatch.setenv("TOFUSOUP_DISABLE_UI", "1")
     monkeypatch.setenv("TEXTUAL_LOG", "none")
 
+
 @pytest.fixture(autouse=True)
 def reset_foundation_for_tests():
     """Reset Foundation state between tests for proper isolation."""
     yield
     reset_foundation_setup_for_testing()
+
 
 @pytest.fixture(scope="session")
 def go_soup_harness_path() -> Path:

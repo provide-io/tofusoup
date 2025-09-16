@@ -116,7 +116,9 @@ async def run_terraform_command(
         env = runtime.get_terraform_env(env)
     else:
         # Neither runtime nor override provided
-        raise RuntimeError("Either StirRuntime or override_cache_dir must be provided for terraform command execution")
+        raise RuntimeError(
+            "Either StirRuntime or override_cache_dir must be provided for terraform command execution"
+        )
 
     command = [TF_COMMAND, *args]
 

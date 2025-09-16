@@ -121,7 +121,9 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
     is_flag=True,
     help="Disable plugin caching (downloads providers for each test)",
 )
-def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool, upgrade: bool, no_cache: bool) -> None:
+def stir_cli(
+    path: str, matrix: bool, matrix_output: str, output_json: bool, upgrade: bool, no_cache: bool
+) -> None:
     """
     Run multi-threaded Terraform tests against all subdirectories in a given PATH.
 
@@ -141,12 +143,14 @@ def stir_cli(path: str, matrix: bool, matrix_output: str, output_json: bool, upg
 
             if matrix_output:
                 import json
+
                 with open(matrix_output, "w") as f:
                     json.dump(results, f, indent=2, default=str)
                 console.print(f"✅ Matrix results saved to {matrix_output}")
 
             if output_json:
                 import json
+
                 console.print(json.dumps(results, indent=2, default=str))
         else:
             # Run standard single-version testing with runtime

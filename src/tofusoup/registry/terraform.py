@@ -158,11 +158,7 @@ class IBMTerraformRegistry(BaseTfRegistry):
             response.raise_for_status()
             data = response.json()
             versions_data = data.get("modules", [{}])[0].get("versions", [])
-            return [
-                ModuleVersion(version=v.get("version", ""))
-                for v in versions_data
-                if v.get("version")
-            ]
+            return [ModuleVersion(version=v.get("version", "")) for v in versions_data if v.get("version")]
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
             logger.error(
                 f"Error fetching Terraform module versions for '{module_id}'",

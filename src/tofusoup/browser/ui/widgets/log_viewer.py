@@ -35,9 +35,7 @@ class LogViewer(Widget):
         if self.app.is_running and self.app._thread_id == threading.get_ident():
             self._log_widget.write(Text.from_ansi(text.strip()))
         else:
-            self.app.call_from_thread(
-                self._log_widget.write, Text.from_ansi(text.strip())
-            )
+            self.app.call_from_thread(self._log_widget.write, Text.from_ansi(text.strip()))
 
     def flush(self) -> None:
         """A no-op flush method to satisfy the stream protocol."""

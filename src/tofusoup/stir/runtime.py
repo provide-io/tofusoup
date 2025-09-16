@@ -2,11 +2,9 @@
 # tofusoup/stir/runtime.py
 #
 
-import asyncio
 from pathlib import Path
 import re
 import tempfile
-from typing import Any
 
 from tofusoup.stir.display import console
 
@@ -63,7 +61,9 @@ class StirRuntime:
         await self._download_providers(deduplicated_providers)
 
         self._provider_cache_ready = True
-        console.print(f"[bold green]✅ Providers prepared[/bold green] ({len(required_providers)} unique providers)")
+        console.print(
+            f"[bold green]✅ Providers prepared[/bold green] ({len(required_providers)} unique providers)"
+        )
 
     async def _scan_provider_requirements(self, test_dirs: list[Path]) -> set[tuple[str, str]]:
         """
@@ -99,13 +99,13 @@ class StirRuntime:
         providers = set()
 
         # Match required_providers block content
-        terraform_block_pattern = r'required_providers\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}'
+        terraform_block_pattern = r"required_providers\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}"
         terraform_matches = re.findall(terraform_block_pattern, content, re.DOTALL | re.MULTILINE)
 
         for match in terraform_matches:
             # Find provider name and extract everything between braces
             # Handle compact format like: pyvider = { source = "...", version = "..." }
-            provider_pattern = r'(\w+)\s*=\s*\{\s*(.+?)\s*(?:\}|$)'
+            provider_pattern = r"(\w+)\s*=\s*\{\s*(.+?)\s*(?:\}|$)"
             provider_match = re.search(provider_pattern, match.strip(), re.DOTALL)
 
             if provider_match:
@@ -129,7 +129,7 @@ class StirRuntime:
 
         # Only look for legacy provider syntax if we didn't find any in required_providers
         # AND if we're scanning files that don't have terraform blocks with required_providers
-        if not providers and 'required_providers' not in content:
+        if not providers and "required_providers" not in content:
             legacy_pattern = r'provider\s+"([^"]+)"\s*\{'
             legacy_matches = re.findall(legacy_pattern, content)
             for provider_name in legacy_matches:
@@ -206,7 +206,7 @@ class StirRuntime:
                 temp_path,
                 init_args,
                 runtime=None,  # Don't use runtime for provider preparation
-                override_cache_dir=self.plugin_cache_dir
+                override_cache_dir=self.plugin_cache_dir,
             )
 
             if init_rc != 0:
@@ -228,10 +228,7 @@ class StirRuntime:
         Returns:
             Terraform configuration string
         """
-        lines = [
-            "terraform {",
-            "  required_providers {"
-        ]
+        lines = ["terraform {", "  required_providers {"]
 
         for i, (source, version) in enumerate(sorted(providers)):
             # Extract provider name from source (e.g., "hashicorp/aws" -> "aws")
@@ -239,15 +236,12 @@ class StirRuntime:
             # Ensure unique names in case of conflicts - use dashes instead of underscores
             provider_key = f"{provider_name}-{i}" if i > 0 else provider_name
 
-            lines.append(f'    {provider_key} = {{')
+            lines.append(f"    {provider_key} = {{")
             lines.append(f'      source  = "{source}"')
             lines.append(f'      version = "{version}"')
-            lines.append('    }')
+            lines.append("    }")
 
-        lines.extend([
-            "  }",
-            "}"
-        ])
+        lines.extend(["  }", "}"])
 
         return "\n".join(lines)
 

@@ -34,9 +34,7 @@ def to_msgpack(input_path: Path, output_path: Path | None) -> None:
     """Converts a JSON file to the MessagePack wire format."""
     try:
         result_path = convert_json_to_msgpack(input_path, output_path)
-        click.echo(
-            f"✅ Successfully converted '{input_path.name}' to '{result_path.name}'"
-        )
+        click.echo(f"✅ Successfully converted '{input_path.name}' to '{result_path.name}'")
     except (json.JSONDecodeError, msgpack.exceptions.PackException) as e:
         raise click.ClickException(f"Error during conversion: {e}")
     except Exception as e:
@@ -64,9 +62,7 @@ def to_json(input_path: Path, output_path: Path | None, pretty: bool) -> None:
     """Converts a MessagePack wire format file to JSON."""
     try:
         result_path = convert_msgpack_to_json(input_path, output_path)
-        click.echo(
-            f"✅ Successfully converted '{input_path.name}' to '{result_path.name}'"
-        )
+        click.echo(f"✅ Successfully converted '{input_path.name}' to '{result_path.name}'")
         if pretty:
             # Read back the result for pretty printing
             json_data = result_path.read_text("utf-8")

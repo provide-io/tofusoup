@@ -59,13 +59,9 @@ def dump_python_to_json_string(data: Any, pretty: bool = True) -> str:
         else:
             return json.dumps(data, ensure_ascii=False)
     except TypeError as e:
-        raise ConversionError(
-            f"Error serializing data to JSON: {e}. Ensure data is JSON serializable."
-        ) from e
+        raise ConversionError(f"Error serializing data to JSON: {e}. Ensure data is JSON serializable.") from e
     except Exception as e:
-        raise ConversionError(
-            f"Unexpected error dumping data to JSON string: {type(e).__name__} - {e}"
-        ) from e
+        raise ConversionError(f"Unexpected error dumping data to JSON string: {type(e).__name__} - {e}") from e
 
 
 def dump_python_to_msgpack_bytes(data: Any) -> bytes:

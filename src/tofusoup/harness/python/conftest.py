@@ -36,16 +36,12 @@ def go_cty_harness(request) -> Path:
     source_file = root_path / "harnesses/go/cty-generic/harness.go"
     if not source_file.exists():
         # Also check the cty-owf harness as it was similar
-        source_file_owf = (
-            root_path / "harnesses/go/cty-owf/main.go"
-        )  # Assuming main.go is the entry
+        source_file_owf = root_path / "harnesses/go/cty-owf/main.go"  # Assuming main.go is the entry
         if source_file_owf.exists():
             source_file = source_file_owf
             harness_name = "go-cty-owf-harness"
         else:
-            pytest.skip(
-                f"Go CTY harness source not found at {source_file} or {source_file_owf}."
-            )
+            pytest.skip(f"Go CTY harness source not found at {source_file} or {source_file_owf}.")
             return  # Should not be reached if skip works
     else:
         harness_name = "go-cty-generic-harness"  # Default name if primary found
@@ -88,9 +84,7 @@ def go_kvstore_harness(request) -> Path:
         )  # Local import to avoid top-level issues if problematic
 
         # The name "kvstore-go" should match a key in GO_HARNESS_CONFIG in harness.logic
-        ensure_go_harness_build(
-            "kvstore-go", root_path
-        )  # ensure_go_harness_build returns the bin dir
+        ensure_go_harness_build("kvstore-go", root_path)  # ensure_go_harness_build returns the bin dir
 
         # The actual executable name might vary. Common patterns: <harness_name> or main
         # Based on kvproto, it's likely 'kv-go-server' or compiled from 'plugin-go-server/main.go'
@@ -142,9 +136,7 @@ def go_kvstore_harness(request) -> Path:
         # `ensure_go_harness_build` is expected to return the path to the directory
         # where binaries are placed, or directly to the binary.
         # Let's assume it returns the directory, and we know the executable name.
-        harness_info = ensure_go_harness_build(
-            "kvstore-go", root_path
-        )  # This should give us enough info
+        harness_info = ensure_go_harness_build("kvstore-go", root_path)  # This should give us enough info
 
         # harness_info could be a Path to the binary, or a dict with details.
         # Assuming harness_info is the Path to the built executable itself, as per
@@ -161,9 +153,7 @@ def go_kvstore_harness(request) -> Path:
             # If harness_info is a directory, try to find the executable
             if isinstance(harness_info, Path) and harness_info.is_dir():
                 # Attempt to find a known executable name, this must match build output
-                potential_exe_name = (
-                    "kvstore-server-go"  # This name is assumed by rpc.cli.py
-                )
+                potential_exe_name = "kvstore-server-go"  # This name is assumed by rpc.cli.py
                 exe_path = harness_info / "bin" / potential_exe_name
                 if exe_path.exists() and os.access(exe_path, os.X_OK):
                     return exe_path

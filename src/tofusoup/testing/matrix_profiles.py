@@ -25,6 +25,7 @@ console = Console()
 @dataclass
 class ProfileTestResult:
     """Result from testing a specific profile."""
+
     profile_name: str
     success: bool
     duration_seconds: float = 0.0
@@ -77,9 +78,7 @@ class ProfileMatrix:
         return list(all_profiles.keys())
 
     async def run_profile_tests(
-        self,
-        stir_directory: Path,
-        profiles: list[str] | None = None
+        self, stir_directory: Path, profiles: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Run 'soup stir' tests for each profile.
@@ -150,11 +149,7 @@ class ProfileMatrix:
             "parallel_jobs": self.parallel_jobs,
         }
 
-    async def _test_single_profile(
-        self,
-        profile_name: str,
-        stir_directory: Path
-    ) -> ProfileTestResult:
+    async def _test_single_profile(self, profile_name: str, stir_directory: Path) -> ProfileTestResult:
         """Test a single profile configuration."""
         import os
         import time
@@ -169,7 +164,9 @@ class ProfileMatrix:
 
             # Extract tools from profile
             tools = {}
-            terraform_flavor = profile.get("terraform_flavor", self.config.get_setting("terraform_flavor", "terraform"))
+            terraform_flavor = profile.get(
+                "terraform_flavor", self.config.get_setting("terraform_flavor", "terraform")
+            )
 
             # Get the appropriate tool based on flavor
             if terraform_flavor == "opentofu" and "tofu" in profile:
@@ -210,7 +207,9 @@ class ProfileMatrix:
     async def _install_profile_tools(self, profile_name: str, profile: dict[str, Any]) -> None:
         """Install all tools for a specific profile."""
         # Determine which tools to install based on terraform_flavor
-        terraform_flavor = profile.get("terraform_flavor", self.config.get_setting("terraform_flavor", "terraform"))
+        terraform_flavor = profile.get(
+            "terraform_flavor", self.config.get_setting("terraform_flavor", "terraform")
+        )
 
         tools_to_install = {}
         if terraform_flavor == "opentofu" and "tofu" in profile:
@@ -241,17 +240,15 @@ class ProfileMatrix:
             )
 
     async def _run_stir_test(
-        self,
-        profile_name: str,
-        stir_directory: Path,
-        env: dict[str, str]
+        self, profile_name: str, stir_directory: Path, env: dict[str, str]
     ) -> dict[str, Any]:
         """Run soup stir test for a specific profile."""
         import json
 
         # Build the soup stir command
         cmd = [
-            "soup", "stir",
+            "soup",
+            "stir",
             str(stir_directory),
             "--json",  # Get JSON output for parsing
         ]
@@ -264,10 +261,7 @@ class ProfileMatrix:
             stderr=asyncio.subprocess.PIPE,
         )
 
-        stdout, stderr = await asyncio.wait_for(
-            process.communicate(),
-            timeout=self.timeout_minutes * 60
-        )
+        stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=self.timeout_minutes * 60)
 
         if process.returncode == 0:
             # Parse JSON output if available
@@ -332,9 +326,7 @@ class ProfileMatrix:
 
 # Convenience function for soup stir integration
 async def run_profile_matrix_tests(
-    stir_directory: Path,
-    profiles: list[str] | None = None,
-    config: WorkenvConfig | None = None
+    stir_directory: Path, profiles: list[str] | None = None, config: WorkenvConfig | None = None
 ) -> dict[str, Any]:
     """
     Run profile-based matrix testing for soup stir.

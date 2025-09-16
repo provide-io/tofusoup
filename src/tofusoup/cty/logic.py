@@ -16,6 +16,7 @@ from tofusoup.common.serialization import (
 try:
     from pyvider.cty import CtyType, CtyValue
     from pyvider.cty.conversion import cty_to_native, infer_cty_type_from_raw
+
     HAS_CTY = True
 except ImportError:
     HAS_CTY = False
@@ -25,6 +26,7 @@ except ImportError:
 # Optional HCL integration
 try:
     from pyvider.hcl import HclError, parse_hcl_to_cty
+
     HAS_HCL = True
 except ImportError:
     HAS_HCL = False
@@ -66,14 +68,10 @@ def cty_value_to_json_comparable_dict(val: CtyValue) -> dict[str, Any]:
         processed_value = [cty_value_to_json_comparable_dict(v) for v in val.value]
     elif isinstance(native_value, set):
         processed_value = [
-            cty_value_to_json_comparable_dict(v)
-            for v in sorted(list(val.value), key=lambda x: str(x))
+            cty_value_to_json_comparable_dict(v) for v in sorted(list(val.value), key=lambda x: str(x))
         ]
     elif isinstance(native_value, dict):
-        processed_value = {
-            k: cty_value_to_json_comparable_dict(v)
-            for k, v in sorted(val.value.items())
-        }
+        processed_value = {k: cty_value_to_json_comparable_dict(v) for k, v in sorted(val.value.items())}
     else:
         processed_value = native_value
 
@@ -90,7 +88,7 @@ def load_cty_file_to_cty_value(filepath: str, file_format: str) -> CtyValue:
     """Loads a data file (JSON, Msgpack, HCL) and converts it to a CtyValue."""
     if not HAS_CTY:
         raise ImportError("CTY support requires 'pip install tofusoup[cty]'")
-    
+
     if file_format == "hcl":
         if not HAS_HCL:
             raise ImportError("HCL support requires 'pip install tofusoup[hcl]'")
@@ -98,9 +96,7 @@ def load_cty_file_to_cty_value(filepath: str, file_format: str) -> CtyValue:
             hcl_content = pathlib.Path(filepath).read_text(encoding="utf-8")
             return parse_hcl_to_cty(hcl_content)
         except (HclError, FileNotFoundError) as e:
-            raise ConversionError(
-                f"Failed to process HCL file '{filepath}': {e}"
-            ) from e
+            raise ConversionError(f"Failed to process HCL file '{filepath}': {e}") from e
 
     raw_data: Any
     if file_format == "json":
@@ -115,9 +111,7 @@ def load_cty_file_to_cty_value(filepath: str, file_format: str) -> CtyValue:
         cty_value = inferred_type.validate(raw_data)
         return cty_value
     except Exception as e:
-        raise ConversionError(
-            f"Failed to convert raw data from '{filepath}' to CTY: {e}"
-        ) from e
+        raise ConversionError(f"Failed to convert raw data from '{filepath}' to CTY: {e}") from e
 
 
 def dump_cty_value_to_json_string(value: CtyValue, pretty: bool = True) -> str:

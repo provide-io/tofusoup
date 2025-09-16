@@ -1,17 +1,12 @@
 # tofusoup/conformance/cli_verification/souptest_cli_cty.py
-import pytest
-import json
 from pathlib import Path
-from typing import Any
-import re
 
-from tofusoup.harness.logic import ensure_go_harness_build, GO_HARNESS_CONFIG, HarnessBuildError
-from tofusoup.common.exceptions import HarnessError
-from tofusoup.common.utils import DecimalAwareJSONEncoder
+import pytest
 
 from .shared_cli_utils import run_harness_cli
 
 HARNESS_NAME = "soup-go"
+
 
 # This test now correctly uses the generic go_harness_executable fixture
 # by parameterizing it with the specific harness name it needs.
@@ -24,14 +19,17 @@ def test_cty_cli_help(go_harness_executable: Path, project_root: Path, request: 
         ["cty", "--help"],
         project_root=project_root,
         harness_artifact_name=HARNESS_NAME,
-        test_id=test_id
+        test_id=test_id,
     )
-    assert exit_code == 0, f"Expected exit code 0 for cty --help, got {exit_code}.\nStdout: {stdout}\nStderr: {stderr}"
+    assert exit_code == 0, (
+        f"Expected exit code 0 for cty --help, got {exit_code}.\nStdout: {stdout}\nStderr: {stderr}"
+    )
     output_to_check = stderr if stderr else stdout
     assert "Perform CTY (Complex Type) operations including validation and conversion" in output_to_check
     assert "Available Commands:" in output_to_check
     assert "convert" in output_to_check
     assert "validate-value" in output_to_check
+
 
 GET_TYPE_SCHEMA_CASES = [
     # This test does not exist in the new go-cty harness. It is removed.

@@ -41,26 +41,20 @@ def build_rich_tree_from_cty_json_comparable(
         if isinstance(value, list):
             for i, item in enumerate(value):
                 if isinstance(item, dict) and "type_name" in item:
-                    build_rich_tree_from_cty_json_comparable(
-                        current_branch, item, name=f"[{i}]"
-                    )
+                    build_rich_tree_from_cty_json_comparable(current_branch, item, name=f"[{i}]")
                 else:
                     current_branch.add(f"[{i}]: [yellow]{item!r}[/yellow]")
         elif isinstance(value, dict):
             for k, v_item in sorted(value.items()):
                 if isinstance(v_item, dict) and "type_name" in v_item:
-                    build_rich_tree_from_cty_json_comparable(
-                        current_branch, v_item, name=str(k)
-                    )
+                    build_rich_tree_from_cty_json_comparable(current_branch, v_item, name=str(k))
                 else:
                     current_branch.add(f"{k}: [yellow]{v_item!r}[/yellow]")
         else:
             current_branch.add(f"[yellow]{value!r}[/yellow]")
 
 
-def build_rich_tree_from_dict(
-    tree_node: Tree, data: dict[str, Any], parent_name: str = "Config Root"
-) -> None:
+def build_rich_tree_from_dict(tree_node: Tree, data: dict[str, Any], parent_name: str = "Config Root") -> None:
     """
     Recursively builds a Rich Tree from a generic dictionary.
     """
@@ -73,15 +67,11 @@ def build_rich_tree_from_dict(
             branch = tree_node.add(f"[bold blue]{key}[/bold blue]")
             build_rich_tree_from_dict(branch, value, parent_name=key)
         elif isinstance(value, list):
-            branch = tree_node.add(
-                f"[bold blue]{key}[/bold blue] ([italic]list[/italic])"
-            )
+            branch = tree_node.add(f"[bold blue]{key}[/bold blue] ([italic]list[/italic])")
             for i, item in enumerate(value):
                 if isinstance(item, dict):
                     item_branch = branch.add(f"Item {i}")
-                    build_rich_tree_from_dict(
-                        item_branch, item, parent_name=f"Item {i}"
-                    )
+                    build_rich_tree_from_dict(item_branch, item, parent_name=f"Item {i}")
                 else:
                     branch.add(f"[green]{item!r}[/green]")
         else:

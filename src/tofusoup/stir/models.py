@@ -8,6 +8,7 @@ from typing import Any, NamedTuple
 
 class TestResult(NamedTuple):
     """Represents the result of running a single test."""
+
     directory: str
     success: bool
     skipped: bool

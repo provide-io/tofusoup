@@ -44,11 +44,11 @@ def view_command(ctx, filepath: str) -> None:
         # Convert the CtyValue to the JSON-comparable dictionary structure for tree building
         comparable_dict = cty_value_to_json_comparable_dict(cty_value)
 
-        tree_title = f":page_facing_up: [bold blue]{input_file_path.name}[/bold blue] ([italic]HCL as CTY[/italic])"
-        rich_tree = Tree(tree_title)
-        build_rich_tree_from_cty_json_comparable(
-            rich_tree, comparable_dict, "HCL Root (as CTY)"
+        tree_title = (
+            f":page_facing_up: [bold blue]{input_file_path.name}[/bold blue] ([italic]HCL as CTY[/italic])"
         )
+        rich_tree = Tree(tree_title)
+        build_rich_tree_from_cty_json_comparable(rich_tree, comparable_dict, "HCL Root (as CTY)")
         rich_print(rich_tree)
 
     except ConversionError as e:  # Catch specific conversion errors from logic.py
@@ -68,12 +68,8 @@ def view_command(ctx, filepath: str) -> None:
 
 
 @hcl_cli.command("convert")
-@click.argument(
-    "input_file", type=click.Path(exists=True, dir_okay=False, readable=True)
-)
-@click.argument(
-    "output_file", type=click.Path(dir_okay=False, writable=True, allow_dash=True)
-)
+@click.argument("input_file", type=click.Path(exists=True, dir_okay=False, readable=True))
+@click.argument("output_file", type=click.Path(dir_okay=False, writable=True, allow_dash=True))
 @click.option(
     "--output-format",
     "-of",
@@ -134,11 +130,7 @@ def convert_command(ctx, input_file: str, output_file: str, output_format_opt: s
         sys.exit(1)
 
 
-def _determine_output_format(
-    output_format_opt: str | None,
-    cmd_opts: dict,
-    output_file: str
-) -> str:
+def _determine_output_format(output_format_opt: str | None, cmd_opts: dict, output_file: str) -> str:
     """Determine the output format from CLI, config, or file extension inference."""
     # CLI option takes precedence
     if output_format_opt:
