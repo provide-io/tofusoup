@@ -73,9 +73,7 @@ def create_self_signed_ca(
         (ca_certificate, ca_private_key, key_description)
     """
     ca_private_key, key_desc = generate_private_key(key_type, curve_name)
-    subject = issuer = x509.Name(
-        [x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, common_name)]
-    )
+    subject = issuer = x509.Name([x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, common_name)])
 
     builder = (
         x509.CertificateBuilder()
@@ -83,12 +81,9 @@ def create_self_signed_ca(
         .issuer_name(issuer)
         .public_key(ca_private_key.public_key())
         .serial_number(x509.random_serial_number())
-        .not_valid_before(
-            datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
-        )
+        .not_valid_before(datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1))
         .not_valid_after(
-            datetime.datetime.now(datetime.UTC)
-            + datetime.timedelta(days=DEFAULT_CERT_VALIDITY_DAYS)
+            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=DEFAULT_CERT_VALIDITY_DAYS)
         )
         .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
         .add_extension(
@@ -149,12 +144,9 @@ def create_signed_certificate(
         .issuer_name(ca_certificate.subject)
         .public_key(private_key.public_key())
         .serial_number(x509.random_serial_number())
-        .not_valid_before(
-            datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
-        )
+        .not_valid_before(datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1))
         .not_valid_after(
-            datetime.datetime.now(datetime.UTC)
-            + datetime.timedelta(days=DEFAULT_CERT_VALIDITY_DAYS)
+            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=DEFAULT_CERT_VALIDITY_DAYS)
         )
         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
     )
@@ -200,9 +192,7 @@ def create_signed_certificate(
 
     if dns_names:
         san_entries = [x509.DNSName(name) for name in dns_names]
-        builder = builder.add_extension(
-            x509.SubjectAlternativeName(san_entries), critical=False
-        )
+        builder = builder.add_extension(x509.SubjectAlternativeName(san_entries), critical=False)
 
     builder = builder.add_extension(
         x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_certificate.public_key()),
@@ -233,16 +223,12 @@ def save_key_and_cert_to_files(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=(
-            serialization.BestAvailableEncryption(password)
-            if password
-            else serialization.NoEncryption()
+            serialization.BestAvailableEncryption(password) if password else serialization.NoEncryption()
         ),
     )
     with open(key_filename, "wb") as f:
         f.write(key_pem)
-    logger.debug(
-        f"Saved private key to {key_filename} (Encrypted: {password is not None})"
-    )
+    logger.debug(f"Saved private key to {key_filename} (Encrypted: {password is not None})")
 
     cert_pem = certificate.public_bytes(serialization.Encoding.PEM)
     with open(cert_filename, "wb") as f:
@@ -299,9 +285,7 @@ def generate_cert_bundle_for_mtls(
     )
     server_cert_path = temp_dir / "server.pem"
     server_key_path = temp_dir / "server.key"
-    save_key_and_cert_to_files(
-        server_key, server_cert, server_key_path, server_cert_path
-    )
+    save_key_and_cert_to_files(server_key, server_cert, server_key_path, server_cert_path)
 
     client_cert, client_key, _ = create_signed_certificate(
         common_name=client_common_name,
@@ -313,9 +297,7 @@ def generate_cert_bundle_for_mtls(
     )
     client_cert_path = temp_dir / "client.pem"
     client_key_path = temp_dir / "client.key"
-    save_key_and_cert_to_files(
-        client_key, client_cert, client_key_path, client_cert_path
-    )
+    save_key_and_cert_to_files(client_key, client_cert, client_key_path, client_cert_path)
 
     return {
         "ca_cert": str(ca_cert_path.resolve()),

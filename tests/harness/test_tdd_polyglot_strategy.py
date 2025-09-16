@@ -1,12 +1,15 @@
 """
 TDD Tests for the Polyglot CLI Strategy.
 """
-import pytest
+
+from unittest.mock import MagicMock, patch
+
 from click.testing import CliRunner
-from unittest.mock import patch, MagicMock
+import pytest
 
 from tofusoup.cli import main_cli
 from tofusoup.harness.logic import GO_HARNESS_CONFIG
+
 
 @pytest.mark.tdd
 class TestPolyglotStrategyContract:
@@ -31,7 +34,7 @@ class TestPolyglotStrategyContract:
         soup_dir = tmp_path / "soup"
         soup_dir.mkdir()
         (soup_dir / "soup.toml").write_text("[global_settings]\ndefault_python_log_level = 'INFO'")
-        
+
         result = runner.invoke(main_cli, ["harness", "list"], obj={"PROJECT_ROOT": tmp_path})
         assert result.exit_code == 0
         assert "soup-go" in result.output
@@ -45,16 +48,18 @@ class TestPolyglotStrategyContract:
         soup_dir = tmp_path / "soup"
         soup_dir.mkdir()
         (soup_dir / "soup.toml").write_text("[global_settings]\ndefault_python_log_level = 'INFO'")
-        
+
         # Create the source directory
         source_dir = tmp_path / "src/tofusoup/harness/go/soup-go"
         source_dir.mkdir(parents=True)
-        
+
         # Mock successful build
         mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
-        
+
         # Force rebuild to ensure subprocess.run is called
-        result = runner.invoke(main_cli, ["harness", "build", "soup-go", "--force-rebuild"], obj={"PROJECT_ROOT": tmp_path})
+        result = runner.invoke(
+            main_cli, ["harness", "build", "soup-go", "--force-rebuild"], obj={"PROJECT_ROOT": tmp_path}
+        )
         assert result.exit_code == 0
         assert "Building harness: soup-go" in result.output
         mock_run.assert_called_once()
@@ -66,7 +71,7 @@ class TestPolyglotStrategyContract:
         soup_dir = tmp_path / "soup"
         soup_dir.mkdir()
         (soup_dir / "soup.toml").write_text("[global_settings]\ndefault_python_log_level = 'INFO'")
-        
+
         result = runner.invoke(main_cli, ["harness", "build", "go-cty"], obj={"PROJECT_ROOT": tmp_path})
         assert result.exit_code != 0
         # The error should appear in stderr, not stdout
@@ -77,10 +82,11 @@ class TestPolyglotStrategyContract:
         CONTRACT: Conformance test helpers must construct `soup-go <subcommand>` calls.
         This test simulates a helper function that might be used in conformance tests.
         """
+
         def get_harness_command(harness_name: str, subcommand: str, args: list[str]) -> list[str]:
             if harness_name != "soup-go":
                 raise ValueError("Only 'soup-go' is supported.")
-            
+
             executable_path = "/path/to/soup-go"
             return [executable_path, subcommand] + args
 

@@ -14,6 +14,7 @@ from provide.foundation import logger
 try:
     from pyvider.cty import CtyValue
     from pyvider.cty.conversion import cty_to_native
+
     HAS_CTY = True
 except ImportError:
     HAS_CTY = False
@@ -51,7 +52,7 @@ def convert_hcl_file_to_output_format(
     """
     if not HAS_CTY:
         raise ImportError("HCL support requires 'pip install tofusoup[hcl]'")
-    
+
     cty_from_hcl = load_hcl_file_as_cty(input_filepath_str)
     native_python_obj = cty_to_native(cty_from_hcl)
 
@@ -62,9 +63,7 @@ def convert_hcl_file_to_output_format(
     elif output_format == "msgpack":
         output_content = dump_python_to_msgpack_bytes(native_python_obj)
     else:
-        raise TofuSoupError(
-            f"Internal error: Unsupported output format '{output_format}' for HCL conversion."
-        )
+        raise TofuSoupError(f"Internal error: Unsupported output format '{output_format}' for HCL conversion.")
 
     if output_to_stdout:
         return output_content

@@ -1,17 +1,20 @@
 import pytest
 from textual.pilot import Pilot
 from textual.screen import Screen
-from textual.widgets import Markdown
+
 from tofusoup.browser.ui.widgets.detail_view import DetailView
 from tofusoup.registry.search.engine import SearchResult
 
 # Mark all tests in this module as browser tests
 pytestmark = pytest.mark.browser
 
+
 class DetailViewScreen(Screen):
     """A simple screen to host the DetailView widget for testing."""
+
     def compose(self):
         yield DetailView()
+
 
 async def test_detail_view_initial_state(pilot: Pilot):
     """Verify the detail view is initially empty."""
@@ -21,6 +24,7 @@ async def test_detail_view_initial_state(pilot: Pilot):
     view = pilot.app.screen.query_one(DetailView)
     assert "No item selected" in view.raw_content
 
+
 async def test_detail_view_update_content(pilot: Pilot):
     """Verify the detail view can be updated with new content."""
     await pilot.app.push_screen(DetailViewScreen())
@@ -28,8 +32,12 @@ async def test_detail_view_update_content(pilot: Pilot):
     detail_view = pilot.app.screen.query_one(DetailView)
 
     result = SearchResult(
-        id="1", name="test-module", namespace="test", type="module",
-        registry_source="opentofu", provider_name="aws"
+        id="1",
+        name="test-module",
+        namespace="test",
+        type="module",
+        registry_source="opentofu",
+        provider_name="aws",
     )
     detail_view.update_content(result)
     await pilot.pause()

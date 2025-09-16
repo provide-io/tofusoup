@@ -41,14 +41,10 @@ def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool) 
     elif harness_names:
         names_to_clean = list(harness_names)
     else:
-        rich_print(
-            "[yellow]Please specify harness names to clean or use --all.[/yellow]"
-        )
+        rich_print("[yellow]Please specify harness names to clean or use --all.[/yellow]")
         return
 
-    rich_print(
-        f"[bold yellow]Cleaning harnesses: {', '.join(names_to_clean)}[/bold yellow]"
-    )
+    rich_print(f"[bold yellow]Cleaning harnesses: {', '.join(names_to_clean)}[/bold yellow]")
     for name in names_to_clean:
         if name in GO_HARNESS_CONFIG:
             output_name = GO_HARNESS_CONFIG[name]["output_name"]
@@ -96,13 +92,9 @@ def list_harnesses_command(ctx) -> None:
     is_flag=True,
     help="Force rebuild even if the harness already exists.",
 )
-@click.option(
-    "--log-level", default="info", help="Set the logging level for the harness build."
-)
+@click.option("--log-level", default="info", help="Set the logging level for the harness build.")
 @click.pass_context
-def build_harness_command(
-    ctx, harness_names: tuple[str, ...], force_rebuild: bool, log_level: str
-) -> None:
+def build_harness_command(ctx, harness_names: tuple[str, ...], force_rebuild: bool, log_level: str) -> None:
     """Builds specified test harnesses."""
     project_root = ctx.obj["PROJECT_ROOT"]
     loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})
@@ -111,9 +103,7 @@ def build_harness_command(
     rich_print(f"[bold cyan]Building harness: {', '.join(names_to_build)}[/bold cyan]")
     for name in names_to_build:
         try:
-            executable_path = ensure_go_harness_build(
-                name, project_root, loaded_config, force_rebuild
-            )
+            executable_path = ensure_go_harness_build(name, project_root, loaded_config, force_rebuild)
             rich_print(
                 f"[green]Go harness '{name}' is available at:[/green] {executable_path.relative_to(project_root)}"
             )

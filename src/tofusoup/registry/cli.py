@@ -4,12 +4,9 @@
 #
 
 import asyncio
-import os
-import sys
 
 import click
 from provide.foundation import logger
-from provide.foundation.concurrency import async_run
 
 
 def safe_async_run(coro_func):
@@ -19,7 +16,6 @@ def safe_async_run(coro_func):
     Uses asyncio.run() directly to avoid event loop conflicts in testing.
     """
     return asyncio.run(coro_func())
-
 
 
 from tofusoup.config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
@@ -67,11 +63,7 @@ def provider_info(ctx: click.Context, provider: str, registry: str) -> None:
     async def fetch_info() -> None:
         registries = []
         if registry in ["terraform", "both"]:
-            registries.append(
-                IBMTerraformRegistry(
-                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
-                )
-            )
+            registries.append(IBMTerraformRegistry(RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)))
         if registry in ["opentofu", "both"]:
             registries.append(OpenTofuRegistry())
 
@@ -82,13 +74,9 @@ def provider_info(ctx: click.Context, provider: str, registry: str) -> None:
                     provider_data = await reg.get_provider_details(namespace, name)
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Provider: {namespace}/{name}")
-                    click.echo(
-                        f"Description: {provider_data.get('description', 'N/A')}"
-                    )
+                    click.echo(f"Description: {provider_data.get('description', 'N/A')}")
                     click.echo(f"Source: {provider_data.get('source', 'N/A')}")
-                    click.echo(
-                        f"Downloads: {provider_data.get('download_count', 'N/A')}"
-                    )
+                    click.echo(f"Downloads: {provider_data.get('download_count', 'N/A')}")
                 except Exception as e:
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Error: {e}")
@@ -118,11 +106,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
     async def fetch_versions() -> None:
         registries = []
         if registry in ["terraform", "both"]:
-            registries.append(
-                IBMTerraformRegistry(
-                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
-                )
-            )
+            registries.append(IBMTerraformRegistry(RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)))
         if registry in ["opentofu", "both"]:
             registries.append(OpenTofuRegistry())
 
@@ -141,11 +125,7 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
                     else:
                         click.echo(f"Versions ({len(versions)} total):")
                         for v in versions[:10]:  # Show first 10
-                            platforms = (
-                                f" ({len(v.platforms)} platforms)"
-                                if v.platforms
-                                else ""
-                            )
+                            platforms = f" ({len(v.platforms)} platforms)" if v.platforms else ""
                             click.echo(f"  - {v.version}{platforms}")
                         if len(versions) > 10:
                             click.echo(f"  ... and {len(versions) - 10} more")
@@ -177,9 +157,7 @@ def module_info(ctx: click.Context, module: str, registry: str) -> None:
     """Get detailed information about a module."""
     parts = module.split("/")
     if len(parts) != 3:
-        click.echo(
-            "Error: Module must be in format 'namespace/name/provider'", err=True
-        )
+        click.echo("Error: Module must be in format 'namespace/name/provider'", err=True)
         return
 
     namespace, name, provider_name = parts
@@ -187,11 +165,7 @@ def module_info(ctx: click.Context, module: str, registry: str) -> None:
     async def fetch_info() -> None:
         registries = []
         if registry in ["terraform", "both"]:
-            registries.append(
-                IBMTerraformRegistry(
-                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
-                )
-            )
+            registries.append(IBMTerraformRegistry(RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)))
         if registry in ["opentofu", "both"]:
             registries.append(OpenTofuRegistry())
 
@@ -199,9 +173,7 @@ def module_info(ctx: click.Context, module: str, registry: str) -> None:
             async with reg:
                 reg_name = reg.__class__.__name__.replace("Registry", "")
                 try:
-                    module_data = await reg.get_module_details(
-                        namespace, name, provider_name, "latest"
-                    )
+                    module_data = await reg.get_module_details(namespace, name, provider_name, "latest")
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Module: {namespace}/{name}/{provider_name}")
                     click.echo(f"Description: {module_data.get('description', 'N/A')}")
@@ -229,9 +201,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
     """List all versions of a module."""
     parts = module.split("/")
     if len(parts) != 3:
-        click.echo(
-            "Error: Module must be in format 'namespace/name/provider'", err=True
-        )
+        click.echo("Error: Module must be in format 'namespace/name/provider'", err=True)
         return
 
     namespace, name, provider_name = parts
@@ -239,11 +209,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
     async def fetch_versions() -> None:
         registries = []
         if registry in ["terraform", "both"]:
-            registries.append(
-                IBMTerraformRegistry(
-                    RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)
-                )
-            )
+            registries.append(IBMTerraformRegistry(RegistryConfig(base_url=TERRAFORM_REGISTRY_URL)))
         if registry in ["opentofu", "both"]:
             registries.append(OpenTofuRegistry())
 
@@ -251,12 +217,8 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
             async with reg:
                 reg_name = reg.__class__.__name__.replace("Registry", "")
                 try:
-                    await reg.get_module_details(
-                        namespace, name, provider_name, "latest"
-                    )
-                    versions = await reg.list_module_versions(
-                        f"{namespace}/{name}/{provider_name}"
-                    )
+                    await reg.get_module_details(namespace, name, provider_name, "latest")
+                    versions = await reg.list_module_versions(f"{namespace}/{name}/{provider_name}")
 
                     click.echo(f"\n=== {reg_name} Registry ===")
                     click.echo(f"Module: {namespace}/{name}/{provider_name}")
@@ -266,11 +228,7 @@ def module_versions(ctx: click.Context, module: str, registry: str, latest: bool
                     else:
                         click.echo(f"Versions ({len(versions)} total):")
                         for v in versions[:10]:  # Show first 10
-                            published = (
-                                f" (published: {v.published_at})"
-                                if v.published_at
-                                else ""
-                            )
+                            published = f" (published: {v.published_at})" if v.published_at else ""
                             click.echo(f"  - {v.version}{published}")
                         if len(versions) > 10:
                             click.echo(f"  ... and {len(versions) - 10} more")
@@ -308,9 +266,7 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
         click.echo("Please provide a search term.", err=True)
         return
 
-    logger.info(
-        f"Initiating registry search for term: '{search_term}' on registry: '{registry_name}'"
-    )
+    logger.info(f"Initiating registry search for term: '{search_term}' on registry: '{registry_name}'")
 
     try:
         results = safe_async_run(lambda: async_search_runner(search_term, registry_name))
@@ -346,11 +302,7 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
             has_versions = any(r.total_versions is not None for r in results)
 
             if has_versions:
-                max_latest_len = (
-                    max(len(r.latest_version or "N/A") for r in results)
-                    if results
-                    else 10
-                )
+                max_latest_len = max(len(r.latest_version or "N/A") for r in results) if results else 10
                 header = f"| R | T | {'Name':<{max_name_len}} | {'Latest':<{max_latest_len}} | {'Total':<5} | Description"
             else:
                 header = f"| R | T | {'Name':<{max_name_len}} | Description"
@@ -379,26 +331,16 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
 
                 if has_versions:
                     latest = result.latest_version or "N/A"
-                    total = (
-                        str(result.total_versions)
-                        if result.total_versions is not None
-                        else "N/A"
-                    )
+                    total = str(result.total_versions) if result.total_versions is not None else "N/A"
                     click.echo(
                         f"| {registry_emoji} | {type_emoji} | {name:<{max_name_len}} | {latest:<{max_latest_len}} | {total:<5} | {desc}"
                     )
                 else:
-                    click.echo(
-                        f"| {registry_emoji} | {type_emoji} | {name:<{max_name_len}} | {desc}"
-                    )
+                    click.echo(f"| {registry_emoji} | {type_emoji} | {name:<{max_name_len}} | {desc}")
 
-            click.echo(
-                "\nKey: 🤝 Both | 🍲 OpenTofu | 🏗️ Terraform | 📦 Module | 🔌 Provider"
-            )
+            click.echo("\nKey: 🤝 Both | 🍲 OpenTofu | 🏗️ Terraform | 📦 Module | 🔌 Provider")
         else:
-            click.echo(
-                f"No results found for '{search_term}' on {registry_name} registry."
-            )
+            click.echo(f"No results found for '{search_term}' on {registry_name} registry.")
 
     except Exception as e:
         logger.error(f"Error in search_command: {e}", exc_info=True)
@@ -428,9 +370,7 @@ def compare_command(resource: str) -> None:
         return
 
     async def compare_resources() -> None:
-        tf_registry = IBMTerraformRegistry(
-            RegistryConfig(base_url="https://registry.terraform.io")
-        )
+        tf_registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
         tofu_registry = OpenTofuRegistry()
 
         click.echo(f"\nComparing {resource_type}: {resource}")
@@ -441,16 +381,10 @@ def compare_command(resource: str) -> None:
             try:
                 if resource_type == "provider":
                     tf_data = await tf_registry.get_provider_details(namespace, name)
-                    tf_versions = await tf_registry.list_provider_versions(
-                        f"{namespace}/{name}"
-                    )
+                    tf_versions = await tf_registry.list_provider_versions(f"{namespace}/{name}")
                 else:
-                    tf_data = await tf_registry.get_module_details(
-                        namespace, name, provider_name, "latest"
-                    )
-                    tf_versions = await tf_registry.list_module_versions(
-                        f"{namespace}/{name}/{provider_name}"
-                    )
+                    tf_data = await tf_registry.get_module_details(namespace, name, provider_name, "latest")
+                    tf_versions = await tf_registry.list_module_versions(f"{namespace}/{name}/{provider_name}")
 
                 tf_latest = tf_versions[0].version if tf_versions else "N/A"
                 tf_count = len(tf_versions)
@@ -462,12 +396,8 @@ def compare_command(resource: str) -> None:
             # OpenTofu Registry
             try:
                 if resource_type == "provider":
-                    tofu_data = await tofu_registry.get_provider_details(
-                        namespace, name
-                    )
-                    tofu_versions = await tofu_registry.list_provider_versions(
-                        f"{namespace}/{name}"
-                    )
+                    tofu_data = await tofu_registry.get_provider_details(namespace, name)
+                    tofu_versions = await tofu_registry.list_provider_versions(f"{namespace}/{name}")
                 else:
                     tofu_data = await tofu_registry.get_module_details(
                         namespace, name, provider_name, "latest"
@@ -484,39 +414,26 @@ def compare_command(resource: str) -> None:
                 tofu_count = 0
 
             # Display comparison
-            click.echo(
-                f"\n{'Registry':<20} | {'Status':<12} | {'Latest':<10} | {'Versions':<8}"
-            )
+            click.echo(f"\n{'Registry':<20} | {'Status':<12} | {'Latest':<10} | {'Versions':<8}")
             click.echo("-" * 60)
 
             tf_status = "Available" if tf_data else "Not found"
-            click.echo(
-                f"{'Terraform Registry':<20} | {tf_status:<12} | {tf_latest:<10} | {tf_count:<8}"
-            )
+            click.echo(f"{'Terraform Registry':<20} | {tf_status:<12} | {tf_latest:<10} | {tf_count:<8}")
 
             tofu_status = "Available" if tofu_data else "Not found"
-            click.echo(
-                f"{'OpenTofu Registry':<20} | {tofu_status:<12} | {tofu_latest:<10} | {tofu_count:<8}"
-            )
+            click.echo(f"{'OpenTofu Registry':<20} | {tofu_status:<12} | {tofu_latest:<10} | {tofu_count:<8}")
 
             # Version comparison if both exist
             if tf_data and tofu_data and tf_versions and tofu_versions:
                 click.echo("\nVersion Availability:")
                 all_versions = sorted(
-                    set(
-                        [v.version for v in tf_versions]
-                        + [v.version for v in tofu_versions]
-                    ),
+                    set([v.version for v in tf_versions] + [v.version for v in tofu_versions]),
                     reverse=True,
                 )
 
                 for version in all_versions[:10]:  # Show top 10
-                    tf_has = (
-                        "✓" if any(v.version == version for v in tf_versions) else "✗"
-                    )
-                    tofu_has = (
-                        "✓" if any(v.version == version for v in tofu_versions) else "✗"
-                    )
+                    tf_has = "✓" if any(v.version == version for v in tf_versions) else "✗"
+                    tofu_has = "✓" if any(v.version == version for v in tofu_versions) else "✗"
                     click.echo(f"  {version:<15} TF: {tf_has}  OpenTofu: {tofu_has}")
 
                 if len(all_versions) > 10:

@@ -4,6 +4,7 @@
 """Centralized logging configuration using Pyvider Telemetry."""
 
 from provide.foundation import LoggingConfig, TelemetryConfig, get_hub
+
 from tofusoup.config.defaults import DEFAULT_LOG_LEVEL
 
 

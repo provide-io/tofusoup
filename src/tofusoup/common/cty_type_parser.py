@@ -41,12 +41,7 @@ def _split_by_delimiter_respecting_nesting(text: str, delimiter: str) -> list[st
             balance_brace += 1
         elif char == "}":
             balance_brace -= 1
-        elif (
-            char == delimiter
-            and balance_paren == 0
-            and balance_bracket == 0
-            and balance_brace == 0
-        ):
+        elif char == delimiter and balance_paren == 0 and balance_bracket == 0 and balance_brace == 0:
             parts.append(text[current_part_start:i].strip())
             current_part_start = i + len(delimiter)
     parts.append(text[current_part_start:].strip())
@@ -73,14 +68,8 @@ def parse_cty_type_string(type_str: str) -> CtyType:
         element_types_str = type_str[len("tuple([") : -2]
         if not element_types_str:
             return CtyTuple(element_types=())
-        element_type_strs = _split_by_delimiter_respecting_nesting(
-            element_types_str, ","
-        )
-        return CtyTuple(
-            element_types=tuple(
-                parse_cty_type_string(s.strip()) for s in element_type_strs
-            )
-        )
+        element_type_strs = _split_by_delimiter_respecting_nesting(element_types_str, ",")
+        return CtyTuple(element_types=tuple(parse_cty_type_string(s.strip()) for s in element_type_strs))
     if type_str.startswith("object({") and type_str.endswith("})"):
         attrs_str = type_str[len("object({") : -2]
         if not attrs_str.strip():

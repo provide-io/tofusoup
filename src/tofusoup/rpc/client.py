@@ -16,10 +16,12 @@ from tofusoup.config.defaults import (
     ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH,
     REQUEST_TIMEOUT,
 )
+
 # Optional RPC integration
 try:
     from pyvider.rpcplugin.client import RPCPluginClient
     from pyvider.rpcplugin.config import rpcplugin_config
+
     HAS_RPC = True
 except ImportError:
     HAS_RPC = False
@@ -82,9 +84,7 @@ class KVClient:
             "PLUGIN_MAGIC_COOKIE_KEY": go_server_expected_cookie_key,
             go_server_expected_cookie_key: go_server_expected_cookie_value,
             "PLUGIN_PROTOCOL_VERSIONS": go_server_protocol_version,
-            "LOG_LEVEL": os.getenv(
-                "LOG_LEVEL", logger.level.name if hasattr(logger, "level") else "INFO"
-            ),  # type: ignore
+            "LOG_LEVEL": os.getenv("LOG_LEVEL", logger.level.name if hasattr(logger, "level") else "INFO"),  # type: ignore
             "PYTHONUNBUFFERED": "1",
             "GODEBUG": os.getenv("GODEBUG", "asyncpreemptoff=1,panicasync=1"),
             "PLUGIN_AUTO_MTLS": "true" if self.enable_mtls else "false",
@@ -104,23 +104,15 @@ class KVClient:
             f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.plugin_magic_cookie_value}"
         )
 
-        if (
-            rpcplugin_config.plugin_magic_cookie_key
-            != go_server_expected_cookie_key
-        ):
+        if rpcplugin_config.plugin_magic_cookie_key != go_server_expected_cookie_key:
             logger.info(
                 f"Updating rpcplugin_config PLUGIN_MAGIC_COOKIE_KEY to '{go_server_expected_cookie_key}'"
             )
             rpcplugin_config.plugin_magic_cookie_key = go_server_expected_cookie_key
         else:
-            logger.info(
-                f"rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY already '{go_server_expected_cookie_key}'"
-            )
+            logger.info(f"rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY already '{go_server_expected_cookie_key}'")
 
-        if (
-            rpcplugin_config.plugin_magic_cookie_value
-            != go_server_expected_cookie_value
-        ):
+        if rpcplugin_config.plugin_magic_cookie_value != go_server_expected_cookie_value:
             logger.info(
                 f"Updating rpcplugin_config PLUGIN_MAGIC_COOKIE_VALUE to '{go_server_expected_cookie_value}'"
             )
@@ -136,18 +128,14 @@ class KVClient:
         logger.info(
             f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.plugin_magic_cookie_value}"
         )
-        logger.info(
-            f"[KVClient.__init__] self.subprocess_env for plugin: {self.subprocess_env}"
-        )
+        logger.info(f"[KVClient.__init__] self.subprocess_env for plugin: {self.subprocess_env}")
 
     async def start(self) -> None:
         start_time = time.time()
         self.is_started = False
         try:
             pyvider_client_mtls_mode = "true" if self.enable_mtls else "false"
-            logger.info(
-                f"Setting rpcplugin_config.PLUGIN_AUTO_MTLS to: {pyvider_client_mtls_mode}"
-            )
+            logger.info(f"Setting rpcplugin_config.PLUGIN_AUTO_MTLS to: {pyvider_client_mtls_mode}")
             rpcplugin_config.plugin_auto_mtls = pyvider_client_mtls_mode
 
             if self.enable_mtls:
@@ -156,31 +144,21 @@ class KVClient:
                 server_ca_env = os.getenv("PLUGIN_SERVER_CERT_CHAIN")
 
                 if client_cert_env:
-                    logger.info(
-                        f"Updating rpcplugin_config with PLUGIN_CLIENT_CERT: {client_cert_env}"
-                    )
+                    logger.info(f"Updating rpcplugin_config with PLUGIN_CLIENT_CERT: {client_cert_env}")
                     rpcplugin_config.plugin_client_cert = client_cert_env
                 if client_key_env:
-                    logger.info(
-                        f"Updating rpcplugin_config with PLUGIN_CLIENT_KEY: {client_key_env}"
-                    )
+                    logger.info(f"Updating rpcplugin_config with PLUGIN_CLIENT_KEY: {client_key_env}")
                     rpcplugin_config.plugin_client_key = client_key_env
                 if server_ca_env:
-                    logger.info(
-                        f"Updating rpcplugin_config with PLUGIN_SERVER_CERT_CHAIN: {server_ca_env}"
-                    )
+                    logger.info(f"Updating rpcplugin_config with PLUGIN_SERVER_CERT_CHAIN: {server_ca_env}")
                     rpcplugin_config.plugin_server_cert_chain = server_ca_env
 
             logger.debug(f"KVClient attempting to start server: {self.server_path}")
 
             if not os.path.exists(self.server_path):
-                raise FileNotFoundError(
-                    f"Server executable not found: {self.server_path}"
-                )
+                raise FileNotFoundError(f"Server executable not found: {self.server_path}")
             if not os.access(self.server_path, os.X_OK):
-                raise PermissionError(
-                    f"Server executable not executable: {self.server_path}"
-                )
+                raise PermissionError(f"Server executable not executable: {self.server_path}")
 
             server_command = [self.server_path]
             # Prepare effective_env early as it might be modified
@@ -200,14 +178,12 @@ class KVClient:
                 # New harnesses expect rpc server-start subcommand
                 server_command.extend(["rpc", "server-start"])
             # For existing go-rpc binary, just pass flags directly
-            
+
             server_command.extend(["--tls-mode", self.tls_mode])
 
             if self.tls_mode == "auto":
                 server_command.extend(["--tls-key-type", self.tls_key_type])
-                logger.info(
-                    f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}"
-                )
+                logger.info(f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}")
             elif self.tls_mode == "manual":
                 if self.cert_file and self.key_file:
                     server_command.extend(["--cert-file", self.cert_file])
@@ -226,18 +202,14 @@ class KVClient:
                             f"KVClient: Manual TLS enabled using env vars - cert: {server_cert_path}, key: {server_key_path}"
                         )
                     else:
-                        logger.error(
-                            "KVClient: Manual TLS mode requires cert-file and key-file"
-                        )
+                        logger.error("KVClient: Manual TLS mode requires cert-file and key-file")
                         raise ValueError(
                             "Manual TLS mode requires cert_file and key_file parameters or PLUGIN_SERVER_CERT/PLUGIN_SERVER_KEY environment variables"
                         )
             else:  # disabled
                 logger.info("KVClient: TLS disabled - running in insecure mode")
 
-            logger.info(
-                f"Effective server command for plugin: {' '.join(server_command)}"
-            )
+            logger.info(f"Effective server command for plugin: {' '.join(server_command)}")
 
             # Ensure PLUGIN_AUTO_MTLS in effective_env (for pyvider-rpcplugin client itself) matches KVClient's intent
             effective_env["PLUGIN_AUTO_MTLS"] = "true" if self.enable_mtls else "false"
@@ -245,12 +217,8 @@ class KVClient:
             # Set up magic cookies in the server's effective_env.
             go_server_expected_cookie_key_name = "BASIC_PLUGIN"
             go_server_expected_cookie_value = "hello"
-            effective_env["PLUGIN_MAGIC_COOKIE_KEY"] = (
-                go_server_expected_cookie_key_name
-            )
-            effective_env[go_server_expected_cookie_key_name] = (
-                go_server_expected_cookie_value
-            )
+            effective_env["PLUGIN_MAGIC_COOKIE_KEY"] = go_server_expected_cookie_key_name
+            effective_env[go_server_expected_cookie_key_name] = go_server_expected_cookie_value
             if (
                 "PLUGIN_MAGIC_COOKIE" in effective_env
                 and go_server_expected_cookie_key_name != "PLUGIN_MAGIC_COOKIE"
@@ -283,9 +251,7 @@ class KVClient:
                     )
                     client_constructor_config["client_cert_path"] = client_cert_path_env
                     client_constructor_config["client_key_path"] = client_key_path_env
-                    client_constructor_config["server_root_ca_path"] = (
-                        server_ca_path_env
-                    )
+                    client_constructor_config["server_root_ca_path"] = server_ca_path_env
                 else:
                     logger.warning(
                         f"KVClient: mTLS enabled for KVClient, but not all {ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH}, "
@@ -301,12 +267,8 @@ class KVClient:
                 config=client_constructor_config,
             )
 
-            logger.debug(
-                f"Starting RPCPluginClient (pyvider), timeout={self.connection_timeout}s"
-            )
-            await asyncio.wait_for(
-                self._client.start(), timeout=self.connection_timeout
-            )
+            logger.debug(f"Starting RPCPluginClient (pyvider), timeout={self.connection_timeout}s")
+            await asyncio.wait_for(self._client.start(), timeout=self.connection_timeout)
 
             if self._client._process and self._client._process.stderr:
                 self._relay_stderr()
@@ -318,14 +280,8 @@ class KVClient:
             )
 
         except TimeoutError:
-            logger.error(
-                f"KVClient connection to server timed out after {time.time() - start_time:.3f}s"
-            )
-            if (
-                self._client
-                and self._client._process
-                and self._client._process.poll() is None
-            ):
+            logger.error(f"KVClient connection to server timed out after {time.time() - start_time:.3f}s")
+            if self._client and self._client._process and self._client._process.poll() is None:
                 logger.debug("Server process was still running after client timeout.")
             self.is_started = False
             raise
@@ -340,9 +296,7 @@ class KVClient:
     def _relay_stderr(self) -> None:
         import threading
 
-        if not (
-            self._client and self._client._process and self._client._process.stderr
-        ):
+        if not (self._client and self._client._process and self._client._process.stderr):
             logger.warning("stderr relay: client process or stderr not available.")
             return
         stderr_pipe = self._client._process.stderr
@@ -380,17 +334,13 @@ class KVClient:
             self.is_started = False
             try:
                 if self._client._process and self._client._process.returncode is None:
-                    if hasattr(self._client, "close") and asyncio.iscoroutinefunction(
-                        self._client.close
-                    ):
+                    if hasattr(self._client, "close") and asyncio.iscoroutinefunction(self._client.close):
                         await self._client.close()
                     elif hasattr(self._client, "close"):
                         self._client.close()
                     logger.debug("RPCPluginClient close called.")
                 else:
-                    logger.debug(
-                        "RPCPluginClient process already terminated or not started."
-                    )
+                    logger.debug("RPCPluginClient process already terminated or not started.")
             except Exception as e:
                 logger.error(
                     f"Error during RPCPluginClient.close(): {type(e).__name__} - {e}",
@@ -402,9 +352,7 @@ class KVClient:
                 logger.debug("KVClient connection closed and attributes reset.")
         else:
             self.is_started = False
-            logger.debug(
-                "KVClient.close() called but client was not initialized or already closed."
-            )
+            logger.debug("KVClient.close() called but client was not initialized or already closed.")
 
     async def put(self, key: str, value: bytes) -> None:
         if not self.is_started or not self._stub:
@@ -412,9 +360,7 @@ class KVClient:
         if not isinstance(value, bytes):
             raise TypeError("Value for put must be bytes.")
         try:
-            logger.debug(
-                f"KVClient: Sending Put - key='{key}', value_size={len(value)} bytes."
-            )
+            logger.debug(f"KVClient: Sending Put - key='{key}', value_size={len(value)} bytes.")
             await asyncio.wait_for(
                 self._stub.Put(kv_pb2.PutRequest(key=key, value=value)), timeout=REQUEST_TIMEOUT
             )
@@ -450,15 +396,11 @@ class KVClient:
                 return response.value
             else:
                 # This path should ideally not be reached given gRPC behavior (either response or error).
-                logger.warning(
-                    f"KVClient: Get for key='{key}' returned a None response object (unexpected)."
-                )
+                logger.warning(f"KVClient: Get for key='{key}' returned a None response object (unexpected).")
                 return None
         except grpc.aio.AioRpcError as e:
             if e.code() == grpc.StatusCode.NOT_FOUND:
-                logger.info(
-                    f"KVClient: Key='{key}' not found on server (gRPC StatusCode.NOT_FOUND)."
-                )
+                logger.info(f"KVClient: Key='{key}' not found on server (gRPC StatusCode.NOT_FOUND).")
                 return None  # Correctly return None for not found
             logger.error(
                 f"KVClient: Get for key='{key}' failed with gRPC error {e.code()}: {e.details()}",

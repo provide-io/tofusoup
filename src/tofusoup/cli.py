@@ -7,20 +7,18 @@ import pathlib
 import sys
 
 import click
-from provide.foundation import LoggingConfig, TelemetryConfig, logger, get_hub
+from provide.foundation import LoggingConfig, TelemetryConfig, get_hub, logger
 from rich import print as rich_print_direct
 from rich.tree import Tree
 
-from tofusoup.config.defaults import DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL, LOG_LEVELS
 from tofusoup.common.config import TofuSoupConfigError, load_tofusoup_config
 from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
+from tofusoup.config.defaults import DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL, LOG_LEVELS
 
 telemetry_config = TelemetryConfig(
     service_name="tofusoup-cli",
-    logging=LoggingConfig(
-        default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper()
-    ),
+    logging=LoggingConfig(default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper()),
 )
 hub = get_hub()
 hub.initialize_foundation(config=telemetry_config)
@@ -65,9 +63,7 @@ LAZY_COMMANDS = {
     default=None,
     help="Path to a specific TofuSoup configuration file.",
 )
-def main_cli(
-    ctx: click.Context, verbose: bool, log_level: str | None, config_file: str | None
-) -> None:
+def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_file: str | None) -> None:
     ctx.obj = ctx.obj or {}
 
     final_log_level = "DEBUG" if verbose else log_level
@@ -86,14 +82,10 @@ def main_cli(
             break
         project_root_path = project_root_path.parent
     else:
-        raise FileNotFoundError(
-            "Could not determine project root containing 'pyproject.toml'."
-        )
+        raise FileNotFoundError("Could not determine project root containing 'pyproject.toml'.")
 
     try:
-        loaded_config = load_tofusoup_config(
-            project_root_path, explicit_config_file=config_file
-        )
+        loaded_config = load_tofusoup_config(project_root_path, explicit_config_file=config_file)
     except TofuSoupConfigError as e:
         logger.error(f"Configuration Error: {e}. Aborting.")
         sys.exit(1)
@@ -116,9 +108,7 @@ def show_config_command(ctx: click.Context) -> None:
     """Displays the currently loaded TofuSoup configuration."""
     loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})
     if not loaded_config:
-        rich_print_direct(
-            "[yellow]No TofuSoup configuration loaded or configuration is empty.[/yellow]"
-        )
+        rich_print_direct("[yellow]No TofuSoup configuration loaded or configuration is empty.[/yellow]")
         return
 
     config_tree = Tree("🍲 [bold green]Loaded TofuSoup Configuration[/bold green]")

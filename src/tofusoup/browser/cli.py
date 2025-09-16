@@ -4,7 +4,7 @@
 #
 
 import click
-from provide.foundation import logger, get_hub
+from provide.foundation import get_hub, logger
 
 from tofusoup.browser.ui.app import TFBrowserApp
 
@@ -28,9 +28,7 @@ def sui_cli(ctx: click.Context) -> None:
 @click.pass_context
 def tui_command(ctx: click.Context, registry_name: str | None) -> None:
     """Launch the Textual TUI to browse registries."""
-    logger.info(
-        f"Launching TUI browser. Specified registry context: {registry_name or 'not specified'}"
-    )
+    logger.info(f"Launching TUI browser. Specified registry context: {registry_name or 'not specified'}")
     app = TFBrowserApp()
     try:
         app.run()

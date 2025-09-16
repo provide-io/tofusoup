@@ -64,16 +64,21 @@ async def _run_pytest_suite(
     if not pytest_target_path.exists():
         raise TofuSoupError(f"Test suite path not found: {pytest_target_path}")
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", delete=False, suffix=".json", encoding="utf-8"
-    ) as report_file:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json", encoding="utf-8") as report_file:
         report_path = report_file.name
 
     # Corrected invocation: Use `-o` to override configuration for this specific run.
     # This is the correct way to tell this pytest session to only find `souptest_` files.
-    command = (
-        [sys.executable, "-m", "pytest", f"--json-report-file={report_path}", "-o", "python_files=souptest_*.py", *pytest_args, str(pytest_target_path)]
-    )
+    command = [
+        sys.executable,
+        "-m",
+        "pytest",
+        f"--json-report-file={report_path}",
+        "-o",
+        "python_files=souptest_*.py",
+        *pytest_args,
+        str(pytest_target_path),
+    ]
 
     current_env = os.environ.copy()
     current_env.update({k: str(v) for k, v in env_vars.items()})
@@ -110,11 +115,7 @@ async def _run_pytest_suite(
             raise ValidationError(f"Invalid JSON in test report: {e}") from e
 
         summary = report.get("summary", {})
-        failures = [
-            test
-            for test in report.get("tests", [])
-            if test.get("outcome") in ("failed", "error")
-        ]
+        failures = [test for test in report.get("tests", []) if test.get("outcome") in ("failed", "error")]
         return TestSuiteResult(
             suite_name=suite_name,
             success=(report.get("exitcode", 1) == 0),
@@ -160,18 +161,13 @@ async def run_test_suite(
     if pytest_options:
         pytest_args.extend(pytest_options)
 
-    return await _run_pytest_suite(
-        suite_name, project_root, suite_cfg["path"], pytest_args, env_vars
-    )
+    return await _run_pytest_suite(suite_name, project_root, suite_cfg["path"], pytest_args, env_vars)
 
 
 async def run_all_test_suites(
     project_root: pathlib.Path, loaded_config: dict, verbose: bool
 ) -> list[TestSuiteResult]:
-    tasks = [
-        run_test_suite(name, project_root, loaded_config, verbose, None)
-        for name in TEST_SUITE_CONFIG
-    ]
+    tasks = [run_test_suite(name, project_root, loaded_config, verbose, None) for name in TEST_SUITE_CONFIG]
     return await asyncio.gather(*tasks)
 
 

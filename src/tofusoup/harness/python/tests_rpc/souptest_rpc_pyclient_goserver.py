@@ -27,9 +27,7 @@ async def test_pyclient_goserver_put_get(go_kvstore_harness: Path, tmp_path: Pat
     The KVClient will start this Go server as a subprocess.
     """
     if not go_kvstore_harness.exists() or not os.access(go_kvstore_harness, os.X_OK):
-        pytest.skip(
-            f"Go KVStore harness executable not found or not executable at {go_kvstore_harness}"
-        )
+        pytest.skip(f"Go KVStore harness executable not found or not executable at {go_kvstore_harness}")
 
     # For the Go server, crypto options are passed as command-line arguments to the harness.
     # The KVClient starts the server executable directly.

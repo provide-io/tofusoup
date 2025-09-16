@@ -36,18 +36,14 @@ class HarnessCleanError(TofuSoupError):
     pass
 
 
-def _get_effective_go_harness_settings(
-    harness_name: str, loaded_config: dict[str, Any]
-) -> dict[str, Any]:
+def _get_effective_go_harness_settings(harness_name: str, loaded_config: dict[str, Any]) -> dict[str, Any]:
     settings: dict[str, Any] = {"build_flags": [], "env_vars": {}}
     component_id = harness_name
     go_defaults = loaded_config.get("harness_defaults", {}).get("go", {})
     settings["build_flags"] = go_defaults.get("build_flags", [])
     settings["env_vars"] = go_defaults.get("common_env_vars", {})
 
-    specific_config = (
-        loaded_config.get("harness", {}).get("go", {}).get(component_id, {})
-    )
+    specific_config = loaded_config.get("harness", {}).get("go", {}).get(component_id, {})
     if "build_flags" in specific_config:
         settings["build_flags"] = specific_config["build_flags"]
     if "env_vars" in specific_config:
@@ -71,9 +67,7 @@ def ensure_go_harness_build(
     output_path = output_bin_dir / config["output_name"]
 
     if not force_rebuild and output_path.exists():
-        logger.info(
-            f"Go harness '{harness_name}' already built at {output_path}. Skipping build."
-        )
+        logger.info(f"Go harness '{harness_name}' already built at {output_path}. Skipping build.")
         return output_path
 
     logger.info(f"Building Go harness '{harness_name}' from {harness_source_path}...")
@@ -105,13 +99,9 @@ def ensure_go_harness_build(
         return output_path
     except subprocess.CalledProcessError as e:
         logger.error(f"Go build failed for '{harness_name}': {e.stderr}")
-        raise HarnessBuildError(
-            f"Failed to build Go harness '{harness_name}': {e.stderr}"
-        ) from e
+        raise HarnessBuildError(f"Failed to build Go harness '{harness_name}': {e.stderr}") from e
     except FileNotFoundError:
-        raise GoVersionError(
-            "Go executable not found. Please ensure Go is installed and in your PATH."
-        )
+        raise GoVersionError("Go executable not found. Please ensure Go is installed and in your PATH.")
 
 
 def clean_go_harness_artifacts(harness_name: str, project_root: pathlib.Path) -> None:
@@ -128,13 +118,9 @@ def clean_go_harness_artifacts(harness_name: str, project_root: pathlib.Path) ->
             logger.info(f"Cleaned Go harness '{harness_name}' at {output_path}")
         except OSError as e:
             logger.error(f"Failed to remove Go harness '{harness_name}': {e}")
-            raise HarnessCleanError(
-                f"Failed to clean Go harness '{harness_name}': {e}"
-            ) from e
+            raise HarnessCleanError(f"Failed to clean Go harness '{harness_name}': {e}") from e
     else:
-        logger.info(
-            f"Go harness '{harness_name}' not found at {output_path}. Nothing to clean."
-        )
+        logger.info(f"Go harness '{harness_name}' not found at {output_path}. Nothing to clean.")
 
 
 def start_go_plugin_server_process(
@@ -148,9 +134,7 @@ def start_go_plugin_server_process(
     """
     Ensures a Go harness is built and starts it as a server process.
     """
-    harness_executable_path = ensure_go_harness_build(
-        harness_name, project_root, loaded_config
-    )
+    harness_executable_path = ensure_go_harness_build(harness_name, project_root, loaded_config)
 
     process_env = os.environ.copy()
     if custom_env:
@@ -163,9 +147,7 @@ def start_go_plugin_server_process(
     try:
         return subprocess.Popen(cmd, env=process_env)
     except Exception as e:
-        raise TofuSoupError(
-            f"Failed to start Go plugin server '{harness_name}': {e}"
-        ) from e
+        raise TofuSoupError(f"Failed to start Go plugin server '{harness_name}': {e}") from e
 
 
 # 🍲🥄📄🪄

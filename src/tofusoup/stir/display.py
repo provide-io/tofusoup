@@ -30,9 +30,7 @@ def generate_status_table() -> Table:
     table.add_column("Data", justify="center", style="blue", width=5)
     table.add_column("Func", justify="center", style="blue", width=5)
 
-    show_eph_func_col = any(
-        status.get("ephemeral_functions", 0) > 0 for status in test_statuses.values()
-    )
+    show_eph_func_col = any(status.get("ephemeral_functions", 0) > 0 for status in test_statuses.values())
     if show_eph_func_col:
         table.add_column("Eph. Func", justify="center", style="blue", width=9)
 
@@ -56,9 +54,7 @@ def generate_status_table() -> Table:
 
         if status_info.get("active"):
             status_emoji = (
-                "[yellow]🔄[/yellow]"
-                if not status_info.get("has_warnings")
-                else "[yellow]⚠️[/yellow]"
+                "[yellow]🔄[/yellow]" if not status_info.get("has_warnings") else "[yellow]⚠️[/yellow]"
             )
         elif status_info.get("skipped"):
             status_emoji = "[dim]⏭️[/dim]"
@@ -79,10 +75,12 @@ def generate_status_table() -> Table:
         ]
         if show_eph_func_col:
             row_data.append(str(status_info.get("ephemeral_functions", "")))
-        row_data.extend([
-            str(status_info.get("outputs", "")),
-            last_log,
-        ])
+        row_data.extend(
+            [
+                str(status_info.get("outputs", "")),
+                last_log,
+            ]
+        )
         table.add_row(*row_data)
 
     return table

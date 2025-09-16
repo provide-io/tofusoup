@@ -85,20 +85,14 @@ class SearchView(Vertical):
         row_key = RowKey(result.id)
 
         registry_emoji = (
-            "🤝"
-            if result.registry_source == "both"
-            else "🍲"
-            if result.registry_source == "opentofu"
-            else "🏗️"
+            "🤝" if result.registry_source == "both" else "🍲" if result.registry_source == "opentofu" else "🏗️"
         )
         type_emoji = "📦" if result.type == "module" else "🔌"
         name = f"{result.namespace}/{result.name}"
         if result.type == "module":
             name += f"/{result.provider_name}"
 
-        total_versions = (
-            result.total_versions if result.total_versions is not None else -1
-        )
+        total_versions = result.total_versions if result.total_versions is not None else -1
 
         # FIX: Use the correct `try...except RowDoesNotExist` pattern to check for row existence.
         try:

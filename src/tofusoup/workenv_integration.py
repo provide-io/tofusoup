@@ -28,7 +28,7 @@ def load_soup_config(project_root: Path | None = None) -> dict[str, Any]:
     soup_toml_path = project_root / "soup.toml"
 
     if soup_toml_path.exists():
-        with open(soup_toml_path, 'rb') as f:
+        with open(soup_toml_path, "rb") as f:
             return tomllib.load(f)
 
     return {}
@@ -49,7 +49,7 @@ def create_workenv_config_with_soup(project_root: Path | None = None) -> Workenv
     """
     # Load soup.toml
     soup_config = load_soup_config(project_root)
-    workenv_section = soup_config.get('workenv', {})
+    workenv_section = soup_config.get("workenv", {})
 
     if not workenv_section:
         # No workenv config in soup.toml, just return standard WorkenvConfig
@@ -59,7 +59,9 @@ def create_workenv_config_with_soup(project_root: Path | None = None) -> Workenv
     from wrkenv.env.config import FileConfigSource
 
     # Create a soup.toml source
-    soup_source = FileConfigSource(project_root / "soup.toml" if project_root else Path.cwd() / "soup.toml", "workenv")
+    soup_source = FileConfigSource(
+        project_root / "soup.toml" if project_root else Path.cwd() / "soup.toml", "workenv"
+    )
 
     # Create WorkenvConfig and add soup source with highest priority
     config = WorkenvConfig(project_root=project_root)
@@ -79,4 +81,4 @@ def get_matrix_config_from_soup(project_root: Path | None = None) -> dict[str, A
         Matrix configuration dictionary.
     """
     soup_config = load_soup_config(project_root)
-    return soup_config.get('workenv', {}).get('matrix', {})
+    return soup_config.get("workenv", {}).get("matrix", {})

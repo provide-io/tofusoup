@@ -1,16 +1,17 @@
-import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
-from tofusoup.registry.models.provider import Provider, ProviderVersion
+import pytest
+
 from tofusoup.registry.models.module import Module, ModuleVersion
+from tofusoup.registry.models.provider import Provider, ProviderVersion
 
 
 @pytest.fixture
 def mock_terraform_registry():
     """Create a mock Terraform registry."""
-    from tofusoup.registry.terraform import IBMTerraformRegistry
     from tofusoup.registry.base import RegistryConfig
-    
+    from tofusoup.registry.terraform import IBMTerraformRegistry
+
     mock = AsyncMock(spec=IBMTerraformRegistry)
     mock.config = RegistryConfig(base_url="https://registry.terraform.io")
     return mock
@@ -20,7 +21,7 @@ def mock_terraform_registry():
 def mock_opentofu_registry():
     """Create a mock OpenTofu registry."""
     from tofusoup.registry.opentofu import OpenTofuRegistry
-    
+
     mock = AsyncMock(spec=OpenTofuRegistry)
     return mock
 
@@ -36,7 +37,7 @@ def sample_provider():
         tag="provider",
         description="AWS Provider",
         downloads=1000000,
-        source="https://github.com/hashicorp/terraform-provider-aws"
+        source="https://github.com/hashicorp/terraform-provider-aws",
     )
 
 
@@ -46,7 +47,7 @@ def sample_provider_versions():
     return [
         ProviderVersion(version="6.8.0", protocols=["6"], platforms=[]),
         ProviderVersion(version="6.7.0", protocols=["6"], platforms=[]),
-        ProviderVersion(version="6.6.0", protocols=["6"], platforms=[])
+        ProviderVersion(version="6.6.0", protocols=["6"], platforms=[]),
     ]
 
 
@@ -60,7 +61,7 @@ def sample_module():
         provider_name="aws",
         description="Terraform module to create AWS VPC resources",
         downloads=500000,
-        source_url="https://github.com/terraform-aws-modules/terraform-aws-vpc"
+        source_url="https://github.com/terraform-aws-modules/terraform-aws-vpc",
     )
 
 
@@ -70,7 +71,7 @@ def sample_module_versions():
     return [
         ModuleVersion(version="6.0.1", published_at="2024-01-15"),
         ModuleVersion(version="6.0.0", published_at="2024-01-10"),
-        ModuleVersion(version="5.9.0", published_at="2023-12-20")
+        ModuleVersion(version="5.9.0", published_at="2023-12-20"),
     ]
 
 

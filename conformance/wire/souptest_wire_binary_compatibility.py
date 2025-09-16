@@ -1,5 +1,7 @@
-import pytest
 from pathlib import Path
+
+import pytest
+
 
 # This test is a placeholder for future binary compatibility tests.
 # It now correctly requests the generic harness fixture.
@@ -8,5 +10,6 @@ from pathlib import Path
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 def test_harness_can_encode_simple_object(go_harness_executable: Path):
     assert go_harness_executable.exists()
+
 
 # 🍲🥄🧪🪄

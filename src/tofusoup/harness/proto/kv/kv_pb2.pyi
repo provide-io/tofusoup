@@ -22,9 +22,7 @@ class PutRequest(_message.Message):
     VALUE_FIELD_NUMBER: _ClassVar[int]
     key: str
     value: bytes
-    def __init__(
-        self, key: str | None = ..., value: bytes | None = ...
-    ) -> None: ...
+    def __init__(self, key: str | None = ..., value: bytes | None = ...) -> None: ...
 
 class Empty(_message.Message):
     __slots__ = ()
