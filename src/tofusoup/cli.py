@@ -75,8 +75,8 @@ def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_fi
         setup_telemetry(config=updated_config)
         logger.debug(f"Log level set to {final_log_level.upper()} by CLI option.")
 
-    current_path = pathlib.Path(__file__).resolve()
-    project_root_path = current_path
+    # Start from current working directory to find project root
+    project_root_path = pathlib.Path.cwd()
     while project_root_path != project_root_path.parent:
         if (project_root_path / "pyproject.toml").exists():
             break
