@@ -41,7 +41,8 @@
       "Bash(timeout 15 soup:*)",
       "Bash(mkdocs build:*)",
       "Bash(plating:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(PLATING_EXAMPLE_PLACEHOLDER=\"# Custom example placeholder\" python -c \"\nfrom plating.config import get_config\nconfig = get_config()\nprint(f''Example placeholder: {repr(config.example_placeholder)}'')\nprint(f''Fallback signature: {repr(config.fallback_signature_format)}'')\nprint(f''Fallback arguments: {repr(config.fallback_arguments_markdown)}'')\n\")"
     ],
     "deny": [],
     "ask": [],
