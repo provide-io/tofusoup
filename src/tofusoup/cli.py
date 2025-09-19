@@ -34,8 +34,6 @@ LAZY_COMMANDS = {
     "rpc": ("tofusoup.rpc.cli", "rpc_cli"),
     "state": ("tofusoup.state", "state_cli"),
     "stir": ("tofusoup.stir", "stir_cli"),
-    "workenv": ("wrknv.cli", "workenv_cli"),
-    "we": ("wrknv.cli", "workenv_cli"),  # Alias for workenv
     "test": ("tofusoup.testing.cli", "test_cli"),
     "wire": ("tofusoup.wire.cli", "wire"),
     # Note: plating command has been moved to separate plating package
