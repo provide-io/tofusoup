@@ -6,7 +6,8 @@
       "Bash(make docs-sample:*)",
       "Bash(make test-docs:*)",
       "Bash(unset VIRTUAL_ENV)",
-      "Bash(PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\")"
+      "Bash(PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\")",
+      "Bash(make:*)"
     ],
     "deny": [],
     "ask": [],
