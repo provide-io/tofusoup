@@ -3,7 +3,8 @@
     "allow": [
       "Bash(make docs-functions:*)",
       "Bash(make docs-check:*)",
-      "Bash(make docs-sample:*)"
+      "Bash(make docs-sample:*)",
+      "Bash(make test-docs:*)"
     ],
     "deny": [],
     "ask": [],
