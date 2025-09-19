@@ -39,7 +39,8 @@
       "Bash(export PATH=\"workenv/tofusoup_darwin_arm64/bin:$PATH\")",
       "Bash(timeout 10 soup:*)",
       "Bash(timeout 15 soup:*)",
-      "Bash(mkdocs build:*)"
+      "Bash(mkdocs build:*)",
+      "Bash(plating:*)"
     ],
     "deny": [],
     "ask": [],
