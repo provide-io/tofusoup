@@ -4,7 +4,9 @@
       "Bash(make docs-functions:*)",
       "Bash(make docs-check:*)",
       "Bash(make docs-sample:*)",
-      "Bash(make test-docs:*)"
+      "Bash(make test-docs:*)",
+      "Bash(unset VIRTUAL_ENV)",
+      "Bash(PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\")"
     ],
     "deny": [],
     "ask": [],
