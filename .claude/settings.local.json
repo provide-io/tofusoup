@@ -40,7 +40,8 @@
       "Bash(timeout 10 soup:*)",
       "Bash(timeout 15 soup:*)",
       "Bash(mkdocs build:*)",
-      "Bash(plating:*)"
+      "Bash(plating:*)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": [],
