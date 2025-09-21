@@ -1,5 +1,7 @@
 # Garnish Component Asset Bundle System: Design Specification
 
+> **NOTE:** This functionality has been moved to the separate `plating` package. This document is kept for historical reference. See the `plating` package documentation for current implementation details.
+
 This document specifies the design for the `.garnish` system, a robust, automated, and developer-friendly system for managing all non-code assets related to a `pyvider` framework component.
 
 ## 1. Guiding Principles

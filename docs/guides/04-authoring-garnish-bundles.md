@@ -1,5 +1,7 @@
 # Guide: Authoring Garnish Bundles
 
+> **NOTE:** This functionality has been moved to the separate `plating` package with `.plating` bundles. This document is kept for historical reference. Use the `plating` CLI commands instead of `soup garnish`.
+
 This guide provides a practical walkthrough for developers on how to create and maintain documentation, examples, and tests for their components using the `.garnish` system.
 
 ## Step 1: Scaffold the Garnish Bundle
