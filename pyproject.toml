@@ -66,14 +66,6 @@ docs = [
     "provide-testkit[docs]",
 ]
 
-[tool.uv.sources]
-provide-foundation = { workspace = true }
-provide-testkit = { workspace = true }
-plating = { workspace = true }
-pyvider-cty = { workspace = true }
-pyvider-hcl = { workspace = true }
-pyvider-rpcplugin = { workspace = true }
-
 [project.scripts]
 soup = "tofusoup.cli:entry_point"
 
