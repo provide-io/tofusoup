@@ -15,7 +15,8 @@
       "Bash(soup:*)",
       "Bash(mktemp:*)",
       "Bash(ruff check:*)",
-      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go:*)"
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": [],
