@@ -87,7 +87,7 @@ class FocusedMatrixTester:
         finally:
             try:
                 await client.close()
-            except:
+            except Exception:
                 pass
 
     async def test_python_to_python_crypto(self, crypto_config: CryptoConfig) -> TestResult:
@@ -143,7 +143,7 @@ class FocusedMatrixTester:
         finally:
             try:
                 await client.close()
-            except:
+            except Exception:
                 pass
 
     def simulate_go_to_go(self, crypto_config: CryptoConfig) -> TestResult:

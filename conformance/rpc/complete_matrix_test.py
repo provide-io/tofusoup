@@ -108,7 +108,7 @@ class CompleteMatrixTester:
         finally:
             try:
                 await client.close()
-            except:
+            except Exception:
                 pass
 
     def test_go_client_combination(self, server_lang: str, crypto_config: CryptoConfig) -> TestResult:

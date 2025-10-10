@@ -8,6 +8,14 @@ import asyncio
 import click
 from provide.foundation import logger
 
+from tofusoup.config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
+from tofusoup.registry.base import RegistryConfig
+from tofusoup.registry.opentofu import OpenTofuRegistry
+from tofusoup.registry.search.engine import (
+    async_search_runner,
+)
+from tofusoup.registry.terraform import IBMTerraformRegistry
+
 
 def safe_async_run(coro_func):
     """
@@ -16,15 +24,6 @@ def safe_async_run(coro_func):
     Uses asyncio.run() directly to avoid event loop conflicts in testing.
     """
     return asyncio.run(coro_func())
-
-
-from tofusoup.config.defaults import DEFAULT_REGISTRY_SOURCE, TERRAFORM_REGISTRY_URL
-from tofusoup.registry.base import RegistryConfig
-from tofusoup.registry.opentofu import OpenTofuRegistry
-from tofusoup.registry.search.engine import (
-    async_search_runner,
-)
-from tofusoup.registry.terraform import IBMTerraformRegistry
 
 
 @click.group("registry")

@@ -3,12 +3,12 @@ from pathlib import Path
 
 import pytest
 
-pytest.skip("Wire encoding functions not yet implemented", allow_module_level=True)
-# from tofusoup.wire.logic import encode_value_to_tfwire
-# Corrected import path
 from tofusoup.common.exceptions import ConversionError
+from tofusoup.wire.logic import encode_value_to_tfwire  # type: ignore
 
 from ..utils.go_interaction import tfwire_go_encode
+
+pytest.skip("Wire encoding functions not yet implemented", allow_module_level=True)
 
 BIT_FOR_BIT_VECTORS = [
     ("simple_string", {"type": "string", "value": "hello"}),
