@@ -70,7 +70,7 @@ def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_fi
             service_name="tofusoup-cli",
             logging=LoggingConfig(default_level=final_log_level.upper()),
         )
-        setup_telemetry(config=updated_config)
+        hub.initialize_foundation(config=updated_config)
         logger.debug(f"Log level set to {final_log_level.upper()} by CLI option.")
 
     # Start from current working directory to find project root

@@ -1,6 +1,7 @@
 #
 # tofusoup/harness/python/conftest.py
 #
+import os
 from pathlib import Path
 import subprocess
 
