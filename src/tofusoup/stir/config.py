@@ -32,6 +32,9 @@ ENV_VARS = {
 # Phase emojis for status display
 PHASE_EMOJI = {
     "PENDING": "⏳",
+    "SCANNING": "🔍",
+    "DOWNLOADING": "📥",
+    "COMPLETE": "✅",
     "CLEANING": "🧹",
     "INIT": "🔄",
     "APPLYING": "🚀",
