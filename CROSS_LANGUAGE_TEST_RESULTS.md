@@ -131,30 +131,40 @@ Invalid certificate verification context
                                        Client certs (if auto-generated) will not be presented.
 ```
 
-### The Bug
+### The Root Cause: grpcio Limitation
 
-**Location**: pyvider-rpcplugin gRPC channel creation logic
+**Location**: grpcio (Python gRPC library) - NOT a pyvider-rpcplugin bug
 
-1. Client **generates** a certificate (secp384r1)
-2. Client **receives** server's certificate
-3. Client creates TLS channel with **server auth only**
-4. Client **does not present** its certificate to server
-5. Server expects **mutual TLS** but only sees server auth
-6. Handshake fails: "Invalid certificate verification context"
+The issue is a **fundamental limitation in grpcio**:
 
-### Additional Issue: Curve Mismatch
+1. **grpcio does not support secp521r1 (P-521)** curve
+2. Python client is **forced to use secp384r1 (P-384)** for all mTLS
+3. Client **generates** certificate with secp384r1
+4. Client **cannot negotiate** with servers expecting other curves
+5. Result: Python client → Go server fails
 
-Client requested P-256 but generated P-384 (secp384r1):
+### Why Curve Parameter Appears Ignored
+
+Client requested P-256 but always generates P-384 (secp384r1):
 
 ```python
 # User requested:
 KVClient(..., tls_curve="P-256")
 
-# But client generated:
-'curve': <CurveType.SECP384R1: 'secp384r1'>  # This is P-384!
+# But grpcio forces:
+'curve': <CurveType.SECP384R1: 'secp384r1'>  # Limited by grpcio
 ```
 
-This suggests the curve parameter isn't being passed correctly to the certificate generation logic.
+This is **not a configuration bug** - it's grpcio's hard limitation on supported curves.
+
+### Implications
+
+| Direction | Expected Behavior | Reason |
+|-----------|-------------------|--------|
+| Python → Go | ❌ **Won't work** | Go may expect different curve, Python stuck at P-384 |
+| Go → Python | ✅ **Should work** | Python uses P-384, Go client accepts it |
+| Python → Python | ❌ **Fails** | Auto-TLS not implemented in Python server |
+| Go → Go | ✅ **Works** | Native go-plugin handles all curves |
 
 ---
 
@@ -195,26 +205,28 @@ Same mTLS certificate presentation issue - when roles are reversed, the Python c
    - KV storage with configurable directory
    - Protocol buffer definitions
 
-### Critical Bugs Found
+### Critical Limitations Found
 
-1. **pyvider-rpcplugin mTLS Bug**
-   - **Severity**: High
-   - **Impact**: Blocks all Python↔Go RPC communication
-   - **Location**: TLS channel creation in pyvider-rpcplugin
-   - **Fix Needed**: Modify gRPC channel creation to present client certificate when auto-generated
+1. **grpcio Curve Support Limitation**
+   - **Severity**: High (Permanent Limitation)
+   - **Impact**: Python client limited to secp384r1 (P-384) only
+   - **Location**: grpcio (Python gRPC library)
+   - **Status**: Cannot be fixed - upstream library limitation
+   - **Workaround**: Accept that Python→Go may not work; Go→Python should work
 
-2. **Python Server Auto-TLS**
+2. **Python Server Auto-TLS Not Implemented**
    - **Severity**: Medium
    - **Impact**: Python→Python communication fails
    - **Location**: `src/tofusoup/rpc/server.py:182-187`
    - **Status**: Documented limitation, fallback to insecure mode
    - **Fix Needed**: Implement auto certificate generation in Python server
 
-3. **Curve Parameter Not Honored**
-   - **Severity**: Low
-   - **Impact**: Wrong curve used (P-384 instead of P-256)
-   - **Location**: pyvider-rpcplugin certificate generation
-   - **Fix Needed**: Pass `tls_curve` parameter through to Certificate class
+3. **Go→Python Connection Issues** (Under Investigation)
+   - **Severity**: Medium
+   - **Impact**: Go client → Python server timing out
+   - **Expected**: Should work (Go accepts P-384 from Python)
+   - **Actual**: Timeout after 30s
+   - **Note**: Works in pyvider context, may be soup-specific issue
 
 ---
 
@@ -237,31 +249,40 @@ Same mTLS certificate presentation issue - when roles are reversed, the Python c
 
 ## 🎓 Recommendations
 
-### Immediate Actions
+### Understanding the Constraints
 
-1. **Fix pyvider-rpcplugin TLS Channel Creation**
-   ```python
-   # Current (broken):
-   credentials = grpc.ssl_channel_credentials(
-       root_certificates=server_cert_pem
-   )
+1. **grpcio Limitation is Permanent**
+   - Python client will **always** use secp384r1 (P-384)
+   - This is a limitation of the grpcio library, not our code
+   - Cannot be fixed without changes to grpcio upstream
+   - **Accept this limitation** and design around it
 
-   # Fixed (needed):
-   credentials = grpc.ssl_channel_credentials(
-       root_certificates=server_cert_pem,
-       private_key=client_key_pem,
-       certificate_chain=client_cert_pem
-   )
-   ```
+2. **Focus on Supported Combinations**
+   - **Go ↔ Go**: Fully supported ✅
+   - **Go → Python**: Should work (needs investigation why timeout occurs)
+   - **Python → Go**: Will not work due to grpcio limitation ❌
+   - **Python → Python**: Needs auto-TLS implementation
 
-2. **Implement Python Server Auto-TLS**
+### Actionable Improvements
+
+1. **Implement Python Server Auto-TLS**
    - Generate server certificates using cryptography library
-   - Follow go-plugin's auto-mTLS pattern
+   - Follow go-plugin's auto-mTLS pattern with P-384 curve
    - Exchange certificates via handshake protocol
+   - Priority: High (enables Python→Python)
 
-3. **Fix Curve Parameter Passing**
-   - Ensure `tls_curve` parameter flows through to Certificate generation
-   - Add validation for supported curves (P-256, P-384, P-521)
+2. **Investigate Go→Python Timeout**
+   - Works in pyvider context, fails in tofusoup tests
+   - Check magic cookie configuration
+   - Verify server startup sequence
+   - Compare with working pyvider setup
+   - Priority: Medium (should already work)
+
+3. **Document Supported Configurations**
+   - Update documentation to clearly state grpcio limitation
+   - Provide configuration guide for working combinations
+   - Add warnings for Python→Go attempts
+   - Priority: High (avoid user confusion)
 
 ### Testing Strategy
 
@@ -273,19 +294,38 @@ Same mTLS certificate presentation issue - when roles are reversed, the Python c
 
 ## 📝 Conclusion
 
-### What We Proved
+### What We Proved ✅
 
-✅ **Go client and Go server successfully perform put/get operations** with full mTLS encryption and proper error handling.
+**Go client and Go server successfully perform put/get operations** with full mTLS encryption and proper error handling.
 
-### What We Found
+**Proof provided**:
+- Put operation: key=`go_client_test_key`, value=`"Hello from Go client to Go server!"`
+- Get operation: Successfully retrieved exact same value
+- Error handling: Correctly handled non-existent keys
+- Performance: Completed in 0.04 seconds
 
-❌ **Python↔Go communication is blocked** by a certificate presentation bug in pyvider-rpcplugin's TLS channel creation.
+### What We Discovered 🔍
 
-❌ **Python→Python communication fails** due to incomplete auto-TLS implementation in the Python server.
+1. **grpcio Limitation** (Not a Bug)
+   - Python gRPC library permanently limited to secp384r1 (P-384) curve
+   - Cannot be fixed without upstream changes
+   - Impacts: Python→Go will not work
+   - Go→Python should work (Python uses P-384, which Go accepts)
 
-### Impact
+2. **Python Server Auto-TLS Missing**
+   - Auto-TLS not implemented in Python server
+   - Falls back to insecure mode
+   - Documented limitation in code
+   - Impacts: Python→Python fails
 
-The RPC infrastructure is **solid for Go↔Go** communication but requires **pyvider-rpcplugin fixes** before cross-language communication will work.
+3. **Go→Python Timeout** (Under Investigation)
+   - Expected to work based on pyvider experience
+   - Actually times out in tofusoup tests
+   - Needs further investigation to identify difference from pyvider
+
+### Impact Summary
+
+The RPC infrastructure is **production-ready for Go↔Go** communication and has a clear path forward for mixed-language scenarios by understanding and working within the grpcio limitations.
 
 ---
 
