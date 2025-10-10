@@ -2,7 +2,6 @@
 #
 # tofusoup/cli.py
 #
-import logging
 import os
 import pathlib
 import sys
@@ -17,13 +16,14 @@ from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
 from tofusoup.config.defaults import DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL, LOG_LEVELS
 
-# CRITICAL: Configure all logging to use stderr BEFORE any logging happens
-# This is essential for go-plugin compatibility where stdout is reserved for handshake
-logging.basicConfig(stream=sys.stderr, force=True)
-
+# CRITICAL: Configure Foundation logger to use stderr for go-plugin compatibility
+# stdout is reserved for the plugin handshake protocol
 telemetry_config = TelemetryConfig(
     service_name="tofusoup-cli",
-    logging=LoggingConfig(default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper()),
+    logging=LoggingConfig(
+        default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper(),
+        stream=sys.stderr,  # Force all logging to stderr
+    ),
 )
 hub = get_hub()
 hub.initialize_foundation(config=telemetry_config)
