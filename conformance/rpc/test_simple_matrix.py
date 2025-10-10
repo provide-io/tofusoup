@@ -29,7 +29,7 @@ async def test_pyclient_goserver_no_mtls(project_root: Path):
     if not go_server_path.exists():
         pytest.skip(f"Go RPC server not found at {go_server_path}")
 
-    client = KVClient(server_path=str(go_server_path), enable_mtls=False)
+    client = KVClient(server_path=str(go_server_path), tls_mode="disabled")
 
     test_key = f"simple-test-{uuid.uuid4()}"
     test_value = b"Hello from simple matrix test"
@@ -56,9 +56,8 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path):
 
     client = KVClient(
         server_path=str(go_server_path),
-        enable_mtls=True,  # Enable mTLS with auto-generation
-        cert_algo="rsa",
-        cert_bits=2048,
+        tls_mode="auto",
+        tls_key_type="rsa",
     )
 
     test_key = f"mtls-test-{uuid.uuid4()}"
@@ -84,7 +83,7 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path):
     if not go_server_path.exists():
         pytest.skip(f"Go RPC server not found at {go_server_path}")
 
-    client = KVClient(server_path=str(go_server_path), enable_mtls=True, cert_algo="ecdsa", cert_curve="P-256")
+    client = KVClient(server_path=str(go_server_path), tls_mode="auto", tls_key_type="ec")
 
     test_key = f"ecdsa-test-{uuid.uuid4()}"
     test_value = b"Hello from ECDSA mTLS test"
@@ -109,7 +108,7 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path):
     if not py_server_path.exists():
         pytest.skip(f"Python KV server not found at {py_server_path}")
 
-    client = KVClient(server_path=str(py_server_path), enable_mtls=False)
+    client = KVClient(server_path=str(py_server_path), tls_mode="disabled")
 
     test_key = f"py2py-test-{uuid.uuid4()}"
     test_value = b"Hello from Python to Python"
@@ -134,7 +133,7 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path):
     if not py_server_path.exists():
         pytest.skip(f"Python KV server not found at {py_server_path}")
 
-    client = KVClient(server_path=str(py_server_path), enable_mtls=True, cert_algo="rsa", cert_bits=2048)
+    client = KVClient(server_path=str(py_server_path), tls_mode="auto", tls_key_type="rsa")
 
     test_key = f"py2py-mtls-{uuid.uuid4()}"
     test_value = b"Hello from Python to Python with mTLS"

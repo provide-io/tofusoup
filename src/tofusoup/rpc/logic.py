@@ -57,16 +57,11 @@ async def _test_with_python_server(project_root: pathlib.Path, loaded_config: di
     success = False
     try:
         # KVClient will start server.py as a subprocess.
-        # Pass enable_mtls based on some logic or default for Py-Py tests.
-        # For now, default KVClient mTLS behavior (usually on if it can auto-generate)
         client = KVClient(
             server_path=str(python_server_script_path),
-            enable_mtls=True,  # Assuming mTLS for Py-Py tests too; adjust if needed
+            tls_mode="auto",
+            tls_key_type="ec",
         )
-        # Note: KVClient needs `loaded_config` to pass to RPCPluginClient if mTLS paths are from tofusoup.config.
-        # However, KVClient's constructor doesn't take loaded_config directly.
-        # This aspect might need refinement if Py-Py mTLS relies on config files via RPCPluginClient.
-        # For now, this setup relies on pyvider-rpcplugin's defaults or env vars for its own certs.
 
         await client.start()
         logger.info("Python client connected to Python KV server (via subprocess).")
@@ -88,11 +83,11 @@ async def _test_with_go_server(
     success = False
     try:
         # KVClient handles starting the Go server subprocess.
-        # enable_mtls=True is important for this test path.
-        # KVClient will use loaded_config to pass relevant settings to RPCPluginClient.
-        client = KVClient(server_path=str(go_server_executable), enable_mtls=True)
-        # KVClient's start method uses its own copy of loaded_config if needed for RPCPluginClient.
-        # The `loaded_config` parameter here is more for `ensure_go_harness_build`.
+        client = KVClient(
+            server_path=str(go_server_executable),
+            tls_mode="auto",
+            tls_key_type="ec",
+        )
         await client.start()
         logger.info("Python client connected to Go KV server.")
         success = await _run_client_operations(client, TEST_KEY, TEST_VALUE_GO, "Go")
