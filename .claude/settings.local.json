@@ -9,7 +9,8 @@
       "Bash(PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\")",
       "Bash(make:*)",
       "Bash(. .venv/bin/activate)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": [],
