@@ -170,7 +170,14 @@ def entry_point() -> None:
 
         # Start the server - this will block until shutdown
         try:
-            asyncio.run(server.serve())
+            # Get or create event loop
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            loop.run_until_complete(server.serve())
             sys.exit(0)
         except Exception as e:
             logger.error(f"Plugin server failed to start: {e}")
