@@ -37,7 +37,22 @@ def generate_status_table() -> Table:
     table.add_column("Outs", justify="center", style="blue", width=5)
     table.add_column("Last Log", justify="left", style="yellow", ratio=5)
 
-    for directory, status_info in sorted(test_statuses.items()):
+    # Sort items, but ensure __PROVIDER_PREP__ appears first if it exists
+    sorted_items = []
+    provider_prep_item = None
+
+    for directory, status_info in test_statuses.items():
+        if directory == "__PROVIDER_PREP__":
+            provider_prep_item = (directory, status_info)
+        else:
+            sorted_items.append((directory, status_info))
+
+    sorted_items = sorted(sorted_items)
+
+    if provider_prep_item:
+        sorted_items.insert(0, provider_prep_item)
+
+    for directory, status_info in sorted_items:
         phase_text = status_info["text"]
         last_log = status_info.get("last_log", "")
 
@@ -63,10 +78,16 @@ def generate_status_table() -> Table:
         else:
             status_emoji = "[red]❌[/red]"
 
+        # Special formatting for provider prep row
+        if directory == "__PROVIDER_PREP__":
+            display_name = "[bold magenta]Provider Cache Preparation[/bold magenta]"
+        else:
+            display_name = f"[bold]{directory}[/bold]"
+
         row_data = [
             status_emoji,
             phase_emoji,
-            f"[bold]{directory}[/bold]",
+            display_name,
             elapsed_str,
             str(status_info.get("providers", "")),
             str(status_info.get("resources", "")),

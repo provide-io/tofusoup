@@ -41,28 +41,63 @@ class StirRuntime:
         Args:
             test_dirs: List of test directories to scan for provider requirements
         """
-        console.print("[bold blue]🔧 Preparing providers...[/bold blue]")
+        from tofusoup.stir.display import test_statuses
+
+        # Add a special entry for provider preparation phase
+        test_statuses["__PROVIDER_PREP__"] = {
+            "text": "SCANNING",
+            "style": "blue",
+            "active": True,
+            "success": False,
+            "skipped": False,
+            "start_time": None,
+            "end_time": None,
+            "last_log": "Scanning test directories for provider requirements...",
+            "outputs": 0,
+            "has_warnings": False,
+            "providers": 0,
+            "resources": 0,
+            "data_sources": 0,
+            "functions": 0,
+            "ephemeral_functions": 0,
+        }
 
         # Ensure plugin cache directory exists
         self.plugin_cache_dir.mkdir(parents=True, exist_ok=True)
 
         # Find all unique providers needed across all test directories
+        test_statuses["__PROVIDER_PREP__"]["last_log"] = "Scanning test directories..."
         required_providers = await self._scan_provider_requirements(test_dirs)
 
         if not required_providers:
-            console.print("[yellow]⚠️  No provider requirements found in test directories[/yellow]")
+            test_statuses["__PROVIDER_PREP__"].update(
+                text="SKIPPED",
+                style="dim yellow",
+                active=False,
+                skipped=True,
+                last_log="No provider requirements found",
+            )
             self._provider_cache_ready = True
             return
 
         # Deduplicate providers by source, preferring higher versions
         deduplicated_providers = self._deduplicate_providers(required_providers)
 
+        test_statuses["__PROVIDER_PREP__"]["providers"] = len(deduplicated_providers)
+        test_statuses["__PROVIDER_PREP__"][
+            "last_log"
+        ] = f"Downloading {len(deduplicated_providers)} providers..."
+
         # Create a temporary manifest to download all providers
         await self._download_providers(deduplicated_providers)
 
         self._provider_cache_ready = True
-        console.print(
-            f"[bold green]✅ Providers prepared[/bold green] ({len(required_providers)} unique providers)"
+        test_statuses["__PROVIDER_PREP__"].update(
+            text="COMPLETE",
+            style="bold green",
+            active=False,
+            success=True,
+            last_log=f"Downloaded {len(deduplicated_providers)} providers to cache",
         )
 
     async def _scan_provider_requirements(self, test_dirs: list[Path]) -> set[tuple[str, str]]:
@@ -188,6 +223,8 @@ class StirRuntime:
         if not providers:
             return
 
+        from tofusoup.stir.display import test_statuses
+
         # Create temporary directory for provider manifest (auto-cleaned on context exit)
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -200,7 +237,10 @@ class StirRuntime:
             # Run terraform init to download providers
             from tofusoup.stir.terraform import run_terraform_command
 
-            console.print(f"[blue]📥 Downloading {len(providers)} providers to cache...[/blue]")
+            test_statuses["__PROVIDER_PREP__"]["text"] = "DOWNLOADING"
+            test_statuses["__PROVIDER_PREP__"][
+                "last_log"
+            ] = f"Running terraform init to download {len(providers)} providers..."
 
             init_args = ["init", "-no-color", "-input=false"]
             if self.force_upgrade:
@@ -217,6 +257,15 @@ class StirRuntime:
                 # Read logs to see what went wrong
                 stdout_content = stdout_log.read_text() if stdout_log.exists() else "No stdout"
                 stderr_content = stderr_log.read_text() if stderr_log.exists() else "No stderr"
+
+                test_statuses["__PROVIDER_PREP__"].update(
+                    text="ERROR",
+                    style="bold red",
+                    active=False,
+                    success=False,
+                    last_log=f"Terraform init failed with code {init_rc}",
+                )
+
                 console.print(f"[red]Terraform init failed with code {init_rc}[/red]")
                 console.print(f"[red]STDOUT:[/red] {stdout_content}")
                 console.print(f"[red]STDERR:[/red] {stderr_content}")

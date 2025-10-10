@@ -44,6 +44,9 @@ def process_results(results: list[TestResult | Exception]) -> tuple[list[TestRes
 
 async def main(target_path: str, runtime: StirRuntime) -> None:
     """Main execution function for stir tests."""
+    from rich.live import Live
+    from tofusoup.stir.display import generate_status_table, live_updater
+
     start_time = monotonic()
     base_dir = Path(target_path).resolve()
 
@@ -68,18 +71,37 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
         console.print(f"🤷 No directories found in '{base_dir}'.")
         return
 
-    # Phase 1: Provider preparation (serial)
-    await runtime.prepare_providers(test_dirs)
-
-    # Phase 2: Test execution (parallel)
-    initialize_tests(test_dirs)
-
     console.print("[bold]🚀 Tofusoup Stir[/bold]")
     console.print(
         f"Found {len(test_dirs)} test suites in '{base_dir}'. Running up to {MAX_CONCURRENT_TESTS} in parallel..."
     )
+    console.print()  # Empty line for spacing
 
-    results = await execute_tests(test_dirs, runtime)
+    # Initialize test directories for status tracking
+    initialize_tests(test_dirs)
+
+    # Start live display
+    stop_event = asyncio.Event()
+    with Live(generate_status_table(), console=console, refresh_per_second=10) as live_display:
+        # Start the live updater task
+        updater_task = asyncio.create_task(live_updater(live_display, stop_event))
+
+        try:
+            # Phase 1: Provider preparation (serial) - now with live display active
+            await runtime.prepare_providers(test_dirs)
+
+            # Remove provider prep entry after completion to avoid clutter
+            from tofusoup.stir.display import test_statuses
+
+            test_statuses.pop("__PROVIDER_PREP__", None)
+
+            # Phase 2: Test execution (parallel)
+            results = await execute_tests(test_dirs, runtime)
+        finally:
+            # Stop the live updater
+            stop_event.set()
+            await updater_task
+
     failed_tests, skipped_count, all_passed = process_results(results)
 
     duration = monotonic() - start_time
