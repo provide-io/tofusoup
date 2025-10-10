@@ -145,6 +145,7 @@ def start_kv_server(
     cert_file: str | None = None,
     key_file: str | None = None,
     storage_dir: str = "/tmp",
+    output_handshake: bool = True,
 ) -> None:
     """
     Start the KV plugin server with TLS configuration matching the Go implementation.
@@ -156,6 +157,7 @@ def start_kv_server(
         cert_file: Path to certificate file (required for manual TLS)
         key_file: Path to private key file (required for manual TLS)
         storage_dir: Directory to store KV data files. Defaults to /tmp.
+        output_handshake: If True, output go-plugin handshake to stdout
     """
     logger.info(
         "Starting KV plugin server with Python implementation",
@@ -164,6 +166,7 @@ def start_kv_server(
         cert_file=cert_file,
         key_file=key_file,
         storage_dir=storage_dir,
+        output_handshake=output_handshake,
     )
 
     # Create gRPC server
@@ -172,6 +175,9 @@ def start_kv_server(
     # Add the KV servicer with configurable storage directory
     serve(server, storage_dir=storage_dir)
 
+    # Variables for handshake
+    server_cert_pem = None
+
     # Configure TLS based on mode
     if tls_mode == "disabled":
         logger.info("TLS disabled - running in insecure mode")
@@ -179,12 +185,35 @@ def start_kv_server(
         logger.info(f"Server listening on insecure port {port}")
 
     elif tls_mode == "auto":
-        logger.info("Auto TLS mode not fully implemented in Python server - falling back to insecure")
-        logger.warning(
-            "Python server does not yet support auto-generated certificates like Go's go-plugin framework"
-        )
-        port = server.add_insecure_port("[::]:0")
-        logger.info(f"Server listening on insecure port {port} (auto TLS fallback)")
+        logger.info("Auto TLS enabled - generating server certificate")
+
+        # Generate server certificate
+        from provide.foundation.crypto import Certificate
+
+        try:
+            cert_obj = Certificate.create_self_signed_server_cert(
+                common_name="tofusoup.rpc.server",
+                organization_name="TofuSoup",
+                alt_names=["localhost", "127.0.0.1"],
+            )
+            server_cert_pem = cert_obj.cert
+            server_key_pem = cert_obj.key
+
+            # Create SSL credentials for mTLS
+            # For auto-mTLS, we accept any client cert (root_certificates=None means trust all)
+            server_credentials = grpc.ssl_server_credentials(
+                [(server_key_pem.encode("utf-8"), server_cert_pem.encode("utf-8"))],
+                root_certificates=None,  # Accept any client certificate for auto-mTLS
+                require_client_auth=True,  # mTLS: client MUST present a certificate
+            )
+            port = server.add_secure_port("[::]:0", server_credentials)
+            logger.info(f"Server listening on secure port {port} with auto-generated certificate")
+
+        except Exception as e:
+            logger.error(f"Failed to generate auto TLS certificate: {e}")
+            logger.warning("Falling back to insecure mode")
+            port = server.add_insecure_port("[::]:0")
+            server_cert_pem = None
 
     elif tls_mode == "manual":
         if not cert_file or not key_file:
@@ -216,6 +245,32 @@ def start_kv_server(
     # Start the server
     server.start()
     logger.info("KV plugin server started successfully")
+
+    # Output go-plugin handshake if requested
+    if output_handshake:
+        import base64
+
+        # Format: core_version|protocol_version|network|address|protocol|cert
+        core_version = "1"
+        protocol_version = "1"
+        network = "tcp"
+        address = f"127.0.0.1:{port}"
+        protocol = "grpc"
+
+        # Encode certificate for handshake (strip PEM headers and encode base64)
+        cert_b64 = ""
+        if server_cert_pem:
+            # Remove PEM headers and whitespace
+            cert_clean = server_cert_pem.replace("-----BEGIN CERTIFICATE-----", "")
+            cert_clean = cert_clean.replace("-----END CERTIFICATE-----", "")
+            cert_clean = cert_clean.replace("\n", "").replace("\r", "").strip()
+            cert_b64 = cert_clean  # Already base64 encoded within PEM
+
+        handshake_line = f"{core_version}|{protocol_version}|{network}|{address}|{protocol}|{cert_b64}"
+
+        # Print to stdout (go-plugin reads this)
+        print(handshake_line, flush=True)
+        logger.debug(f"Handshake output: {handshake_line[:100]}...")
 
     try:
         # Keep the server running
