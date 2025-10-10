@@ -131,8 +131,17 @@ def entry_point() -> None:
     # If magic cookie is present and we have no command-line arguments (or just the script name)
     # then we're being invoked as a plugin by go-plugin framework
     if magic_cookie_value and len(sys.argv) == 1:
-        logger.debug(f"Detected plugin invocation (magic cookie: {magic_cookie_key}={magic_cookie_value})")
-        logger.info("Auto-starting as RPC plugin server...")
+        # Suppress all logging output to avoid interfering with handshake
+        # The handshake MUST be the first clean line to stdout
+        import logging
+        logging.basicConfig(level=logging.CRITICAL, stream=sys.stderr)
+
+        # Reconfigure foundation logger to use stderr
+        updated_config = TelemetryConfig(
+            service_name="tofusoup-plugin",
+            logging=LoggingConfig(default_level="ERROR"),  # Minimize logging
+        )
+        hub.initialize_foundation(config=updated_config)
 
         # Start the RPC server directly
         from tofusoup.rpc.server import start_kv_server
