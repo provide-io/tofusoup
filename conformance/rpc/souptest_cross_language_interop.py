@@ -117,7 +117,7 @@ class TestCrossLanguageInterop:
         logger.info("🐍↔🐹 Testing Python Client ↔ Go Server")
 
         # Use our KVClient to connect to Go server
-        client = KVClient(server_path=go_server_path, enable_mtls=False)
+        client = KVClient(server_path=go_server_path, tls_mode="disabled")
 
         try:
             await client.start()
@@ -299,7 +299,7 @@ if __name__ == '__main__':
 
         # Test Go server if available
         if go_server_path:
-            client = KVClient(server_path=go_server_path, enable_mtls=False)
+            client = KVClient(server_path=go_server_path, tls_mode="disabled")
             try:
                 await client.start()
 
