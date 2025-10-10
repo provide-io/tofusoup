@@ -195,6 +195,7 @@ def start_kv_server(
                 common_name="tofusoup.rpc.server",
                 organization_name="TofuSoup",
                 alt_names=["localhost", "127.0.0.1"],
+                validity_days=365,  # 1 year validity
             )
             server_cert_pem = cert_obj.cert
             server_key_pem = cert_obj.key
