@@ -143,26 +143,31 @@ def entry_point() -> None:
         )
         hub.initialize_foundation(config=updated_config)
 
-        # Start the RPC server directly
-        from tofusoup.rpc.server import start_kv_server
+        # Start the RPC server using pyvider-rpcplugin infrastructure
+        import asyncio
+        from tofusoup.harness.proto.kv import KVProtocol
+        from tofusoup.rpc.server import KV
+        from pyvider.rpcplugin.factories import plugin_server
 
-        # Get TLS configuration from environment or use defaults
-        tls_mode = os.getenv("PLUGIN_TLS_MODE", "auto")
-        tls_key_type = os.getenv("PLUGIN_TLS_KEY_TYPE", "ec")
-        cert_file = os.getenv("PLUGIN_CERT_FILE")
-        key_file = os.getenv("PLUGIN_KEY_FILE")
         storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
+
+        # Create KV handler
+        handler = KV(storage_dir=storage_dir)
+
+        # Create protocol wrapper
+        protocol = KVProtocol()
+
+        # Create server using pyvider factory
+        # This handles handshake, mTLS, and all go-plugin protocol automatically
+        server = plugin_server(
+            protocol=protocol,
+            handler=handler,
+            transport="tcp",  # Use TCP for compatibility
+        )
 
         # Start the server - this will block until shutdown
         try:
-            start_kv_server(
-                tls_mode=tls_mode,
-                tls_key_type=tls_key_type,
-                cert_file=cert_file,
-                key_file=key_file,
-                storage_dir=storage_dir,
-                output_handshake=True,  # Output go-plugin handshake for compatibility
-            )
+            asyncio.run(server.serve())
             sys.exit(0)
         except Exception as e:
             logger.error(f"Plugin server failed to start: {e}")
