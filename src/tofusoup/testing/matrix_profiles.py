@@ -268,7 +268,7 @@ class ProfileMatrix:
             try:
                 result = json.loads(stdout.decode())
                 result["success"] = True
-            except:
+            except (json.JSONDecodeError, ValueError):
                 result = {
                     "success": True,
                     "stdout": stdout.decode(),
