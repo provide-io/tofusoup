@@ -12,7 +12,8 @@
       "WebSearch",
       "Bash(python:*)",
       "Bash(find:*)",
-      "Bash(soup:*)"
+      "Bash(soup:*)",
+      "Bash(mktemp:*)"
     ],
     "deny": [],
     "ask": [],
