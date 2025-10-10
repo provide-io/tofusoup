@@ -18,8 +18,12 @@ def cli() -> None:
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
 def from_hcl_json(input_file) -> None:
-    """Convert a CTY-JSON file (from go-hcl) to a JSONComparableValue."""
-    # TODO: Implement a proper conversion from CTY-JSON to a JSONComparableValue
+    """
+    Convert a CTY-JSON file (from go-hcl) to a JSONComparableValue.
+
+    NOTE: This is a placeholder implementation for testing harness infrastructure.
+    Currently performs pass-through. Full conversion logic to be implemented when needed.
+    """
     hcl_json = json.load(input_file)
     print(json.dumps(hcl_json, indent=2))
 
@@ -27,8 +31,12 @@ def from_hcl_json(input_file) -> None:
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
 def to_hcl_json(input_file) -> None:
-    """Convert a JSONComparableValue file back to a CTY-JSON file."""
-    # TODO: Implement a proper conversion from a JSONComparableValue to CTY-JSON
+    """
+    Convert a JSONComparableValue file back to a CTY-JSON file.
+
+    NOTE: This is a placeholder implementation for testing harness infrastructure.
+    Currently performs pass-through. Full conversion logic to be implemented when needed.
+    """
     comparable_value = json.load(input_file)
     print(json.dumps(comparable_value, indent=2))
 

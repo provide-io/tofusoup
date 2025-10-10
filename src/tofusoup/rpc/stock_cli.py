@@ -39,8 +39,11 @@ SUPPORTED_LANGUAGES = [
 
 
 def get_stock_binary_path(language: str, role: str) -> Path:
-    """Get the path to the stock binary for a given language and role."""
-    # TODO: These paths will be configured via soup.toml
+    """
+    Get the path to the stock binary for a given language and role.
+
+    Note: Paths are currently hardcoded. Future enhancement will read from soup.toml configuration.
+    """
     base_dir = Path(__file__).parent.parent.parent.parent / "direct" / language
 
     binary_map = {
@@ -197,9 +200,10 @@ def matrix_cmd(client: tuple, server: tuple, quick: bool) -> None:
     passed = 0
     for server_lang in servers:
         for client_lang in clients:
-            # TODO: Actually run the test
-            # For now, just show what would be tested
-            status = "🔄 Testing..."
+            # NOTE: Test matrix functionality not yet implemented
+            # This command shows the test plan but doesn't execute tests
+            # Use individual 'client' and 'server' commands for actual testing
+            status = "⏸️  Not Implemented"
             table.add_row(client_lang, server_lang, status)
 
     console.print(table)
