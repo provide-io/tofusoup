@@ -16,10 +16,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-func startRPCServer(logger hclog.Logger, port int, tlsMode string) error {
+func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, certFile, keyFile string) error {
 	logger.Info("🗄️✨ starting RPC plugin server",
 		"port", port,
 		"tls_mode", tlsMode,
+		"tls_key_type", tlsKeyType,
+		"cert_file", certFile,
+		"key_file", keyFile,
 		"log_level", logger.GetLevel())
 
 	// Determine if AutoMTLS is enabled
