@@ -63,11 +63,12 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, certFile
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
-	// Create KV implementation
-	kv := &KVImpl{
-		logger: logger.Named("kv"),
-		mu:     sync.RWMutex{},
+	// Create KV implementation with storage directory from environment or default
+	storageDir := os.Getenv("KV_STORAGE_DIR")
+	if storageDir == "" {
+		storageDir = "/tmp"
 	}
+	kv := NewKVImpl(logger.Named("kv"), storageDir)
 
 	config := &plugin.ServeConfig{
 		HandshakeConfig: Handshake,
