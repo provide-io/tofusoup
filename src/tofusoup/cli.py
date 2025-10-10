@@ -150,6 +150,10 @@ def entry_point() -> None:
 
         storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
 
+        # Configure pyvider to match Go's magic cookie expectations
+        # Go uses BASIC_PLUGIN=hello, so we need to set PLUGIN_MAGIC_COOKIE_VALUE=hello
+        os.environ["PLUGIN_MAGIC_COOKIE_VALUE"] = magic_cookie_value
+
         # Create KV handler
         handler = KV(storage_dir=storage_dir)
 
