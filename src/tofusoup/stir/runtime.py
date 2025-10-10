@@ -180,11 +180,15 @@ class StirRuntime:
 
         Args:
             providers: Set of (source, version_constraint) tuples to download
+
+        Note:
+            Uses tempfile.TemporaryDirectory which automatically cleans up after use.
+            This is safe for parallel execution as each invocation gets a unique directory.
         """
         if not providers:
             return
 
-        # Create temporary directory for provider manifest
+        # Create temporary directory for provider manifest (auto-cleaned on context exit)
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
             manifest_file = temp_path / "providers.tf"
