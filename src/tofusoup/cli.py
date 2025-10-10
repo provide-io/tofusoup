@@ -135,19 +135,17 @@ def entry_point() -> None:
     # If magic cookie is present and we have no command-line arguments (or just the script name)
     # then we're being invoked as a plugin by go-plugin framework
     if magic_cookie_value and len(sys.argv) == 1:
-        # Debug: Check environment for plugin mode
-        import sys
-        print(f"DEBUG [Python Server]: Plugin mode detected", file=sys.stderr)
-        print(f"DEBUG [Python Server]: PLUGIN_AUTO_MTLS = {os.getenv('PLUGIN_AUTO_MTLS')}", file=sys.stderr)
-        print(f"DEBUG [Python Server]: Magic cookie key = {magic_cookie_key}", file=sys.stderr)
-        print(f"DEBUG [Python Server]: Magic cookie value = {magic_cookie_value}", file=sys.stderr)
-
         # Minimize logging for plugin mode (already using stderr from top of file)
         updated_config = TelemetryConfig(
             service_name="tofusoup-plugin",
             logging=LoggingConfig(default_level="DEBUG"),  # Debug logging for now
         )
         hub.initialize_foundation(config=updated_config)
+
+        logger.debug("Plugin mode detected",
+                     plugin_auto_mtls=os.getenv('PLUGIN_AUTO_MTLS'),
+                     magic_cookie_key=magic_cookie_key,
+                     magic_cookie_value=magic_cookie_value)
 
         # Start the RPC server using pyvider-rpcplugin infrastructure
         import asyncio
@@ -171,13 +169,13 @@ def entry_point() -> None:
             "PLUGIN_MAGIC_COOKIE_VALUE": magic_cookie_value,
         }
 
-        print(f"DEBUG [Python Server]: Creating RPCPluginServer with config: {server_config}", file=sys.stderr)
+        logger.debug("Creating RPCPluginServer", server_config=server_config)
 
         # Create server without explicit transport (let it auto-negotiate)
         # This matches pyvider's pattern and allows proper transport negotiation
         server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
 
-        print(f"DEBUG [Python Server]: RPCPluginServer created, about to serve...", file=sys.stderr)
+        logger.debug("RPCPluginServer created, starting serve()")
 
         # Start the server - this will block until shutdown
         try:
