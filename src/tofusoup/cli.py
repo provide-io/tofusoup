@@ -147,6 +147,7 @@ def entry_point() -> None:
         from tofusoup.harness.proto.kv import KVProtocol
         from tofusoup.rpc.server import KV
         from pyvider.rpcplugin.server import RPCPluginServer
+        from pyvider.rpcplugin.transport import TCPSocketTransport
 
         storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
 
@@ -163,8 +164,11 @@ def entry_point() -> None:
             "PLUGIN_MAGIC_COOKIE_VALUE": magic_cookie_value,
         }
 
+        # Create TCP transport explicitly (Go client expects TCP, not Unix socket)
+        transport = TCPSocketTransport(host="127.0.0.1", port=0)  # 0 = ephemeral port
+
         # Create server directly (not using factory) to match pyvider pattern
-        server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
+        server = RPCPluginServer(protocol=protocol, handler=handler, transport=transport, config=server_config)
 
         # Start the server - this will block until shutdown
         try:
