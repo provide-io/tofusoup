@@ -20,7 +20,8 @@
       "Bash(go build:*)",
       "Bash(export KV_STORAGE_DIR=/tmp)",
       "Bash(chmod:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(bash:*)"
     ],
     "deny": [],
     "ask": [],
