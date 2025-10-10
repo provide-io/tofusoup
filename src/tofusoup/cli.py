@@ -118,6 +118,47 @@ main_cli.add_command(config_cli)
 
 
 def entry_point() -> None:
+    """
+    CLI entry point with automatic plugin server detection.
+
+    If invoked with the plugin magic cookie in the environment and no arguments,
+    automatically starts as an RPC plugin server (for go-plugin compatibility).
+    """
+    # Check if we're being invoked as a plugin server
+    magic_cookie_key = os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN")
+    magic_cookie_value = os.getenv(magic_cookie_key)
+
+    # If magic cookie is present and we have no command-line arguments (or just the script name)
+    # then we're being invoked as a plugin by go-plugin framework
+    if magic_cookie_value and len(sys.argv) == 1:
+        logger.debug(f"Detected plugin invocation (magic cookie: {magic_cookie_key}={magic_cookie_value})")
+        logger.info("Auto-starting as RPC plugin server...")
+
+        # Start the RPC server directly
+        from tofusoup.rpc.server import start_kv_server
+
+        # Get TLS configuration from environment or use defaults
+        tls_mode = os.getenv("PLUGIN_TLS_MODE", "auto")
+        tls_key_type = os.getenv("PLUGIN_TLS_KEY_TYPE", "ec")
+        cert_file = os.getenv("PLUGIN_CERT_FILE")
+        key_file = os.getenv("PLUGIN_KEY_FILE")
+        storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
+
+        # Start the server - this will block until shutdown
+        try:
+            start_kv_server(
+                tls_mode=tls_mode,
+                tls_key_type=tls_key_type,
+                cert_file=cert_file,
+                key_file=key_file,
+                storage_dir=storage_dir,
+            )
+            sys.exit(0)
+        except Exception as e:
+            logger.error(f"Plugin server failed to start: {e}")
+            sys.exit(1)
+
+    # Normal CLI invocation
     main_cli(obj={})
 
 
