@@ -82,35 +82,35 @@ class KVClient:
             self.subprocess_env["PYVIDER_CLIENT_CERT_ALGO"] = "rsa"
 
         logger.info(
-            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.plugin_magic_cookie_key}"
+            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.magic_cookie_key}"
         )
         logger.info(
-            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.plugin_magic_cookie_value}"
+            f"[KVClient.__init__] Before update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.magic_cookie_value}"
         )
 
-        if rpcplugin_config.plugin_magic_cookie_key != go_server_expected_cookie_key:
+        if rpcplugin_config.magic_cookie_key != go_server_expected_cookie_key:
             logger.info(
                 f"Updating rpcplugin_config PLUGIN_MAGIC_COOKIE_KEY to '{go_server_expected_cookie_key}'"
             )
-            rpcplugin_config.plugin_magic_cookie_key = go_server_expected_cookie_key
+            rpcplugin_config.magic_cookie_key = go_server_expected_cookie_key
         else:
             logger.info(f"rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY already '{go_server_expected_cookie_key}'")
 
-        if rpcplugin_config.plugin_magic_cookie_value != go_server_expected_cookie_value:
+        if rpcplugin_config.magic_cookie_value != go_server_expected_cookie_value:
             logger.info(
                 f"Updating rpcplugin_config PLUGIN_MAGIC_COOKIE_VALUE to '{go_server_expected_cookie_value}'"
             )
-            rpcplugin_config.plugin_magic_cookie_value = go_server_expected_cookie_value
+            rpcplugin_config.magic_cookie_value = go_server_expected_cookie_value
         else:
             logger.info(
                 f"rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE already '{go_server_expected_cookie_value}'"
             )
 
         logger.info(
-            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.plugin_magic_cookie_key}"
+            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_KEY = {rpcplugin_config.magic_cookie_key}"
         )
         logger.info(
-            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.plugin_magic_cookie_value}"
+            f"[KVClient.__init__] After update: rpcplugin_config.PLUGIN_MAGIC_COOKIE_VALUE = {rpcplugin_config.magic_cookie_value}"
         )
         logger.info(f"[KVClient.__init__] self.subprocess_env for plugin: {self.subprocess_env}")
 
@@ -120,7 +120,7 @@ class KVClient:
         try:
             pyvider_client_mtls_mode = "true" if self.enable_mtls else "false"
             logger.info(f"Setting rpcplugin_config.PLUGIN_AUTO_MTLS to: {pyvider_client_mtls_mode}")
-            rpcplugin_config.plugin_auto_mtls = pyvider_client_mtls_mode
+            rpcplugin_config.auto_mtls = pyvider_client_mtls_mode
 
             if self.enable_mtls:
                 client_cert_env = os.getenv("PLUGIN_CLIENT_CERT")
@@ -129,13 +129,13 @@ class KVClient:
 
                 if client_cert_env:
                     logger.info(f"Updating rpcplugin_config with PLUGIN_CLIENT_CERT: {client_cert_env}")
-                    rpcplugin_config.plugin_client_cert = client_cert_env
+                    rpcplugin_config.client_cert = client_cert_env
                 if client_key_env:
                     logger.info(f"Updating rpcplugin_config with PLUGIN_CLIENT_KEY: {client_key_env}")
-                    rpcplugin_config.plugin_client_key = client_key_env
+                    rpcplugin_config.client_key = client_key_env
                 if server_ca_env:
                     logger.info(f"Updating rpcplugin_config with PLUGIN_SERVER_CERT_CHAIN: {server_ca_env}")
-                    rpcplugin_config.plugin_server_cert_chain = server_ca_env
+                    rpcplugin_config.server_cert_chain = server_ca_env
 
             logger.debug(f"KVClient attempting to start server: {self.server_path}")
 
