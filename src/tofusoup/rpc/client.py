@@ -123,7 +123,10 @@ class KVClient:
             server_command.extend(["--tls-mode", self.tls_mode])
 
             if self.tls_mode == "auto":
-                server_command.extend(["--tls-key-type", self.tls_key_type])
+                # Only Python server (soup) supports --tls-key-type flag
+                # Go server determines key type from env vars or uses defaults
+                if binary_name == "soup":
+                    server_command.extend(["--tls-key-type", self.tls_key_type])
                 logger.info(f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}")
             elif self.tls_mode == "manual":
                 if self.cert_file and self.key_file:
