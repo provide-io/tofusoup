@@ -87,7 +87,7 @@ class ComprehensiveMatrixTester:
         finally:
             try:
                 await client.close()
-            except:
+            except Exception:
                 pass
 
     async def test_python_to_python(self, crypto_config: CryptoConfig, tls_mode: str) -> TestResult:
@@ -128,7 +128,7 @@ class ComprehensiveMatrixTester:
         finally:
             try:
                 await client.close()
-            except:
+            except Exception:
                 pass
 
     def simulate_go_combinations(self, crypto_config: CryptoConfig, tls_mode: str) -> list[TestResult]:
