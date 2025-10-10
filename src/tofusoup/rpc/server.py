@@ -197,8 +197,8 @@ def start_kv_server(
                 validity_days=365,  # 1 year validity
                 alt_names=["localhost", "127.0.0.1"],
             )
-            server_cert_pem = cert_obj.cert
-            server_key_pem = cert_obj.key
+            server_cert_pem = cert_obj.cert_pem
+            server_key_pem = cert_obj.key_pem
 
             # Create SSL credentials for mTLS
             # For auto-mTLS, we accept any client cert (root_certificates=None means trust all)
