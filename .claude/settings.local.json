@@ -27,7 +27,9 @@
       "Bash(export BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN KV_STORAGE_DIR=/tmp LOG_LEVEL=DEBUG)",
       "Bash(cut:*)",
       "Bash(python3:*)",
-      "Bash(export:*)"
+      "Bash(export:*)",
+      "Bash(pip show:*)",
+      "Bash(source env.sh)"
     ],
     "deny": [],
     "ask": [],
