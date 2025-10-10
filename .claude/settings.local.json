@@ -18,7 +18,8 @@
       "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go:*)",
       "Bash(pkill:*)",
       "Bash(go build:*)",
-      "Bash(export KV_STORAGE_DIR=/tmp)"
+      "Bash(export KV_STORAGE_DIR=/tmp)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": [],
