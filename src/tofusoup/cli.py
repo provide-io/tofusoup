@@ -135,6 +135,10 @@ def entry_point() -> None:
     # If magic cookie is present and we have no command-line arguments (or just the script name)
     # then we're being invoked as a plugin by go-plugin framework
     if magic_cookie_value and len(sys.argv) == 1:
+        # Configure pyvider to match Go's magic cookie expectations BEFORE any imports
+        # Go uses BASIC_PLUGIN=hello, so we need to set PLUGIN_MAGIC_COOKIE_VALUE=hello
+        os.environ["PLUGIN_MAGIC_COOKIE_VALUE"] = magic_cookie_value
+
         # Minimize logging for plugin mode (already using stderr from top of file)
         updated_config = TelemetryConfig(
             service_name="tofusoup-plugin",
@@ -149,10 +153,6 @@ def entry_point() -> None:
         from pyvider.rpcplugin.factories import plugin_server
 
         storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
-
-        # Configure pyvider to match Go's magic cookie expectations
-        # Go uses BASIC_PLUGIN=hello, so we need to set PLUGIN_MAGIC_COOKIE_VALUE=hello
-        os.environ["PLUGIN_MAGIC_COOKIE_VALUE"] = magic_cookie_value
 
         # Create KV handler
         handler = KV(storage_dir=storage_dir)
