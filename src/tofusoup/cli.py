@@ -152,6 +152,7 @@ def entry_point() -> None:
                 cert_file=cert_file,
                 key_file=key_file,
                 storage_dir=storage_dir,
+                output_handshake=True,  # Output go-plugin handshake for compatibility
             )
             sys.exit(0)
         except Exception as e:
