@@ -11,7 +11,8 @@
       "Bash(. .venv/bin/activate)",
       "WebSearch",
       "Bash(python:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(soup:*)"
     ],
     "deny": [],
     "ask": [],
