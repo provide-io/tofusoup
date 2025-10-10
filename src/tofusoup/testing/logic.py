@@ -6,7 +6,6 @@ import json
 import os
 import pathlib
 import sys
-import tempfile
 from typing import Any
 
 import attrs
@@ -64,8 +63,12 @@ async def _run_pytest_suite(
     if not pytest_target_path.exists():
         raise TofuSoupError(f"Test suite path not found: {pytest_target_path}")
 
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json", encoding="utf-8") as report_file:
-        report_path = report_file.name
+    # Use project-specific temp directory for test reports
+    reports_dir = project_root / "soup" / "output" / "test-reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create unique report file name to support parallel test execution
+    report_path = reports_dir / f"{suite_name}-report-{os.getpid()}.json"
 
     # Corrected invocation: Use `-o` to override configuration for this specific run.
     # This is the correct way to tell this pytest session to only find `souptest_` files.
@@ -130,8 +133,9 @@ async def _run_pytest_suite(
     try:
         return _process_test_report()
     finally:
-        if os.path.exists(report_path):
-            os.unlink(report_path)
+        # Keep report files for debugging - they're in a well-organized location
+        # and will be cleaned up by project cleanup scripts if needed
+        logger.debug(f"Test report saved to {report_path}")
 
 
 async def run_test_suite(

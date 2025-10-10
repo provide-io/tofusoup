@@ -20,7 +20,7 @@ class KV(kv_pb2_grpc.KVServicer):
         Initialize KV servicer with configurable storage directory.
 
         Args:
-            storage_dir: Directory to store KV data files. Defaults to /tmp for backward compatibility.
+            storage_dir: Directory to store KV data files. Defaults to /tmp.
         """
         self.storage_dir = storage_dir
         self.key_pattern = re.compile(r"^[a-zA-Z0-9.-]+$")
@@ -116,7 +116,7 @@ def serve(server: grpc.Server, storage_dir: str = "/tmp") -> KV:
 
     Args:
         server: gRPC server instance
-        storage_dir: Directory to store KV data files. Defaults to /tmp for backward compatibility.
+        storage_dir: Directory to store KV data files. Defaults to /tmp.
 
     Returns:
         The KV servicer instance

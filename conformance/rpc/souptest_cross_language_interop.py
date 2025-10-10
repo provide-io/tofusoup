@@ -16,11 +16,12 @@ Test Matrix:
 import asyncio
 import os
 import subprocess
-import tempfile
+from pathlib import Path
 
 import grpc.aio
-from provide.foundation import logger
 import pytest
+from provide.foundation import logger
+from provide.testkit import temp_directory
 
 from tofusoup.rpc.client import KVClient
 from tofusoup.rpc.server import serve
@@ -30,14 +31,15 @@ class TestCrossLanguageInterop:
     """Test cross-language RPC interoperability."""
 
     @pytest.fixture
-    async def python_server_address(self) -> str:
-        """Start a Python KV server and return its address."""
+    async def python_server_address(self, temp_directory: Path) -> str:
+        """Start a Python KV server with isolated storage and return its address."""
         server = grpc.aio.server()
         port = server.add_insecure_port("[::]:0")  # Get available port
-        serve(server)
+        # Use isolated temp directory for this server instance
+        serve(server, storage_dir=str(temp_directory))
         await server.start()
         address = f"127.0.0.1:{port}"
-        logger.info(f"Started Python KV server at {address}")
+        logger.info(f"Started Python KV server at {address}", storage_dir=str(temp_directory))
         yield address
         await server.stop(0)
         logger.info(f"Stopped Python KV server at {address}")
@@ -146,18 +148,18 @@ class TestCrossLanguageInterop:
     @pytest.mark.harness_go
     @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
-    async def test_go_client_python_server(self, go_client_path: str, python_server_address: str):
+    async def test_go_client_python_server(
+        self, go_client_path: str, python_server_address: str, temp_directory: Path
+    ):
         """Test: Go Client ↔ Python Server"""
         if not go_client_path:
             pytest.skip("Go client binary not available")
 
         logger.info("🐹↔🐍 Testing Go Client ↔ Python Server")
 
-        # Create a temporary script that the Go client can execute
-        # Since Go client expects to launch a server, we'll create a wrapper
-        # that connects to our already-running Python server
-
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+        # Create a temporary bridge script in our isolated temp directory
+        bridge_path = temp_directory / "bridge.py"
+        with bridge_path.open("w") as f:
             # Create a Python script that acts as a bridge
             bridge_script = f"""#!/usr/bin/env python3
 import sys
@@ -192,10 +194,9 @@ if __name__ == '__main__':
     server.wait_for_termination()
 """
             f.write(bridge_script)
-            bridge_path = f.name
 
         try:
-            os.chmod(bridge_path, 0o755)
+            bridge_path.chmod(0o755)
 
             # Test using subprocess to call go client
             # Note: This is a simplified test - in practice, the go-plugin system is more complex
@@ -206,7 +207,7 @@ if __name__ == '__main__':
                 "--value",
                 "Hello from Go client to Python server!",
                 "--server",
-                bridge_path,
+                str(bridge_path),
             ]
 
             logger.info(f"Running Go client: {' '.join(cmd)}")
@@ -227,7 +228,8 @@ if __name__ == '__main__':
         except Exception as e:
             logger.warning(f"Go client test had issues: {e}")
         finally:
-            os.unlink(bridge_path)
+            if bridge_path.exists():
+                bridge_path.unlink()
 
         logger.info("🐹↔🐍 Go Client ↔ Python Server: Test completed (compatibility proven at proto level)")
 
