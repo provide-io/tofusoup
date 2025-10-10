@@ -135,10 +135,6 @@ def entry_point() -> None:
     # If magic cookie is present and we have no command-line arguments (or just the script name)
     # then we're being invoked as a plugin by go-plugin framework
     if magic_cookie_value and len(sys.argv) == 1:
-        # Configure pyvider to match Go's magic cookie expectations BEFORE any imports
-        # Go uses BASIC_PLUGIN=hello, so we need to set PLUGIN_MAGIC_COOKIE_VALUE=hello
-        os.environ["PLUGIN_MAGIC_COOKIE_VALUE"] = magic_cookie_value
-
         # Minimize logging for plugin mode (already using stderr from top of file)
         updated_config = TelemetryConfig(
             service_name="tofusoup-plugin",
@@ -150,7 +146,7 @@ def entry_point() -> None:
         import asyncio
         from tofusoup.harness.proto.kv import KVProtocol
         from tofusoup.rpc.server import KV
-        from pyvider.rpcplugin.factories import plugin_server
+        from pyvider.rpcplugin.server import RPCPluginServer
 
         storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
 
@@ -160,24 +156,22 @@ def entry_point() -> None:
         # Create protocol wrapper
         protocol = KVProtocol()
 
-        # Create server using pyvider factory
-        # This handles handshake, mTLS, and all go-plugin protocol automatically
-        server = plugin_server(
-            protocol=protocol,
-            handler=handler,
-            transport="tcp",  # Use TCP for compatibility
-        )
+        # Configure the RPC plugin server with the magic cookie from Go client
+        # This matches how pyvider does it - pass config directly to RPCPluginServer
+        server_config = {
+            "PLUGIN_MAGIC_COOKIE_KEY": magic_cookie_key,
+            "PLUGIN_MAGIC_COOKIE_VALUE": magic_cookie_value,
+        }
+
+        # Create server directly (not using factory) to match pyvider pattern
+        server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
 
         # Start the server - this will block until shutdown
         try:
-            # Get or create event loop
-            try:
-                loop = asyncio.get_event_loop()
-            except RuntimeError:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-
-            loop.run_until_complete(server.serve())
+            asyncio.run(server.serve())
+            sys.exit(0)
+        except KeyboardInterrupt:
+            logger.info("Plugin server interrupted by user")
             sys.exit(0)
         except Exception as e:
             logger.error(f"Plugin server failed to start: {e}")
