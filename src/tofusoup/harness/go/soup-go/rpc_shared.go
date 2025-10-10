@@ -74,10 +74,12 @@ func (p *KVGRPCPlugin) GRPCServer(broker *plugin.GRPCBroker, s *grpc.Server) err
 
 	if p.Impl == nil {
 		logger.Warn("📡⚠️ no implementation provided, using default implementation")
-		p.Impl = &KVImpl{
-			logger: logger.Named("kv"),
-			mu:     sync.RWMutex{},
+		// Use environment variable or default to /tmp
+		storageDir := os.Getenv("KV_STORAGE_DIR")
+		if storageDir == "" {
+			storageDir = "/tmp"
 		}
+		p.Impl = NewKVImpl(logger.Named("kv"), storageDir)
 	}
 
 	server := &GRPCServer{
@@ -184,8 +186,22 @@ func (m *GRPCServer) Get(ctx context.Context, req *proto.GetRequest) (*proto.Get
 
 // KVImpl provides a simple file-based KV implementation
 type KVImpl struct {
-	logger hclog.Logger
-	mu     sync.RWMutex
+	logger     hclog.Logger
+	mu         sync.RWMutex
+	storageDir string
+}
+
+// NewKVImpl creates a new KVImpl with a configurable storage directory
+func NewKVImpl(logger hclog.Logger, storageDir string) *KVImpl {
+	if storageDir == "" {
+		storageDir = "/tmp"
+	}
+	logger.Debug("Initializing KVImpl", "storage_dir", storageDir)
+	return &KVImpl{
+		logger:     logger,
+		mu:         sync.RWMutex{},
+		storageDir: storageDir,
+	}
 }
 
 func (k *KVImpl) Put(key string, value []byte) error {
@@ -200,7 +216,8 @@ func (k *KVImpl) Put(key string, value []byte) error {
 		"key", key,
 		"value_length", len(value))
 
-	return os.WriteFile("/tmp/kv-data-"+key, value, 0644)
+	filePath := k.storageDir + "/kv-data-" + key
+	return os.WriteFile(filePath, value, 0644)
 }
 
 func (k *KVImpl) Get(key string) ([]byte, error) {
@@ -212,5 +229,6 @@ func (k *KVImpl) Get(key string) ([]byte, error) {
 	}
 
 	k.logger.Debug("🗄️📥 getting value", "key", key)
-	return os.ReadFile("/tmp/kv-data-" + key)
+	filePath := k.storageDir + "/kv-data-" + key
+	return os.ReadFile(filePath)
 }
