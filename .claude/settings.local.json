@@ -29,7 +29,8 @@
       "Bash(python3:*)",
       "Bash(export:*)",
       "Bash(pip show:*)",
-      "Bash(source env.sh)"
+      "Bash(source env.sh)",
+      "Bash(uv pip install:*)"
     ],
     "deny": [],
     "ask": [],
