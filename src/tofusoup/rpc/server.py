@@ -15,9 +15,16 @@ from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 
 class KV(kv_pb2_grpc.KVServicer):
-    def __init__(self) -> None:
-        # File-based storage pattern: /tmp/soup-kv-<key>
+    def __init__(self, storage_dir: str = "/tmp") -> None:
+        """
+        Initialize KV servicer with configurable storage directory.
+
+        Args:
+            storage_dir: Directory to store KV data files. Defaults to /tmp for backward compatibility.
+        """
+        self.storage_dir = storage_dir
         self.key_pattern = re.compile(r"^[a-zA-Z0-9.-]+$")
+        logger.debug("Initialized KV servicer", storage_dir=storage_dir)
 
     def _validate_key(self, key: str) -> bool:
         """Validate that key contains only allowed characters [a-zA-Z0-9.-]"""
@@ -25,7 +32,7 @@ class KV(kv_pb2_grpc.KVServicer):
 
     def _get_file_path(self, key: str) -> str:
         """Get the file path for a given key"""
-        return f"/tmp/soup-kv-{key}"
+        return f"{self.storage_dir}/soup-kv-{key}"
 
     def Get(self, request: kv_pb2.GetRequest, context: grpc.ServicerContext) -> kv_pb2.GetResponse:
         logger.info("🔌➡️📥 Received Get request", key=request.key)
@@ -103,8 +110,18 @@ class KV(kv_pb2_grpc.KVServicer):
             return kv_pb2.Empty()
 
 
-def serve(server: grpc.Server) -> KV:
-    servicer = KV()
+def serve(server: grpc.Server, storage_dir: str = "/tmp") -> KV:
+    """
+    Add KV servicer to gRPC server.
+
+    Args:
+        server: gRPC server instance
+        storage_dir: Directory to store KV data files. Defaults to /tmp for backward compatibility.
+
+    Returns:
+        The KV servicer instance
+    """
+    servicer = KV(storage_dir=storage_dir)
     kv_pb2_grpc.add_KVServicer_to_server(servicer, server)
     return servicer
 
@@ -127,10 +144,18 @@ def start_kv_server(
     tls_key_type: str = "ec",
     cert_file: str | None = None,
     key_file: str | None = None,
+    storage_dir: str = "/tmp",
 ) -> None:
     """
     Start the KV plugin server with TLS configuration matching the Go implementation.
     This function is designed to work within the go-plugin framework when called by a client.
+
+    Args:
+        tls_mode: TLS mode (disabled, auto, or manual)
+        tls_key_type: Key type for TLS (ec or rsa)
+        cert_file: Path to certificate file (required for manual TLS)
+        key_file: Path to private key file (required for manual TLS)
+        storage_dir: Directory to store KV data files. Defaults to /tmp.
     """
     logger.info(
         "Starting KV plugin server with Python implementation",
@@ -138,13 +163,14 @@ def start_kv_server(
         tls_key_type=tls_key_type,
         cert_file=cert_file,
         key_file=key_file,
+        storage_dir=storage_dir,
     )
 
     # Create gRPC server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
-    # Add the KV servicer
-    serve(server)
+    # Add the KV servicer with configurable storage directory
+    serve(server, storage_dir=storage_dir)
 
     # Configure TLS based on mode
     if tls_mode == "disabled":
