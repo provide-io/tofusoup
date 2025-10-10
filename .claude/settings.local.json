@@ -21,7 +21,8 @@
       "Bash(export KV_STORAGE_DIR=/tmp)",
       "Bash(chmod:*)",
       "Bash(timeout:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": [],
