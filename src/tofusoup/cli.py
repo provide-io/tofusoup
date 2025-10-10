@@ -2,6 +2,7 @@
 #
 # tofusoup/cli.py
 #
+import logging
 import os
 import pathlib
 import sys
@@ -15,6 +16,10 @@ from tofusoup.common.config import TofuSoupConfigError, load_tofusoup_config
 from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
 from tofusoup.config.defaults import DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL, LOG_LEVELS
+
+# CRITICAL: Configure all logging to use stderr BEFORE any logging happens
+# This is essential for go-plugin compatibility where stdout is reserved for handshake
+logging.basicConfig(stream=sys.stderr, force=True)
 
 telemetry_config = TelemetryConfig(
     service_name="tofusoup-cli",
@@ -131,12 +136,7 @@ def entry_point() -> None:
     # If magic cookie is present and we have no command-line arguments (or just the script name)
     # then we're being invoked as a plugin by go-plugin framework
     if magic_cookie_value and len(sys.argv) == 1:
-        # Suppress all logging output to avoid interfering with handshake
-        # The handshake MUST be the first clean line to stdout
-        import logging
-        logging.basicConfig(level=logging.CRITICAL, stream=sys.stderr)
-
-        # Reconfigure foundation logger to use stderr
+        # Minimize logging for plugin mode (already using stderr from top of file)
         updated_config = TelemetryConfig(
             service_name="tofusoup-plugin",
             logging=LoggingConfig(default_level="ERROR"),  # Minimize logging
