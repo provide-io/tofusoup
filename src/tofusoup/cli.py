@@ -147,7 +147,6 @@ def entry_point() -> None:
         from tofusoup.harness.proto.kv import KVProtocol
         from tofusoup.rpc.server import KV
         from pyvider.rpcplugin.server import RPCPluginServer
-        from pyvider.rpcplugin.transport import TCPSocketTransport
 
         storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
 
@@ -159,16 +158,15 @@ def entry_point() -> None:
 
         # Configure the RPC plugin server with the magic cookie from Go client
         # This matches how pyvider does it - pass config directly to RPCPluginServer
+        # Note: We do NOT pass transport - let RPCPluginServer negotiate it automatically
         server_config = {
             "PLUGIN_MAGIC_COOKIE_KEY": magic_cookie_key,
             "PLUGIN_MAGIC_COOKIE_VALUE": magic_cookie_value,
         }
 
-        # Create TCP transport explicitly (Go client expects TCP, not Unix socket)
-        transport = TCPSocketTransport(host="127.0.0.1", port=0)  # 0 = ephemeral port
-
-        # Create server directly (not using factory) to match pyvider pattern
-        server = RPCPluginServer(protocol=protocol, handler=handler, transport=transport, config=server_config)
+        # Create server without explicit transport (let it auto-negotiate)
+        # This matches pyvider's pattern and allows proper transport negotiation
+        server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
 
         # Start the server - this will block until shutdown
         try:
