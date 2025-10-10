@@ -22,7 +22,8 @@
       "Bash(chmod:*)",
       "Bash(timeout:*)",
       "Bash(bash:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(export BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN KV_STORAGE_DIR=/tmp)"
     ],
     "deny": [],
     "ask": [],
