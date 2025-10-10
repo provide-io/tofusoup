@@ -44,11 +44,13 @@ class KVClient:
         server_path: str,
         tls_mode: str = "disabled",
         tls_key_type: str = "ec",
+        tls_curve: str = "P-256",
         cert_file: str | None = None,
         key_file: str | None = None,
     ) -> None:
         self.tls_mode = tls_mode
         self.tls_key_type = tls_key_type
+        self.tls_curve = tls_curve
         self.server_path = server_path
         self.cert_file = cert_file
         self.key_file = key_file
@@ -77,7 +79,7 @@ class KVClient:
         # Map TLS key type to legacy environment variables if needed
         if self.tls_key_type == "ec":
             self.subprocess_env["PYVIDER_CLIENT_CERT_ALGO"] = "ecdsa"
-            self.subprocess_env["PYVIDER_CLIENT_CERT_CURVE"] = "P-256"
+            self.subprocess_env["PYVIDER_CLIENT_CERT_CURVE"] = self.tls_curve
         elif self.tls_key_type == "rsa":
             self.subprocess_env["PYVIDER_CLIENT_CERT_ALGO"] = "rsa"
 
