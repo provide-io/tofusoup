@@ -1,8 +1,8 @@
 Attention: The following text is a 'bfiles' bundle, containing multiple delimited files with metadata.
 Parse and analyze the content between '<<< BOF <<<' and '>>> EOF >>>' for each '### FILE...' entry.
 
---- START OF BFILE bfiles-20251010-114529.txt ---
-bfiles bundle generated on: 2025-10-10T11:45:29.809166
+--- START OF BFILE bfiles-20251010-131213.txt ---
+bfiles bundle generated on: 2025-10-10T13:12:13.146409
 Config: hash=sha256, gitignore=yes, followlinks=no
 ---
 
@@ -867,353 +867,7 @@ def load_tofusoup_config(
 # 🍲🥄⚙️🪄
 >>> EOF >>>
 
-### FILE 17: tofusoup/common/crypto_utils.py | checksum=d00b6ff3bf21... | modified=2025-09-17T17:32:12 | op=+ | size=12714 | tokens=2924 | type=x-python ###
-<<< BOF <<<
-#
-# tofusoup/common/crypto_utils.py
-#
-"""
-Cryptographic utilities for TofuSoup, primarily for generating
-certificates for mTLS testing.
-"""
-
-import datetime
-from pathlib import Path
-
-from cryptography import x509
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import ec, rsa
-from provide.foundation import logger
-
-# --- Constants ---
-DEFAULT_CERT_VALIDITY_DAYS = 7
-DEFAULT_RSA_KEY_SIZE = 2048
-DEFAULT_PUBLIC_EXPONENT = 65537
-
-SUPPORTED_CURVES = {
-    "secp256r1": ec.SECP256R1(),
-    "secp384r1": ec.SECP384R1(),
-    "secp521r1": ec.SECP521R1(),
-}
-
-
-def generate_private_key(
-    key_type: str = "ecdsa", curve_name: str = "secp384r1"
-) -> tuple[ec.EllipticCurvePrivateKey | rsa.RSAPrivateKey, str]:
-    """
-    Generates a private key.
-
-    Args:
-        key_type: "ecdsa" or "rsa".
-        curve_name: Name of the ECDSA curve to use (if key_type is "ecdsa").
-
-    Returns:
-        A tuple of (private_key_object, key_description_string).
-    """
-    if key_type.lower() == "ecdsa":
-        curve = SUPPORTED_CURVES.get(curve_name.lower())
-        if not curve:
-            raise ValueError(
-                f"Unsupported ECDSA curve: {curve_name}. Supported: {list(SUPPORTED_CURVES.keys())}"
-            )
-        private_key = ec.generate_private_key(curve, default_backend())
-        desc = f"ECDSA-{curve_name}"
-        return private_key, desc
-    elif key_type.lower() == "rsa":
-        private_key = rsa.generate_private_key(
-            public_exponent=DEFAULT_PUBLIC_EXPONENT,
-            key_size=DEFAULT_RSA_KEY_SIZE,
-            backend=default_backend(),
-        )
-        desc = f"RSA-{DEFAULT_RSA_KEY_SIZE}"
-        return private_key, desc
-    else:
-        raise ValueError(f"Unsupported key_type: {key_type}. Must be 'ecdsa' or 'rsa'.")
-
-
-def create_self_signed_ca(
-    common_name: str = "TofuSoup Test Root CA",
-    key_type: str = "ecdsa",
-    curve_name: str = "secp384r1",
-) -> tuple[x509.Certificate, ec.EllipticCurvePrivateKey | rsa.RSAPrivateKey, str]:
-    """
-    Creates a self-signed Root CA certificate and its private key.
-
-    Returns:
-        (ca_certificate, ca_private_key, key_description)
-    """
-    ca_private_key, key_desc = generate_private_key(key_type, curve_name)
-    subject = issuer = x509.Name([x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, common_name)])
-
-    builder = (
-        x509.CertificateBuilder()
-        .subject_name(subject)
-        .issuer_name(issuer)
-        .public_key(ca_private_key.public_key())
-        .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1))
-        .not_valid_after(
-            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=DEFAULT_CERT_VALIDITY_DAYS)
-        )
-        .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
-        .add_extension(
-            x509.KeyUsage(
-                digital_signature=True,
-                content_commitment=False,
-                key_encipherment=False,
-                data_encipherment=False,
-                key_agreement=False,
-                key_cert_sign=True,
-                crl_sign=True,
-                encipher_only=False,
-                decipher_only=False,
-            ),
-            critical=True,
-        )
-        .add_extension(
-            x509.SubjectKeyIdentifier.from_public_key(ca_private_key.public_key()),
-            critical=False,
-        )
-    )
-
-    ca_certificate = builder.sign(ca_private_key, hashes.SHA256(), default_backend())
-    logger.debug(f"Generated Root CA: {common_name} ({key_desc})")
-    return ca_certificate, ca_private_key, key_desc
-
-
-def create_signed_certificate(
-    common_name: str,
-    ca_certificate: x509.Certificate,
-    ca_private_key: ec.EllipticCurvePrivateKey | rsa.RSAPrivateKey,
-    is_server_cert: bool,
-    key_type: str = "ecdsa",
-    curve_name: str = "secp384r1",
-    dns_names: list[str] | None = None,
-) -> tuple[x509.Certificate, ec.EllipticCurvePrivateKey | rsa.RSAPrivateKey, str]:
-    """
-    Creates a certificate signed by the provided CA.
-
-    Args:
-        common_name: Common Name for the certificate.
-        ca_certificate: The CA's x509.Certificate object.
-        ca_private_key: The CA's private key object.
-        is_server_cert: Boolean, True if this is a server certificate, False for client.
-        key_type: "ecdsa" or "rsa" for the new certificate's key.
-        curve_name: ECDSA curve name if key_type is "ecdsa".
-        dns_names: Optional list of DNS names for SubjectAlternativeName extension.
-
-    Returns:
-        (certificate, private_key, key_description)
-    """
-    private_key, key_desc = generate_private_key(key_type, curve_name)
-    subject = x509.Name([x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, common_name)])
-
-    builder = (
-        x509.CertificateBuilder()
-        .subject_name(subject)
-        .issuer_name(ca_certificate.subject)
-        .public_key(private_key.public_key())
-        .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1))
-        .not_valid_after(
-            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=DEFAULT_CERT_VALIDITY_DAYS)
-        )
-        .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
-    )
-
-    if is_server_cert:
-        builder = builder.add_extension(
-            x509.KeyUsage(
-                digital_signature=True,
-                content_commitment=False,
-                key_encipherment=True,
-                data_encipherment=False,
-                key_agreement=False,
-                key_cert_sign=False,
-                crl_sign=False,
-                encipher_only=False,
-                decipher_only=False,
-            ),
-            critical=True,
-        )
-        builder = builder.add_extension(
-            x509.ExtendedKeyUsage([x509.oid.ExtendedKeyUsageOID.SERVER_AUTH]),
-            critical=False,
-        )
-    else:
-        builder = builder.add_extension(
-            x509.KeyUsage(
-                digital_signature=True,
-                content_commitment=False,
-                key_encipherment=False,
-                data_encipherment=False,
-                key_agreement=True,
-                key_cert_sign=False,
-                crl_sign=False,
-                encipher_only=False,
-                decipher_only=False,
-            ),
-            critical=True,
-        )
-        builder = builder.add_extension(
-            x509.ExtendedKeyUsage([x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH]),
-            critical=False,
-        )
-
-    if dns_names:
-        san_entries = [x509.DNSName(name) for name in dns_names]
-        builder = builder.add_extension(x509.SubjectAlternativeName(san_entries), critical=False)
-
-    builder = builder.add_extension(
-        x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_certificate.public_key()),
-        critical=False,
-    )
-    builder = builder.add_extension(
-        x509.SubjectKeyIdentifier.from_public_key(private_key.public_key()),
-        critical=False,
-    )
-
-    certificate = builder.sign(ca_private_key, hashes.SHA256(), default_backend())
-    cert_type_str = "Server" if is_server_cert else "Client"
-    logger.debug(
-        f"Generated {cert_type_str} Certificate: {common_name} ({key_desc}), signed by {ca_certificate.subject.rfc4514_string()}"
-    )
-    return certificate, private_key, key_desc
-
-
-def save_key_and_cert_to_files(
-    private_key: ec.EllipticCurvePrivateKey | rsa.RSAPrivateKey,
-    certificate: x509.Certificate,
-    key_filename: Path,
-    cert_filename: Path,
-    password: bytes | None = None,
-) -> None:
-    """Saves a private key and certificate to PEM-encoded files."""
-    key_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=(
-            serialization.BestAvailableEncryption(password) if password else serialization.NoEncryption()
-        ),
-    )
-    with open(key_filename, "wb") as f:
-        f.write(key_pem)
-    logger.debug(f"Saved private key to {key_filename} (Encrypted: {password is not None})")
-
-    cert_pem = certificate.public_bytes(serialization.Encoding.PEM)
-    with open(cert_filename, "wb") as f:
-        f.write(cert_pem)
-    logger.debug(f"Saved certificate to {cert_filename}")
-
-
-def generate_cert_bundle_for_mtls(
-    temp_dir: Path,
-    curve_name: str = "secp384r1",
-    ca_common_name: str = "TofuSoup Test CA",
-    server_common_name: str = "localhost",
-    client_common_name: str = "TofuSoup Test Client",
-    server_dns_names: list[str] | None = None,
-) -> dict[str, str]:
-    """
-    Generates a full set of CA, server, and client certs/keys for mTLS,
-    saves them to files in temp_dir, and returns a dictionary of their paths.
-
-    Args:
-        temp_dir: Path object to a directory where certs/keys will be saved.
-        curve_name: The ECDSA curve to use (e.g., "secp384r1").
-        ... other CNs and DNS names ...
-
-    Returns:
-        A dictionary mapping component name to file path string:
-        {
-            "ca_cert": "/path/to/ca.pem",
-            "server_cert": "/path/to/server.pem",
-            "server_key": "/path/to/server.key",
-            "client_cert": "/path/to/client.pem",
-            "client_key": "/path/to/client.key"
-        }
-    """
-    if server_dns_names is None:
-        server_dns_names = ["localhost", "127.0.0.1"]
-
-    ca_cert, ca_key, _ = create_self_signed_ca(
-        common_name=ca_common_name, key_type="ecdsa", curve_name=curve_name
-    )
-    ca_cert_path = temp_dir / "ca.pem"
-    with open(ca_cert_path, "wb") as f:
-        f.write(ca_cert.public_bytes(serialization.Encoding.PEM))
-    logger.debug(f"Saved Root CA certificate to {ca_cert_path}")
-
-    server_cert, server_key, _ = create_signed_certificate(
-        common_name=server_common_name,
-        ca_certificate=ca_cert,
-        ca_private_key=ca_key,
-        is_server_cert=True,
-        key_type="ecdsa",
-        curve_name=curve_name,
-        dns_names=server_dns_names,
-    )
-    server_cert_path = temp_dir / "server.pem"
-    server_key_path = temp_dir / "server.key"
-    save_key_and_cert_to_files(server_key, server_cert, server_key_path, server_cert_path)
-
-    client_cert, client_key, _ = create_signed_certificate(
-        common_name=client_common_name,
-        ca_certificate=ca_cert,
-        ca_private_key=ca_key,
-        is_server_cert=False,
-        key_type="ecdsa",
-        curve_name=curve_name,
-    )
-    client_cert_path = temp_dir / "client.pem"
-    client_key_path = temp_dir / "client.key"
-    save_key_and_cert_to_files(client_key, client_cert, client_key_path, client_cert_path)
-
-    return {
-        "ca_cert": str(ca_cert_path.resolve()),
-        "server_cert": str(server_cert_path.resolve()),
-        "server_key": str(server_key_path.resolve()),
-        "client_cert": str(client_cert_path.resolve()),
-        "client_key": str(client_key_path.resolve()),
-    }
-
-
-if __name__ == "__main__":
-    # Example Usage (for manual testing of this module)
-    logger.info("Testing crypto utilities...")
-    temp_test_dir = Path("./temp_certs")
-    temp_test_dir.mkdir(exist_ok=True)
-
-    logger.info("--- Generating SECP384R1 Cert Bundle ---")
-    paths_384 = generate_cert_bundle_for_mtls(temp_test_dir, curve_name="secp384r1")
-    logger.info(f"SECP384R1 Certs generated: {paths_384}")
-
-    logger.info("--- Generating SECP521R1 Cert Bundle ---")
-    paths_521 = generate_cert_bundle_for_mtls(
-        temp_test_dir, curve_name="secp521r1", ca_common_name="TofuSoup P521 CA"
-    )
-    logger.info(f"SECP521R1 Certs generated: {paths_521}")
-
-    logger.info(f"Test certificates saved in ./{temp_test_dir.name}/")
-    # To clean up: shutil.rmtree(temp_test_dir)
-# I've added functions for:
-# *   `generate_private_key`: Creates ECDSA (with specified curve) or RSA private keys.
-# *   `create_self_signed_ca`: Generates a root CA certificate and key.
-# *   `create_signed_certificate`: Generates server or client certificates signed by a given CA.
-# *   `save_key_and_cert_to_files`: Saves keys and certs to PEM files.
-# *   `generate_cert_bundle_for_mtls`: Orchestrates the generation of a full set of CA, server, and client certs/keys for a given curve, saves them to a temporary directory, and returns a dictionary of their paths.
-#
-# This module now provides the core utilities needed for the pytest fixtures.
-# I also added a `if __name__ == "__main__":` block for basic manual testing of these functions.
-
-# <3 🍲 🍜 🍥>
-
-
-# 🍲🥄🛠️🪄
->>> EOF >>>
-
-### FILE 18: tofusoup/common/cty_type_parser.py | checksum=2638321e5dff... | modified=2025-09-17T17:32:12 | op=+ | size=3252 | tokens=827 | type=x-python ###
+### FILE 17: tofusoup/common/cty_type_parser.py | checksum=2638321e5dff... | modified=2025-09-17T17:32:12 | op=+ | size=3252 | tokens=827 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/common/cty_type_parser.py
@@ -1305,7 +959,7 @@ def parse_cty_type_string(type_str: str) -> CtyType:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 19: tofusoup/common/exceptions.py | checksum=3726d35eb814... | modified=2025-09-17T17:32:12 | op=+ | size=1655 | tokens=376 | type=x-python ###
+### FILE 18: tofusoup/common/exceptions.py | checksum=28e336a76dc8... | modified=2025-10-10T12:05:53 | op=+ | size=1593 | tokens=367 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/common/exceptions.py
@@ -1353,7 +1007,6 @@ class HarnessError(ProcessError):
         command: str | list[str] | None = None,
         return_code: int | None = None,
     ) -> None:
-        # Store details separately for backward compatibility
         self.details = details
 
         # Pass to ProcessError which handles stdout/stderr formatting
@@ -1373,7 +1026,7 @@ class HarnessError(ProcessError):
 # 🍲🥄⚠️🪄
 >>> EOF >>>
 
-### FILE 20: tofusoup/common/lazy_group.py | checksum=0d8386a0ca98... | modified=2025-09-17T17:32:12 | op=+ | size=1576 | tokens=343 | type=x-python ###
+### FILE 19: tofusoup/common/lazy_group.py | checksum=0d8386a0ca98... | modified=2025-09-17T17:32:12 | op=+ | size=1576 | tokens=343 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/common/lazy_group.py
@@ -1423,7 +1076,7 @@ class LazyGroup(click.Group):
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 21: tofusoup/common/rich_utils.py | checksum=a5aa9dff8bae... | modified=2025-09-17T17:32:12 | op=+ | size=3164 | tokens=769 | type=x-python ###
+### FILE 20: tofusoup/common/rich_utils.py | checksum=a5aa9dff8bae... | modified=2025-09-17T17:32:12 | op=+ | size=3164 | tokens=769 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/common/rich_utils.py
@@ -1514,7 +1167,7 @@ def print_json(data: Any, indent: int = 2) -> None:
 # 🍲🥄🛠️🪄
 >>> EOF >>>
 
-### FILE 22: tofusoup/common/serialization.py | checksum=1a178ced3558... | modified=2025-09-17T17:32:12 | op=+ | size=4064 | tokens=969 | type=x-python ###
+### FILE 21: tofusoup/common/serialization.py | checksum=1a178ced3558... | modified=2025-09-17T17:32:12 | op=+ | size=4064 | tokens=969 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/common/serialization.py
@@ -1631,7 +1284,7 @@ def dump_python_to_msgpack_file(data: Any, filepath: str) -> None:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 23: tofusoup/common/utils.py | checksum=93e4eba2a1ec... | modified=2025-09-17T17:32:12 | op=+ | size=3122 | tokens=715 | type=x-python ###
+### FILE 22: tofusoup/common/utils.py | checksum=93e4eba2a1ec... | modified=2025-09-17T17:32:12 | op=+ | size=3122 | tokens=715 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/common/utils.py
@@ -1710,7 +1363,7 @@ class DecimalAwareJSONEncoder(json.JSONEncoder):
 # 🍲🥄🛠️🪄
 >>> EOF >>>
 
-### FILE 24: tofusoup/config/defaults.py | checksum=4632e296e479... | modified=2025-09-17T17:32:12 | op=+ | size=1712 | tokens=454 | type=x-python ###
+### FILE 23: tofusoup/config/defaults.py | checksum=4632e296e479... | modified=2025-09-17T17:32:12 | op=+ | size=1712 | tokens=454 | type=x-python ###
 <<< BOF <<<
 #
 # config/defaults.py
@@ -1776,7 +1429,7 @@ CONFIG_FILENAME = "soup.toml"
 DEFAULT_CONFIG_SUBDIR = "soup"
 >>> EOF >>>
 
-### FILE 25: tofusoup/cty/__init__.py | checksum=0a5c6c22d646... | modified=2025-09-17T17:32:12 | op=+ | size=51 | tokens=29 | type=x-python ###
+### FILE 24: tofusoup/cty/__init__.py | checksum=0a5c6c22d646... | modified=2025-09-17T17:32:12 | op=+ | size=51 | tokens=29 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/cty/__init__.py
@@ -1785,7 +1438,7 @@ DEFAULT_CONFIG_SUBDIR = "soup"
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 26: tofusoup/cty/cli.py | checksum=7abc78a46eca... | modified=2025-09-17T17:32:12 | op=+ | size=5796 | tokens=1367 | type=x-python ###
+### FILE 25: tofusoup/cty/cli.py | checksum=7abc78a46eca... | modified=2025-09-17T17:32:12 | op=+ | size=5796 | tokens=1367 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -1962,7 +1615,7 @@ def validate_value_command(value: str, type_spec: str) -> None:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 27: tofusoup/cty/logic.py | checksum=fb065cce0942... | modified=2025-09-17T17:32:12 | op=+ | size=4432 | tokens=1128 | type=x-python ###
+### FILE 26: tofusoup/cty/logic.py | checksum=fb065cce0942... | modified=2025-09-17T17:32:12 | op=+ | size=4432 | tokens=1128 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/cty/logic.py
@@ -2099,7 +1752,7 @@ def dump_cty_value_to_msgpack_bytes(value: CtyValue) -> bytes:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 28: tofusoup/harness/__init__.py | checksum=44977e1f66b8... | modified=2025-09-17T17:32:12 | op=+ | size=55 | tokens=28 | type=x-python ###
+### FILE 27: tofusoup/harness/__init__.py | checksum=44977e1f66b8... | modified=2025-09-17T17:32:12 | op=+ | size=55 | tokens=28 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/__init__.py
@@ -2108,7 +1761,7 @@ def dump_cty_value_to_msgpack_bytes(value: CtyValue) -> bytes:
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 29: tofusoup/harness/cli.py | checksum=54787d766956... | modified=2025-09-17T17:32:12 | op=+ | size=4200 | tokens=989 | type=x-python ###
+### FILE 28: tofusoup/harness/cli.py | checksum=54787d766956... | modified=2025-09-17T17:32:12 | op=+ | size=4200 | tokens=989 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -2227,7 +1880,7 @@ def build_harness_command(ctx, harness_names: tuple[str, ...], force_rebuild: bo
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 30: tofusoup/harness/go/Makefile | checksum=915cc383564c... | modified=2025-09-11T18:05:26 | op=+ | size=2160 | tokens=691 | type=plain ###
+### FILE 29: tofusoup/harness/go/Makefile | checksum=915cc383564c... | modified=2025-09-11T18:05:26 | op=+ | size=2160 | tokens=691 | type=plain ###
 <<< BOF <<<
 # Makefile for TofuSoup Go Harnesses
 # Builds test harnesses for conformance testing
@@ -2308,7 +1961,7 @@ help:
 	@echo "  GO            Go compiler (default: go)"
 >>> EOF >>>
 
-### FILE 31: tofusoup/harness/go/go.sum | checksum=d397851acce0... | modified=2025-09-12T08:08:17 | op=+ | size=4055 | tokens=2309 ###
+### FILE 30: tofusoup/harness/go/go.sum | checksum=d397851acce0... | modified=2025-09-12T08:08:17 | op=+ | size=4055 | tokens=2309 ###
 <<< BOF <<<
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
@@ -2357,7 +2010,7 @@ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 >>> EOF >>>
 
-### FILE 32: tofusoup/harness/go/soup-go/cty.go | checksum=c98be1b94ff5... | modified=2025-09-12T09:09:42 | op=+ | size=11065 | tokens=3211 | type=x-go ###
+### FILE 31: tofusoup/harness/go/soup-go/cty.go | checksum=c98be1b94ff5... | modified=2025-09-12T09:09:42 | op=+ | size=11065 | tokens=3211 | type=x-go ###
 <<< BOF <<<
 package main
 
@@ -2759,7 +2412,7 @@ func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, e
 }
 >>> EOF >>>
 
-### FILE 33: tofusoup/harness/go/soup-go/go.sum | checksum=89eff1c53e99... | modified=2025-09-12T16:21:10 | op=+ | size=7616 | tokens=4311 ###
+### FILE 32: tofusoup/harness/go/soup-go/go.sum | checksum=89eff1c53e99... | modified=2025-09-12T16:21:10 | op=+ | size=7616 | tokens=4311 ###
 <<< BOF <<<
 github.com/agext/levenshtein v1.2.1 h1:QmvMAjj2aEICytGiWzmxoE0x2KZvE0fvmqMOfy2tjT8=
 github.com/agext/levenshtein v1.2.1/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
@@ -2848,7 +2501,7 @@ gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 >>> EOF >>>
 
-### FILE 34: tofusoup/harness/go/soup-go/hcl.go | checksum=9d7714901287... | modified=2025-09-12T09:01:48 | op=+ | size=6207 | tokens=1762 | type=x-go ###
+### FILE 33: tofusoup/harness/go/soup-go/hcl.go | checksum=9d7714901287... | modified=2025-09-12T09:01:48 | op=+ | size=6207 | tokens=1762 | type=x-go ###
 <<< BOF <<<
 package main
 
@@ -3099,7 +2752,7 @@ func diagnosticsToJSON(diags hcl.Diagnostics) []map[string]interface{} {
 }
 >>> EOF >>>
 
-### FILE 35: tofusoup/harness/go/soup-go/main.go | checksum=207c15947386... | modified=2025-09-12T19:31:20 | op=+ | size=7300 | tokens=2014 | type=x-go ###
+### FILE 34: tofusoup/harness/go/soup-go/main.go | checksum=207c15947386... | modified=2025-09-12T19:31:20 | op=+ | size=7300 | tokens=2014 | type=x-go ###
 <<< BOF <<<
 package main
 
@@ -3389,7 +3042,7 @@ func initLogger() {
 }
 >>> EOF >>>
 
-### FILE 36: tofusoup/harness/go/soup-go/rpc.go | checksum=9dba2b789d7e... | modified=2025-09-12T19:32:19 | op=+ | size=5316 | tokens=1509 | type=x-go ###
+### FILE 35: tofusoup/harness/go/soup-go/rpc.go | checksum=9dba2b789d7e... | modified=2025-09-12T19:32:19 | op=+ | size=5316 | tokens=1509 | type=x-go ###
 <<< BOF <<<
 package main
 
@@ -3603,7 +3256,7 @@ func testRPCClient(logger hclog.Logger, serverPath string) error {
 }
 >>> EOF >>>
 
-### FILE 37: tofusoup/harness/go/soup-go/rpc_shared.go | checksum=6fa0b273d4be... | modified=2025-09-12T17:33:05 | op=+ | size=5237 | tokens=1525 | type=x-go ###
+### FILE 36: tofusoup/harness/go/soup-go/rpc_shared.go | checksum=21ea2361b2a2... | modified=2025-10-10T12:03:42 | op=+ | size=5797 | tokens=1668 | type=x-go ###
 <<< BOF <<<
 package main
 
@@ -3681,10 +3334,12 @@ func (p *KVGRPCPlugin) GRPCServer(broker *plugin.GRPCBroker, s *grpc.Server) err
 
 	if p.Impl == nil {
 		logger.Warn("📡⚠️ no implementation provided, using default implementation")
-		p.Impl = &KVImpl{
-			logger: logger.Named("kv"),
-			mu:     sync.RWMutex{},
+		// Use environment variable or default to /tmp
+		storageDir := os.Getenv("KV_STORAGE_DIR")
+		if storageDir == "" {
+			storageDir = "/tmp"
 		}
+		p.Impl = NewKVImpl(logger.Named("kv"), storageDir)
 	}
 
 	server := &GRPCServer{
@@ -3791,8 +3446,22 @@ func (m *GRPCServer) Get(ctx context.Context, req *proto.GetRequest) (*proto.Get
 
 // KVImpl provides a simple file-based KV implementation
 type KVImpl struct {
-	logger hclog.Logger
-	mu     sync.RWMutex
+	logger     hclog.Logger
+	mu         sync.RWMutex
+	storageDir string
+}
+
+// NewKVImpl creates a new KVImpl with a configurable storage directory
+func NewKVImpl(logger hclog.Logger, storageDir string) *KVImpl {
+	if storageDir == "" {
+		storageDir = "/tmp"
+	}
+	logger.Debug("Initializing KVImpl", "storage_dir", storageDir)
+	return &KVImpl{
+		logger:     logger,
+		mu:         sync.RWMutex{},
+		storageDir: storageDir,
+	}
 }
 
 func (k *KVImpl) Put(key string, value []byte) error {
@@ -3807,7 +3476,8 @@ func (k *KVImpl) Put(key string, value []byte) error {
 		"key", key,
 		"value_length", len(value))
 
-	return os.WriteFile("/tmp/kv-data-"+key, value, 0644)
+	filePath := k.storageDir + "/kv-data-" + key
+	return os.WriteFile(filePath, value, 0644)
 }
 
 func (k *KVImpl) Get(key string) ([]byte, error) {
@@ -3819,11 +3489,12 @@ func (k *KVImpl) Get(key string) ([]byte, error) {
 	}
 
 	k.logger.Debug("🗄️📥 getting value", "key", key)
-	return os.ReadFile("/tmp/kv-data-" + key)
+	filePath := k.storageDir + "/kv-data-" + key
+	return os.ReadFile(filePath)
 }
 >>> EOF >>>
 
-### FILE 38: tofusoup/harness/go/soup-go/wire.go | checksum=c4cd5aad6530... | modified=2025-09-12T09:02:54 | op=+ | size=5374 | tokens=1535 | type=x-go ###
+### FILE 37: tofusoup/harness/go/soup-go/wire.go | checksum=c4cd5aad6530... | modified=2025-09-12T09:02:54 | op=+ | size=5374 | tokens=1535 | type=x-go ###
 <<< BOF <<<
 package main
 
@@ -4030,7 +3701,7 @@ func initWireDecodeCmd() *cobra.Command {
 }
 >>> EOF >>>
 
-### FILE 39: tofusoup/harness/logic.py | checksum=f59c66001a67... | modified=2025-09-17T17:32:12 | op=+ | size=5054 | tokens=1215 | type=x-python ###
+### FILE 38: tofusoup/harness/logic.py | checksum=f59c66001a67... | modified=2025-09-17T17:32:12 | op=+ | size=5054 | tokens=1215 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/logic.py
@@ -4187,7 +3858,7 @@ def start_go_plugin_server_process(
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 40: tofusoup/harness/proto/__init__.py | checksum=92c959111643... | modified=2025-09-17T17:32:12 | op=+ | size=61 | tokens=29 | type=x-python ###
+### FILE 39: tofusoup/harness/proto/__init__.py | checksum=92c959111643... | modified=2025-09-17T17:32:12 | op=+ | size=61 | tokens=29 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/proto/__init__.py
@@ -4196,7 +3867,7 @@ def start_go_plugin_server_process(
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 41: tofusoup/harness/proto/counter/kv.pb.go | checksum=f7724d127c3a... | modified=2025-08-09T10:36:34 | op=+ | size=13870 | tokens=5435 | type=x-go ###
+### FILE 40: tofusoup/harness/proto/counter/kv.pb.go | checksum=f7724d127c3a... | modified=2025-08-09T10:36:34 | op=+ | size=13870 | tokens=5435 | type=x-go ###
 <<< BOF <<<
 //
 // tofusoup/harness/proto/counter/kv.pb.go
@@ -4683,7 +4354,7 @@ func file_proto_kv_proto_init() {
 // 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 42: tofusoup/harness/proto/counter/kv_grpc.pb.go | checksum=e29525d24078... | modified=2025-08-09T10:36:34 | op=+ | size=7613 | tokens=1858 | type=x-go ###
+### FILE 41: tofusoup/harness/proto/counter/kv_grpc.pb.go | checksum=e29525d24078... | modified=2025-08-09T10:36:34 | op=+ | size=7613 | tokens=1858 | type=x-go ###
 <<< BOF <<<
 //
 // tofusoup/harness/proto/counter/kv_grpc.pb.go
@@ -4924,7 +4595,7 @@ var AddHelper_ServiceDesc = grpc.ServiceDesc{
 // 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 43: tofusoup/harness/proto/kv/__init__.py | checksum=92dc01d6e243... | modified=2025-09-17T17:32:12 | op=+ | size=186 | tokens=73 | type=x-python ###
+### FILE 42: tofusoup/harness/proto/kv/__init__.py | checksum=92dc01d6e243... | modified=2025-09-17T17:32:12 | op=+ | size=186 | tokens=73 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/proto/kv/__init__.py
@@ -4938,7 +4609,7 @@ __all__ = ["KVProtocol", "kv_pb2", "kv_pb2_grpc"]
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 44: tofusoup/harness/proto/kv/kv.pb.go | checksum=a82115239821... | modified=2025-08-09T10:36:34 | op=+ | size=9546 | tokens=3625 | type=x-go ###
+### FILE 43: tofusoup/harness/proto/kv/kv.pb.go | checksum=a82115239821... | modified=2025-08-09T10:36:34 | op=+ | size=9546 | tokens=3625 | type=x-go ###
 <<< BOF <<<
 //
 // tofusoup/harness/proto/kv/kv.pb.go
@@ -5277,7 +4948,7 @@ func file_proto_kv_proto_init() {
 // 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 45: tofusoup/harness/proto/kv/kv_grpc.pb.go | checksum=3c540211a056... | modified=2025-08-09T10:36:34 | op=+ | size=4475 | tokens=1169 | type=x-go ###
+### FILE 44: tofusoup/harness/proto/kv/kv_grpc.pb.go | checksum=3c540211a056... | modified=2025-08-09T10:36:34 | op=+ | size=4475 | tokens=1169 | type=x-go ###
 <<< BOF <<<
 //
 // tofusoup/harness/proto/kv/kv_grpc.pb.go
@@ -5430,7 +5101,7 @@ var KV_ServiceDesc = grpc.ServiceDesc{
 // 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 46: tofusoup/harness/proto/kv/kv_protocol.py | checksum=8b084647c76e... | modified=2025-09-17T17:32:12 | op=+ | size=1194 | tokens=283 | type=x-python ###
+### FILE 45: tofusoup/harness/proto/kv/kv_protocol.py | checksum=8b084647c76e... | modified=2025-09-17T17:32:12 | op=+ | size=1194 | tokens=283 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/proto/kv/kv_protocol.py
@@ -5469,7 +5140,7 @@ class KVProtocol(RPCPluginProtocol):
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 47: tofusoup/harness/python/conftest.py | checksum=eb757b569fc4... | modified=2025-09-17T17:32:12 | op=+ | size=10137 | tokens=2341 | type=x-python ###
+### FILE 46: tofusoup/harness/python/conftest.py | checksum=eb757b569fc4... | modified=2025-09-17T17:32:12 | op=+ | size=10137 | tokens=2341 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/python/conftest.py
@@ -5655,7 +5326,7 @@ def go_kvstore_harness(request) -> Path:
 # 🍲🥄🧪🪄
 >>> EOF >>>
 
-### FILE 48: tofusoup/harness/python/py-cty/main.py | checksum=5c2b2c805252... | modified=2025-09-17T17:32:12 | op=+ | size=945 | tokens=257 | type=x-python ###
+### FILE 47: tofusoup/harness/python/py-cty/main.py | checksum=b885e0e0b38e... | modified=2025-10-10T13:10:53 | op=+ | size=1151 | tokens=281 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -5677,8 +5348,12 @@ def cli() -> None:
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
 def from_hcl_json(input_file) -> None:
-    """Convert a CTY-JSON file (from go-hcl) to a JSONComparableValue."""
-    # TODO: Implement a proper conversion from CTY-JSON to a JSONComparableValue
+    """
+    Convert a CTY-JSON file (from go-hcl) to a JSONComparableValue.
+
+    NOTE: This is a placeholder implementation for testing harness infrastructure.
+    Currently performs pass-through. Full conversion logic to be implemented when needed.
+    """
     hcl_json = json.load(input_file)
     print(json.dumps(hcl_json, indent=2))
 
@@ -5686,8 +5361,12 @@ def from_hcl_json(input_file) -> None:
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
 def to_hcl_json(input_file) -> None:
-    """Convert a JSONComparableValue file back to a CTY-JSON file."""
-    # TODO: Implement a proper conversion from a JSONComparableValue to CTY-JSON
+    """
+    Convert a JSONComparableValue file back to a CTY-JSON file.
+
+    NOTE: This is a placeholder implementation for testing harness infrastructure.
+    Currently performs pass-through. Full conversion logic to be implemented when needed.
+    """
     comparable_value = json.load(input_file)
     print(json.dumps(comparable_value, indent=2))
 
@@ -5699,7 +5378,7 @@ if __name__ == "__main__":
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 49: tofusoup/harness/python/py-hcl/main.py | checksum=b3937e86f39e... | modified=2025-09-17T17:32:12 | op=+ | size=557 | tokens=160 | type=x-python ###
+### FILE 48: tofusoup/harness/python/py-hcl/main.py | checksum=b3937e86f39e... | modified=2025-09-17T17:32:12 | op=+ | size=557 | tokens=160 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -5736,7 +5415,7 @@ if __name__ == "__main__":
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 50: tofusoup/harness/python/py-wire/main.py | checksum=2177081b93d2... | modified=2025-09-17T17:32:12 | op=+ | size=410 | tokens=117 | type=x-python ###
+### FILE 49: tofusoup/harness/python/py-wire/main.py | checksum=2177081b93d2... | modified=2025-09-17T17:32:12 | op=+ | size=410 | tokens=117 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -5767,7 +5446,7 @@ if __name__ == "__main__":
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 51: tofusoup/harness/python/tests_rpc/__init__.py | checksum=260d6bc5f20a... | modified=2025-09-17T17:32:12 | op=+ | size=72 | tokens=31 | type=x-python ###
+### FILE 50: tofusoup/harness/python/tests_rpc/__init__.py | checksum=260d6bc5f20a... | modified=2025-09-17T17:32:12 | op=+ | size=72 | tokens=31 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/python/tests_rpc/__init__.py
@@ -5776,7 +5455,7 @@ if __name__ == "__main__":
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 52: tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_goserver.py | checksum=4391b9bbb828... | modified=2025-09-17T17:32:12 | op=+ | size=3430 | tokens=809 | type=x-python ###
+### FILE 51: tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_goserver.py | checksum=4391b9bbb828... | modified=2025-09-17T17:32:12 | op=+ | size=3430 | tokens=809 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_goserver.py
@@ -5866,7 +5545,7 @@ async def test_pyclient_goserver_put_get(go_kvstore_harness: Path, tmp_path: Pat
 # 🍲🥄🧪🪄
 >>> EOF >>>
 
-### FILE 53: tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_pyserver.py | checksum=b4ec2bc04290... | modified=2025-09-17T17:32:12 | op=+ | size=9205 | tokens=2091 | type=x-python ###
+### FILE 52: tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_pyserver.py | checksum=b4ec2bc04290... | modified=2025-09-17T17:32:12 | op=+ | size=9205 | tokens=2091 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_pyserver.py
@@ -6054,7 +5733,7 @@ async def test_pyclient_pyserver_put_get(tmp_path) -> None:
 # 🍲🥄🧪🪄
 >>> EOF >>>
 
-### FILE 54: tofusoup/hcl/__init__.py | checksum=c014297f1d26... | modified=2025-09-17T17:32:12 | op=+ | size=51 | tokens=28 | type=x-python ###
+### FILE 53: tofusoup/hcl/__init__.py | checksum=c014297f1d26... | modified=2025-09-17T17:32:12 | op=+ | size=51 | tokens=28 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/hcl/__init__.py
@@ -6063,7 +5742,7 @@ async def test_pyclient_pyserver_put_get(tmp_path) -> None:
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 55: tofusoup/hcl/cli.py | checksum=8427b128b7f6... | modified=2025-09-17T17:32:12 | op=+ | size=7031 | tokens=1651 | type=x-python ###
+### FILE 54: tofusoup/hcl/cli.py | checksum=8427b128b7f6... | modified=2025-09-17T17:32:12 | op=+ | size=7031 | tokens=1651 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -6260,7 +5939,7 @@ def _handle_stdout_output(content_or_none: str | bytes | None) -> None:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 56: tofusoup/hcl/logic.py | checksum=0c063d4a839f... | modified=2025-09-17T17:32:12 | op=+ | size=2819 | tokens=677 | type=x-python ###
+### FILE 55: tofusoup/hcl/logic.py | checksum=0c063d4a839f... | modified=2025-09-17T17:32:12 | op=+ | size=2819 | tokens=677 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/hcl/logic.py
@@ -6353,7 +6032,7 @@ def convert_hcl_file_to_output_format(
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 57: tofusoup/provider/__init__.py | checksum=130e13800791... | modified=2025-09-17T17:32:12 | op=+ | size=101 | tokens=34 | type=x-python ###
+### FILE 56: tofusoup/provider/__init__.py | checksum=130e13800791... | modified=2025-09-17T17:32:12 | op=+ | size=101 | tokens=34 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/provider/__init__.py
@@ -6364,7 +6043,7 @@ def convert_hcl_file_to_output_format(
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 58: tofusoup/provider/cli.py | checksum=39fc626c2602... | modified=2025-09-17T17:32:12 | op=+ | size=873 | tokens=205 | type=x-python ###
+### FILE 57: tofusoup/provider/cli.py | checksum=39fc626c2602... | modified=2025-09-17T17:32:12 | op=+ | size=873 | tokens=205 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -6400,7 +6079,7 @@ def new_provider_command(project_dir: str) -> None:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 59: tofusoup/registry/__init__.py | checksum=91033b558d7f... | modified=2025-09-17T17:32:12 | op=+ | size=355 | tokens=113 | type=x-python ###
+### FILE 58: tofusoup/registry/__init__.py | checksum=91033b558d7f... | modified=2025-09-17T17:32:12 | op=+ | size=355 | tokens=113 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/__init__.py
@@ -6424,7 +6103,7 @@ __all__ = [
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 60: tofusoup/registry/base.py | checksum=42ff9333cffe... | modified=2025-09-17T17:32:12 | op=+ | size=1627 | tokens=393 | type=x-python ###
+### FILE 59: tofusoup/registry/base.py | checksum=42ff9333cffe... | modified=2025-09-17T17:32:12 | op=+ | size=1627 | tokens=393 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/base.py
@@ -6488,7 +6167,7 @@ class BaseTfRegistry(ABC):
 # 🍲🥄🏛️🪄
 >>> EOF >>>
 
-### FILE 61: tofusoup/registry/cli.py | checksum=0dbd83eb70fc... | modified=2025-09-17T17:32:12 | op=+ | size=17363 | tokens=3727 | type=x-python ###
+### FILE 60: tofusoup/registry/cli.py | checksum=0dbd83eb70fc... | modified=2025-09-17T17:32:12 | op=+ | size=17363 | tokens=3727 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -6937,7 +6616,7 @@ def compare_command(resource: str) -> None:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 62: tofusoup/registry/models/__init__.py | checksum=95859dc489a9... | modified=2025-09-17T17:32:12 | op=+ | size=473 | tokens=126 | type=x-python ###
+### FILE 61: tofusoup/registry/models/__init__.py | checksum=95859dc489a9... | modified=2025-09-17T17:32:12 | op=+ | size=473 | tokens=126 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/models/__init__.py
@@ -6962,7 +6641,7 @@ __all__ = [
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 63: tofusoup/registry/models/module.py | checksum=0c9cc2945376... | modified=2025-09-17T17:32:12 | op=+ | size=1519 | tokens=368 | type=x-python ###
+### FILE 62: tofusoup/registry/models/module.py | checksum=0c9cc2945376... | modified=2025-09-17T17:32:12 | op=+ | size=1519 | tokens=368 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/models/module.py
@@ -7032,7 +6711,7 @@ class Module:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 64: tofusoup/registry/models/provider.py | checksum=a051d0f9070c... | modified=2025-09-17T17:32:12 | op=+ | size=960 | tokens=230 | type=x-python ###
+### FILE 63: tofusoup/registry/models/provider.py | checksum=a051d0f9070c... | modified=2025-09-17T17:32:12 | op=+ | size=960 | tokens=230 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/models/provider.py
@@ -7078,7 +6757,7 @@ class Provider:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 65: tofusoup/registry/models/version.py | checksum=80649a9e2209... | modified=2025-09-17T17:32:12 | op=+ | size=2306 | tokens=525 | type=x-python ###
+### FILE 64: tofusoup/registry/models/version.py | checksum=80649a9e2209... | modified=2025-09-17T17:32:12 | op=+ | size=2306 | tokens=525 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/models/version.py
@@ -7148,7 +6827,7 @@ class VersionInfo:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 66: tofusoup/registry/opentofu.py | checksum=19a8a3fba1bd... | modified=2025-09-17T17:32:12 | op=+ | size=6682 | tokens=1341 | type=x-python ###
+### FILE 65: tofusoup/registry/opentofu.py | checksum=19a8a3fba1bd... | modified=2025-09-17T17:32:12 | op=+ | size=6682 | tokens=1341 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/opentofu.py
@@ -7325,7 +7004,7 @@ class OpenTofuRegistry(BaseTfRegistry):
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 67: tofusoup/registry/search/__init__.py | checksum=0ea9dde211a3... | modified=2025-09-17T17:32:12 | op=+ | size=287 | tokens=85 | type=x-python ###
+### FILE 66: tofusoup/registry/search/__init__.py | checksum=0ea9dde211a3... | modified=2025-09-17T17:32:12 | op=+ | size=287 | tokens=85 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/search/__init__.py
@@ -7346,7 +7025,7 @@ __all__ = [
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 68: tofusoup/registry/search/cache.py | checksum=af420bb1e99d... | modified=2025-09-17T17:32:12 | op=+ | size=2635 | tokens=621 | type=x-python ###
+### FILE 67: tofusoup/registry/search/cache.py | checksum=af420bb1e99d... | modified=2025-09-17T17:32:12 | op=+ | size=2635 | tokens=621 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/search/cache.py
@@ -7427,7 +7106,7 @@ class SearchCache:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 69: tofusoup/registry/search/engine.py | checksum=db8705c65498... | modified=2025-09-17T17:32:12 | op=+ | size=8410 | tokens=1507 | type=x-python ###
+### FILE 68: tofusoup/registry/search/engine.py | checksum=db8705c65498... | modified=2025-09-17T17:32:12 | op=+ | size=8410 | tokens=1507 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/search/engine.py
@@ -7647,7 +7326,7 @@ async def async_search_runner(search_term: str, registry_choice: str) -> list[Se
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 70: tofusoup/registry/terraform.py | checksum=2d08afa88d3e... | modified=2025-09-17T17:32:12 | op=+ | size=6231 | tokens=1228 | type=x-python ###
+### FILE 69: tofusoup/registry/terraform.py | checksum=2d08afa88d3e... | modified=2025-09-17T17:32:12 | op=+ | size=6231 | tokens=1228 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/registry/terraform.py
@@ -7822,7 +7501,7 @@ class IBMTerraformRegistry(BaseTfRegistry):
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 71: tofusoup/rpc/__init__.py | checksum=c6bf3b6328b1... | modified=2025-09-17T17:32:12 | op=+ | size=51 | tokens=28 | type=x-python ###
+### FILE 70: tofusoup/rpc/__init__.py | checksum=c6bf3b6328b1... | modified=2025-09-17T17:32:12 | op=+ | size=51 | tokens=28 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/rpc/__init__.py
@@ -7831,7 +7510,7 @@ class IBMTerraformRegistry(BaseTfRegistry):
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 72: tofusoup/rpc/cli.py | checksum=cc6506527d36... | modified=2025-09-17T17:32:12 | op=+ | size=4308 | tokens=1020 | type=x-python ###
+### FILE 71: tofusoup/rpc/cli.py | checksum=cc6506527d36... | modified=2025-09-17T17:32:12 | op=+ | size=4308 | tokens=1020 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -7963,7 +7642,7 @@ def server_start(tls_mode: str, tls_key_type: str, cert_file: str | None, key_fi
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 73: tofusoup/rpc/client.py | checksum=aac166093bff... | modified=2025-09-17T17:32:12 | op=+ | size=19979 | tokens=4031 | type=x-python ###
+### FILE 72: tofusoup/rpc/client.py | checksum=133c8e7eaa7e... | modified=2025-10-10T12:05:53 | op=+ | size=19266 | tokens=3864 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/rpc/client.py
@@ -8013,25 +7692,9 @@ class KVClient:
         tls_key_type: str = "ec",
         cert_file: str | None = None,
         key_file: str | None = None,
-        enable_mtls: bool | None = None,  # Backward compatibility
-        cert_algo: str | None = None,  # Backward compatibility
-        cert_bits: int | None = None,  # Backward compatibility
-        cert_curve: str | None = None,  # Backward compatibility
     ) -> None:
-        # Handle backward compatibility for enable_mtls parameter
-        if enable_mtls is not None:
-            self.tls_mode = "auto" if enable_mtls else "disabled"
-        else:
-            self.tls_mode = tls_mode
-
-        # Handle backward compatibility for cert_algo/cert_bits/cert_curve
-        if cert_algo == "rsa":
-            self.tls_key_type = "rsa"
-        elif cert_algo == "ecdsa" or cert_curve:
-            self.tls_key_type = "ec"
-        else:
-            self.tls_key_type = tls_key_type
-
+        self.tls_mode = tls_mode
+        self.tls_key_type = tls_key_type
         self.server_path = server_path
         self.cert_file = cert_file
         self.key_file = key_file
@@ -8040,7 +7703,7 @@ class KVClient:
         self.is_started = False
         self.connection_timeout = CONNECTION_TIMEOUT
 
-        # Backwards compatibility - map old enable_mtls to new tls_mode
+        # Map tls_mode to enable_mtls for internal use
         self.enable_mtls = self.tls_mode != "disabled"
 
         go_server_expected_cookie_key = "BASIC_PLUGIN"
@@ -8388,7 +8051,7 @@ class KVClient:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 74: tofusoup/rpc/logic.py | checksum=32b7f24728ce... | modified=2025-09-17T17:32:12 | op=+ | size=7013 | tokens=1572 | type=x-python ###
+### FILE 73: tofusoup/rpc/logic.py | checksum=d1c7b7166ba5... | modified=2025-10-10T12:39:02 | op=+ | size=6164 | tokens=1376 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/rpc/logic.py
@@ -8449,16 +8112,11 @@ async def _test_with_python_server(project_root: pathlib.Path, loaded_config: di
     success = False
     try:
         # KVClient will start server.py as a subprocess.
-        # Pass enable_mtls based on some logic or default for Py-Py tests.
-        # For now, default KVClient mTLS behavior (usually on if it can auto-generate)
         client = KVClient(
             server_path=str(python_server_script_path),
-            enable_mtls=True,  # Assuming mTLS for Py-Py tests too; adjust if needed
+            tls_mode="auto",
+            tls_key_type="ec",
         )
-        # Note: KVClient needs `loaded_config` to pass to RPCPluginClient if mTLS paths are from tofusoup.config.
-        # However, KVClient's constructor doesn't take loaded_config directly.
-        # This aspect might need refinement if Py-Py mTLS relies on config files via RPCPluginClient.
-        # For now, this setup relies on pyvider-rpcplugin's defaults or env vars for its own certs.
 
         await client.start()
         logger.info("Python client connected to Python KV server (via subprocess).")
@@ -8480,11 +8138,11 @@ async def _test_with_go_server(
     success = False
     try:
         # KVClient handles starting the Go server subprocess.
-        # enable_mtls=True is important for this test path.
-        # KVClient will use loaded_config to pass relevant settings to RPCPluginClient.
-        client = KVClient(server_path=str(go_server_executable), enable_mtls=True)
-        # KVClient's start method uses its own copy of loaded_config if needed for RPCPluginClient.
-        # The `loaded_config` parameter here is more for `ensure_go_harness_build`.
+        client = KVClient(
+            server_path=str(go_server_executable),
+            tls_mode="auto",
+            tls_key_type="ec",
+        )
         await client.start()
         logger.info("Python client connected to Go KV server.")
         success = await _run_client_operations(client, TEST_KEY, TEST_VALUE_GO, "Go")
@@ -8562,7 +8220,7 @@ def run_rpc_compatibility_tests(project_root: pathlib.Path, loaded_config: dict)
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 75: tofusoup/rpc/plugin_server.py | checksum=c1148bad9d3e... | modified=2025-09-17T17:32:12 | op=+ | size=2733 | tokens=604 | type=x-python ###
+### FILE 74: tofusoup/rpc/plugin_server.py | checksum=c1148bad9d3e... | modified=2025-09-17T17:32:12 | op=+ | size=2733 | tokens=604 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -8654,7 +8312,7 @@ if __name__ == "__main__":
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 76: tofusoup/rpc/server.py | checksum=43eb8d1d0016... | modified=2025-09-17T17:32:12 | op=+ | size=7092 | tokens=1557 | type=x-python ###
+### FILE 75: tofusoup/rpc/server.py | checksum=d244342bad80... | modified=2025-10-10T12:05:26 | op=+ | size=8096 | tokens=1772 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -8673,9 +8331,16 @@ from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 
 class KV(kv_pb2_grpc.KVServicer):
-    def __init__(self) -> None:
-        # File-based storage pattern: /tmp/soup-kv-<key>
+    def __init__(self, storage_dir: str = "/tmp") -> None:
+        """
+        Initialize KV servicer with configurable storage directory.
+
+        Args:
+            storage_dir: Directory to store KV data files. Defaults to /tmp.
+        """
+        self.storage_dir = storage_dir
         self.key_pattern = re.compile(r"^[a-zA-Z0-9.-]+$")
+        logger.debug("Initialized KV servicer", storage_dir=storage_dir)
 
     def _validate_key(self, key: str) -> bool:
         """Validate that key contains only allowed characters [a-zA-Z0-9.-]"""
@@ -8683,7 +8348,7 @@ class KV(kv_pb2_grpc.KVServicer):
 
     def _get_file_path(self, key: str) -> str:
         """Get the file path for a given key"""
-        return f"/tmp/soup-kv-{key}"
+        return f"{self.storage_dir}/soup-kv-{key}"
 
     def Get(self, request: kv_pb2.GetRequest, context: grpc.ServicerContext) -> kv_pb2.GetResponse:
         logger.info("🔌➡️📥 Received Get request", key=request.key)
@@ -8761,8 +8426,18 @@ class KV(kv_pb2_grpc.KVServicer):
             return kv_pb2.Empty()
 
 
-def serve(server: grpc.Server) -> KV:
-    servicer = KV()
+def serve(server: grpc.Server, storage_dir: str = "/tmp") -> KV:
+    """
+    Add KV servicer to gRPC server.
+
+    Args:
+        server: gRPC server instance
+        storage_dir: Directory to store KV data files. Defaults to /tmp.
+
+    Returns:
+        The KV servicer instance
+    """
+    servicer = KV(storage_dir=storage_dir)
     kv_pb2_grpc.add_KVServicer_to_server(servicer, server)
     return servicer
 
@@ -8785,10 +8460,18 @@ def start_kv_server(
     tls_key_type: str = "ec",
     cert_file: str | None = None,
     key_file: str | None = None,
+    storage_dir: str = "/tmp",
 ) -> None:
     """
     Start the KV plugin server with TLS configuration matching the Go implementation.
     This function is designed to work within the go-plugin framework when called by a client.
+
+    Args:
+        tls_mode: TLS mode (disabled, auto, or manual)
+        tls_key_type: Key type for TLS (ec or rsa)
+        cert_file: Path to certificate file (required for manual TLS)
+        key_file: Path to private key file (required for manual TLS)
+        storage_dir: Directory to store KV data files. Defaults to /tmp.
     """
     logger.info(
         "Starting KV plugin server with Python implementation",
@@ -8796,13 +8479,14 @@ def start_kv_server(
         tls_key_type=tls_key_type,
         cert_file=cert_file,
         key_file=key_file,
+        storage_dir=storage_dir,
     )
 
     # Create gRPC server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
-    # Add the KV servicer
-    serve(server)
+    # Add the KV servicer with configurable storage directory
+    serve(server, storage_dir=storage_dir)
 
     # Configure TLS based on mode
     if tls_mode == "disabled":
@@ -8865,7 +8549,7 @@ if __name__ == "__main__":
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 77: tofusoup/rpc/stock_cli.py | checksum=21079fa42b4b... | modified=2025-09-17T17:32:12 | op=+ | size=8062 | tokens=1942 | type=x-python ###
+### FILE 76: tofusoup/rpc/stock_cli.py | checksum=62312c3ab96a... | modified=2025-10-10T13:10:39 | op=+ | size=8246 | tokens=1973 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -8908,8 +8592,11 @@ SUPPORTED_LANGUAGES = [
 
 
 def get_stock_binary_path(language: str, role: str) -> Path:
-    """Get the path to the stock binary for a given language and role."""
-    # TODO: These paths will be configured via soup.toml
+    """
+    Get the path to the stock binary for a given language and role.
+
+    Note: Paths are currently hardcoded. Future enhancement will read from soup.toml configuration.
+    """
     base_dir = Path(__file__).parent.parent.parent.parent / "direct" / language
 
     binary_map = {
@@ -9066,9 +8753,10 @@ def matrix_cmd(client: tuple, server: tuple, quick: bool) -> None:
     passed = 0
     for server_lang in servers:
         for client_lang in clients:
-            # TODO: Actually run the test
-            # For now, just show what would be tested
-            status = "🔄 Testing..."
+            # NOTE: Test matrix functionality not yet implemented
+            # This command shows the test plan but doesn't execute tests
+            # Use individual 'client' and 'server' commands for actual testing
+            status = "⏸️  Not Implemented"
             table.add_row(client_lang, server_lang, status)
 
     console.print(table)
@@ -9100,7 +8788,7 @@ def put_cmd(key: str, value: str, client: str, server: str) -> None:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 78: tofusoup/scaffolding/__init__.py | checksum=6cfe7ea91477... | modified=2025-09-17T17:32:12 | op=+ | size=107 | tokens=38 | type=x-python ###
+### FILE 77: tofusoup/scaffolding/__init__.py | checksum=6cfe7ea91477... | modified=2025-09-17T17:32:12 | op=+ | size=107 | tokens=38 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/scaffolding/__init__.py
@@ -9111,7 +8799,7 @@ def put_cmd(key: str, value: str, client: str, server: str) -> None:
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 79: tofusoup/scaffolding/env_generator.py | checksum=53b15ce198c5... | modified=2025-09-17T17:32:12 | op=+ | size=4646 | tokens=1018 | type=x-python ###
+### FILE 78: tofusoup/scaffolding/env_generator.py | checksum=53b15ce198c5... | modified=2025-09-17T17:32:12 | op=+ | size=4646 | tokens=1018 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/scaffolding/env_generator.py
@@ -9255,7 +8943,7 @@ def create_project_env_scripts(project_dir: Path) -> None:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 80: tofusoup/scaffolding/generator.py | checksum=82fb03234b92... | modified=2025-09-17T17:32:12 | op=+ | size=1897 | tokens=473 | type=x-python ###
+### FILE 79: tofusoup/scaffolding/generator.py | checksum=82fb03234b92... | modified=2025-09-17T17:32:12 | op=+ | size=1897 | tokens=473 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/scaffolding/generator.py
@@ -9310,7 +8998,7 @@ def scaffold_new_provider(project_dir: Path) -> Path:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 81: tofusoup/scaffolding/templates/data_source/data_source.py.j2 | checksum=e1282c08da4e... | modified=2025-08-07T18:12:49 | op=+ | size=473 | tokens=98 ###
+### FILE 80: tofusoup/scaffolding/templates/data_source/data_source.py.j2 | checksum=e1282c08da4e... | modified=2025-08-07T18:12:49 | op=+ | size=473 | tokens=98 ###
 <<< BOF <<<
 """
 Data source for {{ component_name }}
@@ -9336,7 +9024,7 @@ class {{ component_class_name }}DataSource(BaseDataSource):
         return {}
 >>> EOF >>>
 
-### FILE 82: tofusoup/scaffolding/templates/env/pwsh/base.ps1.j2 | checksum=0e1ba9aaa7dd... | modified=2025-08-09T10:25:31 | op=+ | size=896 | tokens=235 ###
+### FILE 81: tofusoup/scaffolding/templates/env/pwsh/base.ps1.j2 | checksum=0e1ba9aaa7dd... | modified=2025-08-09T10:25:31 | op=+ | size=896 | tokens=235 ###
 <<< BOF <<<
 # env.ps1 - {{ project_name }} Development Environment Setup
 #
@@ -9380,7 +9068,7 @@ $ProgressPreference = "SilentlyContinue"
 exit 0
 >>> EOF >>>
 
-### FILE 83: tofusoup/scaffolding/templates/env/pwsh/cleanup.ps1.j2 | checksum=04359ad16799... | modified=2025-08-09T10:25:48 | op=+ | size=569 | tokens=130 ###
+### FILE 82: tofusoup/scaffolding/templates/env/pwsh/cleanup.ps1.j2 | checksum=04359ad16799... | modified=2025-08-09T10:25:48 | op=+ | size=569 | tokens=130 ###
 <<< BOF <<<
 # --- Cleanup Previous Environment ---
 Write-Header "🧹 Cleaning Previous Environment"
@@ -9400,7 +9088,7 @@ $script:OriginalPath = $env:PATH
 Write-Success "Cleared Python aliases and PYTHONPATH"
 >>> EOF >>>
 
-### FILE 84: tofusoup/scaffolding/templates/env/pwsh/dependency_installation.ps1.j2 | checksum=96ce320dde37... | modified=2025-08-09T10:26:57 | op=+ | size=1187 | tokens=328 ###
+### FILE 83: tofusoup/scaffolding/templates/env/pwsh/dependency_installation.ps1.j2 | checksum=96ce320dde37... | modified=2025-08-09T10:26:57 | op=+ | size=1187 | tokens=328 ###
 <<< BOF <<<
 # --- Dependency Installation ---
 Write-Header "📦 Installing Dependencies"
@@ -9446,7 +9134,7 @@ catch {
 }
 >>> EOF >>>
 
-### FILE 85: tofusoup/scaffolding/templates/env/pwsh/environment_config.ps1.j2 | checksum=d082d77c690d... | modified=2025-08-09T10:33:25 | op=+ | size=678 | tokens=202 ###
+### FILE 84: tofusoup/scaffolding/templates/env/pwsh/environment_config.ps1.j2 | checksum=d082d77c690d... | modified=2025-08-09T10:33:25 | op=+ | size=678 | tokens=202 ###
 <<< BOF <<<
 # --- Environment Configuration ---
 Write-Header "🔧 Configuring Environment"
@@ -9471,7 +9159,7 @@ $env:PATH = $NewPath -join $PathSeparator
 {% endif %}
 >>> EOF >>>
 
-### FILE 86: tofusoup/scaffolding/templates/env/pwsh/final_summary.ps1.j2 | checksum=d5f1acfbb447... | modified=2025-08-09T10:27:47 | op=+ | size=706 | tokens=187 ###
+### FILE 85: tofusoup/scaffolding/templates/env/pwsh/final_summary.ps1.j2 | checksum=d5f1acfbb447... | modified=2025-08-09T10:27:47 | op=+ | size=706 | tokens=187 ###
 <<< BOF <<<
 # --- Final Summary ---
 Write-Header "✅ Environment Ready!"
@@ -9495,7 +9183,7 @@ if (Test-Path $LogDir) {
 {% endif %}
 >>> EOF >>>
 
-### FILE 87: tofusoup/scaffolding/templates/env/pwsh/platform_detection.ps1.j2 | checksum=8c9d2e641e0b... | modified=2025-08-09T10:26:17 | op=+ | size=750 | tokens=211 ###
+### FILE 86: tofusoup/scaffolding/templates/env/pwsh/platform_detection.ps1.j2 | checksum=8c9d2e641e0b... | modified=2025-08-09T10:26:17 | op=+ | size=750 | tokens=211 ###
 <<< BOF <<<
 # --- Platform Detection ---
 $TFOS = if ($IsWindows) { "windows" } elseif ($IsMacOS) { "darwin" } else { "linux" }
@@ -9521,7 +9209,7 @@ if ($Profile -eq "default") {
 $env:UV_PROJECT_ENVIRONMENT = $VenvDir
 >>> EOF >>>
 
-### FILE 88: tofusoup/scaffolding/templates/env/pwsh/print_helpers.ps1.j2 | checksum=3083f92fbb83... | modified=2025-08-09T10:25:38 | op=+ | size=479 | tokens=119 ###
+### FILE 87: tofusoup/scaffolding/templates/env/pwsh/print_helpers.ps1.j2 | checksum=3083f92fbb83... | modified=2025-08-09T10:25:38 | op=+ | size=479 | tokens=119 ###
 <<< BOF <<<
 # Helper functions for formatted output
 function Write-Header {
@@ -9545,7 +9233,7 @@ function Write-Warning {
 }
 >>> EOF >>>
 
-### FILE 89: tofusoup/scaffolding/templates/env/pwsh/sibling_packages.ps1.j2 | checksum=85e08b238b83... | modified=2025-08-09T10:27:14 | op=+ | size=1680 | tokens=421 ###
+### FILE 88: tofusoup/scaffolding/templates/env/pwsh/sibling_packages.ps1.j2 | checksum=85e08b238b83... | modified=2025-08-09T10:27:14 | op=+ | size=1680 | tokens=421 ###
 <<< BOF <<<
 # --- Sibling Packages ---
 Write-Header "🤝 Installing Sibling Packages"
@@ -9599,7 +9287,7 @@ if ($SiblingCount -eq 0) {
 }
 >>> EOF >>>
 
-### FILE 90: tofusoup/scaffolding/templates/env/pwsh/tool_verification.ps1.j2 | checksum=d8b346d63633... | modified=2025-08-09T10:27:38 | op=+ | size=1196 | tokens=364 ###
+### FILE 89: tofusoup/scaffolding/templates/env/pwsh/tool_verification.ps1.j2 | checksum=d8b346d63633... | modified=2025-08-09T10:27:38 | op=+ | size=1196 | tokens=364 ###
 <<< BOF <<<
 # --- Tool Verification ---
 Write-Header "🔍 Verifying Installation"
@@ -9636,7 +9324,7 @@ if (Test-Path ${{ tool.var_name }}Path) {
 Write-Host ("━" * 40)
 >>> EOF >>>
 
-### FILE 91: tofusoup/scaffolding/templates/env/pwsh/uv_installation.ps1.j2 | checksum=42f32cd2f361... | modified=2025-08-09T10:26:05 | op=+ | size=966 | tokens=229 ###
+### FILE 90: tofusoup/scaffolding/templates/env/pwsh/uv_installation.ps1.j2 | checksum=42f32cd2f361... | modified=2025-08-09T10:26:05 | op=+ | size=966 | tokens=229 ###
 <<< BOF <<<
 # --- UV Installation ---
 Write-Header "🚀 Checking UV Package Manager"
@@ -9670,7 +9358,7 @@ if (-not $uvCommand) {
 }
 >>> EOF >>>
 
-### FILE 92: tofusoup/scaffolding/templates/env/pwsh/validation.ps1.j2 | checksum=016ec07ca58f... | modified=2025-08-09T10:25:55 | op=+ | size=465 | tokens=118 ###
+### FILE 91: tofusoup/scaffolding/templates/env/pwsh/validation.ps1.j2 | checksum=016ec07ca58f... | modified=2025-08-09T10:25:55 | op=+ | size=465 | tokens=118 ###
 <<< BOF <<<
 # --- Project Validation ---
 if (-not (Test-Path "pyproject.toml")) {
@@ -9687,7 +9375,7 @@ if ($ProjectName -ne "{{ project_name }}") {
 {% endif %}
 >>> EOF >>>
 
-### FILE 93: tofusoup/scaffolding/templates/env/pwsh/venv_setup.ps1.j2 | checksum=9c9c7ccd517b... | modified=2025-08-09T10:33:11 | op=+ | size=1445 | tokens=393 ###
+### FILE 92: tofusoup/scaffolding/templates/env/pwsh/venv_setup.ps1.j2 | checksum=9c9c7ccd517b... | modified=2025-08-09T10:33:11 | op=+ | size=1445 | tokens=393 ###
 <<< BOF <<<
 # --- Virtual Environment ---
 Write-Header "🐍 Setting Up Virtual Environment"
@@ -9733,7 +9421,7 @@ if (Test-Path $ActivateScript) {
 }
 >>> EOF >>>
 
-### FILE 94: tofusoup/scaffolding/templates/pyproject.toml.j2 | checksum=5ff8d9e19963... | modified=2025-08-08T19:26:50 | op=+ | size=829 | tokens=225 ###
+### FILE 93: tofusoup/scaffolding/templates/pyproject.toml.j2 | checksum=5ff8d9e19963... | modified=2025-08-08T19:26:50 | op=+ | size=829 | tokens=225 ###
 <<< BOF <<<
 # pyproject.toml for terraform-provider-{{ provider_name }}
 
@@ -9772,7 +9460,7 @@ private_key_path = "keys/provider-private.key"
 public_key_path = "keys/provider-public.key"
 >>> EOF >>>
 
-### FILE 95: tofusoup/scaffolding/templates/resource/resource.py.j2 | checksum=39f80464b7c2... | modified=2025-09-01T17:42:40 | op=+ | size=3660 | tokens=752 ###
+### FILE 94: tofusoup/scaffolding/templates/resource/resource.py.j2 | checksum=840f3b6f7be2... | modified=2025-10-10T13:11:14 | op=+ | size=4492 | tokens=933 ###
 <<< BOF <<<
 """
 Scaffolded Pyvider Resource: {{ component_name }}
@@ -9823,10 +9511,17 @@ class {{ component_name | capitalize }}Resource(
     async def read(self, ctx: ResourceContext) -> {{ component_name | capitalize }}State | None:
         """Reads the current state of the resource from the real world."""
         logger.info(f"Reading resource {ctx.state.id if ctx.state else 'new'}")
-        
-        # TODO: Implement logic to fetch the resource's state.
-        # If the resource exists, return its state as a State object.
-        # If the resource does not exist, return None.
+
+        # TODO: Implement your read logic here
+        # Fetch the resource's actual state from your service/API
+        # Return a State object if the resource exists, None if it doesn't
+        #
+        # Example:
+        #   response = await your_api_client.get_resource(ctx.state.id)
+        #   if response.found:
+        #       return self.state_class(id=response.id, example_attribute=response.value)
+        #   return None
+
         if ctx.state:
             return ctx.state
         return None
@@ -9849,24 +9544,39 @@ class {{ component_name | capitalize }}Resource(
     async def apply(self, ctx: ResourceContext) -> tuple[{{ component_name | capitalize }}State | None, None]:
         """Creates or updates the resource to match the planned state."""
         logger.info("Applying resource changes for {{ component_name }}")
-        
-        # TODO: Implement the logic to create or update the resource.
-        # This method should be idempotent.
-        
-        # The state returned here MUST be identical to ctx.planned_state.
-        # The framework will verify this contract.
+
+        # TODO: Implement your create/update logic here
+        # Make API calls to create or update the resource
+        # This method MUST be idempotent
+        #
+        # Example:
+        #   if ctx.state is None:
+        #       response = await your_api_client.create_resource(ctx.planned_state)
+        #   else:
+        #       response = await your_api_client.update_resource(ctx.state.id, ctx.planned_state)
+        #
+        # IMPORTANT: The returned state MUST match ctx.planned_state exactly
         return ctx.planned_state, None
 
     async def delete(self, ctx: ResourceContext) -> None:
         """Deletes the resource."""
         logger.info(f"Deleting resource {ctx.state.id if ctx.state else 'unknown'}")
-        
-        # TODO: Implement the logic to delete the resource.
-        # This method should be idempotent.
+
+        # TODO: Implement your delete logic here
+        # Make API calls to delete the resource
+        # This method MUST be idempotent (safe to call multiple times)
+        #
+        # Example:
+        #   try:
+        #       await your_api_client.delete_resource(ctx.state.id)
+        #   except ResourceNotFoundError:
+        #       logger.info(f"Resource {ctx.state.id} already deleted")
+        #       pass  # Idempotent - already deleted is OK
+
         pass
 >>> EOF >>>
 
-### FILE 96: tofusoup/state.py | checksum=ca7565895e0e... | modified=2025-09-17T17:32:12 | op=+ | size=12555 | tokens=2650 | type=x-python ###
+### FILE 95: tofusoup/state.py | checksum=ca7565895e0e... | modified=2025-09-17T17:32:12 | op=+ | size=12555 | tokens=2650 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/state.py
@@ -10220,7 +9930,7 @@ if __name__ == "__main__":
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 97: tofusoup/stir.py | checksum=aea5cf79580c... | modified=2025-09-17T17:32:12 | op=+ | size=160 | tokens=45 | type=x-python ###
+### FILE 96: tofusoup/stir.py | checksum=aea5cf79580c... | modified=2025-09-17T17:32:12 | op=+ | size=160 | tokens=45 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir.py
@@ -10233,7 +9943,7 @@ from tofusoup.stir.cli import stir_cli
 __all__ = ["stir_cli"]
 >>> EOF >>>
 
-### FILE 98: tofusoup/stir/__init__.py | checksum=40aa57a8c968... | modified=2025-09-17T17:32:12 | op=+ | size=96 | tokens=35 | type=x-python ###
+### FILE 97: tofusoup/stir/__init__.py | checksum=40aa57a8c968... | modified=2025-09-17T17:32:12 | op=+ | size=96 | tokens=35 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/__init__.py
@@ -10244,7 +9954,7 @@ from tofusoup.stir.cli import stir_cli
 __all__ = ["stir_cli"]
 >>> EOF >>>
 
-### FILE 99: tofusoup/stir/cli.py | checksum=e2ba1d0ae48e... | modified=2025-09-17T17:32:12 | op=+ | size=5240 | tokens=1188 | type=x-python ###
+### FILE 98: tofusoup/stir/cli.py | checksum=e2ba1d0ae48e... | modified=2025-09-17T17:32:12 | op=+ | size=5240 | tokens=1188 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/cli.py
@@ -10413,7 +10123,7 @@ def stir_cli(
         sys.exit(1)
 >>> EOF >>>
 
-### FILE 100: tofusoup/stir/config.py | checksum=aebc0a4bc234... | modified=2025-09-17T17:32:12 | op=+ | size=1056 | tokens=326 | type=x-python ###
+### FILE 99: tofusoup/stir/config.py | checksum=aebc0a4bc234... | modified=2025-09-17T17:32:12 | op=+ | size=1056 | tokens=326 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/config.py
@@ -10461,7 +10171,7 @@ PHASE_EMOJI = {
 }
 >>> EOF >>>
 
-### FILE 101: tofusoup/stir/display.py | checksum=da3486a17860... | modified=2025-09-17T17:32:12 | op=+ | size=3296 | tokens=783 | type=x-python ###
+### FILE 100: tofusoup/stir/display.py | checksum=da3486a17860... | modified=2025-09-17T17:32:12 | op=+ | size=3296 | tokens=783 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/display.py
@@ -10558,7 +10268,7 @@ async def live_updater(live_display: Live, stop_event: asyncio.Event) -> None:
         await asyncio.sleep(0.1)
 >>> EOF >>>
 
-### FILE 102: tofusoup/stir/executor.py | checksum=b0c101d1255c... | modified=2025-09-17T17:32:12 | op=+ | size=8938 | tokens=1618 | type=x-python ###
+### FILE 101: tofusoup/stir/executor.py | checksum=b0c101d1255c... | modified=2025-09-17T17:32:12 | op=+ | size=8938 | tokens=1618 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/executor.py
@@ -10795,7 +10505,7 @@ async def execute_tests(test_dirs: list[Path], runtime: StirRuntime) -> list[Tes
     return await asyncio.gather(*tasks, return_exceptions=True)
 >>> EOF >>>
 
-### FILE 103: tofusoup/stir/models.py | checksum=fd72103e67db... | modified=2025-09-17T17:32:12 | op=+ | size=618 | tokens=176 | type=x-python ###
+### FILE 102: tofusoup/stir/models.py | checksum=fd72103e67db... | modified=2025-09-17T17:32:12 | op=+ | size=618 | tokens=176 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/models.py
@@ -10826,7 +10536,7 @@ class TestResult(NamedTuple):
     ephemeral_functions: int = 0
 >>> EOF >>>
 
-### FILE 104: tofusoup/stir/reporting.py | checksum=10f495c82bae... | modified=2025-09-17T17:32:12 | op=+ | size=2552 | tokens=604 | type=x-python ###
+### FILE 103: tofusoup/stir/reporting.py | checksum=10f495c82bae... | modified=2025-09-17T17:32:12 | op=+ | size=2552 | tokens=604 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/reporting.py
@@ -10908,7 +10618,7 @@ def print_summary_panel(total_tests: int, failed_tests: int, skipped_tests: int,
     )
 >>> EOF >>>
 
-### FILE 105: tofusoup/stir/runtime.py | checksum=7f7bb35a12de... | modified=2025-09-17T17:32:12 | op=+ | size=11000 | tokens=2220 | type=x-python ###
+### FILE 104: tofusoup/stir/runtime.py | checksum=7eb1435ba860... | modified=2025-10-10T12:05:05 | op=+ | size=11224 | tokens=2258 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/runtime.py
@@ -11092,11 +10802,15 @@ class StirRuntime:
 
         Args:
             providers: Set of (source, version_constraint) tuples to download
+
+        Note:
+            Uses tempfile.TemporaryDirectory which automatically cleans up after use.
+            This is safe for parallel execution as each invocation gets a unique directory.
         """
         if not providers:
             return
 
-        # Create temporary directory for provider manifest
+        # Create temporary directory for provider manifest (auto-cleaned on context exit)
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
             manifest_file = temp_path / "providers.tf"
@@ -11191,7 +10905,7 @@ class StirRuntime:
 __all__ = ["StirRuntime"]
 >>> EOF >>>
 
-### FILE 106: tofusoup/stir/terraform.py | checksum=96caf5292a5e... | modified=2025-09-17T17:32:12 | op=+ | size=5430 | tokens=1277 | type=x-python ###
+### FILE 105: tofusoup/stir/terraform.py | checksum=96caf5292a5e... | modified=2025-09-17T17:32:12 | op=+ | size=5430 | tokens=1277 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/stir/terraform.py
@@ -11355,7 +11069,7 @@ async def run_terraform_command(
     )
 >>> EOF >>>
 
-### FILE 107: tofusoup/testing/__init__.py | checksum=2b63828ca3e9... | modified=2025-09-17T17:32:12 | op=+ | size=55 | tokens=27 | type=x-python ###
+### FILE 106: tofusoup/testing/__init__.py | checksum=2b63828ca3e9... | modified=2025-09-17T17:32:12 | op=+ | size=55 | tokens=27 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/testing/__init__.py
@@ -11364,7 +11078,7 @@ async def run_terraform_command(
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 108: tofusoup/testing/cli.py | checksum=0c3071335276... | modified=2025-09-17T17:32:12 | op=+ | size=2652 | tokens=632 | type=x-python ###
+### FILE 107: tofusoup/testing/cli.py | checksum=0c3071335276... | modified=2025-09-17T17:32:12 | op=+ | size=2652 | tokens=632 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -11452,7 +11166,7 @@ for suite_name_key in TEST_SUITE_CONFIG:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 109: tofusoup/testing/logic.py | checksum=01d17a889de0... | modified=2025-09-17T17:32:12 | op=+ | size=5465 | tokens=1279 | type=x-python ###
+### FILE 108: tofusoup/testing/logic.py | checksum=dceccf3b6d96... | modified=2025-10-10T12:04:44 | op=+ | size=5760 | tokens=1349 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/testing/logic.py
@@ -11462,7 +11176,6 @@ import json
 import os
 import pathlib
 import sys
-import tempfile
 from typing import Any
 
 import attrs
@@ -11520,8 +11233,12 @@ async def _run_pytest_suite(
     if not pytest_target_path.exists():
         raise TofuSoupError(f"Test suite path not found: {pytest_target_path}")
 
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json", encoding="utf-8") as report_file:
-        report_path = report_file.name
+    # Use project-specific temp directory for test reports
+    reports_dir = project_root / "soup" / "output" / "test-reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create unique report file name to support parallel test execution
+    report_path = reports_dir / f"{suite_name}-report-{os.getpid()}.json"
 
     # Corrected invocation: Use `-o` to override configuration for this specific run.
     # This is the correct way to tell this pytest session to only find `souptest_` files.
@@ -11586,8 +11303,9 @@ async def _run_pytest_suite(
     try:
         return _process_test_report()
     finally:
-        if os.path.exists(report_path):
-            os.unlink(report_path)
+        # Keep report files for debugging - they're in a well-organized location
+        # and will be cleaned up by project cleanup scripts if needed
+        logger.debug(f"Test report saved to {report_path}")
 
 
 async def run_test_suite(
@@ -11630,7 +11348,7 @@ async def run_all_test_suites(
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 110: tofusoup/testing/matrix.py | checksum=d606823801b2... | modified=2025-09-17T17:32:12 | op=+ | size=13111 | tokens=2595 | type=x-python ###
+### FILE 109: tofusoup/testing/matrix.py | checksum=d606823801b2... | modified=2025-09-17T17:32:12 | op=+ | size=13111 | tokens=2595 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/testing/matrix.py
@@ -12019,7 +11737,7 @@ async def run_matrix_stir_tests(
 # 🍲🧪🔢🪄
 >>> EOF >>>
 
-### FILE 111: tofusoup/testing/matrix_profiles.py | checksum=3284ffd746ab... | modified=2025-09-17T17:32:12 | op=+ | size=11804 | tokens=2320 | type=x-python ###
+### FILE 110: tofusoup/testing/matrix_profiles.py | checksum=3284ffd746ab... | modified=2025-09-17T17:32:12 | op=+ | size=11804 | tokens=2320 | type=x-python ###
 <<< BOF <<<
 """
 Profile-based matrix testing for TofuSoup.
@@ -12366,7 +12084,7 @@ async def run_profile_matrix_tests(
     return await matrix.run_profile_tests(stir_directory, profiles)
 >>> EOF >>>
 
-### FILE 112: tofusoup/wire/__init__.py | checksum=36d6a41d77d9... | modified=2025-09-17T17:32:12 | op=+ | size=52 | tokens=28 | type=x-python ###
+### FILE 111: tofusoup/wire/__init__.py | checksum=36d6a41d77d9... | modified=2025-09-17T17:32:12 | op=+ | size=52 | tokens=28 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/wire/__init__.py
@@ -12375,7 +12093,7 @@ async def run_profile_matrix_tests(
 # 🍲🥄🚀🪄
 >>> EOF >>>
 
-### FILE 113: tofusoup/wire/cli.py | checksum=1f7b0b509ea5... | modified=2025-09-17T17:32:12 | op=+ | size=2453 | tokens=594 | type=x-python ###
+### FILE 112: tofusoup/wire/cli.py | checksum=1f7b0b509ea5... | modified=2025-09-17T17:32:12 | op=+ | size=2453 | tokens=594 | type=x-python ###
 <<< BOF <<<
 #!/usr/bin/env python3
 #
@@ -12455,7 +12173,7 @@ def to_json(input_path: Path, output_path: Path | None, pretty: bool) -> None:
 # 🍲🥄🖥️🪄
 >>> EOF >>>
 
-### FILE 114: tofusoup/wire/logging.py | checksum=561e38546cfe... | modified=2025-09-17T17:32:12 | op=+ | size=846 | tokens=191 | type=x-python ###
+### FILE 113: tofusoup/wire/logging.py | checksum=561e38546cfe... | modified=2025-09-17T17:32:12 | op=+ | size=846 | tokens=191 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/wire/logging.py
@@ -12492,7 +12210,7 @@ def configure_logging() -> None:
 # 🍲🥄📄🪄
 >>> EOF >>>
 
-### FILE 115: tofusoup/wire/logic.py | checksum=e20e87b7bafe... | modified=2025-09-17T17:32:12 | op=+ | size=1682 | tokens=389 | type=x-python ###
+### FILE 114: tofusoup/wire/logic.py | checksum=e20e87b7bafe... | modified=2025-09-17T17:32:12 | op=+ | size=1682 | tokens=389 | type=x-python ###
 <<< BOF <<<
 #
 # tofusoup/wire/logic.py
@@ -12555,15 +12273,15 @@ def convert_msgpack_to_json(input_path: Path, output_path: Path | None) -> Path:
 
 
 ### BUNDLE SUMMARY ###
-- Included Files: 115
-- Total Size (Included): 412159 bytes
+- Included Files: 114
+- Total Size (Included): 401126 bytes
 - Duplicate Files Skipped: 0
 - Items Excluded by Config/Defaults: 158 (Files: 153, Dirs: 5)
 - Empty Files Found: 0
 - System Errors Encountered: 0
 - Encoding Errors (Fallback Attempted): 0
-- Estimated Bundle Token Range: 103174 - 111216
-- Processing Time: 0.25 seconds
+- Estimated Bundle Token Range: 100580 - 108559
+- Processing Time: 0.21 seconds
 ### END BUNDLE SUMMARY ###
 
---- END OF BFILE bfiles-20251010-114529.txt ---
+--- END OF BFILE bfiles-20251010-131213.txt ---
