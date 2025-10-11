@@ -180,23 +180,36 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 		},
 	}
 
-	// Determine TLS configuration strategy:
-	// - If curve is "auto" or empty: use go-plugin's built-in AutoMTLS (P-521)
-	// - If curve is specified: use TLSProvider with that curve
-	useAutoMTLS := tlsCurve == "" || strings.ToLower(tlsCurve) == "auto"
+	// Determine TLS configuration strategy based on tlsMode and tlsCurve:
+	// - If tlsMode is "disabled": no TLS
+	// - If tlsMode is "auto":
+	//   - If curve is "auto" or empty: use go-plugin's built-in AutoMTLS (P-521)
+	//   - If curve is specified: use TLSProvider with that curve
+	// - If tlsMode is "manual": use TLSProvider with cert files (not implemented yet)
 
-	if useAutoMTLS {
-		logger.Info("🔐 Using AutoMTLS (go-plugin default, P-521 curve)")
-		// Don't set TLSProvider - let go-plugin handle it automatically
-		// This will use go-plugin's built-in AutoMTLS with P-521 curve
-	} else if tlsKeyType == "ec" {
-		logger.Info("🔐 Using TLSProvider with specific elliptic curve", "curve", tlsCurve)
-		config.TLSProvider = createTLSProvider(logger, tlsCurve)
+	if tlsMode == "disabled" {
+		logger.Info("🔐 TLS disabled - no encryption")
+		// Don't set TLSProvider or AutoMTLS
+	} else if tlsMode == "auto" {
+		useAutoMTLS := tlsCurve == "" || strings.ToLower(tlsCurve) == "auto"
+
+		if useAutoMTLS {
+			logger.Info("🔐 Using AutoMTLS (go-plugin default, P-521 curve)")
+			// Don't set TLSProvider - let go-plugin handle it automatically
+			// This will use go-plugin's built-in AutoMTLS with P-521 curve
+		} else if tlsKeyType == "ec" {
+			logger.Info("🔐 Using TLSProvider with specific elliptic curve", "curve", tlsCurve)
+			config.TLSProvider = createTLSProvider(logger, tlsCurve)
+		} else {
+			// For now, we only support EC curves with TLSProvider
+			// RSA support could be added later
+			logger.Warn("⚠️  Only EC key type is supported with TLSProvider, falling back to AutoMTLS")
+			// Note: AutoMTLS will use go-plugin's default P-521 curve
+		}
+	} else if tlsMode == "manual" {
+		logger.Warn("⚠️  Manual TLS mode not implemented yet, falling back to AutoMTLS")
 	} else {
-		// For now, we only support EC curves with TLSProvider
-		// RSA support could be added later
-		logger.Warn("⚠️  Only EC key type is supported with TLSProvider, falling back to AutoMTLS")
-		// Note: AutoMTLS will use go-plugin's default P-521 curve
+		logger.Warn("⚠️  Unknown TLS mode, falling back to AutoMTLS", "mode", tlsMode)
 	}
 
 	// Start serving in a goroutine
