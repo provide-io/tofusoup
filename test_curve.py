@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 """
 Test a single curve: Python client → Go server
+
+⚠️  WARNING: Python → Go connections are NOT SUPPORTED ⚠️
+
+This script tests Python client → Go server, which is a known bug in
+pyvider-rpcplugin. These tests are expected to FAIL with timeout errors.
+
+For testing working configurations, see:
+- test_py_to_py.py (Python → Python) ✓ SUPPORTED
+- Go client → Python server ✓ SUPPORTED
+
 Usage: python test_curve.py <curve_name>
 """
 import asyncio
@@ -14,6 +24,17 @@ async def test_curve(curve_name: str) -> int:
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
     print(f"\n{'='*70}")
+    print(f"⚠️  WARNING: Testing Python → Go (UNSUPPORTED)")
+    print(f"{'='*70}")
+    print()
+    print("❌ This configuration is NOT SUPPORTED due to a known bug")
+    print("   in pyvider-rpcplugin. Connection will likely TIMEOUT.")
+    print()
+    print("✓ Supported alternatives:")
+    print("  - Python → Python (use test_py_to_py.py)")
+    print("  - Go → Python (use Go client)")
+    print("  - Go → Go")
+    print()
     print(f"Testing curve: {curve_name}")
     print(f"{'='*70}\n")
 
@@ -55,6 +76,18 @@ async def test_curve(curve_name: str) -> int:
 
     except Exception as e:
         print(f"\n❌ FAIL: {type(e).__name__}: {str(e)[:100]}")
+        print()
+        print("=" * 70)
+        print("⚠️  This failure is EXPECTED - Python → Go is not supported")
+        print("=" * 70)
+        print()
+        print("This is a known issue in pyvider-rpcplugin.")
+        print()
+        print("For working configurations, use:")
+        print("  ✓ Python → Python (test_py_to_py.py)")
+        print("  ✓ Go → Python")
+        print()
+        print("See docs/rpc-compatibility-matrix.md for details")
         try:
             await client.close()
         except:
@@ -64,10 +97,22 @@ async def test_curve(curve_name: str) -> int:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
+        print()
+        print("=" * 70)
+        print("⚠️  WARNING: Python → Go connections are NOT SUPPORTED")
+        print("=" * 70)
+        print()
         print("Usage: python test_curve.py <curve_name>")
         print("Curves: secp256r1, secp384r1, secp521r1")
+        print()
+        print("Note: This test is expected to FAIL due to known pyvider bug.")
+        print("      Use test_py_to_py.py for testing working configurations.")
+        print()
         sys.exit(1)
 
     curve = sys.argv[1]
+    print()
+    print("⚠️  Note: This test attempts Python → Go, which is NOT SUPPORTED")
+    print()
     exit_code = asyncio.run(test_curve(curve))
     sys.exit(exit_code)
