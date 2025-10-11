@@ -83,13 +83,6 @@ class KVClient:
         elif self.tls_key_type == "rsa":
             self.subprocess_env["PYVIDER_CLIENT_CERT_ALGO"] = "rsa"
 
-        # Force TCP transport for servers when mTLS is enabled to test TLS curves
-        # (Unix sockets skip TLS, so we need TCP to verify curve functionality)
-        if self.enable_mtls:
-            # Set port range to force network listening instead of Unix sockets
-            self.subprocess_env["PLUGIN_MIN_PORT"] = "50000"
-            self.subprocess_env["PLUGIN_MAX_PORT"] = "50100"
-
         # Magic cookie configuration is set via subprocess_env dict above
         # No need to modify rpcplugin_config directly as it reads from environment
         logger.info(f"[KVClient.__init__] self.subprocess_env for plugin: {self.subprocess_env}")
