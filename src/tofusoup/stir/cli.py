@@ -45,6 +45,7 @@ def process_results(results: list[TestResult | Exception]) -> tuple[list[TestRes
 async def main(target_path: str, runtime: StirRuntime) -> None:
     """Main execution function for stir tests."""
     from rich.live import Live
+
     from tofusoup.stir.display import generate_status_table, live_updater
 
     start_time = monotonic()
@@ -82,7 +83,7 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
 
     # Start live display
     stop_event = asyncio.Event()
-    with Live(generate_status_table(), console=console, refresh_per_second=10) as live_display:
+    with Live(generate_status_table(), console=console, refresh_per_second=4) as live_display:
         # Start the live updater task
         updater_task = asyncio.create_task(live_updater(live_display, stop_event))
 
@@ -166,8 +167,7 @@ def stir_cli(
             if matrix_output:
                 import json
 
-                with open(matrix_output, "w") as f:
-                    json.dump(results, f, indent=2, default=str)
+                Path(matrix_output).write_text(json.dumps(results, indent=2, default=str))
                 console.print(f"✅ Matrix results saved to {matrix_output}")
 
             if output_json:
