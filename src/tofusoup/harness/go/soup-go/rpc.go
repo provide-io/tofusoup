@@ -190,7 +190,7 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 
 	if tlsMode == "disabled" {
 		logger.Info("🔐 TLS disabled - no encryption")
-		// Don't set TLSProvider or AutoMTLS
+		// Don't set TLSProvider - go-plugin may still use AutoMTLS internally but that's OK
 	} else if tlsMode == "auto" {
 		useAutoMTLS := tlsCurve == "" || strings.ToLower(tlsCurve) == "auto"
 
