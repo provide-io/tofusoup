@@ -132,9 +132,15 @@ def entry_point() -> None:
     magic_cookie_key = os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN")
     magic_cookie_value = os.getenv(magic_cookie_key)
 
-    # If magic cookie is present and we have no command-line arguments (or just the script name)
-    # then we're being invoked as a plugin by go-plugin framework
-    if magic_cookie_value and len(sys.argv) == 1:
+    # Check if invoked as plugin server:
+    # 1. Magic cookie present + no args (terraform/go-plugin standard)
+    # 2. Magic cookie present + "rpc server-start" args (our Go client calls it this way)
+    is_plugin_mode = magic_cookie_value and (
+        len(sys.argv) == 1 or
+        (len(sys.argv) == 3 and sys.argv[1] == "rpc" and sys.argv[2] == "server-start")
+    )
+
+    if is_plugin_mode:
         # Minimize logging for plugin mode (already using stderr from top of file)
         updated_config = TelemetryConfig(
             service_name="tofusoup-plugin",
