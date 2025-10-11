@@ -30,7 +30,8 @@
       "Bash(export:*)",
       "Bash(pip show:*)",
       "Bash(source env.sh)",
-      "Bash(uv pip install:*)"
+      "Bash(uv pip install:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": [],

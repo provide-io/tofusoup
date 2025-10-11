@@ -57,6 +57,8 @@ def _should_filter_message(message: str, level: str) -> bool:
     # Filter out internal protocol noise
     noise_patterns = [
         "configuring client automatic mTLS",
+        "plugin failed to exit gracefully",  # Benign - provider shuts down properly but TF is impatient
+        "plugin process exited",
         "GRPCProvider.v6:",
         "GRPCProvider6:",
         "statemgr.Filesystem:",
