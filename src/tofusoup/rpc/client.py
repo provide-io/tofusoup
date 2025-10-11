@@ -158,8 +158,8 @@ class KVClient:
 
             logger.info(f"Effective server command for plugin: {' '.join(server_command)}")
 
-            # Ensure PLUGIN_AUTO_MTLS in effective_env (for pyvider-rpcplugin client itself) matches KVClient's intent
-            effective_env["PLUGIN_AUTO_MTLS"] = "true" if self.enable_mtls else "false"
+            # Don't override PLUGIN_AUTO_MTLS - it's already set correctly in subprocess_env
+            # (false for specific curves to use TLSProvider, true only for "auto" mode)
 
             # Set up magic cookies in the server's effective_env.
             go_server_expected_cookie_key_name = "BASIC_PLUGIN"
