@@ -162,20 +162,13 @@ def entry_point() -> None:
         protocol = KVProtocol()
 
         # Configure the RPC plugin server with the magic cookie from Go client
-        # IMPORTANT: Force TCP transport when AutoMTLS is enabled (Go client expects TCP+TLS, not Unix socket)
-        auto_mtls = os.getenv("PLUGIN_AUTO_MTLS", "").lower() == "true"
-
+        # Match pyvider's pattern - just pass magic cookie, let RPCPluginServer auto-negotiate everything
         server_config = {
             "PLUGIN_MAGIC_COOKIE_KEY": magic_cookie_key,
             "PLUGIN_MAGIC_COOKIE_VALUE": magic_cookie_value,
         }
 
-        # Force TCP when AutoMTLS is enabled to match Go client expectations
-        if auto_mtls:
-            server_config["PLUGIN_SERVER_TRANSPORTS"] = "tcp"
-            logger.debug("AutoMTLS enabled, forcing TCP transport")
-
-        logger.debug("Creating RPCPluginServer", server_config=server_config, auto_mtls=auto_mtls)
+        logger.debug("Creating RPCPluginServer", server_config=server_config)
 
         # Create server without explicit transport (let it auto-negotiate)
         # This matches pyvider's pattern and allows proper transport negotiation
