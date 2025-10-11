@@ -35,10 +35,6 @@ type KVGRPCPlugin struct {
 	Impl KV
 }
 
-func (p *KVGRPCPlugin) GRPCPlugin() plugin.GRPCPlugin {
-	return p
-}
-
 func (p *KVGRPCPlugin) GRPCClient(ctx context.Context, broker *plugin.GRPCBroker, c *grpc.ClientConn) (interface{}, error) {
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:  "🔌🌐 kv-grpc-client",
