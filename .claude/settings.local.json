@@ -31,7 +31,8 @@
       "Bash(pip show:*)",
       "Bash(source env.sh)",
       "Bash(uv pip install:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": [],
