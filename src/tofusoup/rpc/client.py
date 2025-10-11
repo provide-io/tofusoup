@@ -44,7 +44,7 @@ class KVClient:
         server_path: str,
         tls_mode: str = "disabled",
         tls_key_type: str = "ec",
-        tls_curve: str = "P-256",
+        tls_curve: str = "secp256r1",
         cert_file: str | None = None,
         key_file: str | None = None,
     ) -> None:

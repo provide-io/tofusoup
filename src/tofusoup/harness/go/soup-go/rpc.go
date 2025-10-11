@@ -16,11 +16,12 @@ import (
 	"google.golang.org/grpc"
 )
 
-func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, certFile, keyFile string) error {
+func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve, certFile, keyFile string) error {
 	logger.Info("🗄️✨ starting RPC plugin server",
 		"port", port,
 		"tls_mode", tlsMode,
 		"tls_key_type", tlsKeyType,
+		"tls_curve", tlsCurve,
 		"cert_file", certFile,
 		"key_file", keyFile,
 		"log_level", logger.GetLevel())

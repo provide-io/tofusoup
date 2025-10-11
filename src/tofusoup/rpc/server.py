@@ -142,6 +142,7 @@ def main() -> None:
 def start_kv_server(
     tls_mode: str = "disabled",
     tls_key_type: str = "ec",
+    tls_curve: str = "secp384r1",
     cert_file: str | None = None,
     key_file: str | None = None,
     storage_dir: str = "/tmp",
@@ -154,6 +155,7 @@ def start_kv_server(
     Args:
         tls_mode: TLS mode (disabled, auto, or manual)
         tls_key_type: Key type for TLS (ec or rsa)
+        tls_curve: Elliptic curve for EC key type (secp256r1, secp384r1, secp521r1)
         cert_file: Path to certificate file (required for manual TLS)
         key_file: Path to private key file (required for manual TLS)
         storage_dir: Directory to store KV data files. Defaults to /tmp.
@@ -163,6 +165,7 @@ def start_kv_server(
         "Starting KV plugin server with Python implementation",
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
+        tls_curve=tls_curve,
         cert_file=cert_file,
         key_file=key_file,
         storage_dir=storage_dir,
@@ -185,7 +188,7 @@ def start_kv_server(
         logger.info(f"Server listening on insecure port {port}")
 
     elif tls_mode == "auto":
-        logger.info("Auto TLS enabled - generating server certificate")
+        logger.info("Auto TLS enabled - generating server certificate", key_type=tls_key_type, curve=tls_curve)
 
         # Generate server certificate
         from provide.foundation.crypto import Certificate
@@ -196,6 +199,8 @@ def start_kv_server(
                 organization_name="TofuSoup",
                 validity_days=365,  # 1 year validity
                 alt_names=["localhost", "127.0.0.1"],
+                key_type="ecdsa" if tls_key_type == "ec" else tls_key_type,
+                ecdsa_curve=tls_curve,
             )
             server_cert_pem = cert_obj.cert_pem
             server_key_pem = cert_obj.key_pem
