@@ -15,7 +15,6 @@ import (
 	"os/exec"
 	"os/signal"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 
@@ -209,46 +208,17 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 		logger.Warn("⚠️  Unknown TLS mode, falling back to AutoMTLS", "mode", tlsMode)
 	}
 
-	// Start serving in a goroutine
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	// Create a channel to signal when the plugin server is done
-	serverDone := make(chan struct{})
-
+	// Handle shutdown signal
 	go func() {
-		defer wg.Done()
-		logger.Info("🗄️✨ starting plugin server")
-		plugin.Serve(config)
-		close(serverDone)
-	}()
-
-	// Handle shutdown
-	go func() {
-		select {
-		case sig := <-shutdown:
-			logger.Info("🗄️🛑 shutting down plugin server", "signal", sig)
-		case <-serverDone:
-			logger.Info("🗄️🛑 plugin server exited before receiving a signal")
-		}
-
-		cleanup := make(chan struct{})
-		go func() {
-			wg.Wait()
-			close(cleanup)
-		}()
-
-		select {
-		case <-cleanup:
-			logger.Info("🗄️✅ clean shutdown completed")
-		case <-time.After(5 * time.Second):
-			logger.Warn("🗄️⏳ cleanup timeout reached")
-		}
-
+		sig := <-shutdown
+		logger.Info("🗄️🛑 shutting down plugin server", "signal", sig)
 		os.Exit(0)
 	}()
 
-	<-serverDone
+	// Start serving - this blocks until termination
+	logger.Info("🗄️✨ starting plugin server")
+	plugin.Serve(config)
+	logger.Info("🗄️✅ plugin server exited")
 	return nil
 }
 
