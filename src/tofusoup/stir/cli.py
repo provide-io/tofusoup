@@ -81,9 +81,9 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
     # Initialize test directories for status tracking
     initialize_tests(test_dirs)
 
-    # Start live display
+    # Start live display with reduced refresh rate to prevent flickering
     stop_event = asyncio.Event()
-    with Live(generate_status_table(), console=console, refresh_per_second=4) as live_display:
+    with Live(generate_status_table(), console=console, refresh_per_second=1) as live_display:
         # Start the live updater task
         updater_task = asyncio.create_task(live_updater(live_display, stop_event))
 

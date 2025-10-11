@@ -140,6 +140,13 @@ func decodeAndLogCertificate(certPEM string, logger hclog.Logger) error {
 func testRPCClient(logger hclog.Logger, serverPath string) error {
 	logger.Info("🌐🧪 starting RPC client test", "server_path", serverPath)
 
+	// Create command with environment variables
+	cmd := exec.Command(serverPath, "rpc", "server-start")
+	cmd.Env = append(os.Environ(),
+		"PLUGIN_AUTO_MTLS=true",  // Explicitly enable AutoMTLS for Python server
+		"KV_STORAGE_DIR=/tmp",    // Set storage directory
+	)
+
 	// Create client
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig:  Handshake,
@@ -148,7 +155,7 @@ func testRPCClient(logger hclog.Logger, serverPath string) error {
 				"kv_grpc": &KVGRPCPlugin{},
 			},
 		},
-		Cmd:             exec.Command(serverPath, "rpc", "server-start"),
+		Cmd:             cmd,
 		Logger:          logger,
 		AutoMTLS:        true,
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},

@@ -149,6 +149,16 @@ def entry_point() -> None:
         hub.initialize_foundation(config=updated_config)
 
         # Debug: Log key environment variables to diagnose go-plugin behavior
+        # Debug logging - also write to file for visibility
+        debug_log_path = "/tmp/tofusoup_plugin_debug.log"
+        with open(debug_log_path, "a") as f:
+            import datetime
+            f.write(f"\n\n=== Plugin start: {datetime.datetime.now()} ===\n")
+            f.write(f"PLUGIN_AUTO_MTLS = {os.getenv('PLUGIN_AUTO_MTLS')}\n")
+            f.write(f"Magic cookie key = {magic_cookie_key}\n")
+            f.write(f"Magic cookie value = {magic_cookie_value}\n")
+            f.write(f"All PLUGIN_* env vars: {[k for k in os.environ.keys() if 'PLUGIN' in k]}\n")
+
         logger.debug("Plugin mode detected",
                      plugin_auto_mtls=os.getenv('PLUGIN_AUTO_MTLS'),
                      magic_cookie_key=magic_cookie_key,
@@ -190,13 +200,53 @@ def entry_point() -> None:
 
         # Start the server - this will block until shutdown
         try:
-            asyncio.run(server.serve())
+            with open(debug_log_path, "a") as f:
+                f.write("About to start server.serve()\n")
+
+            # Use asyncio.run() which creates a new event loop
+            # Foundation's initialization should not create a running loop in plugin mode
+            try:
+                logger.debug("About to call asyncio.run(server.serve())")
+                asyncio.run(server.serve())
+                logger.debug("Server.serve() completed normally")
+                with open(debug_log_path, "a") as f:
+                    f.write("Server.serve() completed normally\n")
+            except RuntimeError as e:
+                if "attached to a different loop" in str(e):
+                    # Fallback: Try getting the existing loop if asyncio.run() fails
+                    logger.warning("Event loop conflict detected, trying alternative approach", error=str(e))
+                    with open(debug_log_path, "a") as f:
+                        f.write(f"Event loop conflict: {str(e)}\n")
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    logger.debug("Running serve() with new event loop")
+                    loop.run_until_complete(server.serve())
+                    loop.close()
+                    logger.debug("Serve() completed with fallback loop")
+                    with open(debug_log_path, "a") as f:
+                        f.write("Serve() completed with fallback loop\n")
+                else:
+                    logger.error("RuntimeError during serve()", error=str(e), exc_info=True)
+                    with open(debug_log_path, "a") as f:
+                        f.write(f"RuntimeError: {str(e)}\n")
+                    raise
+            logger.info("Plugin server shutting down normally")
+            with open(debug_log_path, "a") as f:
+                f.write("Plugin server shutting down normally\n")
             sys.exit(0)
         except KeyboardInterrupt:
             logger.info("Plugin server interrupted by user")
+            with open(debug_log_path, "a") as f:
+                f.write("KeyboardInterrupt\n")
             sys.exit(0)
         except Exception as e:
-            logger.error(f"Plugin server failed to start: {e}")
+            logger.error(f"Plugin server failed to start: {e}", exc_info=True)
+            with open(debug_log_path, "a") as f:
+                import traceback as tb
+                f.write(f"Exception: {str(e)}\n")
+                f.write(tb.format_exc())
+            import traceback
+            traceback.print_exc()
             sys.exit(1)
 
     # Normal CLI invocation
