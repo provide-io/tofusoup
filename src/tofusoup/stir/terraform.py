@@ -15,6 +15,10 @@ from tofusoup.stir.config import ENV_VARS, LOGS_DIR, TF_COMMAND
 from tofusoup.stir.display import console, test_statuses
 from tofusoup.stir.runtime import StirRuntime
 
+# Debouncing: Track last update time per test to reduce display churn
+_last_update_times: dict[str, float] = {}
+_UPDATE_DEBOUNCE_INTERVAL = 0.5  # Only update display every 0.5 seconds
+
 
 async def _tail_tf_log(log_path: Path, process: asyncio.subprocess.Process, dir_name: str) -> None:
     """Asynchronously tails the Terraform JSON log file to update the UI in real-time."""
@@ -35,7 +39,7 @@ async def _wait_for_log_file(log_path: Path, process: asyncio.subprocess.Process
 
 async def _process_log_file(log_path: Path, process: asyncio.subprocess.Process, dir_name: str) -> None:
     """Process log file entries and update test status."""
-    with open(log_path, encoding="utf-8") as f:
+    with log_path.open(encoding="utf-8") as f:
         while process.returncode is None:
             line = f.readline()
             if line:
@@ -44,15 +48,150 @@ async def _process_log_file(log_path: Path, process: asyncio.subprocess.Process,
                 await asyncio.sleep(0.1)
 
 
+def _should_filter_message(message: str, level: str) -> bool:
+    """Determine if a log message should be filtered out (not shown to user)."""
+    # Filter out trace and debug messages entirely
+    if level in ("trace", "debug"):
+        return True
+
+    # Filter out internal protocol noise
+    noise_patterns = [
+        "configuring client automatic mTLS",
+        "GRPCProvider.v6:",
+        "GRPCProvider6:",
+        "statemgr.Filesystem:",
+        "Meta.Backend:",
+        "backend/local:",
+        "providercache.Dir.",
+        "Stdout is not a terminal",
+        "Stderr is not a terminal",
+        "Stdin is a terminal",
+        "checking for provisioner in",
+        "checking for credentials in",
+        "ignoring non-existing provider search directory",
+        "will search for provider plugins in",
+        "using github.com/",
+        "CLI args:",
+        "CLI command args:",
+        "Go runtime version:",
+        "Found the config directory:",
+        "Attempting to open CLI config file:",
+        "Loading CLI configuration from",
+        "Attempting to acquire global provider lock",
+        "Releasing global provider lock",
+        "OpenTelemetry: OTEL_TRACES_EXPORTER not set",
+        "HTTP client GET request to",
+        "New state was assigned lineage",
+    ]
+
+    return any(pattern in message for pattern in noise_patterns)
+
+
+def _extract_resource_operation(message: str, operation: str) -> str | None:
+    """Extract resource name from an operation message."""
+    # Resource pattern: resource_type.resource_name
+    match = re.search(r"(\w+\.\w+\.\w+)", message)
+    if match:
+        return f"{operation} {match.group(1)}"
+
+    # Data source pattern: data.data_type.data_name
+    match = re.search(r"(data\.\w+\.\w+)", message)
+    if match:
+        return f"{operation} {match.group(1)}"
+
+    return None
+
+
+def _extract_provider_install(message: str) -> str | None:
+    """Extract provider installation info from message."""
+    match = re.search(r"registry[^/]*/([^/]+/[^\s]+)\s+v?([\d.]+)", message)
+    if match:
+        return f"Installing {match.group(1)} v{match.group(2)}"
+    return None
+
+
+def _extract_apply_complete(message: str) -> str | None:
+    """Extract resource count from apply complete message."""
+    match = re.search(r"(\d+)\s+added", message)
+    if match:
+        return f"Applied {match.group(1)} resources"
+    return None
+
+
+def _extract_semantic_message(message: str, level: str) -> str | None:
+    """Extract human-readable semantic meaning from Terraform log messages."""
+    # Resource operations
+    if "Creating..." in message or "Creating resource" in message:
+        return _extract_resource_operation(message, "Creating")
+
+    if "Reading..." in message or "Reading data" in message:
+        return _extract_resource_operation(message, "Reading")
+
+    if "Modifying..." in message or "Updating resource" in message:
+        return _extract_resource_operation(message, "Updating")
+
+    if "Destroying..." in message or "Destroying resource" in message:
+        return _extract_resource_operation(message, "Destroying")
+
+    # Provider installation
+    if "Installing" in message and ("provider" in message or "registry" in message):
+        return _extract_provider_install(message)
+
+    # Plan/Apply completion
+    if "Apply complete!" in message:
+        return _extract_apply_complete(message)
+
+    # Errors and warnings are always shown
+    if level in ("error", "warn"):
+        return message[:100]  # Truncate long error messages
+
+    # Info messages that provide value
+    valuable_info_patterns = [
+        "OpenTofu version:",
+        "Terraform version:",
+        "Initializing",
+        "Terraform has been successfully initialized",
+    ]
+
+    for pattern in valuable_info_patterns:
+        if pattern in message:
+            return message
+
+    return None
+
+
 def _process_log_line(line: str, dir_name: str) -> None:
     """Process a single log line and update status."""
+    from time import monotonic
+
     try:
         log_entry = json.loads(line)
         level = log_entry.get("@level", "info")
         message = log_entry.get("@message", "")
 
-        if level in ("info", "warn", "error") and message:
-            test_statuses[dir_name]["last_log"] = message
+        if not message:
+            return
+
+        # Filter out noise
+        if _should_filter_message(message, level):
+            # Still track function counts even if we don't show the message
+            _update_function_counts(message, dir_name)
+            return
+
+        # Extract semantic meaning
+        semantic_message = _extract_semantic_message(message, level)
+
+        if semantic_message:
+            # Debouncing: Only update display if enough time has passed
+            current_time = monotonic()
+            last_update = _last_update_times.get(dir_name, 0)
+
+            # Always show errors/warnings immediately, debounce info messages
+            is_important = level in ("error", "warn")
+
+            if is_important or (current_time - last_update) >= _UPDATE_DEBOUNCE_INTERVAL:
+                test_statuses[dir_name]["last_log"] = semantic_message
+                _last_update_times[dir_name] = current_time
 
         if level == "warn":
             test_statuses[dir_name]["has_warnings"] = True
@@ -144,14 +283,14 @@ async def run_terraform_command(
 
     parsed_logs = []
     if tf_log_path.exists():
-        with open(tf_log_path) as f:
+        with tf_log_path.open() as f:
             for line in f:
                 with contextlib.suppress(json.JSONDecodeError):
                     parsed_logs.append(json.loads(line))
 
     final_stdout = stdout_data.decode("utf-8", errors="ignore") if capture_stdout else ""
     return (
-        process.returncode,
+        process.returncode or 0,  # Ensure returncode is int, not None
         final_stdout,
         stdout_log_path,
         stderr_log_path,
