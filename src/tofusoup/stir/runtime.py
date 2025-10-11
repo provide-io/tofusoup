@@ -17,7 +17,7 @@ class StirRuntime:
     parallel test execution by pre-warming providers before parallel execution.
     """
 
-    def __init__(self, plugin_cache_dir: Path | None = None, force_upgrade: bool = False):
+    def __init__(self, plugin_cache_dir: Path | None = None, force_upgrade: bool = False) -> None:
         """
         Initialize the Stir runtime.
 
@@ -169,10 +169,7 @@ class StirRuntime:
             legacy_matches = re.findall(legacy_pattern, content)
             for provider_name in legacy_matches:
                 # For legacy syntax, assume hashicorp namespace if no explicit source
-                if "/" not in provider_name:
-                    source = f"hashicorp/{provider_name}"
-                else:
-                    source = provider_name
+                source = f"hashicorp/{provider_name}" if "/" not in provider_name else provider_name
                 providers.add((source, ">= 0.0.0"))
 
         return providers
@@ -199,12 +196,8 @@ class StirRuntime:
         for source, versions in by_source.items():
             # If we have ">= 0.0.0", prefer specific versions
             specific_versions = [v for v in versions if not v.startswith(">=")]
-            if specific_versions:
-                # Use the first specific version found (they should all be the same for real projects)
-                version = specific_versions[0]
-            else:
-                # Use the first constraint found
-                version = versions[0]
+            # Use the first specific version found (they should all be the same for real projects)
+            version = specific_versions[0] if specific_versions else versions[0]
             result.add((source, version))
 
         return result
