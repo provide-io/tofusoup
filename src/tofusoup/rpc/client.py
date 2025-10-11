@@ -246,18 +246,59 @@ class KVClient:
                 f"KVClient connected to server in {time.time() - start_time:.3f}s. Server PID: {self._client._process.pid if self._client._process else 'N/A'}"
             )
 
-        except TimeoutError:
-            logger.error(f"KVClient connection to server timed out after {time.time() - start_time:.3f}s")
+        except TimeoutError as e:
+            elapsed = time.time() - start_time
+            logger.error(f"KVClient connection to server timed out after {elapsed:.3f}s")
             if self._client and self._client._process and self._client._process.poll() is None:
                 logger.debug("Server process was still running after client timeout.")
             self.is_started = False
+
+            # Check if this is a Python → Go connection (known incompatibility)
+            server_lang = detect_server_language(self.server_path)
+            if server_lang == "go":
+                raise ConnectionError(
+                    f"Connection timeout after {elapsed:.3f}s - Python client → Go server is not supported.\n\n"
+                    "This is a known issue in pyvider-rpcplugin.\n\n"
+                    "Supported alternatives:\n"
+                    "  ✓ Go client → Python server (use soup-go binary as client)\n"
+                    "  ✓ Python client → Python server\n"
+                    "  ✓ Go client → Go server\n\n"
+                    f"Server path: {self.server_path}"
+                ) from e
             raise
         except Exception as e:
+            elapsed = time.time() - start_time
             logger.error(
                 f"KVClient failed to connect/start server: {type(e).__name__} - {e}",
                 exc_info=True,
             )
             self.is_started = False
+
+            # Provide additional context for common errors
+            server_lang = detect_server_language(self.server_path)
+            error_msg = str(e)
+
+            # Check for language pair issues
+            if server_lang == "go" and ("connection" in error_msg.lower() or "handshake" in error_msg.lower()):
+                raise ConnectionError(
+                    f"Failed to connect to Go server - Python client → Go server is not supported.\n\n"
+                    "This is a known issue in pyvider-rpcplugin.\n\n"
+                    "Supported alternatives:\n"
+                    "  ✓ Go client → Python server\n"
+                    "  ✓ Python client → Python server\n"
+                    "  ✓ Go client → Go server\n\n"
+                    f"Original error: {type(e).__name__}: {e}"
+                ) from e
+
+            # Check for curve compatibility issues
+            if "curve" in error_msg.lower() or "tls" in error_msg.lower() or "ssl" in error_msg.lower():
+                if self.tls_curve == "secp521r1" and server_lang == "python":
+                    raise ValueError(
+                        f"Curve 'secp521r1' is not supported by Python's grpcio library.\n"
+                        "Supported curves for Python: secp256r1, secp384r1\n\n"
+                        f"Original error: {type(e).__name__}: {e}"
+                    ) from e
+
             raise
 
     def _relay_stderr(self) -> None:
