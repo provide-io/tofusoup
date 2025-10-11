@@ -171,7 +171,7 @@ def validate_connection(client: str, server: str, curve: str) -> None:
         soup rpc validate-connection --client python --server soup-go
         soup rpc validate-connection --client go --server /path/to/soup --curve secp384r1
     """
-    from provide.foundation import output
+    from provide.foundation import perr, pout
 
     # Detect server language
     if server in ["python", "go"]:
@@ -180,17 +180,17 @@ def validate_connection(client: str, server: str, curve: str) -> None:
     else:
         server_path = Path(server)
         if not server_path.exists():
-            output.error(f"Server binary not found: {server}")
-            output.info("Please provide a valid path to the server binary.")
+            perr(f"Server binary not found: {server}", color="red", bold=True)
+            pout("Please provide a valid path to the server binary.")
             sys.exit(1)
         server_lang = detect_server_language(server_path)
         server_path_str = str(server_path)
 
-    output.info("Validating connection compatibility...")
-    output.info(f"  Client:  {client}")
-    output.info(f"  Server:  {server_lang} ({server_path_str})")
-    output.info(f"  Curve:   {curve}")
-    output.info("")
+    pout("Validating connection compatibility...", color="cyan", bold=True)
+    pout(f"  Client:  {client}")
+    pout(f"  Server:  {server_lang} ({server_path_str})")
+    pout(f"  Curve:   {curve}")
+    pout("")
 
     errors = []
     warnings = []
@@ -198,60 +198,60 @@ def validate_connection(client: str, server: str, curve: str) -> None:
     # Check language pair compatibility
     try:
         validate_language_pair(client, server_path_str)
-        output.success(f"✓ Language pair {client} → {server_lang} is supported")
+        pout(f"✓ Language pair {client} → {server_lang} is supported", color="green")
     except LanguagePairNotSupportedError as e:
         errors.append(str(e))
-        output.error(f"✗ Language pair {client} → {server_lang} is NOT supported")
-        output.info("")
-        output.info("Supported alternatives:")
+        perr(f"✗ Language pair {client} → {server_lang} is NOT supported", color="red", bold=True)
+        pout("")
+        pout("Supported alternatives:", color="cyan")
         matrix = get_compatibility_matrix()
         for client_key, servers in matrix.items():
             for server_key, is_supported in servers.items():
                 if is_supported:
-                    output.success(f"  ✓ {client_key.capitalize()} → {server_key.capitalize()}")
+                    pout(f"  ✓ {client_key.capitalize()} → {server_key.capitalize()}", color="green")
 
     # Check curve compatibility for client
     if curve != "auto":
         try:
             validate_curve_for_runtime(curve, client)
-            output.success(f"✓ Curve {curve} is supported by {client} client")
+            pout(f"✓ Curve {curve} is supported by {client} client", color="green")
         except CurveNotSupportedError as e:
             errors.append(str(e))
-            output.error(f"✗ Curve {curve} is NOT supported by {client} client")
+            perr(f"✗ Curve {curve} is NOT supported by {client} client", color="red", bold=True)
             supported_curves = get_supported_curves(client)
-            output.info(f"Supported curves for {client}: {', '.join(supported_curves)}")
+            pout(f"Supported curves for {client}: {', '.join(supported_curves)}")
 
         # Check curve compatibility for server
         try:
             validate_curve_for_runtime(curve, server_lang)
-            output.success(f"✓ Curve {curve} is supported by {server_lang} server")
+            pout(f"✓ Curve {curve} is supported by {server_lang} server", color="green")
         except CurveNotSupportedError as e:
             errors.append(str(e))
-            output.error(f"✗ Curve {curve} is NOT supported by {server_lang} server")
+            perr(f"✗ Curve {curve} is NOT supported by {server_lang} server", color="red", bold=True)
             supported_curves = get_supported_curves(server_lang)
-            output.info(f"Supported curves for {server_lang}: {', '.join(supported_curves)}")
+            pout(f"Supported curves for {server_lang}: {', '.join(supported_curves)}")
     else:
-        output.info("ℹ  Auto curve mode - runtime will choose compatible curve")
+        pout("ℹ  Auto curve mode - runtime will choose compatible curve", color="blue")
 
     # Summary
-    output.info("")
+    pout("")
     if errors:
-        output.error("Connection validation FAILED")
-        output.info("")
-        output.info("This connection will likely fail with errors:")
+        perr("Connection validation FAILED", color="red", bold=True)
+        pout("")
+        pout("This connection will likely fail with errors:", color="yellow")
         for error in errors:
-            output.info(f"  - {error.split('.')[0]}")  # First sentence only
-        output.info("")
-        output.info("See docs/rpc-compatibility-matrix.md for details.")
+            pout(f"  - {error.split('.')[0]}")  # First sentence only
+        pout("")
+        pout("See docs/rpc-compatibility-matrix.md for details.", color="cyan")
         sys.exit(1)
     elif warnings:
-        output.warn("Connection validation passed with warnings")
+        pout("Connection validation passed with warnings", color="yellow", bold=True)
         for warning in warnings:
-            output.info(f"  ⚠  {warning}")
+            pout(f"  ⚠  {warning}", color="yellow")
         sys.exit(0)
     else:
-        output.success("Connection validation PASSED")
-        output.info("This connection should work successfully.")
+        pout("Connection validation PASSED", color="green", bold=True)
+        pout("This connection should work successfully.", color="green")
         sys.exit(0)
 
 

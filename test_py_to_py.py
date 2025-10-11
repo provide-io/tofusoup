@@ -5,6 +5,7 @@ Test Python client → Python server
 import asyncio
 import time
 from pathlib import Path
+from provide.foundation import pout, perr
 from tofusoup.rpc.client import KVClient
 
 
@@ -12,17 +13,17 @@ async def main():
     # Use the Python 'soup' command as server
     soup_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
-    print("=" * 70)
-    print("Testing: Python client → Python server")
-    print("=" * 70)
-    print()
-    print("✓ This is a SUPPORTED configuration")
-    print("  - Python → Python works with all supported curves")
-    print("  - Supported curves: secp256r1, secp384r1")
-    print()
-    print("Note: Python → Go is NOT supported (known issue in pyvider-rpcplugin)")
-    print("      Use Go → Python instead for cross-language scenarios")
-    print()
+    pout("=" * 70)
+    pout("Testing: Python client → Python server", color="cyan", bold=True)
+    pout("=" * 70)
+    pout("")
+    pout("✓ This is a SUPPORTED configuration", color="green", bold=True)
+    pout("  - Python → Python works with all supported curves")
+    pout("  - Supported curves: secp256r1, secp384r1")
+    pout("")
+    pout("Note: Python → Go is NOT supported (known issue in pyvider-rpcplugin)", color="yellow")
+    pout("      Use Go → Python instead for cross-language scenarios", color="yellow")
+    pout("")
 
     # Test with auto mode
     client = KVClient(
@@ -34,29 +35,29 @@ async def main():
     client.connection_timeout = 10
 
     try:
-        print("⏳ Connecting with curve secp384r1...")
+        pout("⏳ Connecting with curve secp384r1...", color="cyan")
         start = time.time()
         await client.start()
-        print(f"✅ Connected in {time.time() - start:.2f}s")
+        pout(f"✅ Connected in {time.time() - start:.2f}s", color="green")
 
         await client.put("test_key", b"test_value_py2py")
         result = await client.get("test_key")
-        print(f"✅ Put/Get successful: {result}")
+        pout(f"✅ Put/Get successful: {result}", color="green")
 
         await client.close()
-        print()
-        print("=" * 70)
-        print("🎉 SUCCESS! Python → Python connection works perfectly")
-        print("=" * 70)
-        print()
-        print("See docs/rpc-compatibility-matrix.md for full compatibility details")
+        pout("")
+        pout("=" * 70)
+        pout("🎉 SUCCESS! Python → Python connection works perfectly", color="green", bold=True)
+        pout("=" * 70)
+        pout("")
+        pout("See docs/rpc-compatibility-matrix.md for full compatibility details", color="cyan")
         return 0
 
     except Exception as e:
-        print()
-        print("=" * 70)
-        print(f"❌ FAIL: {type(e).__name__}: {str(e)[:200]}")
-        print("=" * 70)
+        pout("")
+        pout("=" * 70)
+        perr(f"❌ FAIL: {type(e).__name__}: {str(e)[:200]}", color="red", bold=True)
+        pout("=" * 70)
         try:
             await client.close()
         except:
