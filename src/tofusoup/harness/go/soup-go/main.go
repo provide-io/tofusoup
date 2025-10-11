@@ -218,7 +218,7 @@ func init() {
 	rpcServerCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port")
 	rpcServerCmd.Flags().StringVar(&rpcTLSMode, "tls-mode", "disabled", "TLS mode: disabled, auto, manual")
 	rpcServerCmd.Flags().StringVar(&rpcTLSKeyType, "tls-key-type", "ec", "Key type for auto TLS: 'ec' or 'rsa'")
-	rpcServerCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "auto", "Elliptic curve for EC key type: 'auto' (P-521 default), 'secp256r1', 'secp384r1', or 'secp521r1'")
+	rpcServerCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "auto", "Elliptic curve for EC key type: 'auto' (AutoMTLS P-521), 'secp256r1', 'secp384r1', 'secp521r1'")
 	rpcServerCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS)")
 	rpcServerCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS)")
 	

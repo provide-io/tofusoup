@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Python client → Go server with P-384 (secp384r1) curve on both sides
+Test Python client → Go server with secp384r1 curve on both sides
 """
 import asyncio
 import time
@@ -9,38 +9,38 @@ from tofusoup.rpc.client import KVClient
 
 
 async def main():
-    """Test Python client → Go server with P-384 curve."""
+    """Test Python client → Go server with secp384r1 curve."""
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
     print("="*70)
-    print("Test: Python Client → Go Server with P-384 Curve")
+    print("Test: Python Client → Go Server with secp384r1 Curve")
     print("="*70)
     print()
     print(f"ℹ️  Go server: {soup_go_path}")
-    print(f"ℹ️  TLS Mode: auto (AutoMTLS)")
+    print(f"ℹ️  TLS Mode: auto (mTLS with TLSProvider)")
     print(f"ℹ️  Key Type: EC")
-    print(f"ℹ️  Curve: P-384 (secp384r1)")
+    print(f"ℹ️  Curve: secp384r1")
     print()
 
     start_time = time.time()
 
-    # Create client with P-384 curve
+    # Create client with secp384r1 curve
     client = KVClient(
         server_path=str(soup_go_path),
         tls_mode="auto",
         tls_key_type="ec",
-        tls_curve="P-384"  # Force P-384 on Python client
+        tls_curve="secp384r1"  # Use secp384r1 curve
     )
 
     try:
-        print("⏳ Starting Python client with P-384 curve...")
+        print("⏳ Starting Python client with secp384r1 curve...")
         await client.start()
         print(f"✅ Client connected successfully! ({time.time() - start_time:.2f}s)")
         print()
 
         # Test Put operation
-        test_key = "test-p384-py2go"
-        test_value = b"Hello from Python client with P-384 curve!"
+        test_key = "test-secp384r1-py2go"
+        test_value = b"Hello from Python client with secp384r1 curve!"
 
         print(f"📤 PUT: key='{test_key}', value={len(test_value)} bytes")
         await client.put(test_key, test_value)
