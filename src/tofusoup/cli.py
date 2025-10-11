@@ -148,10 +148,12 @@ def entry_point() -> None:
         )
         hub.initialize_foundation(config=updated_config)
 
+        # Debug: Log key environment variables to diagnose go-plugin behavior
         logger.debug("Plugin mode detected",
                      plugin_auto_mtls=os.getenv('PLUGIN_AUTO_MTLS'),
                      magic_cookie_key=magic_cookie_key,
-                     magic_cookie_value=magic_cookie_value)
+                     magic_cookie_value=magic_cookie_value,
+                     all_plugin_env_vars={k: v for k, v in os.environ.items() if 'PLUGIN' in k})
 
         # Start the RPC server using pyvider-rpcplugin infrastructure
         import asyncio
