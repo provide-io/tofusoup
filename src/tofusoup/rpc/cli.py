@@ -4,6 +4,7 @@
 #
 import os
 import sys
+from pathlib import Path
 
 import click
 import grpc
@@ -13,6 +14,15 @@ from tofusoup.config.defaults import DEFAULT_GRPC_ADDRESS
 # Use correct relative import for generated protobuf modules.
 from ..harness.proto.kv import kv_pb2, kv_pb2_grpc
 from .server import start_kv_server
+from .validation import (
+    detect_server_language,
+    get_compatibility_matrix,
+    get_supported_curves,
+    validate_curve_for_runtime,
+    validate_language_pair,
+    CurveNotSupportedError,
+    LanguagePairNotSupportedError,
+)
 
 
 @click.group("rpc")
@@ -131,6 +141,118 @@ def server_start(tls_mode: str, tls_key_type: str, tls_curve: str, cert_file: st
         cert_file=cert_file,
         key_file=key_file,
     )
+
+
+@rpc_cli.command("validate-connection")
+@click.option(
+    "--client",
+    type=click.Choice(["python", "go"]),
+    required=True,
+    help="Client language (python or go)",
+)
+@click.option(
+    "--server",
+    required=True,
+    help="Path to server binary or language name (python/go)",
+)
+@click.option(
+    "--curve",
+    type=click.Choice(["secp256r1", "secp384r1", "secp521r1", "auto"]),
+    default="auto",
+    help="Elliptic curve to validate (default: auto)",
+)
+def validate_connection(client: str, server: str, curve: str) -> None:
+    """
+    Validate if a client-server connection is compatible.
+
+    Checks language pair compatibility and curve support before attempting connection.
+
+    Examples:
+        soup rpc validate-connection --client python --server soup-go
+        soup rpc validate-connection --client go --server /path/to/soup --curve secp384r1
+    """
+    from provide.foundation import output
+
+    # Detect server language
+    if server in ["python", "go"]:
+        server_lang = server
+        server_path_str = f"<{server} binary>"
+    else:
+        server_path = Path(server)
+        if not server_path.exists():
+            output.error(f"Server binary not found: {server}")
+            output.info("Please provide a valid path to the server binary.")
+            sys.exit(1)
+        server_lang = detect_server_language(server_path)
+        server_path_str = str(server_path)
+
+    output.info("Validating connection compatibility...")
+    output.info(f"  Client:  {client}")
+    output.info(f"  Server:  {server_lang} ({server_path_str})")
+    output.info(f"  Curve:   {curve}")
+    output.info("")
+
+    errors = []
+    warnings = []
+
+    # Check language pair compatibility
+    try:
+        validate_language_pair(client, server_path_str)
+        output.success(f"✓ Language pair {client} → {server_lang} is supported")
+    except LanguagePairNotSupportedError as e:
+        errors.append(str(e))
+        output.error(f"✗ Language pair {client} → {server_lang} is NOT supported")
+        output.info("")
+        output.info("Supported alternatives:")
+        matrix = get_compatibility_matrix()
+        for client_key, servers in matrix.items():
+            for server_key, is_supported in servers.items():
+                if is_supported:
+                    output.success(f"  ✓ {client_key.capitalize()} → {server_key.capitalize()}")
+
+    # Check curve compatibility for client
+    if curve != "auto":
+        try:
+            validate_curve_for_runtime(curve, client)
+            output.success(f"✓ Curve {curve} is supported by {client} client")
+        except CurveNotSupportedError as e:
+            errors.append(str(e))
+            output.error(f"✗ Curve {curve} is NOT supported by {client} client")
+            supported_curves = get_supported_curves(client)
+            output.info(f"Supported curves for {client}: {', '.join(supported_curves)}")
+
+        # Check curve compatibility for server
+        try:
+            validate_curve_for_runtime(curve, server_lang)
+            output.success(f"✓ Curve {curve} is supported by {server_lang} server")
+        except CurveNotSupportedError as e:
+            errors.append(str(e))
+            output.error(f"✗ Curve {curve} is NOT supported by {server_lang} server")
+            supported_curves = get_supported_curves(server_lang)
+            output.info(f"Supported curves for {server_lang}: {', '.join(supported_curves)}")
+    else:
+        output.info("ℹ  Auto curve mode - runtime will choose compatible curve")
+
+    # Summary
+    output.info("")
+    if errors:
+        output.error("Connection validation FAILED")
+        output.info("")
+        output.info("This connection will likely fail with errors:")
+        for error in errors:
+            output.info(f"  - {error.split('.')[0]}")  # First sentence only
+        output.info("")
+        output.info("See docs/rpc-compatibility-matrix.md for details.")
+        sys.exit(1)
+    elif warnings:
+        output.warn("Connection validation passed with warnings")
+        for warning in warnings:
+            output.info(f"  ⚠  {warning}")
+        sys.exit(0)
+    else:
+        output.success("Connection validation PASSED")
+        output.info("This connection should work successfully.")
+        sys.exit(0)
 
 
 # 🍲🥄🖥️🪄

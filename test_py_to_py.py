@@ -12,7 +12,16 @@ async def main():
     # Use the Python 'soup' command as server
     soup_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
-    print("Testing Python client → Python server")
+    print("=" * 70)
+    print("Testing: Python client → Python server")
+    print("=" * 70)
+    print()
+    print("✓ This is a SUPPORTED configuration")
+    print("  - Python → Python works with all supported curves")
+    print("  - Supported curves: secp256r1, secp384r1")
+    print()
+    print("Note: Python → Go is NOT supported (known issue in pyvider-rpcplugin)")
+    print("      Use Go → Python instead for cross-language scenarios")
     print()
 
     # Test with auto mode
@@ -25,7 +34,7 @@ async def main():
     client.connection_timeout = 10
 
     try:
-        print("⏳ Connecting...")
+        print("⏳ Connecting with curve secp384r1...")
         start = time.time()
         await client.start()
         print(f"✅ Connected in {time.time() - start:.2f}s")
@@ -35,11 +44,19 @@ async def main():
         print(f"✅ Put/Get successful: {result}")
 
         await client.close()
-        print(f"\n🎉 SUCCESS! Python → Python works")
+        print()
+        print("=" * 70)
+        print("🎉 SUCCESS! Python → Python connection works perfectly")
+        print("=" * 70)
+        print()
+        print("See docs/rpc-compatibility-matrix.md for full compatibility details")
         return 0
 
     except Exception as e:
-        print(f"\n❌ FAIL: {type(e).__name__}: {str(e)[:200]}")
+        print()
+        print("=" * 70)
+        print(f"❌ FAIL: {type(e).__name__}: {str(e)[:200]}")
+        print("=" * 70)
         try:
             await client.close()
         except:
