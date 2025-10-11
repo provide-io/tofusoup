@@ -114,4 +114,4 @@ async def live_updater(live_display: Live, stop_event: asyncio.Event) -> None:
     """Update the live display with current test statuses."""
     while not stop_event.is_set():
         live_display.update(generate_status_table())
-        await asyncio.sleep(1.0)  # Update every 1 second to match refresh rate
+        await asyncio.sleep(1 / 0.77)  # ~1.3 seconds to match 0.77 Hz refresh rate

@@ -18,14 +18,8 @@ from tofusoup.config.defaults import DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL, 
 
 # CRITICAL: Foundation logger uses stderr by default (good for go-plugin compatibility)
 # stdout is reserved for the plugin handshake protocol
-telemetry_config = TelemetryConfig(
-    service_name="tofusoup-cli",
-    logging=LoggingConfig(
-        default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper(),
-    ),
-)
+# NOTE: We delay Foundation initialization until entry_point() to avoid event loop conflicts in plugin mode
 hub = get_hub()
-hub.initialize_foundation(config=telemetry_config)
 
 LAZY_COMMANDS = {
     "sui": ("tofusoup.browser.cli", "sui_cli"),
@@ -128,7 +122,7 @@ def entry_point() -> None:
     If invoked with the plugin magic cookie in the environment and no arguments,
     automatically starts as an RPC plugin server (for go-plugin compatibility).
     """
-    # Check if we're being invoked as a plugin server
+    # Check if we're being invoked as a plugin server BEFORE initializing Foundation
     magic_cookie_key = os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN")
     magic_cookie_value = os.getenv(magic_cookie_key)
 
@@ -141,12 +135,13 @@ def entry_point() -> None:
     )
 
     if is_plugin_mode:
-        # Minimize logging for plugin mode (already using stderr from top of file)
-        updated_config = TelemetryConfig(
+        # Initialize Foundation for plugin mode with minimal logging
+        # Do NOT create an event loop - let asyncio.run() handle that
+        plugin_config = TelemetryConfig(
             service_name="tofusoup-plugin",
-            logging=LoggingConfig(default_level="DEBUG"),  # Debug logging for now
+            logging=LoggingConfig(default_level="ERROR"),  # Minimal logging in plugin mode
         )
-        hub.initialize_foundation(config=updated_config)
+        hub.initialize_foundation(config=plugin_config)
 
         # Debug: Log key environment variables to diagnose go-plugin behavior
         # Debug logging - also write to file for visibility
@@ -203,36 +198,32 @@ def entry_point() -> None:
             with open(debug_log_path, "a") as f:
                 f.write("About to start server.serve()\n")
 
-            # Use asyncio.run() which creates a new event loop
-            # Foundation's initialization should not create a running loop in plugin mode
+            # RPCPluginServer may have created a loop during initialization
+            # Get or create an event loop
             try:
-                logger.debug("About to call asyncio.run(server.serve())")
-                asyncio.run(server.serve())
-                logger.debug("Server.serve() completed normally")
-                with open(debug_log_path, "a") as f:
-                    f.write("Server.serve() completed normally\n")
-            except RuntimeError as e:
-                if "attached to a different loop" in str(e):
-                    # Fallback: Try getting the existing loop if asyncio.run() fails
-                    logger.warning("Event loop conflict detected, trying alternative approach", error=str(e))
-                    with open(debug_log_path, "a") as f:
-                        f.write(f"Event loop conflict: {str(e)}\n")
+                loop = asyncio.get_event_loop()
+                if loop.is_closed():
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
-                    logger.debug("Running serve() with new event loop")
-                    loop.run_until_complete(server.serve())
-                    loop.close()
-                    logger.debug("Serve() completed with fallback loop")
                     with open(debug_log_path, "a") as f:
-                        f.write("Serve() completed with fallback loop\n")
+                        f.write("Previous loop was closed, created new one\n")
                 else:
-                    logger.error("RuntimeError during serve()", error=str(e), exc_info=True)
                     with open(debug_log_path, "a") as f:
-                        f.write(f"RuntimeError: {str(e)}\n")
-                    raise
-            logger.info("Plugin server shutting down normally")
-            with open(debug_log_path, "a") as f:
-                f.write("Plugin server shutting down normally\n")
+                        f.write("Using existing event loop\n")
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                with open(debug_log_path, "a") as f:
+                    f.write("Created new event loop\n")
+
+            # Run the server
+            try:
+                loop.run_until_complete(server.serve())
+                with open(debug_log_path, "a") as f:
+                    f.write("Server.serve() completed normally\n")
+            finally:
+                loop.close()
+
             sys.exit(0)
         except KeyboardInterrupt:
             logger.info("Plugin server interrupted by user")
@@ -249,7 +240,14 @@ def entry_point() -> None:
             traceback.print_exc()
             sys.exit(1)
 
-    # Normal CLI invocation
+    # Normal CLI invocation - initialize Foundation for CLI mode
+    telemetry_config = TelemetryConfig(
+        service_name="tofusoup-cli",
+        logging=LoggingConfig(
+            default_level=os.environ.get(ENV_TOFUSOUP_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper(),
+        ),
+    )
+    hub.initialize_foundation(config=telemetry_config)
     main_cli(obj={})
 
 

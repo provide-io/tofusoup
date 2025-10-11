@@ -23,11 +23,11 @@ class KV(kv_pb2_grpc.KVServicer):
             storage_dir: Directory to store KV data files. Defaults to /tmp.
         """
         self.storage_dir = storage_dir
-        self.key_pattern = re.compile(r"^[a-zA-Z0-9.-]+$")
+        self.key_pattern = re.compile(r"^[a-zA-Z0-9._-]+$")
         logger.debug("Initialized KV servicer", storage_dir=storage_dir)
 
     def _validate_key(self, key: str) -> bool:
-        """Validate that key contains only allowed characters [a-zA-Z0-9.-]"""
+        """Validate that key contains only allowed characters [a-zA-Z0-9._-]"""
         return bool(self.key_pattern.match(key))
 
     def _get_file_path(self, key: str) -> str:
@@ -41,7 +41,7 @@ class KV(kv_pb2_grpc.KVServicer):
             logger.error("Invalid key for Get operation", key=request.key)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(
-                f'Key "{request.key}" contains invalid characters, only [a-zA-Z0-9.-] are allowed'
+                f'Key "{request.key}" contains invalid characters, only [a-zA-Z0-9._-] are allowed'
             )
             return kv_pb2.GetResponse()
 
@@ -59,7 +59,7 @@ class KV(kv_pb2_grpc.KVServicer):
             )
             return kv_pb2.GetResponse(value=value)
         except FileNotFoundError:
-            logger.warn("Key not found during Get operation", key=request.key, file=file_path)
+            logger.warning("Key not found during Get operation", key=request.key, file=file_path)
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Key not found: {request.key}")
             return kv_pb2.GetResponse()
@@ -81,7 +81,7 @@ class KV(kv_pb2_grpc.KVServicer):
             logger.error("Invalid key for Put operation", key=request.key)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(
-                f'Key "{request.key}" contains invalid characters, only [a-zA-Z0-9.-] are allowed'
+                f'Key "{request.key}" contains invalid characters, only [a-zA-Z0-9._-] are allowed'
             )
             return kv_pb2.Empty()
 
