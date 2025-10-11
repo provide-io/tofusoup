@@ -66,6 +66,10 @@ class KVClient:
         go_server_expected_cookie_value = "hello"
         go_server_protocol_version = "1"
 
+        # Note: Don't set PLUGIN_AUTO_MTLS when using TLSProvider (specific curve)
+        # AutoMTLS and TLSProvider are mutually exclusive in go-plugin
+        use_auto_mtls = self.enable_mtls and (self.tls_curve == "auto" or not self.tls_curve)
+
         self.subprocess_env = {
             "PLUGIN_MAGIC_COOKIE_KEY": go_server_expected_cookie_key,
             go_server_expected_cookie_key: go_server_expected_cookie_value,
@@ -73,7 +77,7 @@ class KVClient:
             "LOG_LEVEL": os.getenv("LOG_LEVEL", logger.level.name if hasattr(logger, "level") else "INFO"),  # type: ignore
             "PYTHONUNBUFFERED": "1",
             "GODEBUG": os.getenv("GODEBUG", "asyncpreemptoff=1,panicasync=1"),
-            "PLUGIN_AUTO_MTLS": "true" if self.enable_mtls else "false",
+            "PLUGIN_AUTO_MTLS": "true" if use_auto_mtls else "false",
         }
 
         # Map TLS key type to legacy environment variables if needed
