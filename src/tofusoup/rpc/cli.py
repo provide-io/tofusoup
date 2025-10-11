@@ -68,9 +68,15 @@ def kv_get(address: str, key: str) -> None:
     default="ec",
     help="Key type for auto TLS: 'ec' or 'rsa'",
 )
+@click.option(
+    "--tls-curve",
+    type=click.Choice(["secp256r1", "secp384r1", "secp521r1"]),
+    default="secp384r1",
+    help="Elliptic curve for EC key type: 'secp256r1', 'secp384r1', or 'secp521r1'",
+)
 @click.option("--cert-file", help="Path to certificate file (required for manual TLS)")
 @click.option("--key-file", help="Path to private key file (required for manual TLS)")
-def server_start(tls_mode: str, tls_key_type: str, cert_file: str | None, key_file: str | None) -> None:
+def server_start(tls_mode: str, tls_key_type: str, tls_curve: str, cert_file: str | None, key_file: str | None) -> None:
     """Starts the KV plugin server."""
     from provide.foundation import logger
 
@@ -112,6 +118,7 @@ def server_start(tls_mode: str, tls_key_type: str, cert_file: str | None, key_fi
         "Starting KV plugin server...",
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
+        tls_curve=tls_curve,
         cert_file=cert_file,
         key_file=key_file,
     )
@@ -120,6 +127,7 @@ def server_start(tls_mode: str, tls_key_type: str, cert_file: str | None, key_fi
     start_kv_server(
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
+        tls_curve=tls_curve,
         cert_file=cert_file,
         key_file=key_file,
     )

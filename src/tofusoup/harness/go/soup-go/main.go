@@ -78,6 +78,7 @@ var (
 	rpcPort       int
 	rpcTLSMode    string
 	rpcTLSKeyType string
+	rpcTLSCurve   string
 	rpcCertFile   string
 	rpcKeyFile    string
 )
@@ -90,11 +91,12 @@ var rpcServerCmd = &cobra.Command{
 			"port", rpcPort,
 			"tls_mode", rpcTLSMode,
 			"tls_key_type", rpcTLSKeyType,
+			"tls_curve", rpcTLSCurve,
 			"cert_file", rpcCertFile,
 			"key_file", rpcKeyFile,
 			"log_level", logLevel)
 
-		if err := startRPCServer(logger, rpcPort, rpcTLSMode, rpcTLSKeyType, rpcCertFile, rpcKeyFile); err != nil {
+		if err := startRPCServer(logger, rpcPort, rpcTLSMode, rpcTLSKeyType, rpcTLSCurve, rpcCertFile, rpcKeyFile); err != nil {
 			logger.Error("RPC server failed", "error", err)
 			os.Exit(1)
 		}
@@ -216,6 +218,7 @@ func init() {
 	rpcServerCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port")
 	rpcServerCmd.Flags().StringVar(&rpcTLSMode, "tls-mode", "disabled", "TLS mode: disabled, auto, manual")
 	rpcServerCmd.Flags().StringVar(&rpcTLSKeyType, "tls-key-type", "ec", "Key type for auto TLS: 'ec' or 'rsa'")
+	rpcServerCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "secp384r1", "Elliptic curve for EC key type: 'secp256r1', 'secp384r1', or 'secp521r1'")
 	rpcServerCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS)")
 	rpcServerCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS)")
 	
