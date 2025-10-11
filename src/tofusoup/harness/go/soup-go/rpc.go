@@ -1,7 +1,16 @@
 package main
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/tls"
 	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"fmt"
+	"math/big"
+	"net"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -16,6 +25,125 @@ import (
 	"google.golang.org/grpc"
 )
 
+// getCurve returns the elliptic curve for the given curve name
+func getCurve(curveName string) (elliptic.Curve, error) {
+	switch strings.ToLower(curveName) {
+	case "secp256r1", "p-256", "p256":
+		return elliptic.P256(), nil
+	case "secp384r1", "p-384", "p384":
+		return elliptic.P384(), nil
+	case "secp521r1", "p-521", "p521":
+		return elliptic.P521(), nil
+	default:
+		return nil, fmt.Errorf("unsupported curve: %s", curveName)
+	}
+}
+
+// generateCertWithCurve generates a self-signed certificate using the specified elliptic curve
+func generateCertWithCurve(logger hclog.Logger, curveName string) ([]byte, []byte, error) {
+	curve, err := getCurve(curveName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	logger.Debug("Generating certificate", "curve", curveName)
+
+	// Generate private key
+	priv, err := ecdsa.GenerateKey(curve, rand.Reader)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to generate private key: %w", err)
+	}
+
+	// Generate serial number
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to generate serial number: %w", err)
+	}
+
+	// Create certificate template
+	template := &x509.Certificate{
+		SerialNumber: serialNumber,
+		Subject: pkix.Name{
+			CommonName:   "tofusoup.rpc.server",
+			Organization: []string{"TofuSoup"},
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(365 * 24 * time.Hour),
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth},
+		BasicConstraintsValid: true,
+		DNSNames:              []string{"localhost"},
+		IPAddresses:           []net.IP{net.ParseIP("127.0.0.1")},
+	}
+
+	// Create self-signed certificate
+	certDER, err := x509.CreateCertificate(rand.Reader, template, template, &priv.PublicKey, priv)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create certificate: %w", err)
+	}
+
+	// Encode certificate to PEM
+	certPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: certDER,
+	})
+
+	// Encode private key to PEM
+	privBytes, err := x509.MarshalECPrivateKey(priv)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to marshal private key: %w", err)
+	}
+
+	keyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "EC PRIVATE KEY",
+		Bytes: privBytes,
+	})
+
+	logger.Info("Certificate generated successfully", "curve", curveName)
+	return certPEM, keyPEM, nil
+}
+
+// createTLSProvider creates a TLS provider function for go-plugin with configurable curve
+func createTLSProvider(logger hclog.Logger, curveName string) func() (*tls.Config, error) {
+	return func() (*tls.Config, error) {
+		logger.Debug("TLSProvider called, generating certificate", "curve", curveName)
+
+		certPEM, keyPEM, err := generateCertWithCurve(logger, curveName)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate certificate: %w", err)
+		}
+
+		// Load the certificate and key
+		cert, err := tls.X509KeyPair(certPEM, keyPEM)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load certificate: %w", err)
+		}
+
+		// Read client certificate from environment (go-plugin AutoMTLS pattern)
+		clientCertPEM := os.Getenv("PLUGIN_CLIENT_CERT")
+
+		tlsConfig := &tls.Config{
+			Certificates: []tls.Certificate{cert},
+			MinVersion:   tls.VersionTLS12,
+		}
+
+		// If client certificate is provided, configure mTLS
+		if clientCertPEM != "" {
+			logger.Debug("Client certificate found, configuring mTLS")
+			certPool := x509.NewCertPool()
+			if !certPool.AppendCertsFromPEM([]byte(clientCertPEM)) {
+				return nil, fmt.Errorf("failed to parse client certificate")
+			}
+			tlsConfig.ClientCAs = certPool
+			tlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
+		}
+
+		logger.Info("TLS configuration created successfully", "curve", curveName, "mtls", clientCertPEM != "")
+		return tlsConfig, nil
+	}
+}
+
 func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve, certFile, keyFile string) error {
 	logger.Info("🗄️✨ starting RPC plugin server",
 		"port", port,
@@ -25,40 +153,6 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 		"cert_file", certFile,
 		"key_file", keyFile,
 		"log_level", logger.GetLevel())
-
-	// Determine if AutoMTLS is enabled
-	autoMTLS := true // Default to true
-	autoMTLSValue := os.Getenv("PLUGIN_AUTO_MTLS")
-	if autoMTLSValue != "" {
-		autoMTLS, _ = strconv.ParseBool(strings.ToLower(autoMTLSValue))
-	}
-
-	if autoMTLS {
-		logger.Info("📡🔐 AutoMTLS is enabled. Proceeding with TLS setup...")
-
-		// Load and parse certificate from the environment variable
-		certPEM := os.Getenv("PLUGIN_CLIENT_CERT")
-		if certPEM == "" {
-			logger.Error("📡❌ Certificate not found in PLUGIN_CLIENT_CERT")
-			return nil
-		}
-
-		// Display certificate details
-		logger.Info("🔌🔐 Client Certificate Details:")
-		if err := decodeAndLogCertificate(certPEM, logger); err != nil {
-			return err
-		}
-
-		// Create TLS configuration
-		certPool := x509.NewCertPool()
-		if !certPool.AppendCertsFromPEM([]byte(certPEM)) {
-			logger.Error("📡❌ Failed to append certificate to trust pool")
-			return nil
-		}
-
-	} else {
-		logger.Info("📡🚫 AutoMTLS is disabled. Skipping TLS setup.")
-	}
 
 	// Create shutdown channel
 	shutdown := make(chan os.Signal, 1)
@@ -71,6 +165,7 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 	}
 	kv := NewKVImpl(logger.Named("kv"), storageDir)
 
+	// Configure TLS based on mode and curve
 	config := &plugin.ServeConfig{
 		HandshakeConfig: Handshake,
 		VersionedPlugins: map[int]plugin.PluginSet{
@@ -82,11 +177,27 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 		},
 		Logger: logger,
 		GRPCServer: func(opts []grpc.ServerOption) *grpc.Server {
-			if autoMTLS {
-				logger.Info("🔐⛓️‍💥✅ AutoMTLS support is enabled.")
-			}
 			return grpc.NewServer(opts...)
 		},
+	}
+
+	// Determine TLS configuration strategy:
+	// - If curve is "auto" or empty: use go-plugin's built-in AutoMTLS (P-521)
+	// - If curve is specified: use TLSProvider with that curve
+	useAutoMTLS := tlsCurve == "" || strings.ToLower(tlsCurve) == "auto"
+
+	if useAutoMTLS {
+		logger.Info("🔐 Using AutoMTLS (go-plugin default, P-521 curve)")
+		// Don't set TLSProvider - let go-plugin handle it automatically
+		// This will use go-plugin's built-in AutoMTLS with P-521 curve
+	} else if tlsKeyType == "ec" {
+		logger.Info("🔐 Using TLSProvider with specific elliptic curve", "curve", tlsCurve)
+		config.TLSProvider = createTLSProvider(logger, tlsCurve)
+	} else {
+		// For now, we only support EC curves with TLSProvider
+		// RSA support could be added later
+		logger.Warn("⚠️  Only EC key type is supported with TLSProvider, falling back to AutoMTLS")
+		// Note: AutoMTLS will use go-plugin's default P-521 curve
 	}
 
 	// Start serving in a goroutine
