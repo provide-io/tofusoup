@@ -32,7 +32,8 @@
       "Bash(source env.sh)",
       "Bash(uv pip install:*)",
       "Bash(test:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(LOG_LEVEL=DEBUG python3:*)"
     ],
     "deny": [],
     "ask": [],
