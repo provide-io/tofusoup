@@ -72,18 +72,19 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
         console.print(f"🤷 No directories found in '{base_dir}'.")
         return
 
-    console.print("[bold]🚀 Tofusoup Stir[/bold]")
-    console.print(
-        f"Found {len(test_dirs)} test suites in '{base_dir}'. Running up to {MAX_CONCURRENT_TESTS} in parallel..."
-    )
-    console.print()  # Empty line for spacing
-
     # Initialize test directories for status tracking
     initialize_tests(test_dirs)
 
-    # Start live display with reduced refresh rate to prevent flickering
+    # Start live display with optimal refresh rate for smooth updates without flickering
+    # Banner and info will be shown in the live display context to avoid conflicts
     stop_event = asyncio.Event()
-    with Live(generate_status_table(), console=console, refresh_per_second=1) as live_display:
+    with Live(generate_status_table(), console=console, refresh_per_second=0.77) as live_display:
+        # Show banner once inside live context (won't conflict with table updates)
+        console.print("[bold]🚀 Tofusoup Stir[/bold]")
+        console.print(
+            f"Found {len(test_dirs)} test suites in '{base_dir}'. Running up to {MAX_CONCURRENT_TESTS} in parallel..."
+        )
+        console.print()  # Empty line for spacing
         # Start the live updater task
         updater_task = asyncio.create_task(live_updater(live_display, stop_event))
 
