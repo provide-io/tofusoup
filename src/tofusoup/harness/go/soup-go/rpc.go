@@ -20,6 +20,7 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	"google.golang.org/grpc"
 )
 
 // getCurve returns the elliptic curve for the given curve name
@@ -173,7 +174,11 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 			},
 		},
 		Logger: logger,
-		// Don't set GRPCServer - let go-plugin handle it with TLSProvider
+		// GRPCServer creates the gRPC server - go-plugin will apply TLS if TLSProvider is set
+		GRPCServer: func(opts []grpc.ServerOption) *grpc.Server {
+			logger.Debug("🔐 Creating gRPC server with options", "num_opts", len(opts))
+			return grpc.NewServer(opts...)
+		},
 	}
 
 	// Determine TLS configuration strategy based on tlsMode and tlsCurve:
