@@ -48,11 +48,31 @@ async def _process_log_file(log_path: Path, process: asyncio.subprocess.Process,
                 await asyncio.sleep(0.1)
 
 
-def _should_filter_message(message: str, level: str) -> bool:
-    """Determine if a log message should be filtered out (not shown to user)."""
+def _should_filter_message(message: str, level: str, module: str | None = None) -> bool:
+    """
+    Determine if a log message should be filtered out (not shown to user).
+
+    Args:
+        message: The log message content
+        level: Log level (trace, debug, info, warn, error)
+        module: Source module (e.g. "provider", "provider.terraform-provider-pyvider")
+    """
     # Filter out trace and debug messages entirely
     if level in ("trace", "debug"):
         return True
+
+    # Filter provider-internal messages by module
+    if module and "provider" in module:
+        # Provider-specific noise patterns
+        provider_noise = [
+            "Creating new self-signed",
+            "Creating Unix socket at",
+            "No existing schema future found",
+            "Provider server has shut down gracefully",
+            "Reading environment variables",
+        ]
+        if any(pattern in message for pattern in provider_noise):
+            return True
 
     # Filter out internal protocol noise
     noise_patterns = [
@@ -120,8 +140,35 @@ def _extract_apply_complete(message: str) -> str | None:
     return None
 
 
-def _extract_semantic_message(message: str, level: str) -> str | None:
-    """Extract human-readable semantic meaning from Terraform log messages."""
+def _format_error_message(level: str, error_field: str | None, message: str) -> str:
+    """Format error/warning messages using structured error field when available."""
+    if error_field:
+        # Use structured error if available (cleaner than message)
+        return f"{level.upper()}: {error_field[:80]}"
+    else:
+        # Fall back to truncated message
+        return message[:100]
+
+
+def _extract_semantic_message(
+    message: str, level: str, error_field: str | None = None, module: str | None = None
+) -> str | None:
+    """
+    Extract human-readable semantic meaning from Terraform log messages.
+
+    Args:
+        message: The log message content
+        level: Log level (trace, debug, info, warn, error)
+        error_field: Structured error information if available
+        module: Source module
+
+    Returns:
+        Human-readable message or None if message should be skipped
+    """
+    # Errors and warnings with structured error field take precedence
+    if level in ("error", "warn"):
+        return _format_error_message(level, error_field, message)
+
     # Resource operations
     if "Creating..." in message or "Creating resource" in message:
         return _extract_resource_operation(message, "Creating")
@@ -142,10 +189,6 @@ def _extract_semantic_message(message: str, level: str) -> str | None:
     # Plan/Apply completion
     if "Apply complete!" in message:
         return _extract_apply_complete(message)
-
-    # Errors and warnings are always shown
-    if level in ("error", "warn"):
-        return message[:100]  # Truncate long error messages
 
     # Info messages that provide value
     valuable_info_patterns = [
@@ -170,18 +213,21 @@ def _process_log_line(line: str, dir_name: str) -> None:
         log_entry = json.loads(line)
         level = log_entry.get("@level", "info")
         message = log_entry.get("@message", "")
+        module = log_entry.get("@module")  # Extract module field
+        error_field = log_entry.get("error")  # Extract structured error field
+        # Note: @timestamp available in log_entry for future timing analysis
 
         if not message:
             return
 
-        # Filter out noise
-        if _should_filter_message(message, level):
+        # Filter out noise (now with module awareness)
+        if _should_filter_message(message, level, module):
             # Still track function counts even if we don't show the message
             _update_function_counts(message, dir_name)
             return
 
-        # Extract semantic meaning
-        semantic_message = _extract_semantic_message(message, level)
+        # Extract semantic meaning (now with error field and module)
+        semantic_message = _extract_semantic_message(message, level, error_field, module)
 
         if semantic_message:
             # Debouncing: Only update display if enough time has passed
