@@ -16,6 +16,11 @@ from tofusoup.config.defaults import (
     ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH,
     REQUEST_TIMEOUT,
 )
+from tofusoup.rpc.validation import (
+    validate_curve_for_runtime,
+    validate_language_pair,
+    detect_server_language,
+)
 
 # Optional RPC integration
 try:
@@ -54,6 +59,21 @@ class KVClient:
         self.server_path = server_path
         self.cert_file = cert_file
         self.key_file = key_file
+
+        # Validate language pair compatibility (Python client → server)
+        try:
+            validate_language_pair("python", server_path)
+        except Exception as e:
+            logger.warning("Language pair validation warning", error=str(e))
+            # Don't fail in __init__, just warn
+
+        # Validate curve support
+        if tls_key_type == "ec" and tls_curve not in ["auto", ""]:
+            try:
+                validate_curve_for_runtime(tls_curve, "python")
+            except Exception as e:
+                logger.warning("Curve validation warning", error=str(e))
+                # Don't fail in __init__, just warn
         self._client: RPCPluginClient | None = None
         self._stub: kv_pb2_grpc.KVStub | None = None
         self.is_started = False
