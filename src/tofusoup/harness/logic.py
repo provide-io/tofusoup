@@ -7,6 +7,7 @@ import subprocess
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.process import run as run_command
 
 from tofusoup.common.exceptions import TofuSoupError
 
@@ -87,21 +88,23 @@ def ensure_go_harness_build(
     env.update(env_vars)
 
     try:
-        subprocess.run(
+        result = run_command(
             cmd,
-            check=True,
             cwd=harness_source_path,
             env=env,
             capture_output=True,
             text=True,
+            check=True,
         )
         logger.info(f"Successfully built Go harness '{harness_name}' to {output_path}")
         return output_path
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Go build failed for '{harness_name}': {e.stderr}")
-        raise HarnessBuildError(f"Failed to build Go harness '{harness_name}': {e.stderr}") from e
-    except FileNotFoundError:
-        raise GoVersionError("Go executable not found. Please ensure Go is installed and in your PATH.")
+    except Exception as e:
+        # Foundation's run() raises ProcessError, but we want to maintain our custom exceptions
+        error_msg = str(e)
+        if "not found" in error_msg.lower() or "executable" in error_msg.lower():
+            raise GoVersionError("Go executable not found. Please ensure Go is installed and in your PATH.") from e
+        logger.error(f"Go build failed for '{harness_name}': {error_msg}")
+        raise HarnessBuildError(f"Failed to build Go harness '{harness_name}': {error_msg}") from e
 
 
 def clean_go_harness_artifacts(harness_name: str, project_root: pathlib.Path) -> None:
