@@ -13,6 +13,7 @@ import sys
 
 import click
 from provide.foundation import logger
+from provide.foundation.process import run as run_command
 from rich.console import Console
 from rich.table import Table
 
@@ -163,7 +164,7 @@ def client_cmd(
         elif language == "java":
             cmd = ["java", "-jar", *cmd]
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = run_command(cmd, capture_output=True, text=True, check=False)
         if result.stdout:
             console.print(result.stdout.strip())
         if result.stderr and result.returncode != 0:
