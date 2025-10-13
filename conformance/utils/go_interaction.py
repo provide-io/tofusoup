@@ -33,7 +33,7 @@ def tfwire_go_encode(
         project_root=project_root,
         harness_artifact_name="go-wire-harness",
         test_id=test_id,
-        stdin_content=input_json_str,
+        stdin_input=input_json_str,
     )
 
     if exit_code != 0:
