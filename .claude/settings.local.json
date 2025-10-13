@@ -33,7 +33,8 @@
       "Bash(uv pip install:*)",
       "Bash(test:*)",
       "WebFetch(domain:github.com)",
-      "Bash(LOG_LEVEL=DEBUG python3:*)"
+      "Bash(LOG_LEVEL=DEBUG python3:*)",
+      "Bash(pytest:*)"
     ],
     "deny": [],
     "ask": [],
