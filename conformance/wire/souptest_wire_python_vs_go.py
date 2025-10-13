@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 
 from tofusoup.common.exceptions import ConversionError
-from tofusoup.wire.logic import encode_value_to_tfwire  # type: ignore
 
 from ..utils.go_interaction import tfwire_go_encode
 
@@ -29,6 +28,8 @@ BIT_FOR_BIT_VECTORS = [
 def test_python_and_go_encoders_are_identical(
     test_name: str, payload: dict, go_harness_executable: Path, project_root: Path
 ):
+    from tofusoup.wire.logic import encode_value_to_tfwire  # type: ignore
+
     try:
         py_b64_msgpack_str = encode_value_to_tfwire(payload)
         py_msgpack_bytes = base64.b64decode(py_b64_msgpack_str)

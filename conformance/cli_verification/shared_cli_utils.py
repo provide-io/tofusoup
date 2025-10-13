@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys
 
-from provide.testkit.harness import HarnessRunner
+from provide.testkit import HarnessRunner
 
 
 def run_harness_cli(
