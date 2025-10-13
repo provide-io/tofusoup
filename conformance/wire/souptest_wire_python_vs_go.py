@@ -1,13 +1,30 @@
 import base64
 from pathlib import Path
+from typing import Any
 
 import pytest
+from pyvider.cty.codec import cty_to_msgpack
+from pyvider.cty.parser import parse_tf_type_to_ctytype
 
 from tofusoup.common.exceptions import ConversionError
 
 from ..utils.go_interaction import tfwire_go_encode
 
-pytest.skip("Wire encoding functions not yet implemented", allow_module_level=True)
+
+def encode_value_to_tfwire(payload: dict[str, Any]) -> str:
+    """
+    Encode a value to TF wire format using pyvider-cty.
+
+    Args:
+        payload: Dict with 'type' and 'value' keys
+
+    Returns:
+        Base64-encoded msgpack bytes
+    """
+    cty_type = parse_tf_type_to_ctytype(payload["type"])
+    cty_value = cty_type.validate(payload["value"])
+    msgpack_bytes = cty_to_msgpack(cty_value, cty_type)
+    return base64.b64encode(msgpack_bytes).decode("utf-8")
 
 BIT_FOR_BIT_VECTORS = [
     ("simple_string", {"type": "string", "value": "hello"}),
@@ -28,8 +45,6 @@ BIT_FOR_BIT_VECTORS = [
 def test_python_and_go_encoders_are_identical(
     test_name: str, payload: dict, go_harness_executable: Path, project_root: Path
 ):
-    from tofusoup.wire.logic import encode_value_to_tfwire  # type: ignore
-
     try:
         py_b64_msgpack_str = encode_value_to_tfwire(payload)
         py_msgpack_bytes = base64.b64decode(py_b64_msgpack_str)
