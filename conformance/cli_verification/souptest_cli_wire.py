@@ -35,7 +35,7 @@ def test_wire_cli_encode_simple_string(
     input_json_str = json.dumps({"type": "string", "value": "test"})
 
     # Use HarnessRunner directly to get binary output
-    from provide.testkit.harness import HarnessRunner
+    from provide.testkit import HarnessRunner
 
     runner = HarnessRunner(project_root / "soup" / "output")
     exit_code, stdout_bytes, stderr_bytes = runner.run_binary(
