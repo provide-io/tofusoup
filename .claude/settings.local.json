@@ -34,7 +34,8 @@
       "Bash(test:*)",
       "WebFetch(domain:github.com)",
       "Bash(LOG_LEVEL=DEBUG python3:*)",
-      "Bash(pytest:*)"
+      "Bash(pytest:*)",
+      "Bash(./bin/soup-go:*)"
     ],
     "deny": [],
     "ask": [],
