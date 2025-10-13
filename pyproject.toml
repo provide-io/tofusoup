@@ -52,7 +52,9 @@ hcl = [
 ]
 rpc = [
     "pyvider-rpcplugin>=0.0.112",
-    "grpcio-tools>=1.60.0",
+]
+test-rpc = [
+    "pyvider-rpcplugin[test]",
 ]
 all = [
     "tofusoup[cty,hcl,rpc]",
@@ -60,7 +62,8 @@ all = [
 
 [dependency-groups]
 dev = [
-    "provide-testkit[all]",
+    "provide-testkit[standard,advanced-testing,build]",
+    "tofusoup[test-rpc]",
 ]
 docs = [
     "provide-testkit[docs]",
