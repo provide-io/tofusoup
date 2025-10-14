@@ -50,7 +50,12 @@ def test_wire_cli_encode_simple_string(
     # Decode the MessagePack to verify the content (order doesn't matter for maps)
     import msgpack
 
-    decoded_data = msgpack.unpackb(stdout_bytes, raw=False)
+    # Handle potential trailing newline or whitespace from CLI output
+    # Use strict=False to get the unpacked data and remaining bytes
+    unpacker = msgpack.Unpacker(raw=False)
+    unpacker.feed(stdout_bytes)
+    decoded_data = next(unpacker)
+
     expected_data = {"type": "string", "value": "test"}
     assert decoded_data == expected_data
 
