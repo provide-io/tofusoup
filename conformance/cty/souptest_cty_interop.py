@@ -56,11 +56,15 @@ def _cty_value_to_json_compatible_value(cty_value: CtyValue) -> Any:
     # For other types, _convert_value_to_serializable should return a JSON-compatible type
     serializable_data = _convert_value_to_serializable(cty_value, cty_value.type)
 
+    # Handle bytes conversion to string for JSON compatibility (large integers are encoded as bytes)
+    if isinstance(serializable_data, bytes):
+        return serializable_data.decode("utf-8")
+
     # Handle Decimal conversion to string for JSON compatibility
     if isinstance(serializable_data, Decimal):
         return str(serializable_data)
 
-    # Recursively handle lists and dicts to ensure all nested Decimals are converted
+    # Recursively handle lists and dicts to ensure all nested Decimals/bytes are converted
     if isinstance(serializable_data, dict):
         return {
             k: _cty_value_to_json_compatible_value(v) if isinstance(v, CtyValue) else v
