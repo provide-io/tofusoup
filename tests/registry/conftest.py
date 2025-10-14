@@ -33,11 +33,9 @@ def sample_provider():
         id="hashicorp/aws",
         namespace="hashicorp",
         name="aws",
-        alias="aws",
-        tag="provider",
         description="AWS Provider",
-        downloads=1000000,
-        source="https://github.com/hashicorp/terraform-provider-aws",
+        source_url="https://github.com/hashicorp/terraform-provider-aws",
+        tier="official",
     )
 
 
@@ -73,6 +71,43 @@ def sample_module_versions():
         ModuleVersion(version="6.0.0", published_at="2024-01-10"),
         ModuleVersion(version="5.9.0", published_at="2023-12-20"),
     ]
+
+
+@pytest.fixture
+def mock_provider_details(sample_provider):
+    """Create mock provider details dict for testing."""
+    return {
+        "namespace": sample_provider.namespace,
+        "name": sample_provider.name,
+        "description": sample_provider.description,
+        "source": sample_provider.source_url,
+        "download_count": 1000000,
+    }
+
+
+@pytest.fixture
+def mock_module_details(sample_module):
+    """Create mock module details dict for testing."""
+    return {
+        "namespace": sample_module.namespace,
+        "name": sample_module.name,
+        "provider": sample_module.provider_name,
+        "description": sample_module.description,
+        "source": sample_module.source_url,
+        "download_count": 500000,
+    }
+
+
+@pytest.fixture
+def mock_provider_versions(sample_provider_versions):
+    """Alias for sample_provider_versions for backwards compatibility."""
+    return sample_provider_versions
+
+
+@pytest.fixture
+def mock_module_versions(sample_module_versions):
+    """Alias for sample_module_versions for backwards compatibility."""
+    return sample_module_versions
 
 
 # 🍲🥄🧪🪄
