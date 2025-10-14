@@ -146,6 +146,15 @@ func initWireDecodeCmd() *cobra.Command {
 				return fmt.Errorf("failed to read input: %w", err)
 			}
 
+			// If input looks like base64 (no binary bytes), try to decode it
+			// This handles the case where encode outputs base64 to stdout
+			if wireInputFormat == "msgpack" && inputPath == "-" {
+				// Try to decode as base64 if it looks like text
+				if decoded, err := base64.StdEncoding.DecodeString(string(inputData)); err == nil {
+					inputData = decoded
+				}
+			}
+
 			var outputData []byte
 
 			// If a type is specified, use CTY decoding
