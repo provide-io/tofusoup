@@ -14,15 +14,15 @@ import (
 	ctymsgpack "github.com/zclconf/go-cty/cty/msgpack"
 )
 
-// Wire command flags
-var (
-	wireInputFormat  string
-	wireOutputFormat string
-	wireTypeJSON     string
-)
-
 // Override the encode command with real implementation
 func initWireEncodeCmd() *cobra.Command {
+	// Local flags for this command only
+	var (
+		wireInputFormat  string
+		wireOutputFormat string
+		wireTypeJSON     string
+	)
+
 	cmd := &cobra.Command{
 		Use:   "encode [input] [output]",
 		Short: "Encode data to wire format",
@@ -116,6 +116,13 @@ func initWireEncodeCmd() *cobra.Command {
 
 // Override the decode command with real implementation
 func initWireDecodeCmd() *cobra.Command {
+	// Local flags for this command only
+	var (
+		wireInputFormat  string
+		wireOutputFormat string
+		wireTypeJSON     string
+	)
+
 	cmd := &cobra.Command{
 		Use:   "decode [input] [output]",
 		Short: "Decode data from wire format",
