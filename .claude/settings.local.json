@@ -36,7 +36,8 @@
       "Bash(LOG_LEVEL=DEBUG python3:*)",
       "Bash(pytest:*)",
       "Bash(./bin/soup-go:*)",
-      "Bash(xxd:*)"
+      "Bash(xxd:*)",
+      "Bash(LOG_LEVEL=DEBUG echo:*)"
     ],
     "deny": [],
     "ask": [],
