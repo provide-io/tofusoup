@@ -20,20 +20,21 @@ def tfwire_go_encode(
     test_id: str = "tfwire_encode_test",
 ) -> bytes:
     """Encodes a value using the go-wire harness."""
-    payload = {"type": cty_type_json, "value": cty_value_json}
-    # THE FIX: Use the imported, correct encoder class.
-    input_json_str = json.dumps(payload, cls=DecimalAwareJSONEncoder)
+    # Encode the type specification as JSON
+    type_json_str = json.dumps(cty_type_json, cls=DecimalAwareJSONEncoder)
+    # Encode just the value as JSON (not the entire payload)
+    value_json_str = json.dumps(cty_value_json, cls=DecimalAwareJSONEncoder)
 
     if not project_root:
         project_root = Path.cwd()
 
     exit_code, stdout, stderr = run_harness_cli(
         executable=harness_executable_path,
-        args=["wire", "encode", "-"],
+        args=["wire", "encode", "-", "--type", type_json_str],
         project_root=project_root,
         harness_artifact_name="go-wire-harness",
         test_id=test_id,
-        stdin_input=input_json_str,
+        stdin_input=value_json_str,
     )
 
     if exit_code != 0:
