@@ -237,20 +237,27 @@ class KVClient:
             logger.debug(f"Starting RPCPluginClient (pyvider), timeout={self.connection_timeout}s")
             await asyncio.wait_for(self._client.start(), timeout=self.connection_timeout)
 
-            if self._client._process and self._client._process.stderr:
+            # Check if stderr relay is available (ManagedProcess may not expose stderr attribute)
+            if self._client._process and hasattr(self._client._process, 'stderr') and self._client._process.stderr:
                 self._relay_stderr()
 
             self._stub = kv_pb2_grpc.KVStub(self._client.grpc_channel)
             self.is_started = True
+
+            # Safely get PID from process (may be wrapped in ManagedProcess)
+            pid = getattr(self._client._process, 'pid', 'N/A') if self._client._process else 'N/A'
             logger.info(
-                f"KVClient connected to server in {time.time() - start_time:.3f}s. Server PID: {self._client._process.pid if self._client._process else 'N/A'}"
+                f"KVClient connected to server in {time.time() - start_time:.3f}s. Server PID: {pid}"
             )
 
         except TimeoutError as e:
             elapsed = time.time() - start_time
             logger.error(f"KVClient connection to server timed out after {elapsed:.3f}s")
-            if self._client and self._client._process and self._client._process.poll() is None:
-                logger.debug("Server process was still running after client timeout.")
+            # Safely check if process is still running (ManagedProcess may not have poll())
+            if self._client and self._client._process:
+                poll_result = getattr(self._client._process, 'poll', lambda: None)()
+                if poll_result is None or (hasattr(self._client._process, 'returncode') and self._client._process.returncode is None):
+                    logger.debug("Server process was still running after client timeout.")
             self.is_started = False
 
             # Check if this is a Python → Go connection (known incompatibility)
@@ -341,7 +348,13 @@ class KVClient:
             logger.debug("KVClient closing connection...")
             self.is_started = False
             try:
-                if self._client._process and self._client._process.returncode is None:
+                # Safely check if process is still running (ManagedProcess may not expose returncode directly)
+                process_running = False
+                if self._client._process:
+                    returncode = getattr(self._client._process, 'returncode', None)
+                    process_running = returncode is None
+
+                if process_running:
                     if hasattr(self._client, "close") and asyncio.iscoroutinefunction(self._client.close):
                         await self._client.close()
                     elif hasattr(self._client, "close"):

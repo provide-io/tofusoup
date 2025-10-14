@@ -119,7 +119,8 @@ def test_go_to_go_connection():
 
     # Check if test passed
     assert result.returncode == 0, f"Go→Go test failed: {result.stderr}"
-    assert "completed successfully" in result.stdout, "Go→Go test did not complete successfully"
+    # The Go binary writes success messages to stderr, not stdout
+    assert "completed successfully" in result.stderr, "Go→Go test did not complete successfully"
 
 
 def test_known_unsupported_combinations():

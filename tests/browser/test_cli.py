@@ -8,7 +8,7 @@ from tofusoup.browser import cli as browser_cli
 pytestmark = pytest.mark.browser
 
 
-def test_sui_tui_command_exists(click_testing_mode):
+def test_sui_tui_command_exists():
     """Test that the sui tui command exists and has correct help text."""
     with isolated_cli_runner() as runner:
         result = runner.invoke(browser_cli.sui_cli, ["--help"])
