@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -87,7 +88,13 @@ func initWireEncodeCmd() *cobra.Command {
 
 			// Write output
 			if outputPath == "-" {
-				_, err = os.Stdout.Write(outputData)
+				// For stdout with msgpack output, encode as base64 for safe text transmission
+				if wireOutputFormat == "msgpack" {
+					encoded := base64.StdEncoding.EncodeToString(outputData)
+					_, err = os.Stdout.WriteString(encoded)
+				} else {
+					_, err = os.Stdout.Write(outputData)
+				}
 			} else {
 				err = os.WriteFile(outputPath, outputData, 0644)
 			}
@@ -98,7 +105,7 @@ func initWireEncodeCmd() *cobra.Command {
 			return nil
 		},
 	}
-	
+
 	// Add flags
 	cmd.Flags().StringVar(&wireInputFormat, "input-format", "json", "Input format (json)")
 	cmd.Flags().StringVar(&wireOutputFormat, "output-format", "msgpack", "Output format (msgpack, json)")
