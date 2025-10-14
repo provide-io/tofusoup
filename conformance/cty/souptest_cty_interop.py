@@ -56,7 +56,8 @@ def _cty_value_to_json_compatible_value(cty_value: CtyValue) -> Any:
     # For other types, _convert_value_to_serializable should return a JSON-compatible type
     serializable_data = _convert_value_to_serializable(cty_value, cty_value.type)
 
-    # Handle bytes conversion to string for JSON compatibility (large integers are encoded as bytes)
+    # Handle bytes conversion to string for JSON compatibility (large integers may be encoded as bytes in older versions)
+    # Note: As of latest pyvider-cty, large integers and high-precision decimals are encoded as strings
     if isinstance(serializable_data, bytes):
         return serializable_data.decode("utf-8")
 
