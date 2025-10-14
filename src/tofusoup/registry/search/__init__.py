@@ -1,7 +1,7 @@
+# src/tofusoup/registry/search/__init__.py
 #
-# tofusoup/registry/search/__init__.py
-#
-"""Search component for tfbrowser."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from .cache import SearchCache  # Assuming SearchCache will be the class in cache.py
 from .engine import SearchEngine
@@ -14,4 +14,4 @@ __all__ = [
 # 🔎📚
 
 
-# 🍲🥄🚀🪄
+# 🍜🍲📚🪄

@@ -1,4 +1,8 @@
-"""
+# conformance/rpc/harness_factory.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Harness Factory for RPC K/V Matrix Testing
 
 Creates Go and Python RPC clients and servers dynamically based on
@@ -413,4 +417,4 @@ def get_factory_info() -> dict[str, Any]:
     }
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🔗🪄

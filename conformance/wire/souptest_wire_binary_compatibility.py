@@ -1,3 +1,8 @@
+# conformance/wire/souptest_wire_binary_compatibility.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pathlib import Path
 
 import pytest
@@ -12,4 +17,4 @@ def test_harness_can_encode_simple_object(go_harness_executable: Path):
     assert go_harness_executable.exists()
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔌🪄

@@ -1,6 +1,8 @@
+# src/tofusoup/wire/logic.py
 #
-# tofusoup/wire/logic.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from pathlib import Path
 
@@ -54,4 +56,4 @@ def convert_msgpack_to_json(input_path: Path, output_path: Path | None) -> Path:
     return output_path
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🔌🪄

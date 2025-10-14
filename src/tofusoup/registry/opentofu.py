@@ -1,6 +1,8 @@
+# src/tofusoup/registry/opentofu.py
 #
-# tofusoup/registry/opentofu.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from typing import Any, cast
 
 import httpx
@@ -170,4 +172,4 @@ class OpenTofuRegistry(BaseTfRegistry):
             return []
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📚🪄

@@ -1,5 +1,8 @@
-# tofusoup/conformance/conftest.py
-"""
+# conformance/conftest.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Common conftest for tests under 'tofusoup/conformance'.
 Provides shared fixtures and test collection modifications.
 """
@@ -120,4 +123,4 @@ def tls_cert_paths_rsa4096(certs_base_dir: Path) -> dict[str, str]:
     return _get_cert_paths(certs_base_dir, "rsa-4096-mtls")
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

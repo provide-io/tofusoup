@@ -1,3 +1,8 @@
+# conformance/wire/souptest_tfwire_binary_compatibility.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pytest
 
 # This test suite is temporarily disabled as it requires a full rewrite of the
@@ -5,4 +10,5 @@ import pytest
 # The current recursive approach is fundamentally flawed.
 pytest.skip("Skipping binary compatibility tests pending marshaller rewrite", allow_module_level=True)
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔌🪄

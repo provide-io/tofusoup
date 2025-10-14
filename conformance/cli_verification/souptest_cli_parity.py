@@ -1,4 +1,8 @@
-"""
+# conformance/cli_verification/souptest_cli_parity.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 CLI Parity Tests for soup vs soup-go Commands
 
 This module ensures that the Python 'soup' CLI and Go 'soup-go' CLI
@@ -308,4 +312,5 @@ if __name__ == "__main__":
     # Run the tests
     pytest.main([__file__, "-v"])
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🤔🪄

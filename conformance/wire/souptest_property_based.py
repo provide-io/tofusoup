@@ -1,3 +1,8 @@
+# conformance/wire/souptest_property_based.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from hypothesis import given, strategies as st
 import pytest
 
@@ -32,4 +37,4 @@ def test_roundtrip_is_isomorphic(schema_data):
     assert initial_value == roundtripped_value
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔌🪄

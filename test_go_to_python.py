@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""Test Go client → Python server using soup-go's client test."""
+# test_go_to_python.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from __future__ import annotations
 
 import subprocess
@@ -75,3 +78,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# 🍜🍲🤔🪄

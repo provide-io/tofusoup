@@ -1,6 +1,7 @@
+# src/tofusoup/stir/models.py
 #
-# tofusoup/stir/models.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -25,3 +26,6 @@ class TestResult(NamedTuple):
     data_sources: int = 0
     functions: int = 0
     ephemeral_functions: int = 0
+
+
+# 🍜🍲🥄🪄

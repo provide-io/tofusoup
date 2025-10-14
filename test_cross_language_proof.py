@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# test_cross_language_proof.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Cross-Language RPC Testing with Proof of Put/Get Operations
 
 Tests all combinations of Go and Python clients/servers to demonstrate
@@ -427,4 +430,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

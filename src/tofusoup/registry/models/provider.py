@@ -1,6 +1,8 @@
+# src/tofusoup/registry/models/provider.py
 #
-# tofusoup/registry/models/provider.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from datetime import datetime
 
 from attrs import define, field
@@ -39,4 +41,4 @@ class Provider:
     registry_source: str | None = field(default=None)
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📚🪄

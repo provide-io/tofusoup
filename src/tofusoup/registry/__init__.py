@@ -1,7 +1,7 @@
+# src/tofusoup/registry/__init__.py
 #
-# tofusoup/registry/__init__.py
-#
-"""Registry component for tfbrowser."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from .base import BaseTfRegistry, RegistryConfig
 from .opentofu import OpenTofuRegistry
@@ -17,4 +17,4 @@ __all__ = [
 # 🐍⚙️
 
 
-# 🍲🥄🚀🪄
+# 🍜🍲📚🪄

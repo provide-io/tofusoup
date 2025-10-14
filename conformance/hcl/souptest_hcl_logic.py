@@ -1,3 +1,8 @@
+# conformance/hcl/souptest_hcl_logic.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from decimal import Decimal
 from pathlib import Path
 
@@ -30,4 +35,4 @@ def test_load_hcl_file_as_cty_simple(tmp_path: Path):
     assert cty_value.value["instance_count"].value == Decimal("3")
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📄🪄

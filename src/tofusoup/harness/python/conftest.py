@@ -1,6 +1,8 @@
+# src/tofusoup/harness/python/conftest.py
 #
-# tofusoup/harness/python/conftest.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 from pathlib import Path
 import subprocess
@@ -180,4 +182,4 @@ def go_kvstore_harness(request) -> Path:
         pytest.fail(f"Failed to prepare Go KVStore harness fixture: {e}")
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🛠️🪄

@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+# src/tofusoup/registry/cli.py
 #
-# tofusoup/registry/cli.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import asyncio
 
@@ -441,4 +441,4 @@ def compare_command(resource: str) -> None:
     safe_async_run(compare_resources)
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲📚🪄

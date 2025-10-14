@@ -1,6 +1,7 @@
+# src/tofusoup/stir/terraform.py
 #
-# tofusoup/stir/terraform.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import asyncio
 import contextlib
@@ -345,3 +346,6 @@ async def run_terraform_command(
         tf_log_path,
         parsed_logs,
     )
+
+
+# 🍜🍲🥄🪄

@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# conformance/rpc/run_matrix_tests.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 RPC K/V Matrix Test Runner
 
 Convenience script for running the RPC K/V matrix tests with various configurations.
@@ -103,4 +106,5 @@ def main():
 if __name__ == "__main__":
     main()
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔗🪄

@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/hcl/cli.py
 #
-# tofusoup/hcl/cli.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 CLI commands for HCL operations.
 """
 
@@ -190,4 +190,4 @@ def _handle_stdout_output(content_or_none: str | bytes | None) -> None:
         sys.stdout.buffer.flush()
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲📄🪄

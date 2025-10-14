@@ -1,4 +1,8 @@
-"""
+# conformance/rpc/matrix_config.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 RPC K/V Matrix Testing Configuration
 
 Defines the parameter matrix for testing all combinations of:
@@ -85,4 +89,5 @@ if __name__ == "__main__":
         client, server, crypto = param.values
         print(f"{i:2d}. {param.id}")
 
-# 🍲🥄📄🪄
+
+# 🍜🍲🔗🪄

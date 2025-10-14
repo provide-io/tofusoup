@@ -1,3 +1,8 @@
+# conformance/rpc/souptest_rpc_pyclient_goserver.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pathlib import Path
 
 import pytest
@@ -36,4 +41,4 @@ async def test_pyclient_goserver_put_get_string(go_harness_executable: Path):
             await client.close()
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔗🪄

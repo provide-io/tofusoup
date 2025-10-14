@@ -1,7 +1,8 @@
+# src/tofusoup/common/serialization.py
 #
-# tofusoup/common/serialization.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Generic serialization and deserialization utilities for JSON and Msgpack.
 """
 
@@ -110,4 +111,4 @@ def dump_python_to_msgpack_file(data: Any, filepath: str) -> None:
 # <3 🍲 🍜 🍥>
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📦🪄

@@ -1,6 +1,8 @@
+# src/tofusoup/browser/ui/widgets/detail_view.py
 #
-# tofusoup/browser/ui/widgets/detail_view.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from textual.containers import VerticalScroll
 from textual.widgets import Markdown
 
@@ -62,4 +64,4 @@ class DetailView(VerticalScroll):
             self._markdown.update(no_item_content)
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🌐🪄

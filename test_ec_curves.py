@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# test_ec_curves.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Test all EC curves (P-256, P-384, P-521) with Python client → Go server
 """
 import asyncio
@@ -137,3 +140,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+# 🍜🍲🤔🪄

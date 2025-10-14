@@ -1,3 +1,8 @@
+# tests/browser/ui/widgets/test_search_view.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from collections.abc import Awaitable, Callable
 
 import pytest
@@ -106,4 +111,4 @@ async def test_search_view_clear_results(pilot: Pilot, search_results: list[Sear
     assert table.row_count == 0
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🌐🪄

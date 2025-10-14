@@ -1,4 +1,7 @@
-# src/tofusoup/conformance/rpc/__init__.py
-"""Conformance tests for RPC implementations."""
+# conformance/rpc/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
-# 🍲🥄📄🪄
+
+# 🍜🍲🔗🪄

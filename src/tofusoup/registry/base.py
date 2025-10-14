@@ -1,6 +1,8 @@
+# src/tofusoup/registry/base.py
 #
-# tofusoup/registry/base.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from abc import ABC, abstractmethod
 
 from attrs import define
@@ -57,4 +59,4 @@ class BaseTfRegistry(ABC):
         pass
 
 
-# 🍲🥄🏛️🪄
+# 🍜🍲📚🪄

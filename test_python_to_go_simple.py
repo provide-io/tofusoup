@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""Simple Python → Go test with TLS disabled."""
+# test_python_to_go_simple.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from __future__ import annotations
 
 import asyncio
@@ -55,3 +58,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+# 🍜🍲🤔🪄

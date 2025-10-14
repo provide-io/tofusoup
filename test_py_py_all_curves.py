@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# test_py_py_all_curves.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Test Python client → Python server with all curves
 """
 import asyncio
@@ -118,3 +121,6 @@ async def main():
 if __name__ == "__main__":
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
+
+
+# 🍜🍲🤔🪄

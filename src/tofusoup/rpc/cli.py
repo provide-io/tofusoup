@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/rpc/cli.py
 #
-# tofusoup/rpc/cli.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 import sys
 from pathlib import Path
@@ -255,4 +256,4 @@ def validate_connection(client: str, server: str, curve: str) -> None:
         sys.exit(0)
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🔗🪄

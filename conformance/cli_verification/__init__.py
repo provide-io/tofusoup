@@ -1,6 +1,7 @@
-# tofusoup/conformance/cli_verification/__init__.py
-# This file makes the cli_verification directory a Python package.
+# conformance/cli_verification/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
-# <3 🍲 🍜 🍥>
 
-# 🍲🥄📄🪄
+# 🍜🍲🤔🪄

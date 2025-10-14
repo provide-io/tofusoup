@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/cty/cli.py
 #
-# tofusoup/cty/cli.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from pathlib import Path
 import sys
@@ -170,4 +171,4 @@ def validate_value_command(value: str, type_spec: str) -> None:
         sys.exit(1)
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲📝🪄

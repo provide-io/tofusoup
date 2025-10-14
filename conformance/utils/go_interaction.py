@@ -1,3 +1,8 @@
+# conformance/utils/go_interaction.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from pathlib import Path
 from typing import Any
@@ -43,4 +48,4 @@ def tfwire_go_encode(
     return stdout.strip().encode("utf-8")
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🧰🪄

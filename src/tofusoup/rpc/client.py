@@ -1,6 +1,8 @@
+# src/tofusoup/rpc/client.py
 #
-# tofusoup/rpc/client.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import asyncio
 import logging
 import os
@@ -439,4 +441,4 @@ class KVClient:
             raise
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🔗🪄

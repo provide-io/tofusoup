@@ -1,4 +1,8 @@
-"""
+# conformance/rpc/test_config.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 RPC Test Configuration Matrix for Cross-Language mTLS Testing
 
 This module defines the comprehensive test matrix for validating RPC communication
@@ -185,4 +189,5 @@ STRESS_TEST_CONFIGS = [
     ),
 ]
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔗🪄

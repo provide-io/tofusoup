@@ -1,6 +1,8 @@
+# src/tofusoup/registry/terraform.py
 #
-# tofusoup/registry/terraform.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from typing import Any
 
 import httpx
@@ -168,4 +170,4 @@ class IBMTerraformRegistry(BaseTfRegistry):
             return []
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📚🪄

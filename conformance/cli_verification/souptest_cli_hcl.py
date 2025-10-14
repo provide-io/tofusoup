@@ -1,4 +1,8 @@
-# tofusoup/conformance/cli_verification/souptest_cli_hcl.py
+# conformance/cli_verification/souptest_cli_hcl.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from pathlib import Path
 from typing import Any
@@ -59,4 +63,4 @@ def test_hcl_cli_parse(
             assert actual_output == expected_json_output
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

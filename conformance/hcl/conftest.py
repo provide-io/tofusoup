@@ -1,5 +1,8 @@
-# src/tofusoup/conformance/hcl/conftest.py
-"""
+# conformance/hcl/conftest.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Pytest fixtures specific to HCL conformance tests.
 """
 
@@ -21,4 +24,4 @@ Pytest fixtures specific to HCL conformance tests.
 #     return Path("dummy_go_hcl_harness_path")
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📄🪄

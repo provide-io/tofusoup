@@ -1,3 +1,8 @@
+# conformance/cty/souptest_cty_interop.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from decimal import Decimal
 import json
 from pathlib import Path
@@ -202,4 +207,4 @@ def test_go_verifies_python_fixtures(
         assert exit_code == 0, f"soup-go cty validate-value failed for {case_name}: {stderr}"
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📝🪄

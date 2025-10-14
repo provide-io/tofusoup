@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/harness/python/py-wire/main.py
 #
-# tofusoup/harness/python/py-wire/main.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 
 import click
@@ -24,4 +25,4 @@ if __name__ == "__main__":
     cli()
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🛠️🪄

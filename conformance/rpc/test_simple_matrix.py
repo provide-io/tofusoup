@@ -1,4 +1,8 @@
-"""
+# conformance/rpc/test_simple_matrix.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Simple RPC K/V Matrix Testing
 
 Tests the key known working combinations:
@@ -149,4 +153,4 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path):
         await client.close()
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔗🪄

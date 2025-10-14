@@ -1,7 +1,7 @@
+# src/tofusoup/browser/ui/__init__.py
 #
-# tofusoup/browser/ui/__init__.py
-#
-"""User Interface component for tfbrowser, built with Textual."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from .app import TFBrowserApp  # Assuming TFBrowserApp will be the main app class
 
@@ -12,4 +12,4 @@ __all__ = [
 # 🎨🖥️
 
 
-# 🍲🥄🚀🪄
+# 🍜🍲🌐🪄

@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# test_curve.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Test a single curve: Python client → Go server
 
 ⚠️  WARNING: Python → Go connections are NOT SUPPORTED ⚠️
@@ -117,3 +120,6 @@ if __name__ == "__main__":
     pout("")
     exit_code = asyncio.run(test_curve(curve))
     sys.exit(exit_code)
+
+
+# 🍜🍲🤔🪄

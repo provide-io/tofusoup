@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/rpc/plugin_server.py
 #
-# tofusoup/rpc/plugin_server.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 TofuSoup Python KV Plugin Server
 
 A go-plugin compatible Python server that implements the KV interface
@@ -85,4 +85,4 @@ if __name__ == "__main__":
     asyncio.run(main())
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🔗🪄

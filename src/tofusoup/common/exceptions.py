@@ -1,7 +1,8 @@
+# src/tofusoup/common/exceptions.py
 #
-# tofusoup/common/exceptions.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Common exceptions for the TofuSoup application.
 """
 
@@ -60,4 +61,4 @@ class HarnessError(ProcessError):
 # <3 🍲 🍜 🍥>
 
 
-# 🍲🥄⚠️🪄
+# 🍜🍲📦🪄

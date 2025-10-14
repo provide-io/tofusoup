@@ -1,4 +1,8 @@
-"""
+# conformance/rpc/cert_manager.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Certificate Management for RPC K/V Matrix Testing
 
 Leverages the existing pyvider-rpcplugin certificate system for generating
@@ -188,4 +192,5 @@ if __name__ == "__main__":
                 file_size = file_path.stat().st_size
                 print(f"    {cert_type}: {file_path.name} ({file_size} bytes)")
 
-# 🍲🥄📄🪄
+
+# 🍜🍲🔗🪄

@@ -1,4 +1,8 @@
-"""
+# tests/harness/test_tdd_polyglot_strategy.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 TDD Tests for the Polyglot CLI Strategy.
 """
 
@@ -97,4 +101,4 @@ class TestPolyglotStrategyContract:
             get_harness_command("go-cty", "validate-value", [])
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🛠️🪄

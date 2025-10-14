@@ -1,7 +1,7 @@
+# src/tofusoup/scaffolding/env_generator.py
 #
-# tofusoup/scaffolding/env_generator.py
-#
-"""Generate env.sh and env.ps1 scripts from templates."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
 from typing import Any
@@ -137,4 +137,4 @@ def create_project_env_scripts(project_dir: Path) -> None:
     print(f"✅ Generated {ps1_path}")
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🧱🪄

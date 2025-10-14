@@ -1,3 +1,8 @@
+# conformance/wire/souptest_wire_logic.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from pathlib import Path
 
@@ -35,4 +40,4 @@ def test_convert_msgpack_to_json(tmp_path: Path, sample_data: dict):
     assert json.loads(json_file.read_text()) == sample_data
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔌🪄

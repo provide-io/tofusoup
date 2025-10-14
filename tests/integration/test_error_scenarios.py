@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# tests/integration/test_error_scenarios.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Test error scenarios and failure modes for cross-language RPC.
 
 Validates that:
@@ -104,4 +107,4 @@ def test_document_known_failures():
         )
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

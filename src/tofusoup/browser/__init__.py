@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
+# src/tofusoup/browser/__init__.py
 #
-# tofusoup/browser/__init__.py
-#
-"""Browser module for tofusoup TUI."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+
+# 🍜🍲🌐🪄

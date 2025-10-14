@@ -1,6 +1,8 @@
+# src/tofusoup/browser/ui/widgets/log_viewer.py
 #
-# tofusoup/browser/ui/widgets/log_viewer.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import threading
 
 from rich.text import Text
@@ -46,4 +48,4 @@ class LogViewer(Widget):
         self._log_widget.clear()
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🌐🪄

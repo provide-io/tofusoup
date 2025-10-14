@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# test_rpc_combos.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Quick RPC combination tests:
 1. Python client → Python server
 2. Go client → Python server (via CLI)
@@ -85,3 +88,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+# 🍜🍲🤔🪄

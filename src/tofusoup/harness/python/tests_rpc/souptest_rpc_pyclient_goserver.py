@@ -1,10 +1,7 @@
+# src/tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_goserver.py
 #
-# tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_goserver.py
-#
-# tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_goserver.py
-#
-# tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_goserver.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import os  # For os.access and crypto options via env for client
 from pathlib import Path
@@ -83,4 +80,4 @@ async def test_pyclient_goserver_put_get(go_kvstore_harness: Path, tmp_path: Pat
 # <3 🍲 🍜 🍥>
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🛠️🪄

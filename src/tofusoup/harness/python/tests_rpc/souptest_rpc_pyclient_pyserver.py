@@ -1,10 +1,7 @@
+# src/tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_pyserver.py
 #
-# tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_pyserver.py
-#
-# tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_pyserver.py
-#
-# tofusoup/harness/python/tests_rpc/souptest_rpc_pyclient_pyserver.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
 
@@ -181,4 +178,4 @@ async def test_pyclient_pyserver_put_get(tmp_path) -> None:
 # <3 🍲 🍜 🍥>
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🛠️🪄

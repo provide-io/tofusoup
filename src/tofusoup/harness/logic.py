@@ -1,6 +1,8 @@
+# src/tofusoup/harness/logic.py
 #
-# tofusoup/harness/logic.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 import pathlib
 import subprocess
@@ -153,4 +155,4 @@ def start_go_plugin_server_process(
         raise TofuSoupError(f"Failed to start Go plugin server '{harness_name}': {e}") from e
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🛠️🪄

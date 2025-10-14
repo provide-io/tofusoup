@@ -1,7 +1,8 @@
+# src/tofusoup/hcl/logic.py
 #
-# tofusoup/hcl/logic.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Core HCL processing and conversion logic.
 """
 
@@ -86,4 +87,4 @@ def convert_hcl_file_to_output_format(
         return None
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📄🪄

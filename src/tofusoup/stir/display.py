@@ -1,6 +1,7 @@
+# src/tofusoup/stir/display.py
 #
-# tofusoup/stir/display.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import asyncio
 from time import monotonic
@@ -115,3 +116,6 @@ async def live_updater(live_display: Live, stop_event: asyncio.Event) -> None:
     while not stop_event.is_set():
         live_display.update(generate_status_table())
         await asyncio.sleep(1 / 0.77)  # ~1.3 seconds to match 0.77 Hz refresh rate
+
+
+# 🍜🍲🥄🪄

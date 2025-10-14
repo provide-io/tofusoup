@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""Test Python client → Python server using pyvider-rpcplugin infrastructure."""
+# test_python_to_python_pyvider.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from __future__ import annotations
 
 import asyncio
@@ -68,3 +71,6 @@ async def main():
 if __name__ == "__main__":
     result = asyncio.run(main())
     exit(0 if result else 1)
+
+
+# 🍜🍲🤔🪄

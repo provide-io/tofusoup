@@ -1,4 +1,8 @@
-# tofusoup/conformance/cli_verification/souptest_cli_wire.py
+# conformance/cli_verification/souptest_cli_wire.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import base64
 import json
 from pathlib import Path
@@ -84,4 +88,4 @@ def test_wire_cli_decode_simple_string(
     assert decoded_json == {"type": "string", "value": "test"}
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

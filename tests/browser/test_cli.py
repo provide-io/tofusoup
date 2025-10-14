@@ -1,3 +1,7 @@
+# tests/browser/test_cli.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from provide.testkit import isolated_cli_runner
 import pytest
@@ -17,4 +21,4 @@ def test_sui_tui_command_exists():
         assert "tui" in result.output
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🌐🪄

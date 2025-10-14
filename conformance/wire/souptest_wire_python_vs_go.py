@@ -1,3 +1,8 @@
+# conformance/wire/souptest_wire_python_vs_go.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import base64
 from pathlib import Path
 from typing import Any
@@ -70,4 +75,4 @@ def test_python_and_go_encoders_are_identical(
     )
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔌🪄

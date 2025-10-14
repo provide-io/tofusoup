@@ -1,3 +1,8 @@
+# tests/registry/conftest.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from unittest.mock import AsyncMock
 
 import pytest
@@ -110,4 +115,4 @@ def mock_module_versions(sample_module_versions):
     return sample_module_versions
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📚🪄

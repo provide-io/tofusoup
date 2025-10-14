@@ -1,3 +1,8 @@
+# conformance/cty/souptest_cty_compat.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pathlib import Path
 import subprocess
 
@@ -34,4 +39,4 @@ def test_souptest_go_cty_validation(go_harness_executable: Path):
     assert "Validation Succeeded" in result.stdout
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📝🪄

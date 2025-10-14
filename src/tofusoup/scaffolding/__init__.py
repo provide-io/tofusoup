@@ -1,7 +1,7 @@
+# src/tofusoup/scaffolding/__init__.py
 #
-# tofusoup/scaffolding/__init__.py
-#
-"""Project and component scaffolding tools."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 
-# 🍲🥄🚀🪄
+# 🍜🍲🧱🪄

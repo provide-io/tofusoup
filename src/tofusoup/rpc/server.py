@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/rpc/server.py
 #
-# tofusoup/rpc/server.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from concurrent import futures
 import re
 import sys
@@ -291,4 +292,4 @@ if __name__ == "__main__":
     main()
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🔗🪄

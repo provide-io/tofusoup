@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# src/tofusoup/rpc/validation.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 RPC connection validation utilities.
 
 Provides validation for:
@@ -137,4 +140,4 @@ def get_compatibility_matrix() -> dict[str, dict[str, bool]]:
     }
 
 
-# 🍲🥄📋🪄
+# 🍜🍲🔗🪄

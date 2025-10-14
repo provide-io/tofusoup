@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# tests/integration/test_cross_language_matrix.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Cross-language RPC compatibility test matrix.
 
 Tests all working language pair combinations:
@@ -135,4 +138,4 @@ def test_known_unsupported_combinations():
         logger.info("Unsupported combination", client=client, server=server, curve=curve, reason=reason)
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

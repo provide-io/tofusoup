@@ -1,6 +1,7 @@
+# src/tofusoup/stir/reporting.py
 #
-# tofusoup/stir/reporting.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import json
 
@@ -76,3 +77,6 @@ def print_summary_panel(total_tests: int, failed_tests: int, skipped_tests: int,
             padding=(1, 2),
         )
     )
+
+
+# 🍜🍲🥄🪄

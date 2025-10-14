@@ -1,6 +1,8 @@
+# src/tofusoup/harness/proto/kv/kv_protocol.py
 #
-# tofusoup/harness/proto/kv/kv_protocol.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from typing import Any
 
 from provide.foundation import logger
@@ -32,4 +34,4 @@ class KVProtocol(RPCPluginProtocol):
         kv_pb2_grpc.add_KVServicer_to_server(handler, server)
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🛠️🪄

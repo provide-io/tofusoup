@@ -1,3 +1,8 @@
+# tests/registry/test_search_engine.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from unittest.mock import AsyncMock
 
 import pytest
@@ -156,4 +161,4 @@ async def test_search_engine_empty_query():
     registry.list_modules.assert_called_once_with(query=None)
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📚🪄

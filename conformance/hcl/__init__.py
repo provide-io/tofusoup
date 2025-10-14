@@ -1,4 +1,7 @@
-# src/tofusoup/conformance/hcl/__init__.py
-"""Conformance tests for HCL implementations."""
+# conformance/hcl/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
-# 🍲🥄📄🪄
+
+# 🍜🍲📄🪄

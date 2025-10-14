@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/harness/cli.py
 #
-# tofusoup/harness/cli.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 import sys
 
@@ -112,4 +113,4 @@ def build_harness_command(ctx, harness_names: tuple[str, ...], force_rebuild: bo
             sys.exit(1)
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🛠️🪄

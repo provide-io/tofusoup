@@ -1,7 +1,8 @@
+# src/tofusoup/common/rich_utils.py
 #
-# tofusoup/common/rich_utils.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Utilities for enhancing CLI output using the Rich library.
 """
 
@@ -84,4 +85,4 @@ def print_json(data: Any, indent: int = 2) -> None:
     rich_print(f"```json\n{json_str}\n```")
 
 
-# 🍲🥄🛠️🪄
+# 🍜🍲📦🪄

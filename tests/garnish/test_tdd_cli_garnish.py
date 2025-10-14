@@ -1,4 +1,8 @@
-"""
+# tests/garnish/test_tdd_cli_garnish.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 TDD Tests for the 'soup garnish' CLI command.
 """
 
@@ -53,4 +57,4 @@ class TestGarnishCliContract:
         assert "Documentation generation completed successfully!" in result.output
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/wire/cli.py
 #
-# tofusoup/wire/cli.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from pathlib import Path
 
@@ -73,4 +74,4 @@ def to_json(input_path: Path, output_path: Path | None, pretty: bool) -> None:
         raise click.ClickException(f"An unexpected error occurred: {e}")
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🔌🪄

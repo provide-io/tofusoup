@@ -1,7 +1,7 @@
+# src/tofusoup/registry/search/cache.py
 #
-# tofusoup/registry/search/cache.py
-#
-"""Caching layer for search results and queries."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from typing import Any
 
@@ -74,4 +74,4 @@ class SearchCache:
 # 💾🔍
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📚🪄

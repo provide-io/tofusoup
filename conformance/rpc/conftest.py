@@ -1,3 +1,8 @@
+# conformance/rpc/conftest.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pathlib
 
 import pytest
@@ -38,4 +43,4 @@ def go_harness_executable(project_root: pathlib.Path, loaded_tofusoup_config: di
 # Add other shared RPC fixtures here if needed in the future.
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔗🪄

@@ -1,4 +1,8 @@
-# tofusoup/conformance/cli_verification/shared_cli_utils.py
+# conformance/cli_verification/shared_cli_utils.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pathlib import Path
 import sys
 
@@ -37,4 +41,4 @@ def run_tofusoup_cli(
     )
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🤔🪄

@@ -1,7 +1,7 @@
+# src/tofusoup/provider/__init__.py
 #
-# tofusoup/provider/__init__.py
-#
-"""Provider project management commands."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 
-# 🍲🥄🚀🪄
+# 🍜🍲🏗️🪄

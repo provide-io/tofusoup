@@ -1,5 +1,8 @@
-# src/tofusoup/conformance/utils/__init__.py
-"""
+# conformance/utils/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 TofuSoup Conformance Test Utilities Package.
 """
 
@@ -11,4 +14,5 @@ __all__ = [
     "tfwire_go_encode",
 ]
 
-# 🍲🥄📄🪄
+
+# 🍜🍲🧰🪄

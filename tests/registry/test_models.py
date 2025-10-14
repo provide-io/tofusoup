@@ -1,3 +1,8 @@
+# tests/registry/test_models.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pytest
 
 from tofusoup.registry.models.module import Module, ModuleVersion
@@ -110,4 +115,4 @@ class TestVersionModel:
             VersionInfo(raw_version="not-a-version")
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📚🪄

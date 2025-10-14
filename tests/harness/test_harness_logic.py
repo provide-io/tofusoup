@@ -1,3 +1,8 @@
+# tests/harness/test_harness_logic.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pathlib import Path
 import subprocess
 from unittest.mock import MagicMock, patch
@@ -51,4 +56,4 @@ def test_ensure_go_harness_build_failure(tmp_path: Path):
             ensure_go_harness_build(harness_name, project_root, loaded_config={})
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🛠️🪄

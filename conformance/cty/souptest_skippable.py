@@ -1,3 +1,8 @@
+# conformance/cty/souptest_skippable.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 
 import pytest
@@ -20,4 +25,4 @@ def test_check_env_vars_cty_suite():
     assert os.getenv("TOFUSOUP_CTY_SUITE_ENV") == "cty_specific_env_value_from_toml"
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📝🪄

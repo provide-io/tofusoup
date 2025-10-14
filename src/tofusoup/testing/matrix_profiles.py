@@ -1,4 +1,8 @@
-"""
+# src/tofusoup/testing/matrix_profiles.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Profile-based matrix testing for TofuSoup.
 
 Instead of generating combinations, uses pre-defined profiles from soup.toml
@@ -341,3 +345,6 @@ async def run_profile_matrix_tests(
     """
     matrix = ProfileMatrix(config)
     return await matrix.run_profile_tests(stir_directory, profiles)
+
+
+# 🍜🍲🧪🪄

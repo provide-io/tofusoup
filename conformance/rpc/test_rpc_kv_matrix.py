@@ -1,4 +1,8 @@
-"""
+# conformance/rpc/test_rpc_kv_matrix.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 RPC K/V Matrix Testing
 
 Tests all combinations of:
@@ -349,4 +353,5 @@ if __name__ == "__main__":
         f"Grand total test executions: {sum(v for k, v in summary.items() if k.startswith('total_') and k != 'total_combinations')}"
     )
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔗🪄

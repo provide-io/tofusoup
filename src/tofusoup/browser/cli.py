@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+# src/tofusoup/browser/cli.py
 #
-# tofusoup/browser/cli.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import click
 from provide.foundation import get_hub, logger
@@ -45,4 +45,4 @@ def tui_command(ctx: click.Context, registry_name: str | None) -> None:
         logger.info("TUI browser exited.")
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🌐🪄

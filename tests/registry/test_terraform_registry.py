@@ -1,3 +1,8 @@
+# tests/registry/test_terraform_registry.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pytest
 
 from tofusoup.registry.base import RegistryConfig
@@ -118,4 +123,4 @@ async def test_list_provider_versions(httpx_mock):
         assert versions[0].version == "6.8.0"
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📚🪄

@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# test_simple_py_go.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Simple test: Python client → Go server
 """
 import asyncio
@@ -59,3 +62,6 @@ async def main():
 if __name__ == "__main__":
     exit_code = asyncio.run(main())
     exit(exit_code)
+
+
+# 🍜🍲🤔🪄

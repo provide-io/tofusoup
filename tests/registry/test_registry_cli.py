@@ -1,3 +1,8 @@
+# tests/registry/test_registry_cli.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from unittest.mock import AsyncMock, patch
 
 from provide.testkit import isolated_cli_runner
@@ -236,4 +241,4 @@ class TestCompareCommand:
         assert "Resource must be 'namespace/name' for providers" in result.output
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📚🪄

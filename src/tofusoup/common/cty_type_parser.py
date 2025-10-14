@@ -1,6 +1,8 @@
+# src/tofusoup/common/cty_type_parser.py
 #
-# tofusoup/common/cty_type_parser.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pyvider.cty import (
     CtyBool,
     CtyDynamic,
@@ -85,4 +87,4 @@ def parse_cty_type_string(type_str: str) -> CtyType:
     raise CtyTypeParseError(f"Unsupported or malformed CTY type string: '{type_str}'")
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📦🪄

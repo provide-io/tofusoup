@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
+# src/tofusoup/provider/cli.py
 #
-# tofusoup/provider/cli.py
-#
-"""CLI for provider project lifecycle management."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
 
@@ -29,4 +28,4 @@ def new_provider_command(project_dir: str) -> None:
         raise click.Abort() from e
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🏗️🪄

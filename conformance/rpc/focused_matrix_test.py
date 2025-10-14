@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# conformance/rpc/focused_matrix_test.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Focused TofuSoup RPC Matrix Test
 Tests all crypto combinations but focuses on working client-server pairs
 with quick timeout for known failing combinations.
@@ -328,4 +331,5 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔗🪄

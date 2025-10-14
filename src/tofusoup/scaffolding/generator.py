@@ -1,7 +1,7 @@
+# src/tofusoup/scaffolding/generator.py
 #
-# tofusoup/scaffolding/generator.py
-#
-"""Logic for scaffolding new provider projects and components."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
 import re
@@ -48,4 +48,4 @@ def scaffold_new_provider(project_dir: Path) -> Path:
     return project_dir
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🧱🪄

@@ -1,6 +1,7 @@
+# src/tofusoup/browser/ui/app.py
 #
-# tofusoup/browser/ui/app.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from provide.foundation import LoggingConfig, TelemetryConfig, get_hub, logger
 from textual.app import App, ComposeResult
@@ -120,4 +121,4 @@ class TFBrowserApp(App[None]):
         self.push_screen(MainSearchScreen())
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🌐🪄

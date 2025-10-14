@@ -1,6 +1,7 @@
+# src/tofusoup/stir/config.py
 #
-# tofusoup/stir/config.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import os
 from pathlib import Path
@@ -45,3 +46,6 @@ PHASE_EMOJI = {
     "ERROR": "🔥",
     "SKIPPED": "⏭️",
 }
+
+
+# 🍜🍲🥄🪄

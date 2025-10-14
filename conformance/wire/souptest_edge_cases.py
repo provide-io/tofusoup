@@ -1,3 +1,8 @@
+# conformance/wire/souptest_edge_cases.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from decimal import Decimal
 
 import pytest
@@ -65,4 +70,4 @@ def test_decode_tuple_length_mismatch():
         schema.validate(data)
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔌🪄

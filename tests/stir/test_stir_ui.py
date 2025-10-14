@@ -1,3 +1,7 @@
+# tests/stir/test_stir_ui.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from tofusoup import stir
 
@@ -28,4 +32,4 @@ def test_generate_status_table():
     assert "FAIL" in str(status_cell)
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🥄🪄

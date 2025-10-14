@@ -1,6 +1,8 @@
+# src/tofusoup/cty/logic.py
 #
-# tofusoup/cty/logic.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pathlib
 from typing import Any
 
@@ -130,4 +132,4 @@ def dump_cty_value_to_msgpack_bytes(value: CtyValue) -> bytes:
     return dump_python_to_msgpack_bytes(native_value)
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📝🪄

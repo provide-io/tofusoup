@@ -1,3 +1,8 @@
+# tests/wire/test_wire_cli.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -60,4 +65,4 @@ def test_cli_handles_logic_errors(monkeypatch):
         assert "Error: Error during conversion: Packing failed" in result.output
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔌🪄

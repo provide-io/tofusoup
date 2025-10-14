@@ -1,6 +1,7 @@
+# src/tofusoup/browser/ui/widgets/search_view.py
 #
-# tofusoup/browser/ui/widgets/search_view.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from typing import TYPE_CHECKING, ClassVar
 
@@ -126,4 +127,4 @@ class SearchView(Vertical):
         self.query_one(DataTable).display = not show
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🌐🪄

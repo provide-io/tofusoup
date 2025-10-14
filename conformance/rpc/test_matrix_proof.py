@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+# conformance/rpc/test_matrix_proof.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import asyncio
 
 from tofusoup.rpc.client import KVClient
@@ -70,4 +74,5 @@ async def comprehensive_matrix_test():
 if __name__ == "__main__":
     asyncio.run(comprehensive_matrix_test())
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔗🪄

@@ -1,6 +1,8 @@
+# src/tofusoup/common/lazy_group.py
 #
-# tofusoup/common/lazy_group.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import importlib
 from typing import Any
 
@@ -43,4 +45,4 @@ class LazyGroup(click.Group):
         return super().get_command(ctx, cmd_name)
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📦🪄

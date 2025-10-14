@@ -1,6 +1,8 @@
+# src/tofusoup/registry/models/module.py
 #
-# tofusoup/registry/models/module.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from datetime import datetime
 from typing import Any
 
@@ -63,4 +65,4 @@ class Module:
     registry_source: str | None = field(default=None)
 
 
-# 🍲🥄📄🪄
+# 🍜🍲📚🪄

@@ -1,6 +1,8 @@
+# src/tofusoup/testing/logic.py
 #
-# tofusoup/testing/logic.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import asyncio
 import json
 import os
@@ -175,4 +177,4 @@ async def run_all_test_suites(
     return await asyncio.gather(*tasks)
 
 
-# 🍲🥄📄🪄
+# 🍜🍲🧪🪄

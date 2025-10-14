@@ -1,3 +1,8 @@
+# tests/registry/test_opentofu_registry.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pytest
 
 from tofusoup.registry.opentofu import OpenTofuRegistry
@@ -117,4 +122,4 @@ async def test_list_module_versions(httpx_mock):
         assert versions[0].version == "4.5.0"
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲📚🪄

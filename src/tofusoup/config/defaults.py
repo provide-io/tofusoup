@@ -1,7 +1,8 @@
+# src/tofusoup/config/defaults.py
 #
-# config/defaults.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Centralized defaults and constants for TofuSoup.
 
 All hardcoded defaults should be defined here instead of inline in the code.
@@ -60,3 +61,6 @@ TUI_LOG_LEVEL = "DEBUG"
 # Soup configuration paths
 CONFIG_FILENAME = "soup.toml"
 DEFAULT_CONFIG_SUBDIR = "soup"
+
+
+# 🍜🍲⚙️🪄

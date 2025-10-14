@@ -1,3 +1,8 @@
+# tests/browser/ui/widgets/test_detail_view.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pytest
 from textual.pilot import Pilot
 from textual.screen import Screen
@@ -46,4 +51,4 @@ async def test_detail_view_update_content(pilot: Pilot):
     assert "Type**: module" in detail_view.raw_content
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🌐🪄

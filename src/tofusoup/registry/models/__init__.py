@@ -1,7 +1,7 @@
+# src/tofusoup/registry/models/__init__.py
 #
-# tofusoup/registry/models/__init__.py
-#
-"""Data models for tfbrowser entities."""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 from .module import Module, ModuleVersion  # Example, adjust to actual class names
 from .provider import Provider, ProviderVersion  # Example, adjust to actual class names
@@ -18,4 +18,4 @@ __all__ = [
 # 🧱🧩
 
 
-# 🍲🥄🚀🪄
+# 🍜🍲📚🪄

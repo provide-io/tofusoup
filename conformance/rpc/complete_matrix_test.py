@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# conformance/rpc/complete_matrix_test.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Complete TofuSoup RPC Matrix Test
 Tests all combinations of:
 - Client languages: Python, Go
@@ -282,4 +285,5 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔗🪄

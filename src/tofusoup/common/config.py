@@ -1,7 +1,8 @@
+# src/tofusoup/common/config.py
 #
-# tofusoup/common/config.py
-#
-"""
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Configuration loading and management for TofuSoup.
 """
 
@@ -104,4 +105,4 @@ def load_tofusoup_config(
     return {}
 
 
-# 🍲🥄⚙️🪄
+# 🍜🍲📦🪄

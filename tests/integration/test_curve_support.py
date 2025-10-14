@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# tests/integration/test_curve_support.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Test elliptic curve support across different server implementations.
 
 Validates:
@@ -146,4 +149,4 @@ def test_document_curve_support():
             logger.info("Curve support", runtime=runtime, curve=curve, status=status)
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🤔🪄

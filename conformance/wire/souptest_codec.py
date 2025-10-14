@@ -1,3 +1,8 @@
+# conformance/wire/souptest_codec.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from decimal import Decimal
 
 import pytest
@@ -38,4 +43,4 @@ def test_roundtrip_simple_data():
     assert decoded_value == original_value
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🔌🪄

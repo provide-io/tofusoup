@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# test_all_curves.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Test Python client → Go server with all supported elliptic curves
 Tests: secp256r1, secp384r1, secp521r1, and auto mode
 """
@@ -148,3 +151,6 @@ async def main():
 if __name__ == "__main__":
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
+
+
+# 🍜🍲🤔🪄

@@ -1,3 +1,8 @@
+# tests/browser/conftest.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from collections.abc import Awaitable, Callable
 
 import pytest_asyncio
@@ -36,4 +41,4 @@ async def pilot_with_message_capture() -> Callable[[list[Message]], Awaitable[Pi
     return _pilot_factory
 
 
-# 🍲🥄🧪🪄
+# 🍜🍲🌐🪄

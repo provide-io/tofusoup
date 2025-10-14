@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-"""
+# conformance/rpc/souptest_cross_language_interop.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 Cross-Language Interoperability Test for TofuSoup
 
 This test proves that the Go RPC server and Python RPC server can be used
@@ -331,4 +334,5 @@ if __name__ == "__main__":
 
     asyncio.run(manual_test())
 
-# 🍲🥄🧪🪄
+
+# 🍜🍲🔗🪄

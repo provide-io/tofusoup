@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+# src/tofusoup/testing/cli.py
 #
-# tofusoup/testing/cli.py
-#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import asyncio
 import sys
 
@@ -81,4 +82,4 @@ for suite_name_key in TEST_SUITE_CONFIG:
             sys.exit(1)
 
 
-# 🍲🥄🖥️🪄
+# 🍜🍲🧪🪄
