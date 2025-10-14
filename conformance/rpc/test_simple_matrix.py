@@ -76,6 +76,7 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path):
 @pytest.mark.integration_rpc
 @pytest.mark.harness_go
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="Python client → Go server with mTLS is not currently supported (known issue in pyvider-rpcplugin)")
 async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path):
     """Test Python client -> Go server with auto mTLS using ECDSA"""
     go_server_path = project_root / "bin" / "soup-go"

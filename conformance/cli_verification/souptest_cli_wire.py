@@ -46,15 +46,17 @@ def test_wire_cli_encode_simple_string(
 
     assert exit_code == 0, f"Encode failed. Stderr: {stderr_bytes.decode('utf-8', errors='replace')}"
 
-    # soup-go outputs binary MessagePack for the entire JSON input
-    # Decode the MessagePack to verify the content (order doesn't matter for maps)
+    # soup-go outputs base64-encoded MessagePack for the entire JSON input
+    # First decode base64, then decode MessagePack
+    import base64
     import msgpack
 
-    # Handle potential trailing newline or whitespace from CLI output
-    # Use strict=False to get the unpacked data and remaining bytes
-    unpacker = msgpack.Unpacker(raw=False)
-    unpacker.feed(stdout_bytes)
-    decoded_data = next(unpacker)
+    # Remove trailing whitespace/newline and decode base64
+    b64_output = stdout_bytes.strip()
+    msgpack_bytes = base64.b64decode(b64_output)
+
+    # Decode the MessagePack to verify the content (order doesn't matter for maps)
+    decoded_data = msgpack.unpackb(msgpack_bytes, raw=False)
 
     expected_data = {"type": "string", "value": "test"}
     assert decoded_data == expected_data
