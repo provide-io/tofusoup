@@ -84,8 +84,8 @@ class TestProviderCommands:
                 "namespace": sample_provider.namespace,
                 "name": sample_provider.name,
                 "description": sample_provider.description,
-                "source": sample_provider.source,
-                "download_count": sample_provider.downloads,
+                "source": sample_provider.source_url,
+                "download_count": 1000000,
             }
         )
         mock_tf_instance.__class__.__name__ = "IBMTerraformRegistry"
