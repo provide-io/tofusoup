@@ -29,7 +29,7 @@ def tfwire_go_encode(
 
     exit_code, stdout, stderr = run_harness_cli(
         executable=harness_executable_path,
-        args=["encode", "-"],
+        args=["wire", "encode", "-"],
         project_root=project_root,
         harness_artifact_name="go-wire-harness",
         test_id=test_id,
