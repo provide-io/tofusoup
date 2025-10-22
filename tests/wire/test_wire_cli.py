@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock
+from provide.testkit.mocking import MagicMock
 
 from click.testing import CliRunner
 import msgpack

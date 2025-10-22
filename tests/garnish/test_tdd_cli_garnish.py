@@ -2,7 +2,7 @@
 TDD Tests for the 'soup garnish' CLI command.
 """
 
-from unittest.mock import patch
+from provide.testkit.mocking import patch
 
 from click.testing import CliRunner
 import pytest

@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from provide.testkit.mocking import AsyncMock, patch
 
 from provide.testkit import isolated_cli_runner
 
