@@ -1,6 +1,6 @@
 from pathlib import Path
 import subprocess
-from unittest.mock import MagicMock, patch
+from provide.testkit.mocking import MagicMock, patch
 
 import pytest
 
