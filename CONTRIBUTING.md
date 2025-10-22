@@ -49,7 +49,7 @@ cd tofusoup
 
 2. Set up your development environment
 ```bash
-source env.sh  # This sets up the virtual environment
+uv sync  # This sets up the virtual environment
 ```
 
 3. Run tests to ensure everything works
