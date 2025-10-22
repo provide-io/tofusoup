@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Environment Setup
 
-**IMPORTANT**: Use `source env.sh` to set up the development environment. This script provisions a virtual environment in `workenv/` (NOT `.venv`). The environment setup handles:
+**IMPORTANT**: Use `uv sync` to set up the development environment. This script provisions a virtual environment in `workenv/` (NOT `.venv`). The environment setup handles:
 - Python 3.11+ requirement
 - UV package manager for dependency management
 - Platform-specific virtual environments (e.g., `workenv/tofusoup_darwin_arm64`)
@@ -17,20 +17,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Environment setup (always use this instead of manual venv creation)
-source env.sh
+uv sync
 
 # Run tests
-pytest                           # Run all tests
-pytest conformance/             # Run conformance tests
-pytest tests/                   # Run unit tests
-pytest -n auto                  # Run tests in parallel
-pytest -n auto -vvv             # Verbose parallel test run
-pytest -k "test_name"           # Run tests matching pattern
+uv run pytest                           # Run all tests
+uv run pytest conformance/             # Run conformance tests
+uv run pytest tests/                   # Run unit tests
+uv run pytest -n auto                  # Run tests in parallel
+uv run pytest -n auto -vvv             # Verbose parallel test run
+uv run pytest -k "test_name"           # Run tests matching pattern
 
 # Code quality checks
-ruff check .                    # Run linter
-ruff format .                   # Format code
-mypy src/                       # Type checking
+uv run ruff check .                    # Run linter
+uv run ruff format .                   # Format code
+uv run mypy src/                       # Type checking
 
 # CLI operations
 soup --help                     # Main CLI help
@@ -132,7 +132,7 @@ def test_config_generation(temp_directory):
 
 ## Common Issues & Solutions
 
-1. **ModuleNotFoundError for dependencies**: Run `source env.sh` to ensure proper environment setup
+1. **ModuleNotFoundError for dependencies**: Run `uv sync` to ensure proper environment setup
 2. **Test execution timeouts**: Increase timeout settings in pytest configuration
 3. **Provider compatibility issues**: Check provider version requirements and compatibility matrix
 4. **Import errors**: Ensure PYTHONPATH includes both `src/` and project root
