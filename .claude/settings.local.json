@@ -43,7 +43,8 @@
       "Bash(tree:*)",
       "Bash(git fsck:*)",
       "Bash(git reflog:*)",
-      "Bash(uv run ruff:*)"
+      "Bash(uv run ruff:*)",
+      "Read(//private/tmp/test-stir-discovery/**)"
     ],
     "deny": [],
     "ask": [],
