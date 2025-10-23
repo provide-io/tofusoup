@@ -10,6 +10,7 @@ from time import monotonic
 import click
 
 from tofusoup.stir.config import MAX_CONCURRENT_TESTS, STIR_PLUGIN_CACHE_DIR
+from tofusoup.stir.discovery import TestDiscovery, TestFilter
 from tofusoup.stir.display import console
 from tofusoup.stir.executor import execute_tests, initialize_tests
 from tofusoup.stir.models import TestResult
@@ -42,8 +43,28 @@ def process_results(results: list[TestResult | Exception]) -> tuple[list[TestRes
     return failed_tests, skipped_count, all_passed
 
 
-async def main(target_path: str, runtime: StirRuntime) -> None:
-    """Main execution function for stir tests."""
+async def main(
+    target_path: str,
+    runtime: StirRuntime,
+    patterns: list[str] | None = None,
+    recursive: bool = False,
+    path_filters: list[str] | None = None,
+    tags: list[str] | None = None,
+    types: list[str] | None = None,
+    regex_pattern: str | None = None,
+) -> None:
+    """Main execution function for stir tests.
+
+    Args:
+        target_path: Base directory for test discovery
+        runtime: StirRuntime instance for test execution
+        patterns: Glob patterns for test file discovery
+        recursive: Whether to search recursively
+        path_filters: Path-based filters
+        tags: Tag-based filters
+        types: Component type filters
+        regex_pattern: Regex pattern for filtering
+    """
     from rich.live import Live
 
     from tofusoup.stir.display import generate_status_table, live_updater
@@ -51,22 +72,16 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
     start_time = monotonic()
     base_dir = Path(target_path).resolve()
 
-    test_dirs = []
+    # Use enhanced test discovery
+    discoverer = TestDiscovery(patterns=patterns, recursive=recursive)
+    test_dirs = discoverer.discover_tests(base_dir)
 
-    # Add regular test directories (non-hidden)
-    test_dirs.extend([d for d in base_dir.iterdir() if d.is_dir() and not d.name.startswith(".")])
-
-    # Handle .plating-tests specially - add its subdirectories as test directories
-    plating_dir = base_dir / ".plating-tests"
-    if plating_dir.is_dir():
-        plating_test_dirs = [d for d in plating_dir.iterdir() if d.is_dir()]
-        test_dirs.extend(plating_test_dirs)
-
-    # Add base directory if it contains .tf files
-    if any(base_dir.glob("*.tf")):
-        test_dirs.append(base_dir)
-
-    test_dirs = sorted(test_dirs)
+    # Apply filters if provided
+    if any([path_filters, tags, types, regex_pattern]):
+        test_filter = TestFilter(
+            path_filters=path_filters, tags=tags, types=types, regex_pattern=regex_pattern
+        )
+        test_dirs = test_filter.filter_tests(test_dirs)
 
     if not test_dirs:
         console.print(f"🤷 No directories found in '{base_dir}'.")
@@ -120,6 +135,38 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
     type=click.Path(exists=True, file_okay=False, resolve_path=True),
 )
 @click.option(
+    "--pattern",
+    multiple=True,
+    help="Glob pattern for test file discovery (can be used multiple times)",
+)
+@click.option(
+    "--recursive",
+    is_flag=True,
+    help="Search for tests recursively in subdirectories",
+)
+@click.option(
+    "--filter",
+    "path_filters",
+    multiple=True,
+    help="Path-based filter for tests (e.g., 'function/*', '!slow/*')",
+)
+@click.option(
+    "--tags",
+    multiple=True,
+    help="Filter tests by tags (e.g., 'basic', '!slow')",
+)
+@click.option(
+    "--type",
+    "types",
+    multiple=True,
+    help="Filter by component type (data_source, resource, function)",
+)
+@click.option(
+    "--regex",
+    "regex_pattern",
+    help="Regular expression pattern to filter test paths",
+)
+@click.option(
     "--matrix",
     is_flag=True,
     help="Run tests across multiple tool version combinations defined in soup.toml",
@@ -146,7 +193,18 @@ async def main(target_path: str, runtime: StirRuntime) -> None:
     help="Disable plugin caching (downloads providers for each test)",
 )
 def stir_cli(
-    path: str, matrix: bool, matrix_output: str, output_json: bool, upgrade: bool, no_cache: bool
+    path: str,
+    pattern: tuple[str, ...],
+    recursive: bool,
+    path_filters: tuple[str, ...],
+    tags: tuple[str, ...],
+    types: tuple[str, ...],
+    regex_pattern: str | None,
+    matrix: bool,
+    matrix_output: str,
+    output_json: bool,
+    upgrade: bool,
+    no_cache: bool,
 ) -> None:
     """
     Run multi-threaded Terraform tests against all subdirectories in a given PATH.
@@ -177,7 +235,18 @@ def stir_cli(
                 console.print(json.dumps(results, indent=2, default=str))
         else:
             # Run standard single-version testing with runtime
-            asyncio.run(main(path, runtime))
+            asyncio.run(
+                main(
+                    path,
+                    runtime,
+                    patterns=list(pattern) if pattern else None,
+                    recursive=recursive,
+                    path_filters=list(path_filters) if path_filters else None,
+                    tags=list(tags) if tags else None,
+                    types=list(types) if types else None,
+                    regex_pattern=regex_pattern,
+                )
+            )
 
     except KeyboardInterrupt:
         console.print("\n[yellow]⚠️ Interrupted by user[/yellow]")
