@@ -78,13 +78,16 @@ def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_fi
             break
         project_root_path = project_root_path.parent
     else:
-        raise FileNotFoundError("Could not determine project root containing 'pyproject.toml'.")
+        # If no pyproject.toml found, use current directory as fallback
+        project_root_path = pathlib.Path.cwd()
+        logger.debug("No pyproject.toml found in tree, using current directory as project root")
 
     try:
         loaded_config = load_tofusoup_config(project_root_path, explicit_config_file=config_file)
     except TofuSoupConfigError as e:
-        logger.error(f"Configuration Error: {e}. Aborting.")
-        sys.exit(1)
+        # Config errors are not fatal - some commands don't need config
+        logger.debug(f"Configuration not loaded: {e}")
+        loaded_config = {}
     ctx.obj["TOFUSOUP_CONFIG"] = loaded_config
     ctx.obj["PROJECT_ROOT"] = project_root_path
 
@@ -130,8 +133,7 @@ def entry_point() -> None:
     # 1. Magic cookie present + no args (terraform/go-plugin standard)
     # 2. Magic cookie present + "rpc server-start" args (our Go client calls it this way)
     is_plugin_mode = magic_cookie_value and (
-        len(sys.argv) == 1 or
-        (len(sys.argv) == 3 and sys.argv[1] == "rpc" and sys.argv[2] == "server-start")
+        len(sys.argv) == 1 or (len(sys.argv) == 3 and sys.argv[1] == "rpc" and sys.argv[2] == "server-start")
     )
 
     if is_plugin_mode:
@@ -148,17 +150,20 @@ def entry_point() -> None:
         debug_log_path = "/tmp/tofusoup_plugin_debug.log"
         with open(debug_log_path, "a") as f:
             import datetime
+
             f.write(f"\n\n=== Plugin start: {datetime.datetime.now()} ===\n")
             f.write(f"PLUGIN_AUTO_MTLS = {os.getenv('PLUGIN_AUTO_MTLS')}\n")
             f.write(f"Magic cookie key = {magic_cookie_key}\n")
             f.write(f"Magic cookie value = {magic_cookie_value}\n")
             f.write(f"All PLUGIN_* env vars: {[k for k in os.environ.keys() if 'PLUGIN' in k]}\n")
 
-        logger.debug("Plugin mode detected",
-                     plugin_auto_mtls=os.getenv('PLUGIN_AUTO_MTLS'),
-                     magic_cookie_key=magic_cookie_key,
-                     magic_cookie_value=magic_cookie_value,
-                     all_plugin_env_vars={k: v for k, v in os.environ.items() if 'PLUGIN' in k})
+        logger.debug(
+            "Plugin mode detected",
+            plugin_auto_mtls=os.getenv("PLUGIN_AUTO_MTLS"),
+            magic_cookie_key=magic_cookie_key,
+            magic_cookie_value=magic_cookie_value,
+            all_plugin_env_vars={k: v for k, v in os.environ.items() if "PLUGIN" in k},
+        )
 
         # Start the RPC server using pyvider-rpcplugin infrastructure
         import asyncio
@@ -234,9 +239,11 @@ def entry_point() -> None:
             logger.error(f"Plugin server failed to start: {e}", exc_info=True)
             with open(debug_log_path, "a") as f:
                 import traceback as tb
+
                 f.write(f"Exception: {str(e)}\n")
                 f.write(tb.format_exc())
             import traceback
+
             traceback.print_exc()
             sys.exit(1)
 
