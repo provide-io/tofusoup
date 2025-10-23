@@ -20,7 +20,7 @@ The binary will be placed in `/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go
 Ensure the Python environment is activated with all dependencies:
 
 ```bash
-source env.sh  # Sets up the workenv (not .venv)
+uv sync  # Sets up the workenv (not .venv)
 ```
 
 ## Running Cross-Language Tests
