@@ -38,7 +38,12 @@
       "Bash(./bin/soup-go:*)",
       "Bash(xxd:*)",
       "Bash(LOG_LEVEL=DEBUG echo:*)",
-      "Bash(bin/soup-go wire encode:*)"
+      "Bash(bin/soup-go wire encode:*)",
+      "Bash(git log:*)",
+      "Bash(tree:*)",
+      "Bash(git fsck:*)",
+      "Bash(git reflog:*)",
+      "Bash(uv run ruff:*)"
     ],
     "deny": [],
     "ask": [],
