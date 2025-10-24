@@ -17,9 +17,9 @@ from tofusoup.config.defaults import (
     REQUEST_TIMEOUT,
 )
 from tofusoup.rpc.validation import (
+    detect_server_language,
     validate_curve_for_runtime,
     validate_language_pair,
-    detect_server_language,
 )
 
 # Optional RPC integration
@@ -150,7 +150,9 @@ class KVClient:
                 # Both Go and Python servers support --tls-key-type and --tls-curve flags
                 server_command.extend(["--tls-key-type", self.tls_key_type])
                 server_command.extend(["--tls-curve", self.tls_curve])
-                logger.info(f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}, curve: {self.tls_curve}")
+                logger.info(
+                    f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}, curve: {self.tls_curve}"
+                )
             elif self.tls_mode == "manual":
                 if self.cert_file and self.key_file:
                     server_command.extend(["--cert-file", self.cert_file])
@@ -238,25 +240,29 @@ class KVClient:
             await asyncio.wait_for(self._client.start(), timeout=self.connection_timeout)
 
             # Check if stderr relay is available (ManagedProcess may not expose stderr attribute)
-            if self._client._process and hasattr(self._client._process, 'stderr') and self._client._process.stderr:
+            if (
+                self._client._process
+                and hasattr(self._client._process, "stderr")
+                and self._client._process.stderr
+            ):
                 self._relay_stderr()
 
             self._stub = kv_pb2_grpc.KVStub(self._client.grpc_channel)
             self.is_started = True
 
             # Safely get PID from process (may be wrapped in ManagedProcess)
-            pid = getattr(self._client._process, 'pid', 'N/A') if self._client._process else 'N/A'
-            logger.info(
-                f"KVClient connected to server in {time.time() - start_time:.3f}s. Server PID: {pid}"
-            )
+            pid = getattr(self._client._process, "pid", "N/A") if self._client._process else "N/A"
+            logger.info(f"KVClient connected to server in {time.time() - start_time:.3f}s. Server PID: {pid}")
 
         except TimeoutError as e:
             elapsed = time.time() - start_time
             logger.error(f"KVClient connection to server timed out after {elapsed:.3f}s")
             # Safely check if process is still running (ManagedProcess may not have poll())
             if self._client and self._client._process:
-                poll_result = getattr(self._client._process, 'poll', lambda: None)()
-                if poll_result is None or (hasattr(self._client._process, 'returncode') and self._client._process.returncode is None):
+                poll_result = getattr(self._client._process, "poll", lambda: None)()
+                if poll_result is None or (
+                    hasattr(self._client._process, "returncode") and self._client._process.returncode is None
+                ):
                     logger.debug("Server process was still running after client timeout.")
             self.is_started = False
 
@@ -351,7 +357,7 @@ class KVClient:
                 # Safely check if process is still running (ManagedProcess may not expose returncode directly)
                 process_running = False
                 if self._client._process:
-                    returncode = getattr(self._client._process, 'returncode', None)
+                    returncode = getattr(self._client._process, "returncode", None)
                     process_running = returncode is None
 
                 if process_running:

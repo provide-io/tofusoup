@@ -167,9 +167,10 @@ def entry_point() -> None:
 
         # Start the RPC server using pyvider-rpcplugin infrastructure
         import asyncio
+
+        from pyvider.rpcplugin.server import RPCPluginServer
         from tofusoup.harness.proto.kv import KVProtocol
         from tofusoup.rpc.server import KV
-        from pyvider.rpcplugin.server import RPCPluginServer
 
         storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
 
@@ -240,7 +241,7 @@ def entry_point() -> None:
             with open(debug_log_path, "a") as f:
                 import traceback as tb
 
-                f.write(f"Exception: {str(e)}\n")
+                f.write(f"Exception: {e!s}\n")
                 f.write(tb.format_exc())
             import traceback
 

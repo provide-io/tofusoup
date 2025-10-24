@@ -102,7 +102,9 @@ def ensure_go_harness_build(
         # Foundation's run() raises ProcessError, but we want to maintain our custom exceptions
         error_msg = str(e)
         if "not found" in error_msg.lower() or "executable" in error_msg.lower():
-            raise GoVersionError("Go executable not found. Please ensure Go is installed and in your PATH.") from e
+            raise GoVersionError(
+                "Go executable not found. Please ensure Go is installed and in your PATH."
+            ) from e
         logger.error(f"Go build failed for '{harness_name}': {error_msg}")
         raise HarnessBuildError(f"Failed to build Go harness '{harness_name}': {error_msg}") from e
 

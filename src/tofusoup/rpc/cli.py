@@ -3,8 +3,8 @@
 # tofusoup/rpc/cli.py
 #
 import os
-import sys
 from pathlib import Path
+import sys
 
 import click
 import grpc
@@ -15,13 +15,13 @@ from tofusoup.config.defaults import DEFAULT_GRPC_ADDRESS
 from ..harness.proto.kv import kv_pb2, kv_pb2_grpc
 from .server import start_kv_server
 from .validation import (
+    CurveNotSupportedError,
+    LanguagePairNotSupportedError,
     detect_server_language,
     get_compatibility_matrix,
     get_supported_curves,
     validate_curve_for_runtime,
     validate_language_pair,
-    CurveNotSupportedError,
-    LanguagePairNotSupportedError,
 )
 
 
@@ -86,7 +86,9 @@ def kv_get(address: str, key: str) -> None:
 )
 @click.option("--cert-file", help="Path to certificate file (required for manual TLS)")
 @click.option("--key-file", help="Path to private key file (required for manual TLS)")
-def server_start(tls_mode: str, tls_key_type: str, tls_curve: str, cert_file: str | None, key_file: str | None) -> None:
+def server_start(
+    tls_mode: str, tls_key_type: str, tls_curve: str, cert_file: str | None, key_file: str | None
+) -> None:
     """Starts the KV plugin server."""
     from provide.foundation import logger
 

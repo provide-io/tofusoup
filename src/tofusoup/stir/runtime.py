@@ -84,9 +84,9 @@ class StirRuntime:
         deduplicated_providers = self._deduplicate_providers(required_providers)
 
         test_statuses["__PROVIDER_PREP__"]["providers"] = len(deduplicated_providers)
-        test_statuses["__PROVIDER_PREP__"][
-            "last_log"
-        ] = f"Downloading {len(deduplicated_providers)} providers..."
+        test_statuses["__PROVIDER_PREP__"]["last_log"] = (
+            f"Downloading {len(deduplicated_providers)} providers..."
+        )
 
         # Create a temporary manifest to download all providers
         await self._download_providers(deduplicated_providers)
@@ -231,9 +231,9 @@ class StirRuntime:
             from tofusoup.stir.terraform import run_terraform_command
 
             test_statuses["__PROVIDER_PREP__"]["text"] = "DOWNLOADING"
-            test_statuses["__PROVIDER_PREP__"][
-                "last_log"
-            ] = f"Running terraform init to download {len(providers)} providers..."
+            test_statuses["__PROVIDER_PREP__"]["last_log"] = (
+                f"Running terraform init to download {len(providers)} providers..."
+            )
 
             init_args = ["init", "-no-color", "-input=false"]
             if self.force_upgrade:
