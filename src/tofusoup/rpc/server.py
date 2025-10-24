@@ -254,7 +254,6 @@ def start_kv_server(
 
     # Output go-plugin handshake if requested
     if output_handshake:
-        import base64
 
         # Format: core_version|protocol_version|network|address|protocol|cert
         core_version = "1"
