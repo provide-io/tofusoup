@@ -21,6 +21,10 @@
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
+         <loc>https://foundry.provide.io/tofusoup/api/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
          <loc>https://foundry.provide.io/tofusoup/architecture/01-overview/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
@@ -54,6 +58,10 @@
     </url>
     <url>
          <loc>https://foundry.provide.io/tofusoup/core-concepts/conformance-testing/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/examples/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
@@ -93,6 +101,14 @@
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
+         <loc>https://foundry.provide.io/tofusoup/guides/development/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/guides/production/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
          <loc>https://foundry.provide.io/tofusoup/guides/testing/01-running-conformance-tests/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
@@ -118,6 +134,10 @@
     </url>
     <url>
          <loc>https://foundry.provide.io/tofusoup/testing/cross-language-compatibility/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/tutorials/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
 </urlset>

@@ -21,4 +21,4 @@ We plan to add tutorials covering:
 
 ## Contributing
 
-Interested in contributing tutorials? See [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
+Interested in contributing tutorials? See CONTRIBUTING.md in the project root for guidelines.

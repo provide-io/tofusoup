@@ -70,4 +70,4 @@ For more examples, see:
 
 ## Contributing Examples
 
-Have useful examples to share? See [CONTRIBUTING.md](../../CONTRIBUTING.md) for contribution guidelines.
+Have useful examples to share? See CONTRIBUTING.md in the project root for contribution guidelines.
