@@ -12,13 +12,13 @@
         <meta name="author" content="provide.io">
       
       
-        <link rel="canonical" href="https://foundry.provide.io/tofusoup/architecture/02-conformance-testing-strategy/">
+        <link rel="canonical" href="https://foundry.provide.io/tofusoup/reference/api/">
       
       
-        <link rel="prev" href="../01-overview/">
+        <link rel="prev" href="../compatibility-matrix/">
       
       
-        <link rel="next" href="../03-rpc-matrix-specification/">
+        <link rel="next" href="../../testing/conformance-test-status/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Conformance Testing Strategy - TofuSoup Documentation</title>
+        <title>API - TofuSoup Documentation</title>
       
     
     
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#conformance-testing-strategy" class="md-skip">
+        <a href="#tofusoup-api-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Conformance Testing Strategy
+              API
             
           </span>
         </div>
@@ -320,13 +320,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../01-overview/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../architecture/01-overview/" class="md-tabs__link">
           
   
   
@@ -344,11 +342,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../reference/configuration/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../configuration/" class="md-tabs__link">
           
   
   
@@ -1063,10 +1063,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1088,22 +1086,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -1116,7 +1113,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Architecture Details
@@ -1130,7 +1127,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../01-overview/" class="md-nav__link">
+      <a href="../../architecture/01-overview/" class="md-nav__link">
         
   
   
@@ -1150,32 +1147,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Conformance Testing Strategy
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../architecture/02-conformance-testing-strategy/" class="md-nav__link">
         
   
   
@@ -1186,68 +1161,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#testing-philosophy-souptest-vs-pytest" class="md-nav__link">
-    <span class="md-ellipsis">
-      Testing Philosophy: souptest vs. pytest
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architectural-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      Architectural Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architectural Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#design-principles" class="md-nav__link">
-    <span class="md-ellipsis">
-      Design Principles
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#directory-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      Directory Structure
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1260,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-rpc-matrix-specification/" class="md-nav__link">
+      <a href="../../architecture/03-rpc-matrix-specification/" class="md-nav__link">
         
   
   
@@ -1283,7 +1196,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-wire-protocol-details/" class="md-nav__link">
+      <a href="../../architecture/05-wire-protocol-details/" class="md-nav__link">
         
   
   
@@ -1306,7 +1219,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../06-polyglot-cli-strategy/" class="md-nav__link">
+      <a href="../../architecture/06-polyglot-cli-strategy/" class="md-nav__link">
         
   
   
@@ -1329,7 +1242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-stock-service-design/" class="md-nav__link">
+      <a href="../../architecture/07-stock-service-design/" class="md-nav__link">
         
   
   
@@ -1352,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../soup-go-vs-terraform/" class="md-nav__link">
+      <a href="../../architecture/soup-go-vs-terraform/" class="md-nav__link">
         
   
   
@@ -1379,6 +1292,8 @@
       
   
   
+    
+  
   
   
     
@@ -1396,22 +1311,23 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../reference/api/" class="md-nav__link ">
+            <a href="./" class="md-nav__link md-nav__link--active">
               
   
   
@@ -1424,13 +1340,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_6" id="__nav_6_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Reference
@@ -1444,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/configuration/" class="md-nav__link">
+      <a href="../configuration/" class="md-nav__link">
         
   
   
@@ -1467,7 +1383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/compatibility-matrix/" class="md-nav__link">
+      <a href="../compatibility-matrix/" class="md-nav__link">
         
   
   
@@ -1711,44 +1627,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#testing-philosophy-souptest-vs-pytest" class="md-nav__link">
+  <a href="#using-tofusoup-as-a-library" class="md-nav__link">
     <span class="md-ellipsis">
-      Testing Philosophy: souptest vs. pytest
+      Using TofuSoup as a Library
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architectural-design" class="md-nav__link">
+  <a href="#module-documentation" class="md-nav__link">
     <span class="md-ellipsis">
-      Architectural Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architectural Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#design-principles" class="md-nav__link">
-    <span class="md-ellipsis">
-      Design Principles
+      Module Documentation
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#directory-structure" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#tofusoup" class="md-nav__link">
     <span class="md-ellipsis">
-      Directory Structure
+      <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;tofusoup
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1771,49 +1672,64 @@
   
 
 
-<h1 id="conformance-testing-strategy">Conformance Testing Strategy<a class="headerlink" href="#conformance-testing-strategy" title="Permanent link">&para;</a></h1>
-<p>This document outlines the architecture for the TofuSoup conformance testing suite.</p>
-<h2 id="testing-philosophy-souptest-vs-pytest">Testing Philosophy: <code>souptest</code> vs. <code>pytest</code><a class="headerlink" href="#testing-philosophy-souptest-vs-pytest" title="Permanent link">&para;</a></h2>
-<p>A core distinction in this project is the separation of concerns in testing:
--   <strong>Conformance Tests (<code>souptest_*.py</code>)</strong>: These tests, located in <code>tofusoup/conformance/</code>, are for verifying <strong>cross-language compatibility</strong>. They compare the behavior of Python implementations against the canonical Go harnesses. They are run via the <code>soup test</code> command.
--   <strong>Internal Tests (<code>test_*.py</code>)</strong>: These are standard unit and integration tests for the <code>tofusoup</code> tool <strong>itself</strong>. They are located in <code>tofusoup/tests/</code> and are run using <code>pytest</code> directly.</p>
-<h2 id="architectural-design">Architectural Design<a class="headerlink" href="#architectural-design" title="Permanent link">&para;</a></h2>
-<p>The conformance suite is organized into a hierarchical and purpose-driven structure to ensure clarity, prevent duplication, and provide a scalable foundation for comprehensive testing.</p>
-<h3 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Hierarchical Organization</strong>: Reflect test complexity and dependencies.</li>
-<li><strong>Cross-Cutting Separation</strong>: Create dedicated areas for security, performance, and integration.</li>
-<li><strong>Single Source of Truth</strong>: Eliminate duplication in test scenarios and fixtures.</li>
-<li><strong>Clear Purpose</strong>: Each directory has an explicit, non-overlapping responsibility.</li>
-</ol>
-<h3 id="directory-structure">Directory Structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>conformance/
-├── README.md                           # Testing strategy and execution guide
-├── conftest.py                         # Global fixtures and matrix configurations
-│
-├── unit/                               # Individual protocol conformance
-│   ├── souptest_cty_conformance.py
-│   ├── souptest_wire_conformance.py
-│   └── souptest_rpc_conformance.py
-│
-├── integration/                        # Cross-protocol integration testing
-│   ├── souptest_full_stack_matrix.py      # Complete CTY→Wire→RPC flow
-│   └── souptest_provider_lifecycle.py     # Full Terraform provider scenarios
-│
-├── security/                           # Security-focused conformance
-│   └── souptest_crypto_matrix.py          # All cipher/curve combinations
-│
-├── scenarios/                          # End-to-end BDD-style scenario testing
-│   ├── terraform_equivalence/
-│   │   ├── basic_operations.feature
-│   │   └── step_definitions/
-│   └── souptest_scenario_runner.py
-│
-└── fixtures/                           # Shared test data and configuration
-    ├── cty_data/
-    └── certificates/
+<h1 id="tofusoup-api-reference">TofuSoup API Reference<a class="headerlink" href="#tofusoup-api-reference" title="Permanent link">&para;</a></h1>
+<p>This page provides auto-generated API documentation for the <code>tofusoup</code> Python package.</p>
+<h2 id="using-tofusoup-as-a-library">Using TofuSoup as a Library<a class="headerlink" href="#using-tofusoup-as-a-library" title="Permanent link">&para;</a></h2>
+<p>While TofuSoup is primarily a CLI tool, you can also use its components programmatically:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># CTY operations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_cty_file</span><span class="p">,</span> <span class="n">view_cty_file</span>
+
+<span class="c1"># HCL operations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.hcl.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_hcl_file</span><span class="p">,</span> <span class="n">convert_hcl_file</span>
+
+<span class="c1"># Wire protocol operations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.wire.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_wire</span><span class="p">,</span> <span class="n">decode_wire</span>
+
+<span class="c1"># Configuration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.common.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_tofusoup_config</span>
 </code></pre></div>
-<p>This architecture provides a robust framework for implementing matrix-based testing and ensuring systematic validation of TofuSoup components against their canonical Go counterparts.</p>
+<h2 id="module-documentation">Module Documentation<a class="headerlink" href="#module-documentation" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="tofusoup" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">tofusoup</span>
+
+
+<a href="#tofusoup" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -1851,7 +1767,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../01-overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+          <a href="../compatibility-matrix/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Compatibility Matrix">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1861,20 +1777,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Overview
+                Compatibility Matrix
               </div>
             </div>
           </a>
         
         
           
-          <a href="../03-rpc-matrix-specification/" class="md-footer__link md-footer__link--next" aria-label="Next: RPC Matrix Specification">
+          <a href="../../testing/conformance-test-status/" class="md-footer__link md-footer__link--next" aria-label="Next: Conformance Test Status">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                RPC Matrix Specification
+                Conformance Test Status
               </div>
             </div>
             <div class="md-footer__button md-icon">
