@@ -30,15 +30,15 @@ class TestCrossLanguageInterop:
     """Test cross-language RPC interoperability."""
 
     @pytest.fixture
-    async def python_server_address(self, temp_directory: Path) -> str:
+    async def python_server_address(self, tmp_path: Path) -> str:
         """Start a Python KV server with isolated storage and return its address."""
         server = grpc.aio.server()
         port = server.add_insecure_port("[::]:0")  # Get available port
         # Use isolated temp directory for this server instance
-        serve(server, storage_dir=str(temp_directory))
+        serve(server, storage_dir=str(tmp_path))
         await server.start()
         address = f"127.0.0.1:{port}"
-        logger.info(f"Started Python KV server at {address}", storage_dir=str(temp_directory))
+        logger.info(f"Started Python KV server at {address}", storage_dir=str(tmp_path))
         yield address
         await server.stop(0)
         logger.info(f"Stopped Python KV server at {address}")
@@ -148,7 +148,7 @@ class TestCrossLanguageInterop:
     @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
     async def test_go_client_python_server(
-        self, go_client_path: str, python_server_address: str, temp_directory: Path
+        self, go_client_path: str, python_server_address: str, tmp_path: Path
     ) -> None:
         """Test: Go Client ↔ Python Server"""
         if not go_client_path:
@@ -157,7 +157,7 @@ class TestCrossLanguageInterop:
         logger.info("🐹↔🐍 Testing Go Client ↔ Python Server")
 
         # Create a temporary bridge script in our isolated temp directory
-        bridge_path = temp_directory / "bridge.py"
+        bridge_path = tmp_path / "bridge.py"
         with bridge_path.open("w") as f:
             # Create a Python script that acts as a bridge
             bridge_script = f"""#!/usr/bin/env python3
