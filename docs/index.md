@@ -12,7 +12,6 @@ TofuSoup provides CLI tools and testing frameworks for working with Terraform-re
 - **RPC Testing**: Cross-language RPC compatibility testing (Python ↔ Go)
 - **Registry Access**: Query and search Terraform/OpenTofu registries
 - **Matrix Testing**: Test providers across multiple Terraform/OpenTofu versions
-- **Provider Tools**: Development utilities for provider authors
 
 ## Installation
 
