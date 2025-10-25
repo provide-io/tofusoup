@@ -6,9 +6,9 @@ This directory is reserved for development-focused guides.
 
 For now, please refer to:
 
-- **[CONTRIBUTING.md](../../../CONTRIBUTING.md)** - Contributing guidelines and development setup
-- **[CLAUDE.md](../../../CLAUDE.md)** - Development notes and project structure
-- **[Architecture Documentation](../../architecture/)** - System design and architecture
+- **CONTRIBUTING.md** (project root) - Contributing guidelines and development setup
+- **CLAUDE.md** (project root) - Development notes and project structure
+- **[Architecture Documentation](../../architecture/01-overview.md)** - System design and architecture
 - **[Test Harness Development](../testing/test-harness-development.md)** - Building and testing harnesses
 
 ## Planned Content
@@ -22,4 +22,4 @@ We plan to add guides for:
 
 ## Contributing
 
-Have development expertise to share? See [CONTRIBUTING.md](../../../CONTRIBUTING.md) for contribution guidelines.
+Have development expertise to share? See CONTRIBUTING.md in the project root for contribution guidelines.

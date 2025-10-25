@@ -31,4 +31,4 @@ We plan to add:
 
 ## Contributing
 
-Want to help improve API documentation? See [CONTRIBUTING.md](../../CONTRIBUTING.md).
+Want to help improve API documentation? See CONTRIBUTING.md in the project root or visit the [GitHub repository](https://github.com/provide-io/tofusoup).

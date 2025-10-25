@@ -12,13 +12,9 @@
         <meta name="author" content="provide.io">
       
       
-        <link rel="canonical" href="https://foundry.provide.io/tofusoup/reference/api/">
+        <link rel="canonical" href="https://foundry.provide.io/tofusoup/guides/production/">
       
       
-        <link rel="prev" href="../compatibility-matrix/">
-      
-      
-        <link rel="next" href="../../testing/conformance-test-status/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +22,7 @@
     
     
       
-        <title>API - TofuSoup Documentation</title>
+        <title>Production Guides - TofuSoup Documentation</title>
       
     
     
@@ -84,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tofusoup-api-reference" class="md-skip">
+        <a href="#production-guides" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API
+              Production Guides
             
           </span>
         </div>
@@ -292,7 +288,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/migration/" class="md-tabs__link">
+        <a href="../migration/" class="md-tabs__link">
           
   
   
@@ -332,13 +328,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../configuration/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../reference/configuration/" class="md-tabs__link">
           
   
   
@@ -816,7 +810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/migration/" class="md-nav__link">
+      <a href="../migration/" class="md-nav__link">
         
   
   
@@ -896,7 +890,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/cli-usage/03-using-cty-and-hcl-tools/" class="md-nav__link">
+      <a href="../cli-usage/03-using-cty-and-hcl-tools/" class="md-nav__link">
         
   
   
@@ -919,7 +913,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/cli-usage/wire-protocol/" class="md-nav__link">
+      <a href="../cli-usage/wire-protocol/" class="md-nav__link">
         
   
   
@@ -942,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/cli-usage/matrix-testing/" class="md-nav__link">
+      <a href="../cli-usage/matrix-testing/" class="md-nav__link">
         
   
   
@@ -965,7 +959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/cli-usage/configuration-management/" class="md-nav__link">
+      <a href="../cli-usage/configuration-management/" class="md-nav__link">
         
   
   
@@ -988,7 +982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/cli-usage/state-inspection/" class="md-nav__link">
+      <a href="../cli-usage/state-inspection/" class="md-nav__link">
         
   
   
@@ -1070,7 +1064,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/testing/01-running-conformance-tests/" class="md-nav__link">
+      <a href="../testing/01-running-conformance-tests/" class="md-nav__link">
         
   
   
@@ -1093,7 +1087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/testing/test-harness-development/" class="md-nav__link">
+      <a href="../testing/test-harness-development/" class="md-nav__link">
         
   
   
@@ -1357,8 +1351,6 @@
       
   
   
-    
-  
   
   
     
@@ -1376,23 +1368,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../../reference/api/" class="md-nav__link ">
               
   
   
@@ -1405,13 +1396,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_6" id="__nav_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Reference
@@ -1425,7 +1416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuration/" class="md-nav__link">
+      <a href="../../reference/configuration/" class="md-nav__link">
         
   
   
@@ -1448,7 +1439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../compatibility-matrix/" class="md-nav__link">
+      <a href="../../reference/compatibility-matrix/" class="md-nav__link">
         
   
   
@@ -1692,138 +1683,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#using-tofusoup-as-a-library" class="md-nav__link">
+  <a href="#current-resources" class="md-nav__link">
     <span class="md-ellipsis">
-      Using TofuSoup as a Library
+      Current Resources
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-examples" class="md-nav__link">
+  <a href="#planned-content" class="md-nav__link">
     <span class="md-ellipsis">
-      Quick Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quick Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cty-operations" class="md-nav__link">
-    <span class="md-ellipsis">
-      CTY Operations
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hcl-operations" class="md-nav__link">
-    <span class="md-ellipsis">
-      HCL Operations
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#wire-protocol" class="md-nav__link">
-    <span class="md-ellipsis">
-      Wire Protocol
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Configuration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#common-integration-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Common Integration Patterns
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Common Integration Patterns">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#validation-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      Validation Pipeline
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#custom-test-harness" class="md-nav__link">
-    <span class="md-ellipsis">
-      Custom Test Harness
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#batch-processing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Batch Processing
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Error Handling
+      Planned Content
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#logging" class="md-nav__link">
+  <a href="#contributing" class="md-nav__link">
     <span class="md-ellipsis">
-      Logging
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#module-documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Module Documentation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tofusoup" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;tofusoup
+      Contributing
     </span>
   </a>
   
@@ -1848,259 +1728,26 @@
   
 
 
-<h1 id="tofusoup-api-reference">TofuSoup API Reference<a class="headerlink" href="#tofusoup-api-reference" title="Permanent link">&para;</a></h1>
-<p>This page provides auto-generated API documentation for the <code>tofusoup</code> Python package.</p>
-<h2 id="using-tofusoup-as-a-library">Using TofuSoup as a Library<a class="headerlink" href="#using-tofusoup-as-a-library" title="Permanent link">&para;</a></h2>
-<p>While TofuSoup is primarily a CLI tool, you can also use its components programmatically:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># CTY operations</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_cty_file</span><span class="p">,</span> <span class="n">view_cty_file</span>
-
-<span class="c1"># HCL operations</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.hcl.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_hcl_file</span><span class="p">,</span> <span class="n">convert_hcl_file</span>
-
-<span class="c1"># Wire protocol operations</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.wire.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_wire</span><span class="p">,</span> <span class="n">decode_wire</span>
-
-<span class="c1"># Configuration</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.common.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_tofusoup_config</span>
-</code></pre></div>
-<h2 id="quick-examples">Quick Examples<a class="headerlink" href="#quick-examples" title="Permanent link">&para;</a></h2>
-<h3 id="cty-operations">CTY Operations<a class="headerlink" href="#cty-operations" title="Permanent link">&para;</a></h3>
-<p>Convert CTY files between formats:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_cty_file</span>
-
-<span class="c1"># Convert JSON to MessagePack</span>
-<span class="n">success</span> <span class="o">=</span> <span class="n">convert_cty_file</span><span class="p">(</span>
-    <span class="n">input_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data.json&quot;</span><span class="p">),</span>
-    <span class="n">output_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data.msgpack&quot;</span><span class="p">),</span>
-    <span class="n">input_format</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
-    <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;msgpack&quot;</span>
-<span class="p">)</span>
-
-<span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Conversion successful!&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>View CTY structure:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">view_cty_file</span>
-
-<span class="c1"># Display CTY structure as rich tree</span>
-<span class="n">view_cty_file</span><span class="p">(</span>
-    <span class="n">file_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data.json&quot;</span><span class="p">),</span>
-    <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;json&quot;</span>
-<span class="p">)</span>
-</code></pre></div>
-<h3 id="hcl-operations">HCL Operations<a class="headerlink" href="#hcl-operations" title="Permanent link">&para;</a></h3>
-<p>Parse HCL files:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.hcl.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_hcl_file</span>
-
-<span class="c1"># Parse HCL file and get CTY representation</span>
-<span class="n">cty_value</span> <span class="o">=</span> <span class="n">parse_hcl_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;main.tf&quot;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parsed HCL: </span><span class="si">{</span><span class="n">cty_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>Convert HCL to other formats:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.hcl.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_hcl_file</span>
-
-<span class="c1"># Convert HCL to JSON</span>
-<span class="n">convert_hcl_file</span><span class="p">(</span>
-    <span class="n">input_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;config.hcl&quot;</span><span class="p">),</span>
-    <span class="n">output_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">),</span>
-    <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;json&quot;</span>
-<span class="p">)</span>
-</code></pre></div>
-<h3 id="wire-protocol">Wire Protocol<a class="headerlink" href="#wire-protocol" title="Permanent link">&para;</a></h3>
-<p>Encode and decode wire protocol messages:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.wire.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_wire</span><span class="p">,</span> <span class="n">decode_wire</span>
-
-<span class="c1"># Encode JSON to wire format</span>
-<span class="n">encode_wire</span><span class="p">(</span>
-    <span class="n">input_json_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;value.json&quot;</span><span class="p">),</span>
-    <span class="n">output_tfw_b64_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;value.tfw.b64&quot;</span><span class="p">)</span>
-<span class="p">)</span>
-
-<span class="c1"># Decode wire format to JSON</span>
-<span class="n">decode_wire</span><span class="p">(</span>
-    <span class="n">input_tfw_b64_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;value.tfw.b64&quot;</span><span class="p">),</span>
-    <span class="n">output_json_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;decoded.json&quot;</span><span class="p">)</span>
-<span class="p">)</span>
-</code></pre></div>
-<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
-<p>Load TofuSoup configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.common.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_tofusoup_config</span>
-
-<span class="c1"># Load from project root</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">load_tofusoup_config</span><span class="p">(</span>
-    <span class="n">project_root</span><span class="o">=</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span>
-    <span class="n">explicit_config_file</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">)</span>
-
-<span class="c1"># Access configuration</span>
-<span class="n">log_level</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_settings&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default_python_log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Log level: </span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="common-integration-patterns">Common Integration Patterns<a class="headerlink" href="#common-integration-patterns" title="Permanent link">&para;</a></h2>
-<h3 id="validation-pipeline">Validation Pipeline<a class="headerlink" href="#validation-pipeline" title="Permanent link">&para;</a></h3>
-<p>Build a validation pipeline using TofuSoup components:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_cty_file</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.wire.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_wire</span><span class="p">,</span> <span class="n">decode_wire</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">validate_cty_roundtrip</span><span class="p">(</span><span class="n">input_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate CTY data through full encode/decode cycle.&quot;&quot;&quot;</span>
-    <span class="n">temp_msgpack</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;temp.msgpack&quot;</span><span class="p">)</span>
-    <span class="n">temp_wire</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;temp.tfw.b64&quot;</span><span class="p">)</span>
-    <span class="n">temp_decoded</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;temp_decoded.json&quot;</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Convert to msgpack</span>
-        <span class="n">convert_cty_file</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">temp_msgpack</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;msgpack&quot;</span><span class="p">)</span>
-
-        <span class="c1"># Encode to wire format</span>
-        <span class="n">encode_wire</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">temp_wire</span><span class="p">)</span>
-
-        <span class="c1"># Decode back</span>
-        <span class="n">decode_wire</span><span class="p">(</span><span class="n">temp_wire</span><span class="p">,</span> <span class="n">temp_decoded</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="c1"># Cleanup</span>
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">temp_msgpack</span><span class="p">,</span> <span class="n">temp_wire</span><span class="p">,</span> <span class="n">temp_decoded</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="custom-test-harness">Custom Test Harness<a class="headerlink" href="#custom-test-harness" title="Permanent link">&para;</a></h3>
-<p>Use TofuSoup components to build custom test harnesses:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.common.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_tofusoup_config</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_cty_file</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">CustomTestHarness</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">load_tofusoup_config</span><span class="p">(</span><span class="n">config_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_data_dir</span> <span class="o">=</span> <span class="n">config_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;test_data&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">run_conversion_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run all CTY conversion tests.&quot;&quot;&quot;</span>
-        <span class="n">test_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_data_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">test_file</span> <span class="ow">in</span> <span class="n">test_files</span><span class="p">:</span>
-            <span class="n">output_file</span> <span class="o">=</span> <span class="n">test_file</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.msgpack&quot;</span><span class="p">)</span>
-            <span class="n">success</span> <span class="o">=</span> <span class="n">convert_cty_file</span><span class="p">(</span>
-                <span class="n">test_file</span><span class="p">,</span>
-                <span class="n">output_file</span><span class="p">,</span>
-                <span class="s2">&quot;json&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;msgpack&quot;</span>
-            <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Test </span><span class="si">{</span><span class="n">test_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;PASS&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;FAIL&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Usage</span>
-<span class="n">harness</span> <span class="o">=</span> <span class="n">CustomTestHarness</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;soup.toml&quot;</span><span class="p">))</span>
-<span class="n">harness</span><span class="o">.</span><span class="n">run_conversion_tests</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="batch-processing">Batch Processing<a class="headerlink" href="#batch-processing" title="Permanent link">&para;</a></h3>
-<p>Process multiple files with TofuSoup:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.hcl.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_hcl_file</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">batch_convert_hcl</span><span class="p">(</span><span class="n">source_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert all HCL files in a directory to JSON.&quot;&quot;&quot;</span>
-    <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">hcl_file</span> <span class="ow">in</span> <span class="n">source_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;**/*.hcl&quot;</span><span class="p">):</span>
-        <span class="n">output_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">hcl_file</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">source_dir</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">)</span>
-        <span class="n">output_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">convert_hcl_file</span><span class="p">(</span><span class="n">hcl_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Converted </span><span class="si">{</span><span class="n">hcl_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✗ Failed </span><span class="si">{</span><span class="n">hcl_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Usage</span>
-<span class="n">batch_convert_hcl</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;terraform_configs&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;converted_json&quot;</span><span class="p">))</span>
-</code></pre></div>
-<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
-<p>TofuSoup components raise exceptions for errors. Always wrap calls in try-except blocks:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_cty_file</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TofuSoupError</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">convert_cty_file</span><span class="p">(</span>
-        <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;input.json&quot;</span><span class="p">),</span>
-        <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;output.msgpack&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;json&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;msgpack&quot;</span>
-    <span class="p">)</span>
-<span class="k">except</span> <span class="n">TofuSoupError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TofuSoup error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
-<p>TofuSoup uses structured logging via <code>provide.foundation</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">provide.foundation</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
-
-<span class="c1"># TofuSoup functions log automatically</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tofusoup.cty.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_cty_file</span>
-
-<span class="c1"># Configure logging if needed</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-
-<span class="c1"># Now CTY operations will log debug information</span>
-<span class="n">convert_cty_file</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="module-documentation">Module Documentation<a class="headerlink" href="#module-documentation" title="Permanent link">&para;</a></h2>
-
-
-<div class="doc doc-object doc-module">
-
-
-
-<h2 id="tofusoup" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">tofusoup</span>
-
-
-<a href="#tofusoup" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents first">
-
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
+<h1 id="production-guides">Production Guides<a class="headerlink" href="#production-guides" title="Permanent link">&para;</a></h1>
+<p>This directory is reserved for production deployment and operation guides.</p>
+<h2 id="current-resources">Current Resources<a class="headerlink" href="#current-resources" title="Permanent link">&para;</a></h2>
+<p>For production use, refer to:</p>
+<ul>
+<li><strong><a href="../../reference/configuration/">Configuration Reference</a></strong> - Complete configuration documentation</li>
+<li><strong><a href="../../troubleshooting/">Troubleshooting</a></strong> - Common issues and solutions</li>
+<li><strong><a href="../cli-usage/matrix-testing/">Matrix Testing Guide</a></strong> - Testing across multiple versions</li>
+<li><strong><a href="../cli-usage/state-inspection/">State Inspection</a></strong> - Production state management</li>
+</ul>
+<h2 id="planned-content">Planned Content<a class="headerlink" href="#planned-content" title="Permanent link">&para;</a></h2>
+<p>We plan to add guides for:
+- Deploying TofuSoup in CI/CD pipelines
+- Production configuration best practices
+- Monitoring and observability
+- Security hardening
+- Scaling matrix testing for large provider fleets
+- Integration with enterprise workflows</p>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>Have production experience to share? See CONTRIBUTING.md in the project root for contribution guidelines.</p>
 
 
 
@@ -2133,44 +1780,6 @@
       
         <footer class="md-footer">
   
-    
-      
-      <nav class="md-footer__inner md-grid" aria-label="Footer" >
-        
-          
-          <a href="../compatibility-matrix/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Compatibility Matrix">
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-            </div>
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              <div class="md-ellipsis">
-                Compatibility Matrix
-              </div>
-            </div>
-          </a>
-        
-        
-          
-          <a href="../../testing/conformance-test-status/" class="md-footer__link md-footer__link--next" aria-label="Next: Conformance Test Status">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              <div class="md-ellipsis">
-                Conformance Test Status
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
     
   
   <div class="md-footer-meta md-typeset">
