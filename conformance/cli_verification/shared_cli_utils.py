@@ -18,7 +18,7 @@ def run_harness_cli(
     """
     runner = HarnessRunner(project_root / "soup" / "output")
     return runner.run(
-        [str(executable)] + args, f"harness_runs/{harness_artifact_name}/{test_id}", stdin=stdin_input
+        [str(executable), *args], f"harness_runs/{harness_artifact_name}/{test_id}", stdin=stdin_input
     )
 
 
@@ -30,7 +30,7 @@ def run_tofusoup_cli(
     """
     runner = HarnessRunner(project_root / "soup" / "output")
     return runner.run(
-        [sys.executable, "-m", "tofusoup.cli"] + args,
+        [sys.executable, "-m", "tofusoup.cli", *args],
         f"cli_runs/tofusoup_cli/{test_id}",
         stdin=stdin_input,
         cwd=project_root,

@@ -3,9 +3,12 @@
 Test Python client → Python server with all curves
 """
 import asyncio
+import builtins
+import contextlib
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
+
 from tofusoup.rpc.client import KVClient
 
 
@@ -36,7 +39,7 @@ async def test_curve(curve_name: str, soup_path: Path) -> tuple[bool, float, str
         test_value = f"Hello with {curve_name}!".encode()
 
         await client.put(test_key, test_value)
-        print(f"✅ PUT successful")
+        print("✅ PUT successful")
 
         result = await client.get(test_key)
         print(f"✅ GET successful: {len(result)} bytes")
@@ -47,21 +50,19 @@ async def test_curve(curve_name: str, soup_path: Path) -> tuple[bool, float, str
             await client.close()
             return (True, total_time, "")
         else:
-            print(f"\n❌ FAIL: Value mismatch")
+            print("\n❌ FAIL: Value mismatch")
             await client.close()
             return (False, time.time() - start, "Value mismatch")
 
     except Exception as e:
         error = f"{type(e).__name__}: {str(e)[:100]}"
         print(f"\n❌ FAIL: {error}")
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return (False, time.time() - start, error)
 
 
-async def main():
+async def main() -> int:
     soup_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
     if not soup_path.exists():

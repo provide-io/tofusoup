@@ -6,10 +6,11 @@ Quick RPC combination tests:
 """
 import asyncio
 import time
+
 from tofusoup.rpc.client import KVClient
 
 
-async def test_python_to_python():
+async def test_python_to_python() -> bool | None:
     """Test Python client → Python server with RSA 2048."""
     print("=" * 60)
     print("🐍→🐍 Testing Python Client → Python Server")
@@ -49,7 +50,7 @@ async def test_python_to_python():
             print(f"   Got: {result}")
             return False
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         duration = time.time() - start_time
         print(f"⏱️ TIMEOUT: Handshake failed after {duration:.2f}s")
         print("   This is the known Python→Python handshake issue")
@@ -68,7 +69,7 @@ async def test_python_to_python():
             pass
 
 
-async def main():
+async def main() -> None:
     """Run all tests."""
     print("\n🍲 TofuSoup RPC Combination Tests\n")
 

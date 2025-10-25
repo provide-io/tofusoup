@@ -12,7 +12,7 @@ from pyvider.cty.values import CtyValue
     reason="pyvider-cty validation hits 30s timeout due to recursion detection issues. "
     "See: https://github.com/provide-io/pyvider-cty/issues/TBD"
 )
-def test_decode_simple_attributes():
+def test_decode_simple_attributes() -> None:
     """Verify decoding of a simple flat object."""
     schema = CtyObject({"name": CtyString(), "age": CtyNumber()})
     data = {"name": "Alice", "age": 30}
@@ -27,7 +27,7 @@ def test_decode_simple_attributes():
 
 
 @pytest.mark.integration_cty
-def test_roundtrip_simple_data():
+def test_roundtrip_simple_data() -> None:
     """Verify that encoding then decoding a value yields the original."""
     schema = CtyObject({"name": CtyString(), "age": CtyNumber()})
     original_value = schema.validate({"name": "Bob", "age": 42})

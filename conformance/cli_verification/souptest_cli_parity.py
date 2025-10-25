@@ -44,7 +44,7 @@ def extract_arguments_from_help(help_text: str) -> set[str]:
 
 def get_command_help(executable: Path, command_parts: list[str]) -> tuple[int, str, str]:
     """Get help output for a specific command."""
-    cmd = [str(executable)] + command_parts + ["--help"]
+    cmd = [str(executable), *command_parts, "--help"]
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     return result.returncode, result.stdout, result.stderr
 
@@ -158,7 +158,7 @@ class TestCLIParityMatrix:
     )
     def test_command_structure_parity(
         self, soup_executable: Path, soup_go_executable: Path, command_path: str
-    ):
+    ) -> None:
         """Test that both CLIs have the same command structure."""
         if not soup_executable.exists():
             pytest.skip("soup executable not found")
@@ -210,7 +210,7 @@ class TestCLIParityMatrix:
             "hcl convert",
         ],
     )
-    def test_common_arguments_parity(self, soup_executable: Path, soup_go_executable: Path, command_path: str):
+    def test_common_arguments_parity(self, soup_executable: Path, soup_go_executable: Path, command_path: str) -> None:
         """Test that both CLIs have similar arguments for the same commands."""
         if not soup_executable.exists():
             pytest.skip("soup executable not found")
@@ -220,8 +220,8 @@ class TestCLIParityMatrix:
         command_parts = command_path.split()
 
         # Get help from both CLIs
-        soup_exit, soup_help, soup_err = get_command_help(soup_executable, command_parts)
-        go_exit, go_help, go_err = get_command_help(soup_go_executable, command_parts)
+        soup_exit, soup_help, _soup_err = get_command_help(soup_executable, command_parts)
+        go_exit, go_help, _go_err = get_command_help(soup_go_executable, command_parts)
 
         # Skip if either command doesn't exist
         if soup_exit != 0 or go_exit != 0:
@@ -251,7 +251,7 @@ class TestCLIParityMatrix:
                     UserWarning, match=f"Missing common arguments for '{command_path}': {missing_common}"
                 )
 
-    def test_root_command_basic_parity(self, soup_executable: Path, soup_go_executable: Path):
+    def test_root_command_basic_parity(self, soup_executable: Path, soup_go_executable: Path) -> None:
         """Test basic parity of root commands."""
         if not soup_executable.exists():
             pytest.skip("soup executable not found")
@@ -272,7 +272,7 @@ class TestCLIParityMatrix:
             assert cmd in soup_help.lower(), f"soup should mention '{cmd}' in help"
             assert cmd in go_help.lower(), f"soup-go should mention '{cmd}' in help"
 
-    def test_generate_command_go_only(self, soup_go_executable: Path):
+    def test_generate_command_go_only(self, soup_go_executable: Path) -> None:
         """Test that soup-go has generate command (Go-specific)."""
         if not soup_go_executable.exists():
             pytest.skip("soup-go executable not found")
@@ -285,7 +285,7 @@ class TestCLIParityMatrix:
         )
 
     @pytest.mark.parametrize("command", ["cty", "hcl"])
-    def test_command_exists_both_clis(self, soup_executable: Path, soup_go_executable: Path, command: str):
+    def test_command_exists_both_clis(self, soup_executable: Path, soup_go_executable: Path, command: str) -> None:
         """Test that core commands exist in both CLIs."""
         if not soup_executable.exists():
             pytest.skip("soup executable not found")

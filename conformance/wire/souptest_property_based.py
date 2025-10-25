@@ -17,7 +17,7 @@ simple_schema_and_data = st.builds(
 
 @pytest.mark.integration_cty
 @given(schema_data=simple_schema_and_data)
-def test_roundtrip_is_isomorphic(schema_data):
+def test_roundtrip_is_isomorphic(schema_data) -> None:
     """
     Property-based test to ensure that for any valid schema and data,
     encoding and then decoding the data results in an equivalent CtyValue.

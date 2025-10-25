@@ -113,19 +113,19 @@ HARNESS_INVOCATIONS = {
 }
 
 
-def create_dummy_files():
+def create_dummy_files() -> None:
     """Creates dummy data files needed for some harness invocations."""
     print("Creating dummy data files...")
     for filename, content in DUMMY_DATA.items():
         filepath = DATA_DIR / filename
-        if isinstance(content, dict) or isinstance(content, list):
+        if isinstance(content, (dict, list)):
             filepath.write_text(json.dumps(content, indent=2))
         else:
             filepath.write_text(str(content))
         print(f"  Created: {filepath}")
 
 
-def run_verification():
+def run_verification() -> None:
     """Runs the CLI verification for all defined harnesses."""
     print(f"Project Root: {PROJECT_ROOT}")
     print(f"Harness Bin Dir: {HARNESS_BIN_DIR}")
@@ -150,7 +150,7 @@ def run_verification():
             log_summary = invocation_details["log_summary"]
             stdin_content = invocation_details["stdin"]
 
-            command = [str(harness_executable)] + args
+            command = [str(harness_executable), *args]
             print(f"    Running: {' '.join(command)}")
 
             try:

@@ -4,6 +4,7 @@ Test all EC curves (P-256, P-384, P-521) with Python client → Go server
 """
 import asyncio
 import time
+
 from tofusoup.rpc.client import KVClient
 
 
@@ -25,7 +26,7 @@ async def test_curve(curve_name: str, soup_go_path: str) -> dict:
         print(f"⏳ Starting client with {curve_name}...")
         await client.start()
 
-        print(f"✅ Client started successfully!")
+        print("✅ Client started successfully!")
 
         # Test put/get operations
         test_key = f"test-{curve_name.lower()}"
@@ -58,7 +59,7 @@ async def test_curve(curve_name: str, soup_go_path: str) -> dict:
                 "error": "Value mismatch"
             }
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         duration = time.time() - start_time
         print(f"⏱️ TIMEOUT: Connection failed after {duration:.2f}s")
         return {
@@ -94,7 +95,7 @@ async def test_curve(curve_name: str, soup_go_path: str) -> dict:
             pass
 
 
-async def main():
+async def main() -> None:
     """Run all curve tests."""
     soup_go_path = "/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go"
 
@@ -131,8 +132,8 @@ async def main():
     print(f"\n{'='*60}")
     print(f"Total: {passed}/{total} curves working")
     print(f"Success rate: {passed/total*100:.1f}%")
-    print(f"\n💡 Note: P-521 is known to be incompatible with Python client")
-    print(f"   due to secp521r1 curve support differences")
+    print("\n💡 Note: P-521 is known to be incompatible with Python client")
+    print("   due to secp521r1 curve support differences")
 
 
 if __name__ == "__main__":

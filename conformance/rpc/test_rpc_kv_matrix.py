@@ -30,7 +30,7 @@ class TestRPCKVMatrix:
     @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
     async def test_rpc_kv_basic_operations(
         self, client_lang: str, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path
-    ):
+    ) -> None:
         """
         Test basic RPC K/V operations across all matrix combinations.
 
@@ -95,7 +95,7 @@ class TestRPCKVMatrix:
     @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
     async def test_rpc_kv_multiple_keys(
         self, client_lang: str, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path
-    ):
+    ) -> None:
         """
         Test multiple key operations to ensure no interference between keys.
 
@@ -147,7 +147,7 @@ class TestRPCKVMatrix:
     @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
     async def test_rpc_kv_overwrite_key(
         self, client_lang: str, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path
-    ):
+    ) -> None:
         """
         Test key overwriting behavior.
 
@@ -199,7 +199,7 @@ class TestRPCKVMatrix:
     @pytest.mark.parametrize(
         "crypto_config", [config for param in RPC_KV_MATRIX_PARAMS for config in [param.values[2]]]
     )
-    async def test_rpc_kv_crypto_validation(self, crypto_config: CryptoConfig, tmp_path: Path):
+    async def test_rpc_kv_crypto_validation(self, crypto_config: CryptoConfig, tmp_path: Path) -> None:
         """
         Test crypto configuration validation across all crypto settings.
 
@@ -249,7 +249,7 @@ class TestRPCKVMatrix:
     )
     async def test_rpc_kv_edge_cases(
         self, client_lang: str, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path
-    ):
+    ) -> None:
         """
         Test edge cases with a subset of the matrix.
 

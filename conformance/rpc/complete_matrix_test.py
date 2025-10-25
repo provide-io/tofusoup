@@ -8,6 +8,7 @@ Tests all combinations of:
 """
 
 import asyncio
+import contextlib
 from dataclasses import dataclass
 from pathlib import Path
 import time
@@ -36,7 +37,7 @@ class TestResult:
 class CompleteMatrixTester:
     """Complete matrix tester for all client/server/crypto combinations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.soup_go_path = Path("/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/bin/soup-go")
         self.soup_py_path = Path("/Users/tim/code/pyv/mono/tofusoup/.venv_darwin_arm64/bin/soup")
 
@@ -106,10 +107,8 @@ class CompleteMatrixTester:
                 error_msg += " (EXPECTED: Python client incompatible with secp521r1)"
             return TestResult("python", server_lang, crypto_config, False, error=error_msg)
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 await client.close()
-            except Exception:
-                pass
 
     def test_go_client_combination(self, server_lang: str, crypto_config: CryptoConfig) -> TestResult:
         """Test Go client with specified server and crypto config."""
@@ -265,7 +264,7 @@ class CompleteMatrixTester:
         return "\n".join(report)
 
 
-async def main():
+async def main() -> None:
     """Run complete matrix test."""
     tester = CompleteMatrixTester()
 
@@ -273,7 +272,7 @@ async def main():
     print("This will test all combinations of clients, servers, and crypto configs.")
     print()
 
-    results = await tester.run_complete_matrix()
+    await tester.run_complete_matrix()
 
     print("\n" + "=" * 80)
     print(tester.generate_matrix_report())

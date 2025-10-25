@@ -4,7 +4,7 @@ import asyncio
 from tofusoup.rpc.client import KVClient
 
 
-async def comprehensive_matrix_test():
+async def comprehensive_matrix_test() -> None:
     print("🍲 TofuSoup RPC Matrix Test - COMPREHENSIVE PROOF")
     print("=" * 60)
 

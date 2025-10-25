@@ -8,7 +8,7 @@ import pytest
 @pytest.mark.harness_go
 @pytest.mark.skip(reason="Binary compatibility test suite not yet fully implemented.")
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
-def test_harness_can_encode_simple_object(go_harness_executable: Path):
+def test_harness_can_encode_simple_object(go_harness_executable: Path) -> None:
     assert go_harness_executable.exists()
 
 

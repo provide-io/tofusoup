@@ -41,6 +41,7 @@ dependencies = [
     "tomli-w>=1.0.0",
     "plating>=0.0.0.dev0",
     "mkdocs-material>=9.6.20",
+    "pyvider",  # For state inspection encryption (pyvider.common.encryption)
 ]
 
 [project.optional-dependencies]
@@ -65,6 +66,7 @@ all = [
 
 [tool.uv.sources]
 wrknv = { path = "../wrknv", editable = true }
+pyvider = { path = "../pyvider", editable = true }
 
 [dependency-groups]
 dev = [

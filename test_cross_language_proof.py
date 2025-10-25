@@ -12,10 +12,10 @@ from __future__ import annotations
 
 import asyncio
 import os
+from pathlib import Path
 import subprocess
 import sys
 import time
-from pathlib import Path
 
 
 # Terminal colors for better output
@@ -64,7 +64,7 @@ def print_step(text: str) -> None:
 
 class TestResult:
     """Stores the result of a test."""
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
         self.success = False
         self.duration = 0.0
@@ -207,7 +207,7 @@ async def test_python_to_python() -> TestResult:
             retrieved = await client.get(test_key)
 
             if retrieved == test_value:
-                print_success(f"Get operation successful: retrieved value matches!")
+                print_success("Get operation successful: retrieved value matches!")
                 print_info(f"  Value: {retrieved.decode()}")
                 result.mark_success(
                     time.time() - start_time,
@@ -218,7 +218,7 @@ async def test_python_to_python() -> TestResult:
                 print_error(error_msg)
                 result.mark_failure(time.time() - start_time, error_msg)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             duration = time.time() - start_time
             error_msg = f"Connection timeout after {duration:.2f}s (known issue)"
             result.mark_failure(duration, error_msg)
@@ -293,7 +293,7 @@ async def test_python_to_go() -> TestResult:
         retrieved = await client.get(test_key)
 
         if retrieved == test_value:
-            print_success(f"Get operation successful: retrieved value matches!")
+            print_success("Get operation successful: retrieved value matches!")
             print_info(f"  Value: {retrieved.decode()}")
             result.mark_success(
                 time.time() - start_time,
@@ -308,7 +308,7 @@ async def test_python_to_go() -> TestResult:
         await client.close()
         print_info("Client closed")
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         duration = time.time() - start_time
         error_msg = f"Connection timeout after {duration:.2f}s"
         result.mark_failure(duration, error_msg)

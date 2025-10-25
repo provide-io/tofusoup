@@ -3,12 +3,13 @@
 Test Python client → Go server with secp384r1 curve on both sides
 """
 import asyncio
-import time
 from pathlib import Path
+import time
+
 from tofusoup.rpc.client import KVClient
 
 
-async def main():
+async def main() -> int | None:
     """Test Python client → Go server with secp384r1 curve."""
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
@@ -17,9 +18,9 @@ async def main():
     print("="*70)
     print()
     print(f"ℹ️  Go server: {soup_go_path}")
-    print(f"ℹ️  TLS Mode: auto (mTLS with TLSProvider)")
-    print(f"ℹ️  Key Type: EC")
-    print(f"ℹ️  Curve: secp384r1")
+    print("ℹ️  TLS Mode: auto (mTLS with TLSProvider)")
+    print("ℹ️  Key Type: EC")
+    print("ℹ️  Curve: secp384r1")
     print()
 
     start_time = time.time()
@@ -67,7 +68,7 @@ async def main():
             print(f"   Got: {result}")
             return 1
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         duration = time.time() - start_time
         print(f"❌ TIMEOUT: Connection failed after {duration:.2f}s")
         return 1
