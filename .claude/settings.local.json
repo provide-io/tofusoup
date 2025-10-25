@@ -48,7 +48,8 @@
       "Bash(uv run pytest:*)",
       "Bash(mkdocs build:*)",
       "Bash(uv pip list:*)",
-      "Bash(uv pip check:*)"
+      "Bash(uv pip check:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": [],
