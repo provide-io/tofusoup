@@ -261,4 +261,4 @@ $ uv sync
 $ uv run pytest
 ```
 
-**See:** [CONTRIBUTING.md](../CONTRIBUTING.md) and [CLAUDE.md](../CLAUDE.md)
+**See:** [CONTRIBUTING.md](https://github.com/provide-io/tofusoup/blob/main/CONTRIBUTING.md) and [CLAUDE.md](https://github.com/provide-io/tofusoup/blob/main/CLAUDE.md)

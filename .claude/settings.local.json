@@ -45,7 +45,8 @@
       "Bash(git reflog:*)",
       "Bash(uv run ruff:*)",
       "Read(//private/tmp/test-stir-discovery/**)",
-      "Bash(uv run pytest:*)"
+      "Bash(uv run pytest:*)",
+      "Bash(mkdocs build:*)"
     ],
     "deny": [],
     "ask": [],

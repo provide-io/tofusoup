@@ -13,6 +13,11 @@ copyright: Copyright &copy; 2024-2025 provide.io
 # Standalone mode settings
 docs_dir: docs
 
+# Exclude historical and other non-published docs
+exclude_docs: |
+  historical/
+  STATUS.md
+
 theme:
   name: material
   language: en
@@ -111,8 +116,6 @@ extra_javascript:
 nav:
   - Home: index.md
   - Getting Started:
-    - Installation: index.md#installation
-    - Quick Start: index.md#quick-start
     - Configuration: CONFIGURATION.md
   - Architecture:
     - Overview: architecture/01-overview.md
