@@ -179,9 +179,9 @@ Planned enhancements to the compatibility matrix:
 
 ## Related Documentation
 
-- [RPC Architecture](architecture/rpc.md)
-- [TLS Configuration Guide](guides/tls-setup.md)
-- [Testing Guide](testing/integration-tests.md)
+- [RPC Matrix Specification](architecture/03-rpc-matrix-specification.md)
+- [Running Conformance Tests](guides/01-running-conformance-tests.md)
+- [Cross-Language Compatibility](testing/cross-language-compatibility.md)
 - [pyvider-rpcplugin Documentation](https://github.com/provide-io/pyvider)
 
 ---
