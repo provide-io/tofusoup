@@ -83,7 +83,7 @@ def _parse_collection_type(type_str: str) -> CtyType | None:
         "map": (CtyMap, "map(", ")"),
     }
 
-    for name, (cty_class, prefix, suffix) in collections.items():
+    for _name, (cty_class, prefix, suffix) in collections.items():
         if type_str.startswith(prefix) and type_str.endswith(suffix):
             element_type_str = type_str[len(prefix) : -len(suffix)]
             return cty_class(element_type=parse_cty_type_string(element_type_str))
