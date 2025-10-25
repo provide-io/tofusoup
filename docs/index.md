@@ -140,7 +140,7 @@ $ soup harness list
 $ soup harness build --all
 # Build all Go harnesses
 
-$ soup harness verify-cli go-cty
+$ soup harness verify-cli soup-go
 # Verify harness CLI functionality
 ```
 

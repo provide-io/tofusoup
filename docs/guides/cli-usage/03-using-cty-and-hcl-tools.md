@@ -24,7 +24,7 @@ soup cty convert input.json output.msgpack
 
 ### Validate a Value Against a Type
 
-You can validate a CTY value (as a JSON string) against a CTY type string using the `go-cty` harness. This is useful for checking type compatibility.
+You can validate a CTY value (as a JSON string) against a CTY type string using the `soup-go` harness. This is useful for checking type compatibility.
 
 ```bash
 # Validate a simple string

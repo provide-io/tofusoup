@@ -64,7 +64,7 @@ pip install --upgrade tofusoup[all]
 3. Try building manually:
    ```bash
    cd src/tofusoup/harness/go/soup-go
-   go build -o bin/soup-go
+   go build -o ../../../../harnesses/bin/soup-go
    ```
 
 4. Check for Go module issues:
@@ -83,7 +83,7 @@ pip install --upgrade tofusoup[all]
 soup harness build soup-go
 
 # Verify it runs
-./bin/soup-go --version
+./harnesses/bin/soup-go --version
 
 # Check logs
 soup harness verify-cli soup-go --verbose
@@ -133,7 +133,7 @@ soup harness verify-cli soup-go --verbose
    ```bash
    # See wire protocol guide for debugging
    soup wire encode input.json python.out
-   ./bin/soup-go wire encode input.json go.out
+   ./harnesses/bin/soup-go wire encode input.json go.out
    diff <(xxd python.out) <(xxd go.out)
    ```
 

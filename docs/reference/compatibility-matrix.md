@@ -114,7 +114,7 @@ Use the validation command to check compatibility before connecting:
 
 ```bash
 # Check if a connection will work
-soup rpc validate-connection --client python --server /path/to/soup-go
+soup rpc validate-connection --client python --server harnesses/bin/soup-go
 
 # Output:
 # ⚠️  Python → Go connections not supported
@@ -156,7 +156,7 @@ Supported alternatives:
   ✓ Python client → Python server
   ✓ Go client → Go server
 
-Server path: /path/to/soup-go
+Server path: harnesses/bin/soup-go
 ```
 
 ### Unsupported Curve
