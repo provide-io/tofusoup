@@ -62,90 +62,160 @@ class SearchEngine:
 
         logger.info("SearchEngine.search finished streaming results.")
 
+    def _parse_latest_version(self, versions: list, resource_id: str) -> str | None:
+        """Parse and return the latest valid semver version from a list.
+
+        Args:
+            versions: List of version objects with 'version' attribute
+            resource_id: Identifier for the resource (for logging)
+
+        Returns:
+            String representation of latest version, or None if no valid versions
+
+        Raises:
+            No exceptions raised; invalid versions are logged as warnings
+        """
+        valid_versions = []
+        for v in versions:
+            try:
+                valid_versions.append(semver.Version.parse(v.version))
+            except ValueError:
+                logger.warning(
+                    f"Skipping invalid semver version '{v.version}' for {resource_id}"
+                )
+        if valid_versions:
+            return str(max(valid_versions))
+        return None
+
+    async def _process_modules(
+        self, registry: BaseTfRegistry, query_term: str | None, registry_id: str
+    ) -> list[SearchResult]:
+        """Process modules from a registry and build search results.
+
+        Args:
+            registry: The registry to query for modules
+            query_term: Optional search term to filter modules
+            registry_id: Identifier for the registry (for logging and results)
+
+        Returns:
+            List of SearchResult objects for modules
+        """
+        results: list[SearchResult] = []
+        modules = await registry.list_modules(query=query_term)
+        if modules is None:
+            modules = []
+
+        logger.debug(f"{registry_id}.list_modules returned {len(modules)} modules.")
+
+        for mod in modules:
+            versions = await registry.list_module_versions(
+                f"{mod.namespace}/{mod.name}/{mod.provider_name}"
+            )
+            if versions is None:
+                versions = []
+
+            latest_version = self._parse_latest_version(versions, mod.id)
+
+            results.append(
+                SearchResult(
+                    id=mod.id,
+                    name=mod.name,
+                    namespace=mod.namespace,
+                    provider_name=mod.provider_name,
+                    type="module",
+                    registry_source=registry_id,
+                    description=mod.description,
+                    latest_version=latest_version,
+                    total_versions=len(versions),
+                )
+            )
+
+        return results
+
+    async def _process_providers(
+        self, registry: BaseTfRegistry, query_term: str | None, registry_id: str
+    ) -> list[SearchResult]:
+        """Process providers from a registry and build search results.
+
+        Args:
+            registry: The registry to query for providers
+            query_term: Optional search term to filter providers
+            registry_id: Identifier for the registry (for logging and results)
+
+        Returns:
+            List of SearchResult objects for providers
+        """
+        results: list[SearchResult] = []
+        providers = await registry.list_providers(query=query_term)
+        if providers is None:
+            providers = []
+
+        logger.debug(f"{registry_id}.list_providers returned {len(providers)} providers.")
+
+        for prov in providers:
+            versions = await registry.list_provider_versions(f"{prov.namespace}/{prov.name}")
+            if versions is None:
+                versions = []
+
+            latest_version = self._parse_latest_version(versions, prov.id)
+
+            results.append(
+                SearchResult(
+                    id=prov.id,
+                    name=prov.name,
+                    namespace=prov.namespace,
+                    type="provider",
+                    registry_source=registry_id,
+                    description=prov.description,
+                    latest_version=latest_version,
+                    total_versions=len(versions),
+                )
+            )
+
+        return results
+
     async def _search_single_registry(
         self, registry: BaseTfRegistry, query: SearchQuery
     ) -> list[SearchResult]:
+        """Search a single registry for modules and providers.
+
+        Orchestrates the search process by:
+        1. Processing modules from the registry
+        2. Processing providers from the registry
+        3. Combining results from both
+
+        Args:
+            registry: The registry to search
+            query: Search query parameters
+
+        Returns:
+            Combined list of SearchResult objects from modules and providers
+
+        Raises:
+            Exception: Re-raises any exceptions from registry operations
+        """
         registry_identifier = registry.__class__.__name__.replace("Registry", "").lower()
         logger.info(
             f"Enter _search_single_registry for {registry_identifier}",
             query_term=query.term,
         )
-        registry_results: list[SearchResult] = []
+
         try:
             async with registry:
                 logger.debug(f"Registry context entered for {registry_identifier}.")
                 effective_query_term = query.term if query.term else None
 
-                modules = await registry.list_modules(query=effective_query_term)
-                if modules is None:
-                    modules = []
-                logger.debug(f"{registry_identifier}.list_modules returned {len(modules)} modules.")
-                for mod in modules:
-                    versions = await registry.list_module_versions(
-                        f"{mod.namespace}/{mod.name}/{mod.provider_name}"
-                    )
-                    if versions is None:
-                        versions = []
+                # Process modules and providers
+                module_results = await self._process_modules(
+                    registry, effective_query_term, registry_identifier
+                )
+                provider_results = await self._process_providers(
+                    registry, effective_query_term, registry_identifier
+                )
 
-                    latest_version = None
-                    valid_versions = []
-                    for v in versions:
-                        try:
-                            valid_versions.append(semver.Version.parse(v.version))
-                        except ValueError:
-                            logger.warning(
-                                f"Skipping invalid semver version '{v.version}' for module {mod.id}"
-                            )
-                    if valid_versions:
-                        latest_version = max(valid_versions)
+                # Combine results
+                registry_results = module_results + provider_results
 
-                    registry_results.append(
-                        SearchResult(
-                            id=mod.id,
-                            name=mod.name,
-                            namespace=mod.namespace,
-                            provider_name=mod.provider_name,
-                            type="module",
-                            registry_source=registry_identifier,
-                            description=mod.description,
-                            latest_version=str(latest_version) if latest_version else None,
-                            total_versions=len(versions),
-                        )
-                    )
-
-                providers = await registry.list_providers(query=effective_query_term)
-                if providers is None:
-                    providers = []
-                logger.debug(f"{registry_identifier}.list_providers returned {len(providers)} providers.")
-                for prov in providers:
-                    versions = await registry.list_provider_versions(f"{prov.namespace}/{prov.name}")
-                    if versions is None:
-                        versions = []
-
-                    latest_version = None
-                    valid_versions = []
-                    for v in versions:
-                        try:
-                            valid_versions.append(semver.Version.parse(v.version))
-                        except ValueError:
-                            logger.warning(
-                                f"Skipping invalid semver version '{v.version}' for provider {prov.id}"
-                            )
-                    if valid_versions:
-                        latest_version = max(valid_versions)
-
-                    registry_results.append(
-                        SearchResult(
-                            id=prov.id,
-                            name=prov.name,
-                            namespace=prov.namespace,
-                            type="provider",
-                            registry_source=registry_identifier,
-                            description=prov.description,
-                            latest_version=str(latest_version) if latest_version else None,
-                            total_versions=len(versions),
-                        )
-                    )
             logger.debug(f"Registry context exited for {registry_identifier}.")
             return registry_results
         except Exception as e:
