@@ -7,7 +7,6 @@ Validates:
 - Python servers reject secp521r1 (grpcio limitation)
 - Go servers support all curves (when using TLSProvider)
 """
-import asyncio
 from pathlib import Path
 
 from provide.foundation import logger
