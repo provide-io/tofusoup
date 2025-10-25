@@ -56,8 +56,11 @@ rpc = [
 test-rpc = [
     "pyvider-rpcplugin[test]",
 ]
+matrix = [
+    "wrkenv>=0.1.0",
+]
 all = [
-    "tofusoup[cty,hcl,rpc]",
+    "tofusoup[cty,hcl,rpc,matrix]",
 ]
 
 [dependency-groups]

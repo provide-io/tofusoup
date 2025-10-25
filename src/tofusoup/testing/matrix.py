@@ -6,6 +6,8 @@ Matrix testing functionality for TofuSoup.
 
 Provides version matrix testing for the 'soup stir' command to validate
 providers against multiple versions of Terraform/OpenTofu.
+
+Note: Matrix testing requires the optional 'wrkenv' dependency.
 """
 
 import asyncio
@@ -20,11 +22,18 @@ from typing import Any
 from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
-from wrkenv import WorkenvConfig, get_tool_manager
 
 from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTES
 
-from ..workenv_integration import create_workenv_config_with_soup
+# Optional workenv imports
+try:
+    from wrkenv import WorkenvConfig, get_tool_manager
+    from ..workenv_integration import create_workenv_config_with_soup, WORKENV_AVAILABLE
+except ImportError:
+    WORKENV_AVAILABLE = False
+    WorkenvConfig = None  # type: ignore
+    get_tool_manager = None  # type: ignore
+    create_workenv_config_with_soup = None  # type: ignore
 
 console = Console()
 
@@ -74,15 +83,25 @@ class MatrixResult:
 class VersionMatrix:
     """Manages version matrix testing for TofuSoup."""
 
-    def __init__(self, base_tools: dict[str, str], config: WorkenvConfig | None = None) -> None:
+    def __init__(self, base_tools: dict[str, str], config: Any = None) -> None:
         """
         Initialize the version matrix.
 
         Args:
             base_tools: Base tool versions (e.g., {"terraform": "1.5.7", "tofu": "1.6.2"})
             config: Optional WorkenvConfig. If not provided, creates one with soup compatibility.
+
+        Raises:
+            ImportError: If wrkenv is not installed.
         """
-        self.config = config or create_workenv_config_with_soup()
+        if not WORKENV_AVAILABLE:
+            raise ImportError(
+                "Matrix testing requires the 'wrkenv' package.\n"
+                "Install with: pip install wrkenv\n"
+                "Or install TofuSoup with matrix support: pip install tofusoup[matrix]"
+            )
+
+        self.config = config or create_workenv_config_with_soup()  # type: ignore
         self.base_tools = base_tools
 
         # Get matrix configuration (from soup.toml or wrkenv.toml)
@@ -354,7 +373,7 @@ class VersionMatrix:
 
 # Convenience function for soup stir integration
 async def run_matrix_stir_tests(
-    stir_directory: pathlib.Path, tools: dict[str, str] | None = None, config: WorkenvConfig | None = None
+    stir_directory: pathlib.Path, tools: dict[str, str] | None = None, config: Any = None
 ) -> dict[str, Any]:
     """
     Run matrix testing for soup stir.
@@ -368,9 +387,19 @@ async def run_matrix_stir_tests(
 
     Returns:
         Test results dictionary
+
+    Raises:
+        ImportError: If wrkenv is not installed.
     """
+    if not WORKENV_AVAILABLE:
+        raise ImportError(
+            "Matrix testing requires the 'wrkenv' package.\n"
+            "Install with: pip install wrkenv\n"
+            "Or install TofuSoup with matrix support: pip install tofusoup[matrix]"
+        )
+
     if config is None:
-        config = create_workenv_config_with_soup()
+        config = create_workenv_config_with_soup()  # type: ignore
 
     if tools is None:
         # Get tools from current configuration

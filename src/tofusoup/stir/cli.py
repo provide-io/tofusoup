@@ -218,21 +218,38 @@ def stir_cli(
         runtime = StirRuntime(plugin_cache_dir=plugin_cache_dir, force_upgrade=upgrade)
 
         if matrix:
-            # Run matrix testing
-            from tofusoup.testing.matrix import run_matrix_stir_tests
+            # Run matrix testing (requires optional workenv dependency)
+            try:
+                from tofusoup.testing.matrix import run_matrix_stir_tests, WORKENV_AVAILABLE
 
-            results = asyncio.run(run_matrix_stir_tests(Path(path)))
+                if not WORKENV_AVAILABLE:
+                    console.print(
+                        "[bold red]Error:[/bold red] Matrix testing requires the 'wrkenv' package.\n"
+                        "[yellow]Install with:[/yellow] pip install wrkenv\n"
+                        "[yellow]Or:[/yellow] pip install tofusoup[matrix]"
+                    )
+                    sys.exit(1)
 
-            if matrix_output:
-                import json
+                results = asyncio.run(run_matrix_stir_tests(Path(path)))
 
-                Path(matrix_output).write_text(json.dumps(results, indent=2, default=str))
-                console.print(f"✅ Matrix results saved to {matrix_output}")
+                if matrix_output:
+                    import json
 
-            if output_json:
-                import json
+                    Path(matrix_output).write_text(json.dumps(results, indent=2, default=str))
+                    console.print(f"✅ Matrix results saved to {matrix_output}")
 
-                console.print(json.dumps(results, indent=2, default=str))
+                if output_json:
+                    import json
+
+                    console.print(json.dumps(results, indent=2, default=str))
+
+            except ImportError as e:
+                console.print(
+                    f"[bold red]Error:[/bold red] {e}\n"
+                    "[yellow]Matrix testing is an optional feature.[/yellow]\n"
+                    "[yellow]Install with:[/yellow] pip install wrkenv or pip install tofusoup[matrix]"
+                )
+                sys.exit(1)
         else:
             # Run standard single-version testing with runtime
             asyncio.run(
