@@ -1,6 +1,20 @@
 # Guide: Matrix Testing with Stir
 
-The `soup stir` command is a powerful tool for running parallel integration tests. It includes built-in **matrix testing** capabilities to validate your Terraform configurations against multiple versions of Terraform or OpenTofu.
+The `soup stir` command is a powerful tool for running parallel integration tests. It includes **matrix testing** capabilities to validate your Terraform configurations against multiple versions of Terraform or OpenTofu.
+
+## Prerequisites
+
+Matrix testing is an **optional feature** that requires the `wrkenv` package:
+
+```bash
+# Install with matrix testing support
+pip install tofusoup[matrix]
+
+# Or install wrkenv separately
+pip install wrkenv
+```
+
+**Note**: All other TofuSoup features work without `wrkenv`. Only the `soup stir --matrix` flag requires this dependency.
 
 ## What is Matrix Testing?
 
