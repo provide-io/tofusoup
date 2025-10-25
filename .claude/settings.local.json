@@ -58,7 +58,8 @@
       "Bash(uv pip show:*)",
       "Bash(xargs:*)",
       "Bash(./harnesses/bin/soup-go:*)",
-      "Read(//private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/tmp.pPd0nUZgVI/**)"
+      "Read(//private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/tmp.pPd0nUZgVI/**)",
+      "Bash(shasum:*)"
     ],
     "deny": [],
     "ask": [],
