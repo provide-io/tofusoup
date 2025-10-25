@@ -81,6 +81,8 @@ soup harness build soup-go
 
 **Note**: Requires Go 1.21+ to be installed and available in your PATH.
 
+**Build Artifacts**: Harness binaries are created in `harnesses/bin/` during the build process. This directory is not included in version control and must be created by building the harnesses locally.
+
 ## Verify Installation
 
 Test that everything is working:
