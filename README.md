@@ -42,9 +42,9 @@ It provides:
     soup --version
     ```
 
-**Note on Go Harnesses:** The Go test harnesses (`go-cty`, `go-wire`, `go-rpc`, `go-hcl`) are standardized to use `cobra` for their CLI structure and `go-hclog` for logging. This provides a consistent interface and configurable logging (via a `--log-level` flag) across these tools.
+**Note on Go Harnesses:** The Go test harness `soup-go` is a unified polyglot CLI that provides CTY, HCL, Wire Protocol, and RPC functionality. It uses `cobra` for its CLI structure and `go-hclog` for logging, providing a consistent interface and configurable logging (via a `--log-level` flag) across all subcommands.
 
-**Note on Test Artifacts:** Output from CLI verification tests (stdout, stderr of harness executions) is saved to `tofusoup/soup/output/cli_verification/<harness_name>/<test_id>/` for inspection. Other build or test artifacts may also be placed under `tofusoup/soup/output/`.
+**Note on Test Artifacts:** Output from CLI verification tests (stdout, stderr of harness executions) is saved to `soup/output/cli_verification/<harness_name>/<test_id>/` for inspection. Other build or test artifacts may also be placed under `soup/output/`.
 
 ## `soup` Command-Line Interface (CLI)
 ---------------------------------------
@@ -79,14 +79,14 @@ Commands for working with the Configuration Type System (CTY).
 
 -   **`soup cty test [compat|all]`**
     -   (Deprecated in favor of `soup test cty`). Runs older CTY test suites.
-    -   `compat`: Executes Python vs. Go CTY compatibility tests. Requires `go-cty` harness.
+    -   `compat`: Executes Python vs. Go CTY compatibility tests. Requires `soup-go` harness.
 
 -   **`soup cty benchmark [--iterations N] [--testcase <name>] [--data-file <path>] [--output-dir <path>]`**
     -   Runs CTY encoding/decoding benchmarks. Options can be defaulted in `soup.toml`.
-    -   Requires `go-cty` harness. See `docs/CONFIG_TOML.md`.
+    -   Requires `soup-go` harness. See `docs/reference/configuration.md`.
 
 -   **`soup cty validate-value <value_json_string> --type-string <cty_type_string> [--harness-path <path>]`**
-    -   Validates a CTY value (JSON string) against a CTY type string using the `go-cty` harness.
+    -   Validates a CTY value (JSON string) against a CTY type string using the `soup-go` harness.
     -   Type string example: "object({name=string,age=number})".
     -   The value must be a valid JSON representation of the data to be validated.
     -   Example: `soup cty validate-value '"hello"' --type-string string`
@@ -107,7 +107,7 @@ Commands specifically for HCL file processing (often in conjunction with CTY).
     -   Converts an HCL file to JSON or Msgpack. This implicitly uses CTY as the intermediate representation.
     -   Output format inferred if not specified.
     -   Example: `soup hcl convert network.hcl network.json`
-    -   Default output format can be configured in `soup.toml`. See `docs/CONFIG_TOML.md`.
+    -   Default output format can be configured in `soup.toml`. See `docs/reference/configuration.md`.
 
 * * * * *
 
@@ -118,22 +118,22 @@ Commands for interacting with and testing RPC components, exemplified by a Key-V
 -   **`soup rpc kv server-start [--py | --go-server-bin <path>] [<go_server_options>]`**
     -   Starts an RPC Key-Value store server.
     -   `--py`: Starts the Python server.
-    -   `--go-server-bin <path>`: Path to Go server binary (default: built `go-rpc` harness).
-    -   Go server options (e.g., `--cert-algo`, `--no-mtls`) can be defaulted in `soup.toml`. See `docs/CONFIG_TOML.md`.
+    -   `--go-server-bin <path>`: Path to Go server binary (default: built `soup-go` harness).
+    -   Go server options (e.g., `--cert-algo`, `--no-mtls`) can be defaulted in `soup.toml`. See `docs/reference/configuration.md`.
 
 -   **`soup rpc kv get <key> [--server-bin <path>]`**
     -   Gets a value from an RPC KV server using the Python client.
-    -   `--server-bin`: Path to server (e.g., `tofusoup/src/tofusoup/harness/go/bin/go-rpc`). Default from `PLUGIN_SERVER_PATH` env var or `soup.toml`. See `docs/CONFIG_TOML.md`.
-    -   Example: `soup rpc kv get mykey --server-bin tofusoup/src/tofusoup/harness/go/bin/go-rpc`
+    -   `--server-bin`: Path to server (e.g., `harnesses/bin/soup-go`). Default from `PLUGIN_SERVER_PATH` env var or `soup.toml`. See `docs/reference/configuration.md`.
+    -   Example: `soup rpc kv get mykey --server-bin harnesses/bin/soup-go`
 
 -   **`soup rpc kv put <key> <value> [--server-bin <path>]`**
     -   Puts a key-value pair into an RPC KV server using the Python client.
     -   `--server-bin`: Path to server. Default from `PLUGIN_SERVER_PATH` env var or `soup.toml`.
-    -   Example: `soup rpc kv put mykey "hello" --server-bin tofusoup/src/tofusoup/harness/go/bin/go-rpc`
+    -   Example: `soup rpc kv put mykey "hello" --server-bin harnesses/bin/soup-go`
 
 -   **`soup rpc test [compat|all]`**
     -   (Deprecated in favor of `soup test rpc`). Runs older RPC test suites.
-    -   Requires `go-rpc` harness.
+    -   Requires `soup-go` harness.
 
 * * * * *
 
@@ -153,13 +153,13 @@ Commands for working with the Terraform Wire Protocol (tfwire) objects. These co
 
 -   **`soup wire test [compat|all]`**
     -   (Deprecated in favor of `soup test wire`). Runs older tfwire compatibility tests.
-    -   Requires `go-wire` harness.
+    -   Requires `soup-go` harness.
 
 * * * * *
 
 ### 🛠️ `soup harness` - Manage Test Harnesses
 
-Commands to list, build/setup, verify, and clean test harnesses (e.g., Go executables). Compiled binaries are typically placed in `tofusoup/src/tofusoup/harness/go/bin/`. See `docs/CONFIG_TOML.md`.
+Commands to list, build/setup, verify, and clean test harnesses (e.g., Go executables). Compiled binaries are typically placed in `harnesses/bin/`. See `docs/reference/configuration.md`.
 
 -   **`soup harness list`**
     -   Lists available harnesses and their build/setup status.
@@ -167,7 +167,7 @@ Commands to list, build/setup, verify, and clean test harnesses (e.g., Go execut
 -   **`soup harness build [<harness_names...>] [--language <lang>] [--all] [--force-rebuild|--force-setup]`**
     -   Builds/sets up harnesses. If no specific targets are given, uses `default_targets` from `soup.toml` for this command, or all known harnesses.
     -   Examples:
-        -   `soup harness build go-cty rb-rpc`
+        -   `soup harness build soup-go`
         -   `soup harness build --language go --force-rebuild`
 
 -   **`soup harness verify-cli [<harness_names...>] [--language <lang>] [--all]`**
@@ -180,7 +180,7 @@ Commands to list, build/setup, verify, and clean test harnesses (e.g., Go execut
 
 ### ✅ `soup test` - Run Conformance Tests
 
-Runs Pytest-based conformance test suites located in `tofusoup/conformance/`. Test behavior (env vars, skips, args) can be configured in `soup.toml`. See `docs/CONFIG_TOML.md`.
+Runs Pytest-based conformance test suites located in `conformance/`. Test behavior (env vars, skips, args) can be configured in `soup.toml`. See `docs/reference/configuration.md`.
 
 -   **`soup test <suite_name> [pytest_args...]`**
     -   Runs a specific test suite (e.g., `cty`, `rpc`, `wire`, `cli-cty`, `cli-hcl`, `cli-wire`).
@@ -195,8 +195,7 @@ Runs Pytest-based conformance test suites located in `tofusoup/conformance/`. Te
 ## Project Structure Highlights
 ----------------------------
 
--   **`tofusoup/` (Monorepo Root)**
-    -   **`env.sh`**: Main environment setup script.
+-   **Project Root**
     -   **`pyproject.toml`**: Defines the `tofusoup` Python package and dependencies.
     -   **`src/tofusoup/`**: The main Python source code for the `tofusoup` CLI and its submodules.
         -   `cli.py`: Main CLI entry point.
@@ -205,16 +204,18 @@ Runs Pytest-based conformance test suites located in `tofusoup/conformance/`. Te
         -   `protos/`: Source `.proto` files are now co-located with their respective harness sources. Generated Python stubs are placed within `src/tofusoup/protos/` by build scripts.
         -   `harness/`: Logic and CLI for building/managing external test harnesses.
         -   `testing/`: Logic and CLI for running test suites.
-    -   **`tofusoup/src/tofusoup/harness/go/`**: Source code for Go test harnesses (e.g., `go-cty/`, `go-hcl/`, `go-rpc/kv/plugin-go-server/`, `go-wire/`).
-    -   **`tofusoup/conformance/`**: Pytest test suites for cross-language conformance.
+    -   **`src/tofusoup/harness/go/`**: Source code for the unified `soup-go` test harness.
+        -   `soup-go/`: Unified polyglot harness providing CTY, HCL, Wire, and RPC functionality.
+    -   **`harnesses/bin/`**: Built harness binaries (e.g., `soup-go`, `pspf-packager`).
+    -   **`conformance/`**: Pytest test suites for cross-language conformance.
         -   `cty/`, `hcl/`, `rpc/`, `wire/`: Component-specific conformance tests.
         -   `cli_verification/`: Tests for harness CLIs.
         -   `utils/`: Shared utilities for conformance tests.
-    -   **`soup.toml`**: Configuration file for TofuSoup (in project root or current directory). See `docs/CONFIGURATION.md` for detailed documentation.
+    -   **`soup.toml`**: Configuration file for TofuSoup (in project root or current directory). See `docs/reference/configuration.md` for detailed documentation.
     -   **`soup/`**: Runtime data, output artifacts (optional, created as needed).
         -   `output/`: Default directory for test artifacts, logs.
     -   **`docs/`**: Documentation files.
-        -   `CONFIGURATION.md`: Complete documentation for the `soup.toml` configuration file.
+        -   `reference/configuration.md`: Complete documentation for the `soup.toml` configuration file.
         -   `architecture/`: Architecture and design documents.
         -   `guides/`: Step-by-step usage guides.
     -   **`tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).

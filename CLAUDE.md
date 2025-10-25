@@ -54,6 +54,11 @@ soup stir --help                       # Matrix testing
 soup registry --help                   # Registry operations
 soup harness --help                    # Test harness management
 
+# Harness operations
+soup harness list                      # List available harnesses
+soup harness build soup-go             # Build unified Go harness
+soup harness verify-cli soup-go        # Verify harness functionality
+
 # Build and distribution
 uv build                               # Build package
 uv publish                             # Publish to PyPI
@@ -266,17 +271,21 @@ Documentation generation has been moved to the separate `plating` package. TofuS
 
 ### Go Harness Integration
 
-TofuSoup includes Go test harnesses for reference implementations:
+TofuSoup includes a unified Go test harness (`soup-go`) for reference implementations:
 
 ```bash
-# Build Go harnesses
-soup harness build --all
+# Build Go harness
+soup harness build soup-go
 
 # Verify harness CLI
-soup harness verify-cli go-cty
+soup harness verify-cli soup-go
 
 # List available harnesses
 soup harness list
+
+# Run harness directly
+./harnesses/bin/soup-go cty view data.json
+./harnesses/bin/soup-go wire encode value.json output.tfw.b64
 ```
 
 ## Output Guidelines for CLI and Logging
