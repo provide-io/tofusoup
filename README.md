@@ -44,6 +44,8 @@ It provides:
 
 **Note on Go Harnesses:** The Go test harness `soup-go` is a unified polyglot CLI that provides CTY, HCL, Wire Protocol, and RPC functionality. It uses `cobra` for its CLI structure and `go-hclog` for logging, providing a consistent interface and configurable logging (via a `--log-level` flag) across all subcommands.
 
+**Note on Build Artifacts:** Built harness binaries are placed in `harnesses/bin/` (created during first build). This directory is not included in version control. Run `soup harness build --all` to generate these binaries.
+
 **Note on Test Artifacts:** Output from CLI verification tests (stdout, stderr of harness executions) is saved to `soup/output/cli_verification/<harness_name>/<test_id>/` for inspection. Other build or test artifacts may also be placed under `soup/output/`.
 
 ## `soup` Command-Line Interface (CLI)

@@ -73,6 +73,24 @@ pip install --upgrade tofusoup[all]
    go mod verify
    ```
 
+### Harness binary not found
+
+**Symptom**: `No such file or directory: 'harnesses/bin/soup-go'`
+
+**Cause**: The `harnesses/bin/` directory is a build artifact and not included in version control.
+
+**Solution**:
+```bash
+# Build harnesses (this creates the directory)
+soup harness build --all
+
+# Verify
+ls harnesses/bin/
+./harnesses/bin/soup-go --version
+```
+
+**Note**: You must build harnesses after cloning the repository or when switching branches that update harness code.
+
 ### Harness CLI verification fails
 
 **Symptom**: `soup harness verify-cli` fails
