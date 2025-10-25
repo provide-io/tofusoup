@@ -3,6 +3,8 @@ Profile-based matrix testing for TofuSoup.
 
 Instead of generating combinations, uses pre-defined profiles from soup.toml
 to test against specific tool configurations.
+
+Note: Matrix testing requires the optional 'wrknv' dependency.
 """
 
 import asyncio
@@ -13,11 +15,18 @@ from typing import Any
 from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
-from wrkenv import WorkenvConfig, get_tool_manager
 
 from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTES
 
-from ..workenv_integration import create_workenv_config_with_soup
+# Optional wrknv imports - graceful degradation if not available
+try:
+    from wrknv import WorkenvConfig, get_tool_manager
+    from ..workenv_integration import create_workenv_config_with_soup, WORKENV_AVAILABLE
+except ImportError:
+    WORKENV_AVAILABLE = False
+    WorkenvConfig = None  # type: ignore
+    get_tool_manager = None  # type: ignore
+    create_workenv_config_with_soup = None  # type: ignore
 
 console = Console()
 
