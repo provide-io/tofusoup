@@ -12,13 +12,13 @@
         <meta name="author" content="provide.io">
       
       
-        <link rel="canonical" href="https://foundry.provide.io/tofusoup/guides/cli-usage/03-using-cty-and-hcl-tools/">
+        <link rel="canonical" href="https://foundry.provide.io/tofusoup/guides/cli-usage/configuration-management/">
       
       
-        <link rel="prev" href="../../migration/">
+        <link rel="prev" href="../matrix-testing/">
       
       
-        <link rel="next" href="../wire-protocol/">
+        <link rel="next" href="../state-inspection/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>CTY and HCL Tools - TofuSoup Documentation</title>
+        <title>Configuration Management - TofuSoup Documentation</title>
       
     
     
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#guide-using-cty-and-hcl-tools" class="md-skip">
+        <a href="#guide-configuration-management" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CTY and HCL Tools
+              Configuration Management
             
           </span>
         </div>
@@ -899,32 +899,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    CTY and HCL Tools
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../03-using-cty-and-hcl-tools/" class="md-nav__link">
         
   
   
@@ -935,101 +913,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#cty-utilities-soup-cty" class="md-nav__link">
-    <span class="md-ellipsis">
-      CTY Utilities (soup cty)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="CTY Utilities (soup cty)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#view-data-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      View Data Structure
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#convert-between-formats" class="md-nav__link">
-    <span class="md-ellipsis">
-      Convert Between Formats
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#validate-a-value-against-a-type" class="md-nav__link">
-    <span class="md-ellipsis">
-      Validate a Value Against a Type
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hcl-utilities-soup-hcl" class="md-nav__link">
-    <span class="md-ellipsis">
-      HCL Utilities (soup hcl)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="HCL Utilities (soup hcl)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#view-hcl-as-cty" class="md-nav__link">
-    <span class="md-ellipsis">
-      View HCL as CTY
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#convert-hcl-to-json-or-msgpack" class="md-nav__link">
-    <span class="md-ellipsis">
-      Convert HCL to JSON or Msgpack
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1085,10 +968,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../configuration-management/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Configuration Management
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1099,6 +1004,188 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#viewing-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Viewing Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Viewing Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-file-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration File Location
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Sections
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Sections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#global-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#harness-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Harness Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-suite-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Suite Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matrix-testing-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Matrix Testing Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-configuration-in-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Configuration in Commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Precedence
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-configuration-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Configuration Issues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-configuration-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Configuration Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Configuration Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production Testing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1815,37 +1902,19 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cty-utilities-soup-cty" class="md-nav__link">
+  <a href="#viewing-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      CTY Utilities (soup cty)
+      Viewing Configuration
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="CTY Utilities (soup cty)">
+    <nav class="md-nav" aria-label="Viewing Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#view-data-structure" class="md-nav__link">
+  <a href="#example-output" class="md-nav__link">
     <span class="md-ellipsis">
-      View Data Structure
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#convert-between-formats" class="md-nav__link">
-    <span class="md-ellipsis">
-      Convert Between Formats
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#validate-a-value-against-a-type" class="md-nav__link">
-    <span class="md-ellipsis">
-      Validate a Value Against a Type
+      Example Output
     </span>
   </a>
   
@@ -1857,28 +1926,55 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#hcl-utilities-soup-hcl" class="md-nav__link">
+  <a href="#configuration-file-location" class="md-nav__link">
     <span class="md-ellipsis">
-      HCL Utilities (soup hcl)
+      Configuration File Location
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="HCL Utilities (soup hcl)">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Sections
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Sections">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#view-hcl-as-cty" class="md-nav__link">
+  <a href="#global-settings" class="md-nav__link">
     <span class="md-ellipsis">
-      View HCL as CTY
+      Global Settings
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#convert-hcl-to-json-or-msgpack" class="md-nav__link">
+  <a href="#harness-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      Convert HCL to JSON or Msgpack
+      Harness Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-suite-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Suite Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matrix-testing-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Matrix Testing Configuration
     </span>
   </a>
   
@@ -1886,6 +1982,84 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-configuration-in-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Configuration in Commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Precedence
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-configuration-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Configuration Issues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-configuration-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Configuration Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Configuration Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production Testing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
   
 </li>
       
@@ -1908,40 +2082,134 @@
   
 
 
-<h1 id="guide-using-cty-and-hcl-tools">Guide: Using CTY and HCL Tools<a class="headerlink" href="#guide-using-cty-and-hcl-tools" title="Permanent link">&para;</a></h1>
-<p>TofuSoup provides powerful command-line utilities for inspecting, converting, and validating CTY and HCL data formats.</p>
-<h2 id="cty-utilities-soup-cty">CTY Utilities (<code>soup cty</code>)<a class="headerlink" href="#cty-utilities-soup-cty" title="Permanent link">&para;</a></h2>
-<h3 id="view-data-structure">View Data Structure<a class="headerlink" href="#view-data-structure" title="Permanent link">&para;</a></h3>
-<p>To view the CTY structure of a JSON, Msgpack, or HCL data file, use <code>soup cty view</code>. The output is a rich, colorized tree that shows the inferred CTY type and value.</p>
-<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>cty<span class="w"> </span>view<span class="w"> </span>data.json
-soup<span class="w"> </span>cty<span class="w"> </span>view<span class="w"> </span>config.tfvars<span class="w"> </span>--format<span class="w"> </span>hcl
+<h1 id="guide-configuration-management">Guide: Configuration Management<a class="headerlink" href="#guide-configuration-management" title="Permanent link">&para;</a></h1>
+<p>TofuSoup uses a <code>soup.toml</code> configuration file to customize behavior. The <code>soup config</code> command helps you inspect and manage your configuration.</p>
+<h2 id="viewing-configuration">Viewing Configuration<a class="headerlink" href="#viewing-configuration" title="Permanent link">&para;</a></h2>
+<p>Display the currently loaded configuration:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>config<span class="w"> </span>show
 </code></pre></div>
-<h3 id="convert-between-formats">Convert Between Formats<a class="headerlink" href="#convert-between-formats" title="Permanent link">&para;</a></h3>
-<p>To convert files between CTY-compatible JSON and Msgpack, use <code>soup cty convert</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Convert JSON to MessagePack</span>
-soup<span class="w"> </span>cty<span class="w"> </span>convert<span class="w"> </span>input.json<span class="w"> </span>output.msgpack
+<p>This displays a hierarchical tree view of your active configuration, showing all settings loaded from:
+- Your project's <code>soup.toml</code> file
+- Default values
+- Environment variables</p>
+<h3 id="example-output">Example Output<a class="headerlink" href="#example-output" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>🍲 Loaded TofuSoup Configuration
+└── Config Root
+    ├── global_settings
+    │   ├── default_python_log_level: INFO
+    │   └── default_harness_log_level: DEBUG
+    ├── harness_defaults
+    │   └── go
+    │       ├── build_flags: [&quot;-v&quot;]
+    │       └── timeout_seconds: 300
+    └── test_suite
+        └── rpc
+            └── env_vars
+                └── KV_STORAGE_DIR: /tmp
 </code></pre></div>
-<h3 id="validate-a-value-against-a-type">Validate a Value Against a Type<a class="headerlink" href="#validate-a-value-against-a-type" title="Permanent link">&para;</a></h3>
-<p>You can validate a CTY value (as a JSON string) against a CTY type string using the <code>soup-go</code> harness. This is useful for checking type compatibility.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Validate a simple string</span>
-soup<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span><span class="s1">&#39;&quot;hello&quot;&#39;</span><span class="w"> </span>--type-string<span class="w"> </span>string
+<h2 id="configuration-file-location">Configuration File Location<a class="headerlink" href="#configuration-file-location" title="Permanent link">&para;</a></h2>
+<p>TofuSoup searches for <code>soup.toml</code> in the following order:</p>
+<ol>
+<li>Path specified by <code>--config-file</code> CLI option</li>
+<li><code>./soup.toml</code> (current directory)</li>
+<li>Project root (directory containing <code>pyproject.toml</code>)</li>
+</ol>
+<p>If no configuration file is found, TofuSoup uses built-in defaults.</p>
+<h2 id="configuration-sections">Configuration Sections<a class="headerlink" href="#configuration-sections" title="Permanent link">&para;</a></h2>
+<h3 id="global-settings">Global Settings<a class="headerlink" href="#global-settings" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[global_settings]</span>
+<span class="n">default_python_log_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span>
+<span class="n">default_harness_log_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;DEBUG&quot;</span>
+</code></pre></div>
+<h3 id="harness-configuration">Harness Configuration<a class="headerlink" href="#harness-configuration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[harness_defaults.go]</span>
+<span class="n">build_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">]</span>
+<span class="n">timeout_seconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">300</span>
 
-<span class="c1"># Validate a list of numbers</span>
-soup<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>--type-string<span class="w"> </span><span class="s2">&quot;list(number)&quot;</span>
+<span class="k">[harness.go.soup-go]</span>
+<span class="n">log_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TRACE&quot;</span>
+</code></pre></div>
+<h3 id="test-suite-configuration">Test Suite Configuration<a class="headerlink" href="#test-suite-configuration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[test_suite_defaults]</span>
+<span class="n">extra_pytest_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">]</span>
 
-<span class="c1"># Validate an object</span>
-soup<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;tofu&quot;,&quot;age&quot;:1}&#39;</span><span class="w"> </span>--type-string<span class="w"> </span><span class="s2">&quot;object({name=string,age=number})&quot;</span>
+<span class="k">[test_suite.rpc]</span>
+<span class="n">env_vars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">KV_STORAGE_DIR</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;/tmp&quot;</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<h2 id="hcl-utilities-soup-hcl">HCL Utilities (<code>soup hcl</code>)<a class="headerlink" href="#hcl-utilities-soup-hcl" title="Permanent link">&para;</a></h2>
-<h3 id="view-hcl-as-cty">View HCL as CTY<a class="headerlink" href="#view-hcl-as-cty" title="Permanent link">&para;</a></h3>
-<p>To parse an HCL file (like a <code>.tf</code> or <code>.tfvars</code> file) and display its structure as a CTY representation, use <code>soup hcl view</code>.</p>
-<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>hcl<span class="w"> </span>view<span class="w"> </span>main.tf
+<h3 id="matrix-testing-configuration">Matrix Testing Configuration<a class="headerlink" href="#matrix-testing-configuration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[workenv.matrix]</span>
+<span class="n">parallel_jobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="n">timeout_minutes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span>
+
+<span class="k">[workenv.matrix.versions]</span>
+<span class="n">terraform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;1.5.7&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;1.6.0&quot;</span><span class="p">]</span>
+<span class="n">tofu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;1.8.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;1.9.0&quot;</span><span class="p">]</span>
 </code></pre></div>
-<h3 id="convert-hcl-to-json-or-msgpack">Convert HCL to JSON or Msgpack<a class="headerlink" href="#convert-hcl-to-json-or-msgpack" title="Permanent link">&para;</a></h3>
-<p>To convert an HCL file to a more portable format, use <code>soup hcl convert</code>. This implicitly uses CTY as the intermediate representation.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Convert HCL to JSON</span>
-soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> </span>network.tf<span class="w"> </span>network.json
+<h2 id="using-configuration-in-commands">Using Configuration in Commands<a class="headerlink" href="#using-configuration-in-commands" title="Permanent link">&para;</a></h2>
+<p>Most TofuSoup commands respect configuration file settings:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use default configuration</span>
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>cty
+
+<span class="c1"># Use specific configuration file</span>
+soup<span class="w"> </span>--config-file<span class="w"> </span>/path/to/custom.toml<span class="w"> </span><span class="nb">test</span><span class="w"> </span>cty
+
+<span class="c1"># Override with environment variable</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">TOFUSOUP_LOG_LEVEL</span><span class="o">=</span>DEBUG
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>cty
 </code></pre></div>
+<h2 id="configuration-precedence">Configuration Precedence<a class="headerlink" href="#configuration-precedence" title="Permanent link">&para;</a></h2>
+<p>Settings are resolved in this order (highest to lowest priority):</p>
+<ol>
+<li><strong>Command-line arguments</strong>: <code>--log-level DEBUG</code></li>
+<li><strong>Environment variables</strong>: <code>TOFUSOUP_LOG_LEVEL=DEBUG</code></li>
+<li><strong>Configuration file</strong>: <code>soup.toml</code> settings</li>
+<li><strong>Built-in defaults</strong>: Hardcoded application defaults</li>
+</ol>
+<h2 id="debugging-configuration-issues">Debugging Configuration Issues<a class="headerlink" href="#debugging-configuration-issues" title="Permanent link">&para;</a></h2>
+<p>If you're experiencing unexpected behavior:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Check what configuration is loaded</span>
+soup<span class="w"> </span>config<span class="w"> </span>show
+
+<span class="c1"># 2. Verify configuration file syntax</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import tomllib; tomllib.load(open(&#39;soup.toml&#39;, &#39;rb&#39;))&quot;</span>
+
+<span class="c1"># 3. Use explicit configuration file</span>
+soup<span class="w"> </span>--config-file<span class="w"> </span>./soup.toml<span class="w"> </span>config<span class="w"> </span>show
+
+<span class="c1"># 4. Enable debug logging</span>
+soup<span class="w"> </span>--log-level<span class="w"> </span>DEBUG<span class="w"> </span>config<span class="w"> </span>show
+</code></pre></div>
+<h2 id="common-configuration-patterns">Common Configuration Patterns<a class="headerlink" href="#common-configuration-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="development-environment">Development Environment<a class="headerlink" href="#development-environment" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[global_settings]</span>
+<span class="n">default_python_log_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;DEBUG&quot;</span>
+
+<span class="k">[harness_defaults.go]</span>
+<span class="n">build_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-race&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="cicd-environment">CI/CD Environment<a class="headerlink" href="#cicd-environment" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[global_settings]</span>
+<span class="n">default_python_log_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span>
+
+<span class="k">[test_suite_defaults]</span>
+<span class="n">extra_pytest_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--tb=short&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--color=yes&quot;</span><span class="p">]</span>
+
+<span class="k">[workenv.matrix]</span>
+<span class="n">parallel_jobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span>
+</code></pre></div>
+<h3 id="production-testing">Production Testing<a class="headerlink" href="#production-testing" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[test_suite_defaults]</span>
+<span class="n">extra_pytest_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;not slow&quot;</span><span class="p">]</span>
+
+<span class="k">[harness_defaults.go]</span>
+<span class="n">timeout_seconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600</span>
+</code></pre></div>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../../reference/configuration/">Configuration Reference</a> - Complete configuration file documentation</li>
+<li><a href="../../../troubleshooting/">Troubleshooting</a> - Common configuration issues</li>
+<li><a href="../../../getting-started/quick-start/">Quick Start</a> - Basic configuration examples</li>
+</ul>
 
 
 
@@ -1979,7 +2247,7 @@ soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> <
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../migration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Migration Guide">
+          <a href="../matrix-testing/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Matrix Testing">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1989,20 +2257,20 @@ soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> <
                 Previous
               </span>
               <div class="md-ellipsis">
-                Migration Guide
+                Matrix Testing
               </div>
             </div>
           </a>
         
         
           
-          <a href="../wire-protocol/" class="md-footer__link md-footer__link--next" aria-label="Next: Wire Protocol">
+          <a href="../state-inspection/" class="md-footer__link md-footer__link--next" aria-label="Next: State Inspection">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Wire Protocol
+                State Inspection
               </div>
             </div>
             <div class="md-footer__button md-icon">
