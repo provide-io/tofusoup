@@ -131,6 +131,8 @@ nav:
       - CTY and HCL Tools: guides/cli-usage/03-using-cty-and-hcl-tools.md
       - Wire Protocol: guides/cli-usage/wire-protocol.md
       - Matrix Testing: guides/cli-usage/matrix-testing.md
+      - Configuration Management: guides/cli-usage/configuration-management.md
+      - State Inspection: guides/cli-usage/state-inspection.md
     - Testing:
       - Running Conformance Tests: guides/testing/01-running-conformance-tests.md
       - Test Harness Development: guides/testing/test-harness-development.md
