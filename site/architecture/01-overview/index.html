@@ -291,15 +291,8 @@
   
     
     
-      
-  
-  
-  
-  
-    
-    
       <li class="md-tabs__item">
-        <a href="../../guides/cli-usage/03-using-cty-and-hcl-tools/" class="md-tabs__link">
+        <a href="../../guides/migration/" class="md-tabs__link">
           
   
   
@@ -309,9 +302,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -779,6 +769,8 @@
       
         
       
+        
+      
     
     
     
@@ -823,6 +815,29 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../guides/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -847,10 +862,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
             
   
   
@@ -863,8 +878,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             CLI Usage
           </label>
@@ -975,10 +990,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
             
   
   
@@ -991,8 +1006,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Testing
           </label>
@@ -1672,7 +1687,7 @@
 <p><strong>Conformance Testing (<code>testing/</code>, <code>conformance/</code>)</strong>: This is the core of the suite. The <code>testing/</code> module provides the <code>soup test</code> CLI and logic for invoking <code>pytest</code>. The actual test suites reside in <code>conformance/</code>.</p>
 </li>
 <li>
-<p><strong>Documentation (<code>docs/</code>, <code>.garnish</code> system)</strong>: A co-located documentation framework that treats documentation as a first-class citizen of the development process, tightly coupling it with the source code to prevent drift.</p>
+<p><strong>Documentation (<code>docs/</code>)</strong>: Comprehensive documentation organized by Diátaxis principles, including getting started guides, tutorials, reference material, and architecture documentation. Documentation generation for providers has been moved to the separate <code>plating</code> package.</p>
 </li>
 </ol>
 

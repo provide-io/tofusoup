@@ -126,6 +126,7 @@ nav:
     - Conformance Testing: core-concepts/conformance-testing.md
 
   - Guides:
+    - Migration Guide: guides/migration.md
     - CLI Usage:
       - CTY and HCL Tools: guides/cli-usage/03-using-cty-and-hcl-tools.md
       - Wire Protocol: guides/cli-usage/wire-protocol.md

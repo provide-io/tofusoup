@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://foundry.provide.io/tofusoup/guides/cli-usage/03-using-cty-and-hcl-tools/">
       
       
-        <link rel="prev" href="../../../core-concepts/conformance-testing/">
+        <link rel="prev" href="../../migration/">
       
       
         <link rel="next" href="../wire-protocol/">
@@ -293,17 +293,8 @@
   
     
     
-      
-  
-  
-  
-    
-  
-  
-    
-    
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../../migration/" class="md-tabs__link">
           
   
   
@@ -313,9 +304,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -783,6 +771,8 @@
       
         
       
+        
+      
     
     
     
@@ -826,6 +816,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -855,10 +868,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
             
   
   
@@ -871,8 +884,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             CLI Usage
           </label>
@@ -1103,10 +1116,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="">
             
   
   
@@ -1119,8 +1132,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Testing
           </label>
@@ -1859,7 +1872,7 @@ soup<span class="w"> </span>cty<span class="w"> </span>view<span class="w"> </sp
 soup<span class="w"> </span>cty<span class="w"> </span>convert<span class="w"> </span>input.json<span class="w"> </span>output.msgpack
 </code></pre></div>
 <h3 id="validate-a-value-against-a-type">Validate a Value Against a Type<a class="headerlink" href="#validate-a-value-against-a-type" title="Permanent link">&para;</a></h3>
-<p>You can validate a CTY value (as a JSON string) against a CTY type string using the <code>go-cty</code> harness. This is useful for checking type compatibility.</p>
+<p>You can validate a CTY value (as a JSON string) against a CTY type string using the <code>soup-go</code> harness. This is useful for checking type compatibility.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Validate a simple string</span>
 soup<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span><span class="s1">&#39;&quot;hello&quot;&#39;</span><span class="w"> </span>--type-string<span class="w"> </span>string
 
@@ -1916,7 +1929,7 @@ soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> <
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../../core-concepts/conformance-testing/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Conformance Testing">
+          <a href="../../migration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Migration Guide">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1926,7 +1939,7 @@ soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> <
                 Previous
               </span>
               <div class="md-ellipsis">
-                Conformance Testing
+                Migration Guide
               </div>
             </div>
           </a>

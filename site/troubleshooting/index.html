@@ -291,15 +291,8 @@
   
     
     
-      
-  
-  
-  
-  
-    
-    
       <li class="md-tabs__item">
-        <a href="../guides/cli-usage/03-using-cty-and-hcl-tools/" class="md-tabs__link">
+        <a href="../guides/migration/" class="md-tabs__link">
           
   
   
@@ -309,9 +302,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -779,6 +769,8 @@
       
         
       
+        
+      
     
     
     
@@ -823,6 +815,29 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../guides/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -847,10 +862,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
             
   
   
@@ -863,8 +878,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             CLI Usage
           </label>
@@ -975,10 +990,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
             
   
   
@@ -991,8 +1006,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Testing
           </label>
@@ -2253,7 +2268,7 @@ pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="
 <li>
 <p>Try building manually:
    <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>src/tofusoup/harness/go/soup-go
-go<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>bin/soup-go
+go<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>../../../../harnesses/bin/soup-go
 </code></pre></div></p>
 </li>
 <li>
@@ -2270,7 +2285,7 @@ go<span class="w"> </span>mod<span class="w"> </span>verify
 soup<span class="w"> </span>harness<span class="w"> </span>build<span class="w"> </span>soup-go
 
 <span class="c1"># Verify it runs</span>
-./bin/soup-go<span class="w"> </span>--version
+./harnesses/bin/soup-go<span class="w"> </span>--version
 
 <span class="c1"># Check logs</span>
 soup<span class="w"> </span>harness<span class="w"> </span>verify-cli<span class="w"> </span>soup-go<span class="w"> </span>--verbose
@@ -2316,7 +2331,7 @@ lsof<span class="w"> </span>-i<span class="w"> </span>:50051
 <p>Compare binary outputs:
    <div class="highlight"><pre><span></span><code><span class="c1"># See wire protocol guide for debugging</span>
 soup<span class="w"> </span>wire<span class="w"> </span>encode<span class="w"> </span>input.json<span class="w"> </span>python.out
-./bin/soup-go<span class="w"> </span>wire<span class="w"> </span>encode<span class="w"> </span>input.json<span class="w"> </span>go.out
+./harnesses/bin/soup-go<span class="w"> </span>wire<span class="w"> </span>encode<span class="w"> </span>input.json<span class="w"> </span>go.out
 diff<span class="w"> </span>&lt;<span class="o">(</span>xxd<span class="w"> </span>python.out<span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>xxd<span class="w"> </span>go.out<span class="o">)</span>
 </code></pre></div></p>
 </li>

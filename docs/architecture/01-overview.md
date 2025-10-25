@@ -17,4 +17,4 @@ The architecture is segmented into several key domains:
 
 5.  **Conformance Testing (`testing/`, `conformance/`)**: This is the core of the suite. The `testing/` module provides the `soup test` CLI and logic for invoking `pytest`. The actual test suites reside in `conformance/`.
 
-6.  **Documentation (`docs/`, `.garnish` system)**: A co-located documentation framework that treats documentation as a first-class citizen of the development process, tightly coupling it with the source code to prevent drift.
+6.  **Documentation (`docs/`)**: Comprehensive documentation organized by Diátaxis principles, including getting started guides, tutorials, reference material, and architecture documentation. Documentation generation for providers has been moved to the separate `plating` package.
