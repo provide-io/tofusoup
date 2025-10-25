@@ -152,7 +152,7 @@ def entry_point() -> None:
             f.write(f"PLUGIN_AUTO_MTLS = {os.getenv('PLUGIN_AUTO_MTLS')}\n")
             f.write(f"Magic cookie key = {magic_cookie_key}\n")
             f.write(f"Magic cookie value = {magic_cookie_value}\n")
-            f.write(f"All PLUGIN_* env vars: {[k for k in os.environ.keys() if 'PLUGIN' in k]}\n")
+            f.write(f"All PLUGIN_* env vars: {[k for k in os.environ if 'PLUGIN' in k]}\n")
 
         logger.debug(
             "Plugin mode detected",

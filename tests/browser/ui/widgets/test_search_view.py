@@ -46,7 +46,7 @@ def search_results() -> list[SearchResult]:
     ]
 
 
-async def test_search_view_update_and_display_results(pilot: Pilot, search_results: list[SearchResult]):
+async def test_search_view_update_and_display_results(pilot: Pilot, search_results: list[SearchResult]) -> None:
     """Verify search results are correctly displayed in the view."""
     await pilot.app.push_screen(SearchViewScreen())
     await pilot.pause()
@@ -66,7 +66,7 @@ async def test_search_view_update_and_display_results(pilot: Pilot, search_resul
 
 async def test_search_view_result_selection(
     pilot_with_message_capture: Callable[[list[Message]], Awaitable[Pilot]], search_results: list[SearchResult]
-):
+) -> None:
     """Verify that selecting a result emits the correct message."""
     messages: list[Message] = []
     async with await pilot_with_message_capture(messages) as pilot:
@@ -89,7 +89,7 @@ async def test_search_view_result_selection(
     assert result_selected_messages[0].result.id == "2"
 
 
-async def test_search_view_clear_results(pilot: Pilot, search_results: list[SearchResult]):
+async def test_search_view_clear_results(pilot: Pilot, search_results: list[SearchResult]) -> None:
     """Verify the clear_results method empties the list."""
     await pilot.app.push_screen(SearchViewScreen())
     await pilot.pause()

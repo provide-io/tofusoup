@@ -6,7 +6,7 @@ import asyncio
 import time
 
 
-async def main():
+async def main() -> bool | None:
     from tofusoup.rpc.client import KVClient
 
     print("="*70)
@@ -53,7 +53,7 @@ async def main():
             print(f"\n❌ FAIL: Expected {value}, got {result}")
             return False
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         print(f"❌ Timeout after {time.time() - start:.2f}s")
         return False
     except Exception as e:

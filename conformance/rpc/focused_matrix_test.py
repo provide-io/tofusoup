@@ -6,6 +6,7 @@ with quick timeout for known failing combinations.
 """
 
 import asyncio
+import contextlib
 from dataclasses import dataclass
 import time
 
@@ -32,7 +33,7 @@ class TestResult:
 class FocusedMatrixTester:
     """Focused matrix tester with quick timeouts for known issues."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.soup_go_path = "/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/bin/soup-go"
         self.soup_py_path = "/Users/tim/code/pyv/mono/tofusoup/.venv_darwin_arm64/bin/soup"
 
@@ -85,10 +86,8 @@ class FocusedMatrixTester:
 
             return TestResult("python", "go", crypto_config, False, error=error_msg, duration=duration)
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 await client.close()
-            except Exception:
-                pass
 
     async def test_python_to_python_crypto(self, crypto_config: CryptoConfig) -> TestResult:
         """Test Python client to Python server (expected to fail quickly)."""
@@ -141,10 +140,8 @@ class FocusedMatrixTester:
                 duration=duration,
             )
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 await client.close()
-            except Exception:
-                pass
 
     def simulate_go_to_go(self, crypto_config: CryptoConfig) -> TestResult:
         """Simulate Go client to Go server results."""
@@ -169,7 +166,7 @@ class FocusedMatrixTester:
             duration=0.1,
         )
 
-    async def run_focused_matrix(self):
+    async def run_focused_matrix(self) -> None:
         """Run focused matrix test with timeouts for known issues."""
         print("🍲 FOCUSED TOFUSOUP RPC MATRIX TEST")
         print("=" * 80)
@@ -312,7 +309,7 @@ class FocusedMatrixTester:
         return "\\n".join(lines)
 
 
-async def main():
+async def main() -> None:
     """Run the focused matrix test."""
     tester = FocusedMatrixTester()
 

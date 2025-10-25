@@ -3,13 +3,17 @@
 Test Python client → Python server
 """
 import asyncio
-import time
+import builtins
+import contextlib
 from pathlib import Path
-from provide.foundation import pout, perr
+import time
+
+from provide.foundation import perr, pout
+
 from tofusoup.rpc.client import KVClient
 
 
-async def main():
+async def main() -> int | None:
     # Use the Python 'soup' command as server
     soup_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
@@ -58,10 +62,8 @@ async def main():
         pout("=" * 70)
         perr(f"❌ FAIL: {type(e).__name__}: {str(e)[:200]}", color="red", bold=True)
         pout("=" * 70)
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return 1
 
 

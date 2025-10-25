@@ -1,5 +1,4 @@
 from provide.testkit.mocking import AsyncMock
-
 import pytest
 
 from tofusoup.registry.models.module import Module, ModuleVersion

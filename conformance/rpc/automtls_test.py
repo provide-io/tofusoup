@@ -13,7 +13,7 @@ from tofusoup.rpc.client import KVClient
 
 @pytest.mark.integration_rpc
 @pytest.mark.harness_go
-async def test_automtls_compatibility():
+async def test_automtls_compatibility() -> None:
     print("🔐 AUTOMTLS COMPATIBILITY VERIFICATION")
     print("=" * 80)
 

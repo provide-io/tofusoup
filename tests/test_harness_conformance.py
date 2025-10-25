@@ -140,7 +140,7 @@ class TestHarnessConformance:
     def test_performance_comparison(self, go_harness_path: pathlib.Path, benchmark) -> None:
         """Benchmark Go harness vs Python module performance."""
 
-        def run_go_cty_validation():
+        def run_go_cty_validation() -> None:
             subprocess.run(
                 [str(go_harness_path), "cty", "validate-value", '"test"', "--type", '"string"'],
                 capture_output=True,
@@ -238,7 +238,7 @@ def test_capability_matrix() -> None:
         ]
 
         for capability, args in tests:
-            result = subprocess.run([str(go_binary)] + args, capture_output=True, text=True)
+            result = subprocess.run([str(go_binary), *args], capture_output=True, text=True)
             capabilities["Go Harness"][capability] = result.returncode == 0
 
         # RPC server is available if binary exists

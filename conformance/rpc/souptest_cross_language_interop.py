@@ -15,13 +15,12 @@ Test Matrix:
 
 import asyncio
 import os
-import subprocess
 from pathlib import Path
+import subprocess
 
 import grpc.aio
-import pytest
 from provide.foundation import logger
-from provide.testkit import temp_directory
+import pytest
 
 from tofusoup.rpc.client import KVClient
 from tofusoup.rpc.server import serve
@@ -81,7 +80,7 @@ class TestCrossLanguageInterop:
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_python
-    async def test_python_client_python_server(self, python_server_address: str):
+    async def test_python_client_python_server(self, python_server_address: str) -> None:
         """Test: Python Client ↔ Python Server"""
         logger.info("🐍↔🐍 Testing Python Client ↔ Python Server")
 
@@ -109,7 +108,7 @@ class TestCrossLanguageInterop:
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
-    async def test_python_client_go_server(self, go_server_path: str):
+    async def test_python_client_go_server(self, go_server_path: str) -> None:
         """Test: Python Client ↔ Go Server"""
         if not go_server_path:
             pytest.skip("Go server binary not available")
@@ -150,7 +149,7 @@ class TestCrossLanguageInterop:
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
     async def test_go_client_python_server(
         self, go_client_path: str, python_server_address: str, temp_directory: Path
-    ):
+    ) -> None:
         """Test: Go Client ↔ Python Server"""
         if not go_client_path:
             pytest.skip("Go client binary not available")
@@ -175,11 +174,11 @@ class BridgeHandler(kv_pb2_grpc.KVServicer):
         # Connect to the already-running Python server
         self.channel = grpc.insecure_channel('{python_server_address}')
         self.stub = kv_pb2_grpc.KVStub(self.channel)
-    
+
     def Get(self, request, context):
         return self.stub.Get(request)
-    
-    def Put(self, request, context):  
+
+    def Put(self, request, context):
         return self.stub.Put(request)
 
 if __name__ == '__main__':
@@ -234,7 +233,7 @@ if __name__ == '__main__':
         logger.info("🐹↔🐍 Go Client ↔ Python Server: Test completed (compatibility proven at proto level)")
 
     @pytest.mark.integration_rpc
-    def test_proto_compatibility(self):
+    def test_proto_compatibility(self) -> None:
         """Test: Verify proto message compatibility"""
         logger.info("🔄 Testing Proto Message Compatibility")
 
@@ -265,7 +264,7 @@ if __name__ == '__main__':
     @pytest.mark.harness_go
     async def test_comprehensive_interop_scenario(
         self, python_server_address: str, go_server_path: str | None
-    ):
+    ) -> None:
         """Test: Comprehensive interoperability scenario"""
         logger.info("🌐 Testing Comprehensive Interoperability Scenario")
 
@@ -324,7 +323,7 @@ if __name__ == '__main__':
 
 if __name__ == "__main__":
     # Run a quick manual test
-    async def manual_test():
+    async def manual_test() -> None:
         test_instance = TestCrossLanguageInterop()
         test_instance.test_proto_compatibility()
         print("✅ Manual proto compatibility test passed")

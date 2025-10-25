@@ -2,12 +2,12 @@
 """Test Go client → Python server using soup-go's client test."""
 from __future__ import annotations
 
-import subprocess
 import os
 from pathlib import Path
+import subprocess
 
 
-def main():
+def main() -> None:
     print("="*70)
     print("Test: Go Client → Python Server")
     print("="*70)

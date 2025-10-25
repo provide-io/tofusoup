@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from pathlib import Path
+import time
 
 
-async def main():
+async def main() -> None:
     from tofusoup.rpc.client import KVClient
 
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
@@ -45,7 +45,7 @@ async def main():
         else:
             print(f"\n❌ FAIL: Expected {value}, got {result}")
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         print(f"❌ Timeout after {time.time() - start:.2f}s")
     except Exception as e:
         print(f"❌ Error: {type(e).__name__}: {e}")

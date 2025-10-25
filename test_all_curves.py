@@ -4,9 +4,12 @@ Test Python client → Go server with all supported elliptic curves
 Tests: secp256r1, secp384r1, secp521r1, and auto mode
 """
 import asyncio
+import builtins
+import contextlib
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
+
 from tofusoup.rpc.client import KVClient
 
 
@@ -62,28 +65,24 @@ async def test_curve(curve_name: str, soup_go_path: Path) -> tuple[bool, float, 
             await client.close()
             return (False, time.time() - start_time, "Value mismatch")
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         duration = time.time() - start_time
         error = f"Connection timeout after {duration:.2f}s"
         print(f"❌ {error}")
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return (False, duration, error)
 
     except Exception as e:
         duration = time.time() - start_time
         error = f"{type(e).__name__}: {e}"
         print(f"❌ ERROR: {error}")
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return (False, duration, error)
 
 
-async def main():
+async def main() -> int:
     """Run all curve tests."""
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
@@ -96,8 +95,8 @@ async def main():
     print("Python Client → Go Server (pyvider-rpcplugin ↔ go-plugin)")
     print("="*70)
     print(f"\nGo Server: {soup_go_path}")
-    print(f"TLS Mode: auto (mTLS with TLSProvider)")
-    print(f"Transport: TCP (forced via PLUGIN_MIN_PORT/MAX_PORT)")
+    print("TLS Mode: auto (mTLS with TLSProvider)")
+    print("Transport: TCP (forced via PLUGIN_MIN_PORT/MAX_PORT)")
     print()
 
     # Test all curves

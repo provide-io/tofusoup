@@ -2,9 +2,8 @@
 TDD Tests for the 'soup garnish' CLI command.
 """
 
-from provide.testkit.mocking import patch
-
 from click.testing import CliRunner
+from provide.testkit.mocking import patch
 import pytest
 
 from tofusoup.cli import main_cli
@@ -19,7 +18,7 @@ class TestGarnishCliContract:
         return CliRunner()
 
     @pytest.mark.skip(reason="garnish command moved to separate garnish package")
-    def test_garnish_command_exists(self, runner: CliRunner):
+    def test_garnish_command_exists(self, runner: CliRunner) -> None:
         """CONTRACT: The `soup garnish` command group must exist."""
         result = runner.invoke(main_cli, ["garnish", "--help"])
         assert result.exit_code == 0
@@ -27,7 +26,7 @@ class TestGarnishCliContract:
         assert "scaffold" in result.output
         assert "render" in result.output
 
-    def test_docs_command_is_removed(self, runner: CliRunner):
+    def test_docs_command_is_removed(self, runner: CliRunner) -> None:
         """CONTRACT: The old `soup docs` command must NOT exist."""
         result = runner.invoke(main_cli, ["docs", "--help"])
         assert result.exit_code != 0
@@ -35,7 +34,7 @@ class TestGarnishCliContract:
 
     @pytest.mark.skip(reason="garnish command moved to separate garnish package")
     @patch("tofusoup.garnish.cli.scaffold_garnish")
-    def test_garnish_scaffold_invokes_correct_logic(self, mock_scaffold, runner: CliRunner):
+    def test_garnish_scaffold_invokes_correct_logic(self, mock_scaffold, runner: CliRunner) -> None:
         """CONTRACT: `soup garnish scaffold` must invoke the scaffolding logic."""
         mock_scaffold.return_value = {"resource": 1}
         result = runner.invoke(main_cli, ["garnish", "scaffold"])
@@ -45,7 +44,7 @@ class TestGarnishCliContract:
 
     @pytest.mark.skip(reason="garnish command moved to separate garnish package")
     @patch("tofusoup.garnish.cli.generate_docs")
-    def test_garnish_render_invokes_correct_logic(self, mock_render, runner: CliRunner):
+    def test_garnish_render_invokes_correct_logic(self, mock_render, runner: CliRunner) -> None:
         """CONTRACT: `soup garnish render` must invoke the rendering logic."""
         result = runner.invoke(main_cli, ["garnish", "render", "--force"])
         assert result.exit_code == 0

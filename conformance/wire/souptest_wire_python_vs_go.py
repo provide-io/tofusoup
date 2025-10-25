@@ -3,9 +3,9 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+
 from pyvider.cty.codec import cty_to_msgpack
 from pyvider.cty.parser import parse_tf_type_to_ctytype
-
 from tofusoup.common.exceptions import ConversionError
 
 from ..utils.go_interaction import tfwire_go_encode
@@ -44,7 +44,7 @@ BIT_FOR_BIT_VECTORS = [
 @pytest.mark.parametrize("test_name, payload", BIT_FOR_BIT_VECTORS)
 def test_python_and_go_encoders_are_identical(
     test_name: str, payload: dict, go_harness_executable: Path, project_root: Path
-):
+) -> None:
     try:
         py_b64_msgpack_str = encode_value_to_tfwire(payload)
         py_msgpack_bytes = base64.b64decode(py_b64_msgpack_str)

@@ -3,12 +3,15 @@
 Test Python client → Go server with auto mode (no specific curve)
 """
 import asyncio
-import time
+import builtins
+import contextlib
 from pathlib import Path
+import time
+
 from tofusoup.rpc.client import KVClient
 
 
-async def main():
+async def main() -> int | None:
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
     print("Testing Python client → Go server (auto mode)")
@@ -39,10 +42,8 @@ async def main():
 
     except Exception as e:
         print(f"❌ Error: {e}")
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return 1
 
 

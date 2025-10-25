@@ -9,7 +9,7 @@ from tofusoup.rpc.client import KVClient
 @pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 @pytest.mark.asyncio
-async def test_pyclient_goserver_put_get_string(go_harness_executable: Path):
+async def test_pyclient_goserver_put_get_string(go_harness_executable: Path) -> None:
     """
     Tests Put/Get between Python KVClient and the unified Go KVServer.
     """

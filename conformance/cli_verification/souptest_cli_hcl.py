@@ -33,7 +33,7 @@ def test_hcl_cli_parse(
     hcl_content: str,
     expected_json_output: Any,
     expected_exit_code: int,
-):
+) -> None:
     test_id = request.node.callspec.id
     hcl_file = tmp_path / filename
     hcl_file.write_text(hcl_content)

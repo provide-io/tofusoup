@@ -64,7 +64,7 @@ def go_harness_executable(request, project_root: Path, loaded_tofusoup_config: d
 
 # --- Certificate Fixtures (remain unchanged) ---
 @pytest.fixture(scope="session", autouse=True)
-def _ensure_openssl_available_if_needed_for_anything_else():
+def _ensure_openssl_available_if_needed_for_anything_else() -> None:
     if not shutil.which("openssl"):
         print(
             "Warning: OpenSSL command line tool not found. Some tests or features might be affected if they rely on it directly."

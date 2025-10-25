@@ -1,13 +1,12 @@
-from provide.testkit.mocking import AsyncMock, patch
-
 from provide.testkit import isolated_cli_runner
+from provide.testkit.mocking import AsyncMock, patch
 
 from tofusoup.registry import cli as registry_cli
 from tofusoup.registry.search.engine import SearchResult
 
 
 class TestRegistrySearchCommand:
-    def test_search_command_with_results(self):
+    def test_search_command_with_results(self) -> None:
         mock_results = [
             SearchResult(
                 id="1",
@@ -40,13 +39,13 @@ class TestRegistrySearchCommand:
             assert "hashicorp/aws" in result.output
             assert "terraform-aws-modules/vpc/aws" in result.output
 
-    def test_search_command_no_results(self):
+    def test_search_command_no_results(self) -> None:
         with isolated_cli_runner() as runner, patch("asyncio.run", return_value=[]):
             result = runner.invoke(registry_cli.registry_cli, ["search", "nonexistent"])
             assert result.exit_code == 0
             assert "No results found for 'nonexistent'" in result.output
 
-    def test_search_command_with_type_filter(self):
+    def test_search_command_with_type_filter(self) -> None:
         mock_results = [
             SearchResult(
                 id="1",
@@ -66,7 +65,7 @@ class TestRegistrySearchCommand:
             assert result.exit_code == 0
             assert "hashicorp/aws" in result.output
 
-    def test_search_command_no_term(self):
+    def test_search_command_no_term(self) -> None:
         with isolated_cli_runner() as runner:
             result = runner.invoke(registry_cli.registry_cli, ["search"])
         assert result.exit_code == 0  # Click doesn't exit with error for empty args
@@ -76,7 +75,7 @@ class TestRegistrySearchCommand:
 class TestProviderCommands:
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
     @patch("tofusoup.registry.cli.OpenTofuRegistry")
-    def test_provider_info_command(self, mock_tofu_reg, mock_tf_reg, sample_provider):
+    def test_provider_info_command(self, mock_tofu_reg, mock_tf_reg, sample_provider) -> None:
         # Setup mocks
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(
@@ -106,7 +105,7 @@ class TestProviderCommands:
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
     def test_provider_versions_command(
         self, mock_tf_reg, mock_provider_details, mock_provider_versions
-    ):
+    ) -> None:
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
         mock_tf_instance.list_provider_versions = AsyncMock(return_value=mock_provider_versions)
@@ -125,7 +124,7 @@ class TestProviderCommands:
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
     def test_provider_versions_latest_flag(
         self, mock_tf_reg, mock_provider_details, mock_provider_versions
-    ):
+    ) -> None:
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
         mock_tf_instance.list_provider_versions = AsyncMock(return_value=mock_provider_versions)
@@ -141,7 +140,7 @@ class TestProviderCommands:
         assert "Latest version: 6.8.0" in result.output
         assert "Versions (3 total):" not in result.output
 
-    def test_provider_info_invalid_format(self):
+    def test_provider_info_invalid_format(self) -> None:
         with isolated_cli_runner() as runner:
             result = runner.invoke(registry_cli.registry_cli, ["provider", "info", "invalid-format"])
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code
@@ -150,7 +149,7 @@ class TestProviderCommands:
 
 class TestModuleCommands:
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
-    def test_module_info_command(self, mock_tf_reg, sample_module):
+    def test_module_info_command(self, mock_tf_reg, sample_module) -> None:
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(
             return_value={
@@ -176,7 +175,7 @@ class TestModuleCommands:
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
     def test_module_versions_command(
         self, mock_tf_reg, mock_module_details, mock_module_versions
-    ):
+    ) -> None:
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(return_value=mock_module_details)
         mock_tf_instance.list_module_versions = AsyncMock(return_value=mock_module_versions)
@@ -192,7 +191,7 @@ class TestModuleCommands:
         assert "Module: terraform-aws-modules/vpc/aws" in result.output
         assert "6.0.1" in result.output
 
-    def test_module_info_invalid_format(self):
+    def test_module_info_invalid_format(self) -> None:
         with isolated_cli_runner() as runner:
             result = runner.invoke(registry_cli.registry_cli, ["module", "info", "invalid/format"])
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code
@@ -204,7 +203,7 @@ class TestCompareCommand:
     @patch("tofusoup.registry.cli.OpenTofuRegistry")
     def test_compare_provider_command(
         self, mock_tofu_reg, mock_tf_reg, mock_provider_details, mock_provider_versions
-    ):
+    ) -> None:
         # Setup Terraform registry mock
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_provider_details = AsyncMock(return_value=mock_provider_details)
@@ -229,7 +228,7 @@ class TestCompareCommand:
         assert "OpenTofu Registry" in result.output
         assert "Available" in result.output
 
-    def test_compare_invalid_format(self):
+    def test_compare_invalid_format(self) -> None:
         with isolated_cli_runner() as runner:
             result = runner.invoke(registry_cli.registry_cli, ["compare", "invalid"])
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code

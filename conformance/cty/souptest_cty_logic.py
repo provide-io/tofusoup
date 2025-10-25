@@ -7,7 +7,7 @@ from pyvider.cty.types import CtyNumber, CtyObject, CtyString
 
 
 @pytest.mark.integration_cty
-def test_marshal_unmarshal_roundtrip():
+def test_marshal_unmarshal_roundtrip() -> None:
     """
     Verify that marshalling and unmarshalling a CtyValue preserves it.
     This test now uses the correct, current API.

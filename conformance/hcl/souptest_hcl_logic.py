@@ -8,7 +8,7 @@ from tofusoup.hcl.logic import load_hcl_file_as_cty
 
 
 @pytest.mark.integration_hcl
-def test_load_hcl_file_as_cty_simple(tmp_path: Path):
+def test_load_hcl_file_as_cty_simple(tmp_path: Path) -> None:
     """Verify that a simple HCL file is parsed into a correct CtyValue."""
     hcl_content = """
     name = "test-server"

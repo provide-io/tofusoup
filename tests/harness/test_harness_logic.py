@@ -1,13 +1,13 @@
 from pathlib import Path
 import subprocess
-from provide.testkit.mocking import MagicMock, patch
 
+from provide.testkit.mocking import MagicMock, patch
 import pytest
 
 from tofusoup.harness.logic import HarnessBuildError, ensure_go_harness_build
 
 
-def test_ensure_go_harness_build_success(tmp_path: Path):
+def test_ensure_go_harness_build_success(tmp_path: Path) -> None:
     """Verify that the correct 'go build' command is constructed and run."""
     project_root = tmp_path
     harness_name = "soup-go"
@@ -26,14 +26,14 @@ def test_ensure_go_harness_build_success(tmp_path: Path):
 
         # Check that 'go build' was called with the correct arguments
         mock_run.assert_called_once()
-        args, kwargs = mock_run.call_args
+        args, _kwargs = mock_run.call_args
         assert args[0][0] == "go"
         assert args[0][1] == "build"
         assert "-o" in args[0]
         assert str(result_path) in args[0]
 
 
-def test_ensure_go_harness_build_failure(tmp_path: Path):
+def test_ensure_go_harness_build_failure(tmp_path: Path) -> None:
     """Verify that a build failure raises HarnessBuildError."""
     project_root = tmp_path
     harness_name = "soup-go"

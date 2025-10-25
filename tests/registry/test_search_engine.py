@@ -1,5 +1,4 @@
 from provide.testkit.mocking import AsyncMock
-
 import pytest
 
 from tofusoup.registry.models.module import Module, ModuleVersion
@@ -8,7 +7,7 @@ from tofusoup.registry.search.engine import SearchEngine, SearchQuery
 
 
 class MockRegistry(AsyncMock):
-    def __init__(self, name="terraform"):
+    def __init__(self, name="terraform") -> None:
         super().__init__()
         self._name = name
 
@@ -22,14 +21,14 @@ class MockRegistry(AsyncMock):
     def __class__(self):
         # Mock the class name for registry identification
         class FakeClass:
-            def __init__(self, name):
+            def __init__(self, name) -> None:
                 self.__name__ = f"{name}Registry"
 
         return FakeClass(self._name)
 
 
 @pytest.mark.asyncio
-async def test_search_engine_merges_results_and_versions():
+async def test_search_engine_merges_results_and_versions() -> None:
     """Test that SearchEngine properly merges results from multiple registries."""
     # Create mock registries
     tf_registry = MockRegistry(name="Terraform")
@@ -104,7 +103,7 @@ async def test_search_engine_merges_results_and_versions():
 
 
 @pytest.mark.asyncio
-async def test_search_engine_handles_registry_errors():
+async def test_search_engine_handles_registry_errors() -> None:
     """Test that SearchEngine gracefully handles registry errors."""
     # Create mock registries
     good_registry = MockRegistry(name="Good")
@@ -136,7 +135,7 @@ async def test_search_engine_handles_registry_errors():
 
 
 @pytest.mark.asyncio
-async def test_search_engine_empty_query():
+async def test_search_engine_empty_query() -> None:
     """Test SearchEngine with empty query."""
     registry = MockRegistry(name="Test")
     registry.list_providers = AsyncMock(return_value=[])

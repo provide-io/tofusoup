@@ -14,10 +14,14 @@ For testing working configurations, see:
 Usage: python test_curve.py <curve_name>
 """
 import asyncio
+import builtins
+import contextlib
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
-from provide.foundation import pout, perr
+
+from provide.foundation import perr, pout
+
 from tofusoup.rpc.client import KVClient
 
 
@@ -25,7 +29,7 @@ async def test_curve(curve_name: str) -> int:
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
     pout(f"\n{'='*70}")
-    perr(f"⚠️  WARNING: Testing Python → Go (UNSUPPORTED)", color="yellow", bold=True)
+    perr("⚠️  WARNING: Testing Python → Go (UNSUPPORTED)", color="yellow", bold=True)
     pout(f"{'='*70}")
     pout("")
     perr("❌ This configuration is NOT SUPPORTED due to a known bug", color="red", bold=True)
@@ -60,7 +64,7 @@ async def test_curve(curve_name: str) -> int:
         test_value = f"Hello with {curve_name}!".encode()
 
         await client.put(test_key, test_value)
-        pout(f"✅ PUT successful", color="green")
+        pout("✅ PUT successful", color="green")
 
         result = await client.get(test_key)
         pout(f"✅ GET successful: {len(result)} bytes", color="green")
@@ -71,7 +75,7 @@ async def test_curve(curve_name: str) -> int:
             await client.close()
             return 0
         else:
-            perr(f"\n❌ FAIL: Value mismatch", color="red", bold=True)
+            perr("\n❌ FAIL: Value mismatch", color="red", bold=True)
             await client.close()
             return 1
 
@@ -89,10 +93,8 @@ async def test_curve(curve_name: str) -> int:
         pout("  ✓ Go → Python")
         pout("")
         pout("See docs/rpc-compatibility-matrix.md for details", color="cyan")
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return 1
 
 

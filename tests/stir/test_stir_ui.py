@@ -2,7 +2,7 @@
 from tofusoup import stir
 
 
-def test_generate_status_table():
+def test_generate_status_table() -> None:
     """Verify the Rich table is generated correctly from the status dict."""
     stir.test_statuses = {
         "test_pass": {"text": "✅ PASS", "style": "bold green", "active": False, "thread_id": "1"},

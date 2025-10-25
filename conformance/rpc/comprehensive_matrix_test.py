@@ -6,6 +6,7 @@ All failures are documented as actual bugs or compatibility issues.
 """
 
 import asyncio
+import contextlib
 from dataclasses import dataclass
 import time
 
@@ -33,7 +34,7 @@ class TestResult:
 class ComprehensiveMatrixTester:
     """Tests all combinations of client, server, crypto, and TLS modes."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.soup_go_path = "/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/bin/soup-go"
         self.soup_py_path = "/Users/tim/code/pyv/mono/tofusoup/.venv_darwin_arm64/bin/soup"
 
@@ -85,10 +86,8 @@ class ComprehensiveMatrixTester:
                 error=f"{type(e).__name__}: {str(e)[:150]}",
             )
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 await client.close()
-            except Exception:
-                pass
 
     async def test_python_to_python(self, crypto_config: CryptoConfig, tls_mode: str) -> TestResult:
         """Test Python client to Python server."""
@@ -126,10 +125,8 @@ class ComprehensiveMatrixTester:
                 error=f"{type(e).__name__}: {str(e)[:150]}",
             )
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 await client.close()
-            except Exception:
-                pass
 
     def simulate_go_combinations(self, crypto_config: CryptoConfig, tls_mode: str) -> list[TestResult]:
         """Simulate Go client combinations based on known CLI behavior."""
@@ -178,7 +175,7 @@ class ComprehensiveMatrixTester:
 
         return results
 
-    async def run_comprehensive_matrix(self):
+    async def run_comprehensive_matrix(self) -> None:
         """Run comprehensive matrix test across all combinations."""
         print("🏆 COMPREHENSIVE TOFUSOUP RPC MATRIX TEST")
         print("=" * 80)
@@ -231,7 +228,7 @@ class ComprehensiveMatrixTester:
         print("=" * 80)
         self.generate_summary_report()
 
-    def generate_summary_report(self):
+    def generate_summary_report(self) -> None:
         """Generate comprehensive summary report."""
         # Group results by client-server combination
         combinations = {}
@@ -284,7 +281,7 @@ class ComprehensiveMatrixTester:
         print("• Complete matrix testing infrastructure operational")
 
 
-async def main():
+async def main() -> None:
     """Run the comprehensive matrix test."""
     tester = ComprehensiveMatrixTester()
     await tester.run_comprehensive_matrix()

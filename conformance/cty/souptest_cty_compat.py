@@ -7,7 +7,7 @@ import pytest
 @pytest.mark.integration_cty
 @pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
-def test_souptest_go_cty_validation(go_harness_executable: Path):
+def test_souptest_go_cty_validation(go_harness_executable: Path) -> None:
     """
     Conformance test to verify that the `soup-go cty validate-value` command
     works as expected for a simple case.

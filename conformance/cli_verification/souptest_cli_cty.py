@@ -11,7 +11,7 @@ HARNESS_NAME = "soup-go"
 # This test now correctly uses the generic go_harness_executable fixture
 # by parameterizing it with the specific harness name it needs.
 @pytest.mark.parametrize("go_harness_executable", [HARNESS_NAME], indirect=True)
-def test_cty_cli_help(go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest):
+def test_cty_cli_help(go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest) -> None:
     """Tests the --help output of the soup-go harness CTY commands."""
     test_id = request.node.name
     exit_code, stdout, stderr = run_harness_cli(

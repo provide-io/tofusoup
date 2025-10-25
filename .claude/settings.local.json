@@ -54,7 +54,9 @@
       "Bash(uv run mkdocs build:*)",
       "Bash(pip search:*)",
       "Bash(uv sync:*)",
-      "Bash(uv run python:*)"
+      "Bash(uv run python:*)",
+      "Bash(uv pip show:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": [],

@@ -4,7 +4,7 @@ from tofusoup.registry.opentofu import OpenTofuRegistry
 
 
 @pytest.mark.asyncio
-async def test_get_provider_details_success(httpx_mock):
+async def test_get_provider_details_success(httpx_mock) -> None:
     """Test successful provider details retrieval from OpenTofu Registry."""
     mock_response = {
         "id": "opentofu/aws",
@@ -24,7 +24,7 @@ async def test_get_provider_details_success(httpx_mock):
 
 
 @pytest.mark.asyncio
-async def test_get_provider_details_not_found(httpx_mock):
+async def test_get_provider_details_not_found(httpx_mock) -> None:
     """Test provider not found scenario."""
     httpx_mock.add_response(
         url="https://registry.opentofu.org/v1/providers/nonexistent/provider",
@@ -39,7 +39,7 @@ async def test_get_provider_details_not_found(httpx_mock):
 
 
 @pytest.mark.asyncio
-async def test_get_module_details_success(httpx_mock):
+async def test_get_module_details_success(httpx_mock) -> None:
     """Test successful module details retrieval."""
     mock_response = {
         "id": "aws-ia/vpc/aws",
@@ -61,20 +61,8 @@ async def test_get_module_details_success(httpx_mock):
 
 
 @pytest.mark.asyncio
-async def test_list_modules_with_search(httpx_mock):
+async def test_list_modules_with_search(httpx_mock) -> None:
     """Test listing modules with search query."""
-    mock_response = {
-        "modules": [
-            {
-                "id": "aws-ia/vpc/aws",
-                "namespace": "aws-ia",
-                "name": "vpc",
-                "provider": "aws",
-                "description": "AWS VPC Module",
-                "downloads": 1000,
-            }
-        ]
-    }
 
     # OpenTofu uses a different search API endpoint
     httpx_mock.add_response(
@@ -100,7 +88,7 @@ async def test_list_modules_with_search(httpx_mock):
 
 
 @pytest.mark.asyncio
-async def test_list_module_versions(httpx_mock):
+async def test_list_module_versions(httpx_mock) -> None:
     """Test listing module versions."""
     mock_response = {
         "modules": [{"versions": [{"version": "4.5.0"}, {"version": "4.4.0"}, {"version": "4.3.0"}]}]

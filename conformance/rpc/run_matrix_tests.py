@@ -28,7 +28,7 @@ def run_command(cmd, description):
     return result.returncode == 0
 
 
-def main():
+def main() -> None:
     """Main test runner."""
 
     # Get script directory

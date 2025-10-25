@@ -7,18 +7,17 @@ Validates that:
 - Missing server binaries fail early with clear errors
 - Invalid curves are rejected
 """
-import asyncio
 from pathlib import Path
 
-import pytest
 from provide.foundation import logger
+import pytest
 
 from tofusoup.rpc.client import KVClient
 
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="Python→Go is a known bug, testing it would just waste time")
-async def test_python_to_go_fails_gracefully():
+async def test_python_to_go_fails_gracefully() -> None:
     """
     Test that Python → Go connection fails with a clear error.
 
@@ -44,7 +43,7 @@ async def test_python_to_go_fails_gracefully():
 
 
 @pytest.mark.asyncio
-async def test_missing_server_binary_fails_early():
+async def test_missing_server_binary_fails_early() -> None:
     """Test that missing server binary fails immediately with FileNotFoundError."""
     nonexistent = Path("/tmp/nonexistent-server-binary")
 
@@ -63,7 +62,7 @@ async def test_missing_server_binary_fails_early():
 
 
 @pytest.mark.asyncio
-async def test_timeout_on_broken_connection():
+async def test_timeout_on_broken_connection() -> None:
     """Test that broken connections timeout gracefully."""
     # This tests the timeout mechanism when server doesn't respond
     # For this test, we'd need a mock server that accepts connections but doesn't handshake
@@ -71,7 +70,7 @@ async def test_timeout_on_broken_connection():
     pytest.skip("Requires mock server implementation")
 
 
-def test_document_known_failures():
+def test_document_known_failures() -> None:
     """Document all known failure modes for reference."""
     known_failures = [
         {

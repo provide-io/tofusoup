@@ -150,10 +150,7 @@ def should_test_combination(client_server: ClientServerPair, mtls_config: MTLSCo
         return False
 
     # Skip manual mTLS for now (requires certificate fixtures)
-    if mtls_config.mode == "manual_mtls":
-        return False
-
-    return True
+    return mtls_config.mode != "manual_mtls"
 
 
 # Generate pytest parameters for the full test matrix
