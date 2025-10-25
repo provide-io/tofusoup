@@ -291,15 +291,8 @@
   
     
     
-      
-  
-  
-  
-  
-    
-    
       <li class="md-tabs__item">
-        <a href="../../guides/cli-usage/03-using-cty-and-hcl-tools/" class="md-tabs__link">
+        <a href="../../guides/migration/" class="md-tabs__link">
           
   
   
@@ -309,9 +302,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -779,6 +769,8 @@
       
         
       
+        
+      
     
     
     
@@ -823,6 +815,29 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../guides/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -847,10 +862,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
             
   
   
@@ -863,8 +878,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             CLI Usage
           </label>
@@ -975,10 +990,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
             
   
   
@@ -991,8 +1006,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Testing
           </label>
@@ -2386,7 +2401,7 @@ pytest<span class="w"> </span>tests/integration/test_error_scenarios.py<span cla
 <h2 id="cli-validation">CLI Validation<a class="headerlink" href="#cli-validation" title="Permanent link">&para;</a></h2>
 <p>Use the validation command to check compatibility before connecting:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Check if a connection will work</span>
-soup<span class="w"> </span>rpc<span class="w"> </span>validate-connection<span class="w"> </span>--client<span class="w"> </span>python<span class="w"> </span>--server<span class="w"> </span>/path/to/soup-go
+soup<span class="w"> </span>rpc<span class="w"> </span>validate-connection<span class="w"> </span>--client<span class="w"> </span>python<span class="w"> </span>--server<span class="w"> </span>harnesses/bin/soup-go
 
 <span class="c1"># Output:</span>
 <span class="c1"># ⚠️  Python → Go connections not supported</span>
@@ -2422,7 +2437,7 @@ Supported alternatives:
   ✓ Python client → Python server
   ✓ Go client → Go server
 
-Server path: /path/to/soup-go
+Server path: harnesses/bin/soup-go
 </code></pre></div>
 <h3 id="unsupported-curve">Unsupported Curve<a class="headerlink" href="#unsupported-curve" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>Curve &#39;secp521r1&#39; is not supported by Python&#39;s grpcio library.
