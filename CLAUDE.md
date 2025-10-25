@@ -4,27 +4,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`tofusoup` is a cross-language conformance test suite for OpenTofu/Terraform tooling. It provides automated testing frameworks for verifying compatibility and correctness across different implementations of Terraform-compatible tools, particularly focusing on the Pyvider ecosystem.
+`tofusoup` is a cross-language conformance testing suite and tooling framework for OpenTofu/Terraform ecosystems. It provides CLI tools and testing frameworks for:
+
+- **CTY (Configuration Type System)** - Working with Terraform's type system
+- **HCL (HashiCorp Configuration Language)** - Parsing and converting HCL
+- **Wire Protocol** - Terraform wire protocol encoding/decoding
+- **RPC/gRPC** - Cross-language RPC testing and plugin systems
+- **Registry Operations** - Querying Terraform/OpenTofu registries
+- **Matrix Testing (Stir)** - Testing providers across multiple Terraform/Tofu versions
+- **Provider Development** - Tools for provider project management
+
+The project focuses on ensuring compatibility between Go, Python, and other language implementations of Terraform-adjacent technologies.
 
 ## Development Environment Setup
 
-**IMPORTANT**: Use `uv sync` to set up the development environment. This script provisions a virtual environment in `workenv/` (NOT `.venv`). The environment setup handles:
-- Python 3.11+ requirement
-- UV package manager for dependency management
-- Platform-specific virtual environments (e.g., `workenv/tofusoup_darwin_arm64`)
+**IMPORTANT**: Use `uv sync` to set up the development environment. This creates a virtual environment at `.venv/` (NOT `workenv/`).
+
+```bash
+# Install uv if needed: https://github.com/astral-sh/uv
+uv sync
+```
 
 ## Common Development Commands
 
 ```bash
-# Environment setup (always use this instead of manual venv creation)
-uv sync
+# Environment setup
+uv sync                                 # Set up development environment
 
 # Run tests
 uv run pytest                           # Run all tests
 uv run pytest conformance/             # Run conformance tests
 uv run pytest tests/                   # Run unit tests
 uv run pytest -n auto                  # Run tests in parallel
-uv run pytest -n auto -vvv             # Verbose parallel test run
 uv run pytest -k "test_name"           # Run tests matching pattern
 
 # Code quality checks
@@ -32,200 +43,288 @@ uv run ruff check .                    # Run linter
 uv run ruff format .                   # Format code
 uv run mypy src/                       # Type checking
 
-# CLI operations
-soup --help                     # Main CLI help
-soup generate                   # Generate test configurations
-soup validate                   # Validate configurations
-soup test                       # Run test suites
-soup report                     # Generate test reports
+# CLI operations (command is 'soup', not 'tofusoup')
+soup --help                            # Main CLI help
+soup cty --help                        # CTY utilities
+soup hcl --help                        # HCL utilities
+soup wire --help                       # Wire protocol utilities
+soup rpc --help                        # RPC utilities
+soup test --help                       # Conformance testing
+soup stir --help                       # Matrix testing
+soup registry --help                   # Registry operations
+soup harness --help                    # Test harness management
 
 # Build and distribution
-uv build                        # Build package
-uv publish                      # Publish to PyPI
+uv build                               # Build package
+uv publish                             # Publish to PyPI
 ```
 
 ## Architecture & Code Structure
 
 ### Core Components
 
-1. **Test Generation Engine** (`src/tofusoup/generators/`)
-   - Configuration generators for different test scenarios
-   - Template-based test case creation
-   - Cross-language compatibility test generation
+The codebase is organized into functional modules under `src/tofusoup/`:
 
-2. **Validation Framework** (`src/tofusoup/validators/`)
-   - Schema validation for Terraform configurations
-   - Semantic validation for provider behaviors
-   - Cross-platform compatibility validation
+1. **`cty/`** - CTY value operations
+   - CLI commands for viewing, converting CTY data
+   - Integration with `pyvider-cty` for Python implementation
+   - Cross-language compatibility testing against Go harnesses
 
-3. **Execution Engine** (`src/tofusoup/executors/`)
-   - Test execution orchestration
-   - Parallel test runner with result aggregation
-   - Integration with external tools (terraform, tofu, etc.)
+2. **`hcl/`** - HCL operations
+   - HCL parsing and conversion
+   - Integration with `pyvider-hcl`
+   - CTY representation of HCL structures
 
-4. **Reporting System** (`src/tofusoup/reporters/`)
-   - Test result aggregation and analysis
-   - HTML/JSON/XML report generation
-   - Performance benchmarking reports
+3. **`wire/`** - Terraform wire protocol
+   - Encoding/decoding wire protocol messages
+   - MessagePack and Base64 handling
+   - Integration with `pyvider.wire` library
 
-5. **Configuration Management** (`src/tofusoup/config/`)
-   - Test suite configuration loading
-   - Environment-specific settings
-   - Provider configuration management
+4. **`rpc/`** - RPC and plugin system
+   - gRPC service implementations (KV store example)
+   - Plugin server capabilities (go-plugin compatible)
+   - Cross-language RPC testing (Python ↔ Go)
+   - Certificate and mTLS management
+
+5. **`harness/`** - Test harness management
+   - Building and managing Go test harnesses
+   - CLI for harness lifecycle (build, verify, clean)
+   - Proto definitions and generated code
+
+6. **`testing/`** - Conformance test execution
+   - Unified CLI for running pytest-based conformance suites
+   - Test discovery and execution orchestration
+   - Configuration via `soup.toml`
+
+7. **`stir/`** - Matrix testing framework
+   - Multi-version Terraform/OpenTofu testing
+   - Parallel test execution across tool versions
+   - Integration with workenv for version management
+
+8. **`registry/`** - Registry operations
+   - Querying Terraform and OpenTofu registries
+   - Provider and module search
+   - Caching and API clients
+
+9. **`browser/` (sui)** - Terminal UI
+   - Textual-based TUI for browsing registries
+   - Interactive provider/module exploration
+
+10. **`provider/`** - Provider development tools
+    - Provider project scaffolding
+    - Development utilities
+
+11. **`state/`** - State inspection
+    - Terraform state file analysis
+    - Private state attributes access
+
+12. **`common/`** - Shared utilities
+    - Configuration loading (`config.py`)
+    - Rich terminal output helpers
+    - Exception classes
+    - Lazy loading for CLI performance
+
+13. **`scaffolding/`** - Project scaffolding
+    - Generate new project structures
+    - Template-based code generation
 
 ### Key Design Patterns
 
-1. **Plugin Architecture**: Extensible system for adding new test types and validators
-2. **Template-Driven**: Jinja2-based template system for generating test configurations
-3. **Async-First**: Built on asyncio for concurrent test execution
-4. **Cross-Language**: Supports testing multiple language implementations
-5. **Schema-Driven**: Uses JSON schemas for test configuration validation
+1. **Lazy Loading CLI**: Uses `LazyGroup` for fast CLI startup - subcommands load only when invoked
+2. **Foundation Integration**: Uses `provide-foundation` for structured logging and telemetry
+3. **Rich Terminal Output**: Extensive use of `rich` library for beautiful CLI output
+4. **Plugin Compatibility**: RPC server can run as go-plugin compatible plugin
+5. **Configuration-Driven**: `soup.toml` for configuring harnesses, tests, and commands
+6. **Cross-Language Testing**: Conformance tests validate Python ↔ Go compatibility
 
-### Important Implementation Notes
+### Directory Structure
 
-1. **Integration with Plating**: Uses `plating` for documentation generation and Terraform configuration templating
-2. **Pyvider Ecosystem**: Integrates with `pyvider-cty`, `pyvider-hcl`, and `pyvider-rpcplugin` for testing
-3. **Conformance Testing**: Provides standardized test suites for Terraform provider compliance
-4. **Multi-Format Output**: Supports multiple output formats for CI/CD integration
+```
+tofusoup/
+├── src/tofusoup/           # Main source code
+│   ├── cli.py              # Main CLI entry point
+│   ├── browser/            # TUI (sui command)
+│   ├── common/             # Shared utilities
+│   ├── config/             # Configuration defaults
+│   ├── cty/                # CTY operations
+│   ├── hcl/                # HCL operations
+│   ├── wire/               # Wire protocol
+│   ├── rpc/                # RPC and plugin system
+│   ├── harness/            # Harness management + Go source
+│   ├── testing/            # Test execution
+│   ├── stir/               # Matrix testing
+│   ├── registry/           # Registry operations
+│   ├── provider/           # Provider tools
+│   ├── state/              # State inspection
+│   └── scaffolding/        # Project scaffolding
+├── conformance/            # Conformance test suites
+│   ├── cty/                # CTY conformance tests
+│   ├── hcl/                # HCL conformance tests
+│   ├── wire/               # Wire protocol tests
+│   └── rpc/                # RPC cross-language tests
+├── tests/                  # Unit/integration tests
+├── docs/                   # Documentation
+├── pyproject.toml          # Package configuration
+├── soup.toml               # TofuSoup configuration
+└── README.md               # User documentation
+```
 
 ## Testing Strategy
 
 ### Core Testing Requirements
 
-**CRITICAL**: When testing tofusoup, `provide-testkit` MUST be available and used for all testing utilities.
+**CRITICAL**: `provide-testkit` MUST be available for testing utilities.
 
-- **provide-testkit dependency**: Required in dev dependencies (configured)
+- **provide-testkit dependency**: Required in dev dependencies
 - **Foundation integration**: Uses `provide-foundation` for structured logging
 - **Async testing**: Comprehensive async test support via `pytest-asyncio`
-- **HTTP testing**: Mock HTTP services for testing provider interactions
+- **HTTP testing**: Mock HTTP services with `pytest-httpx` and `respx`
+- **Conformance tests**: Located in `conformance/` directory
+- **Unit tests**: Located in `tests/` directory
 
 ### Standard Testing Pattern
 
 ```python
 import pytest
-from provide.testkit import temp_directory, test_files_structure
-from tofusoup.generators import ConfigGenerator
-from tofusoup.validators import SchemaValidator
+from pathlib import Path
 
-def test_config_generation(temp_directory):
-    """Test configuration generation."""
-    generator = ConfigGenerator()
-    config = generator.generate_test_config(
-        provider="example",
-        resources=["test_resource"]
+def test_cty_conversion():
+    """Test CTY value conversion."""
+    from tofusoup.cty.logic import convert_cty_file
+
+    result = convert_cty_file(
+        input_path=Path("test.json"),
+        output_path=Path("test.msgpack"),
+        input_format="json",
+        output_format="msgpack"
     )
+    assert result is not None
+```
 
-    config_file = temp_directory / "test.tf"
-    config_file.write_text(config)
+### Running Tests
 
-    validator = SchemaValidator()
-    assert validator.validate(config_file)
+```bash
+# Run all tests
+uv run pytest
+
+# Run specific test suite via CLI
+soup test cty                    # CTY conformance tests
+soup test rpc                    # RPC conformance tests
+soup test wire                   # Wire protocol tests
+
+# Run with pytest directly
+uv run pytest conformance/cty/ -v
+uv run pytest tests/ -k test_name
 ```
 
 ### Testing Infrastructure
 
-- Comprehensive test coverage including unit, integration, and conformance tests
-- Tests use `pytest` with async support via `pytest-asyncio`
-- HTTP mocking with `pytest-httpx` and `respx`
-- Database testing with `aiosqlite` for test result storage
-- Performance testing with `pytest-benchmark`
+- Pytest-based with comprehensive markers (see `pyproject.toml`)
+- Conformance tests validate cross-language compatibility
+- Go harnesses provide reference implementations
+- Python implementations tested against Go harnesses
+- Matrix testing validates multiple Terraform/Tofu versions
 
 ## Common Issues & Solutions
 
 1. **ModuleNotFoundError for dependencies**: Run `uv sync` to ensure proper environment setup
-2. **Test execution timeouts**: Increase timeout settings in pytest configuration
-3. **Provider compatibility issues**: Check provider version requirements and compatibility matrix
-4. **Import errors**: Ensure PYTHONPATH includes both `src/` and project root
+2. **Harness build failures**: Ensure Go is installed and `GOPATH` is configured
+3. **Plugin connection timeouts**: Check certificate generation and mTLS configuration
+4. **Test execution timeouts**: Increase timeout settings in pytest configuration
+5. **Import errors**: Ensure PYTHONPATH includes `src/` (configured in `pyproject.toml`)
 
 ## Development Guidelines
 
 - Always use modern Python 3.11+ type hints (e.g., `list[str]` not `List[str]`)
 - Use `attrs` for data classes consistently
 - Follow async patterns for I/O operations
-- Use structured logging via `provide.foundation`
-- No migration, backward compatibility, or legacy implementation logic
+- Use structured logging via `provide.foundation.logger`
 - Only use absolute imports, never relative imports
 - Use async in tests where appropriate
-- No hardcoded defaults - use configuration constants
+- No hardcoded defaults - use configuration constants from `config/defaults.py`
 
 ## Integration with Ecosystem
 
 ### Pyvider Integration
 
-```python
-from tofusoup.integrations.pyvider import PyviderTestSuite
-from pyvider.hub import discover_components
+TofuSoup integrates with the Pyvider ecosystem:
 
-# Test Pyvider provider components
-test_suite = PyviderTestSuite()
-components = discover_components()
-results = await test_suite.test_components(components)
+```python
+# CTY operations use pyvider-cty
+from pyvider.cty import Value, Type
+
+# HCL operations use pyvider-hcl
+from pyvider.hcl import parse_hcl
+
+# RPC uses pyvider-rpcplugin
+from pyvider.rpcplugin.server import RPCPluginServer
 ```
 
 ### Plating Integration
 
-```python
-from tofusoup.integrations.plating import PlatingGenerator
-from plating import PlatingBundle
+Documentation generation has been moved to the separate `plating` package. TofuSoup can work with plating bundles but doesn't generate them directly.
 
-# Generate documentation tests
-generator = PlatingGenerator()
-bundles = PlatingBundle.discover()
-test_configs = generator.generate_from_bundles(bundles)
-```
+### Go Harness Integration
 
-### OpenTofu/Terraform Integration
+TofuSoup includes Go test harnesses for reference implementations:
 
-```python
-from tofusoup.executors import TerraformExecutor, OpenTofuExecutor
+```bash
+# Build Go harnesses
+soup harness build --all
 
-# Test against multiple tools
-terraform = TerraformExecutor()
-tofu = OpenTofuExecutor()
+# Verify harness CLI
+soup harness verify-cli go-cty
 
-results = await asyncio.gather(
-    terraform.execute_test_suite(test_configs),
-    tofu.execute_test_suite(test_configs)
-)
+# List available harnesses
+soup harness list
 ```
 
 ## Output Guidelines for CLI and Logging
 
 **IMPORTANT**: Use the correct output method for the context:
 
-- **CLI User-Facing Output**: Use Foundation's output utilities for user messages
-- **Application Logging**: Use Foundation logger for internal logging/debugging
-- **Test Results**: Use structured JSON output for programmatic consumption
-- **Reports**: Use Rich for terminal UI and HTML for web reports
+- **CLI User-Facing Output**: Use `rich` for formatted terminal output
+- **Application Logging**: Use `provide.foundation.logger` for structured logging
+- **Plugin Mode**: All logging goes to stderr (stdout reserved for plugin handshake)
+- **Test Results**: Use pytest's output mechanisms
+
+Example:
+```python
+from provide.foundation import logger
+from rich import print as rich_print
+
+# For logging (debugging, internal state)
+logger.info("Processing CTY value", value_type="string")
+
+# For CLI output (user-facing information)
+rich_print("[green]✓[/green] Conversion successful")
+```
 
 ## Third-Party Dependencies
 
-The package integrates with multiple external tools:
+Key integrations:
 
-- **OpenTofu/Terraform**: Primary test targets
-- **Jinja2**: Template engine for configuration generation
-- **aiosqlite**: Test result storage and analysis
-- **httpx/respx**: HTTP client testing and mocking
-- **textual**: Terminal UI for interactive test execution
-- **msgpack**: Efficient serialization for test data
-
-## Performance Considerations
-
-- **Parallel Execution**: Tests run in parallel by default using asyncio
-- **Caching**: Test results are cached to avoid redundant execution
-- **Streaming**: Large test suites use streaming to manage memory usage
-- **Benchmarking**: Built-in performance benchmarking for regression testing
-
-## Security Considerations
-
-- **Sandbox Execution**: Test execution is sandboxed to prevent system interference
-- **Input Validation**: All test configurations are validated before execution
-- **Credential Management**: Test credentials are managed securely
-- **Network Isolation**: Tests can run in network-isolated environments
+- **pyvider-cty**: Python CTY implementation
+- **pyvider-hcl**: Python HCL parser
+- **pyvider-rpcplugin**: RPC plugin infrastructure
+- **provide-foundation**: Logging and telemetry
+- **provide-testkit**: Testing utilities
+- **click**: CLI framework
+- **rich**: Terminal formatting
+- **textual**: Terminal UI (for sui command)
+- **msgpack**: Binary serialization
+- **httpx/respx**: HTTP client and mocking
 
 ## Configuration Files
 
-- **`tofusoup.toml`**: Main configuration file for test suites
+- **`soup.toml`**: Main configuration file for TofuSoup
+  - Harness build settings
+  - Test suite configuration
+  - Default command options
+  - Workenv/matrix testing settings
+- **`pyproject.toml`**: Python package configuration
+  - Dependencies
+  - Pytest configuration
+  - Ruff/mypy settings
 - **`conformance/`**: Directory containing conformance test specifications
-- **`templates/`**: Jinja2 templates for test generation
-- **`schemas/`**: JSON schemas for validation
+- **See `docs/CONFIGURATION.md` for complete `soup.toml` documentation**
