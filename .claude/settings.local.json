@@ -59,7 +59,10 @@
       "Bash(xargs:*)",
       "Bash(./harnesses/bin/soup-go:*)",
       "Read(//private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/tmp.pPd0nUZgVI/**)",
-      "Bash(shasum:*)"
+      "Bash(shasum:*)",
+      "Bash(echo \"\" echo \"   Checking for SQL injection risks...\" grep -r \"execute.*%\" src/ --include=\"*.py\")",
+      "Bash(echo \"\" echo \"📝 8. Documentation Coverage:\" echo \"\" echo \"   Files without docstrings:\" find src/tofusoup -name \"*.py\" -type f ! -name \"__init__.py\" -exec sh -c 'grep -L \"\"\"\"\\\"\"\"\"\\\"\"\"\"\\\"\"\"\"\"\"\"\" \"\"\"\"$1\"\"\"\" 2>/dev/null' _ {})",
+      "Bash(uv run mypy:*)"
     ],
     "deny": [],
     "ask": [],
