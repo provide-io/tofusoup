@@ -7,7 +7,7 @@ Matrix testing functionality for TofuSoup.
 Provides version matrix testing for the 'soup stir' command to validate
 providers against multiple versions of Terraform/OpenTofu.
 
-Note: Matrix testing requires the optional 'wrkenv' dependency.
+Note: Matrix testing requires the optional 'wrknv' dependency.
 """
 
 import asyncio
@@ -25,9 +25,9 @@ from rich.table import Table
 
 from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTES
 
-# Optional workenv imports
+# Optional wrknv imports
 try:
-    from wrkenv import WorkenvConfig, get_tool_manager
+    from wrknv import WorkenvConfig, get_tool_manager
     from ..workenv_integration import create_workenv_config_with_soup, WORKENV_AVAILABLE
 except ImportError:
     WORKENV_AVAILABLE = False
@@ -92,13 +92,13 @@ class VersionMatrix:
             config: Optional WorkenvConfig. If not provided, creates one with soup compatibility.
 
         Raises:
-            ImportError: If wrkenv is not installed.
+            ImportError: If wrknv is not installed.
         """
         if not WORKENV_AVAILABLE:
             raise ImportError(
-                "Matrix testing requires the 'wrkenv' package.\n"
-                "Install with: pip install wrkenv\n"
-                "Or install TofuSoup with matrix support: pip install tofusoup[matrix]"
+                "Matrix testing requires the 'wrknv' package.\n"
+                "Install with: pip install wrknv\n"
+                "Or install from source: pip install -e /path/to/wrknv"
             )
 
         self.config = config or create_workenv_config_with_soup()  # type: ignore
@@ -389,13 +389,13 @@ async def run_matrix_stir_tests(
         Test results dictionary
 
     Raises:
-        ImportError: If wrkenv is not installed.
+        ImportError: If wrknv is not installed.
     """
     if not WORKENV_AVAILABLE:
         raise ImportError(
-            "Matrix testing requires the 'wrkenv' package.\n"
-            "Install with: pip install wrkenv\n"
-            "Or install TofuSoup with matrix support: pip install tofusoup[matrix]"
+            "Matrix testing requires the 'wrknv' package.\n"
+            "Install with: pip install wrknv\n"
+            "Or install from source: pip install -e /path/to/wrknv"
         )
 
     if config is None:

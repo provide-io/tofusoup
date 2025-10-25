@@ -110,10 +110,10 @@ $ soup stir tests/stir_cases
 # Run integration tests
 
 $ soup stir tests/stir_cases --matrix
-# Run tests across all configured tool versions (requires: pip install tofusoup[matrix])
+# Run tests across all configured tool versions (requires wrknv package)
 ```
 
-**Note**: Matrix testing requires the optional `wrkenv` dependency. Install with `pip install tofusoup[matrix]`.
+**Note**: Matrix testing requires the optional `wrknv` package (not yet on PyPI). Install separately: `pip install -e /path/to/wrknv`
 
 ### Registry Operations
 

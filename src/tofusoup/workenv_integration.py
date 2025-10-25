@@ -1,10 +1,10 @@
 """
-Integration between TofuSoup and wrkenv.
+Integration between TofuSoup and wrknv.
 
 This module provides functionality to inject TofuSoup's workenv configuration
-from soup.toml into wrkenv, making wrkenv.toml optional for TofuSoup users.
+from soup.toml into wrknv, making wrkenv.toml optional for TofuSoup users.
 
-Note: wrkenv is an optional dependency. If not installed, matrix testing features
+Note: wrknv is an optional dependency. If not installed, matrix testing features
 will be unavailable but other TofuSoup features will work normally.
 """
 
@@ -12,9 +12,9 @@ from pathlib import Path
 import tomllib
 from typing import Any
 
-# Optional wrkenv import - graceful degradation if not available
+# Optional wrknv import - graceful degradation if not available
 try:
-    from wrkenv import WorkenvConfig
+    from wrknv import WorkenvConfig
     WORKENV_AVAILABLE = True
 except ImportError:
     WORKENV_AVAILABLE = False
@@ -61,9 +61,9 @@ def create_workenv_config_with_soup(project_root: Path | None = None) -> Any:
     """
     if not WORKENV_AVAILABLE:
         raise ImportError(
-            "wrkenv package is not installed. "
-            "Matrix testing features require wrkenv. "
-            "Install with: pip install wrkenv"
+            "wrknv package is not installed. "
+            "Matrix testing features require wrknv. "
+            "Install with: pip install wrknv (or pip install -e /path/to/wrknv)"
         )
 
     # Load soup.toml
@@ -75,7 +75,7 @@ def create_workenv_config_with_soup(project_root: Path | None = None) -> Any:
         return WorkenvConfig(project_root=project_root)  # type: ignore
 
     # Create a custom ConfigSource for soup.toml
-    from wrkenv.env.config import FileConfigSource
+    from wrknv.env.config import FileConfigSource
 
     # Create a soup.toml source
     soup_source = FileConfigSource(

@@ -4,17 +4,17 @@ The `soup stir` command is a powerful tool for running parallel integration test
 
 ## Prerequisites
 
-Matrix testing is an **optional feature** that requires the `wrkenv` package:
+Matrix testing is an **optional feature** that requires the `wrknv` package:
 
 ```bash
-# Install with matrix testing support
-pip install tofusoup[matrix]
+# Install wrknv from PyPI (when available)
+pip install wrknv
 
-# Or install wrkenv separately
-pip install wrkenv
+# Or install from local source (development)
+pip install -e /path/to/wrknv
 ```
 
-**Note**: All other TofuSoup features work without `wrkenv`. Only the `soup stir --matrix` flag requires this dependency.
+**Note**: All other TofuSoup features work without `wrknv`. Only the `soup stir --matrix` flag requires this dependency. The `wrknv` package is not yet published to PyPI and must be installed separately.
 
 ## What is Matrix Testing?
 
