@@ -256,134 +256,39 @@ class KVClient:
         return client_config
 
     async def start(self) -> None:
+        """Start the KV server and establish connection.
+
+        Raises:
+            FileNotFoundError: If server executable doesn't exist.
+            PermissionError: If server executable is not executable.
+            ValueError: If TLS configuration is invalid.
+            ConnectionError: If connection fails or times out.
+            TimeoutError: If connection attempt exceeds timeout.
+        """
         start_time = time.time()
         self.is_started = False
         try:
-            # TLS/mTLS configuration is passed via subprocess_env and client constructor config
-            # No need to modify rpcplugin_config directly
-
             logger.debug(f"KVClient attempting to start server: {self.server_path}")
 
-            if not os.path.exists(self.server_path):
-                raise FileNotFoundError(f"Server executable not found: {self.server_path}")
-            if not os.access(self.server_path, os.X_OK):
-                raise PermissionError(f"Server executable not executable: {self.server_path}")
+            # Build server command (validates path and adds TLS args)
+            server_command = self._build_server_command()
 
-            server_command = [self.server_path]
-            # Prepare effective_env early as it might be modified
-            effective_env = (
-                os.environ.copy()
-            )  # Start with current env, which includes what tests monkeypatched
-            effective_env.update(
-                self.subprocess_env
-            )  # Merge KVClient's base env for plugin (e.g., GODEBUG, PYTHONUNBUFFERED)
-            # Note: self.subprocess_env contains PLUGIN_AUTO_MTLS which pyvider-rpcplugin client might read via rpcplugin_config
-            # This is separate from how the server is told to configure its TLS.
+            # Prepare environment variables for server subprocess
+            effective_env = self._prepare_environment()
 
-            # Add TLS configuration arguments
-            # Check if binary name suggests it needs subcommands
-            binary_name = os.path.basename(self.server_path)
-            if binary_name in ["soup-go", "go-harness", "soup"]:
-                # New harnesses (both Go and Python) expect rpc server-start subcommand
-                server_command.extend(["rpc", "server-start"])
-            # For existing go-rpc binary or old-style binaries, just pass flags directly
+            # Configure RPCPluginClient (Python gRPC client)
+            client_config = self._build_client_config(effective_env)
 
-            server_command.extend(["--tls-mode", self.tls_mode])
-
-            if self.tls_mode == "auto":
-                # Both Go and Python servers support --tls-key-type and --tls-curve flags
-                server_command.extend(["--tls-key-type", self.tls_key_type])
-                server_command.extend(["--tls-curve", self.tls_curve])
-                logger.info(
-                    f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}, curve: {self.tls_curve}"
-                )
-            elif self.tls_mode == "manual":
-                if self.cert_file and self.key_file:
-                    server_command.extend(["--cert-file", self.cert_file])
-                    server_command.extend(["--key-file", self.key_file])
-                    logger.info(
-                        f"KVClient: Manual TLS enabled with cert: {self.cert_file}, key: {self.key_file}"
-                    )
-                else:
-                    # Fallback: try to get paths from environment variables
-                    server_cert_path = os.getenv("PLUGIN_SERVER_CERT")
-                    server_key_path = os.getenv("PLUGIN_SERVER_KEY")
-                    if server_cert_path and server_key_path:
-                        server_command.extend(["--cert-file", server_cert_path])
-                        server_command.extend(["--key-file", server_key_path])
-                        logger.info(
-                            f"KVClient: Manual TLS enabled using env vars - cert: {server_cert_path}, key: {server_key_path}"
-                        )
-                    else:
-                        logger.error("KVClient: Manual TLS mode requires cert-file and key-file")
-                        raise ValueError(
-                            "Manual TLS mode requires cert_file and key_file parameters or PLUGIN_SERVER_CERT/PLUGIN_SERVER_KEY environment variables"
-                        )
-            else:  # disabled
-                logger.info("KVClient: TLS disabled - running in insecure mode")
-
-            logger.info(f"Effective server command for plugin: {' '.join(server_command)}")
-
-            # Don't override PLUGIN_AUTO_MTLS - it's already set correctly in subprocess_env
-            # (false for specific curves to use TLSProvider, true only for "auto" mode)
-
-            # Set up magic cookies in the server's effective_env.
-            go_server_expected_cookie_key_name = "BASIC_PLUGIN"
-            go_server_expected_cookie_value = "hello"
-            effective_env["PLUGIN_MAGIC_COOKIE_KEY"] = go_server_expected_cookie_key_name
-            effective_env[go_server_expected_cookie_key_name] = go_server_expected_cookie_value
-            if (
-                "PLUGIN_MAGIC_COOKIE" in effective_env
-                and go_server_expected_cookie_key_name != "PLUGIN_MAGIC_COOKIE"
-            ):
-                del effective_env["PLUGIN_MAGIC_COOKIE"]
-            logger.info(
-                f"Final effective_env for subprocess will include: PLUGIN_MAGIC_COOKIE_KEY={effective_env.get('PLUGIN_MAGIC_COOKIE_KEY')}, {go_server_expected_cookie_key_name}={effective_env.get(go_server_expected_cookie_key_name)}"
-            )
-
-            # --- Configure RPCPluginClient (the Python gRPC client part) ---
-            client_constructor_config = {
-                "plugins": {"kv": KVProtocol()},
-                "env": effective_env,  # Env for the server subprocess it launches
-                # Ensure RPCPluginClient knows mTLS is desired for its gRPC channel
-                "enable_mtls": self.enable_mtls,
-            }
-
-            if self.enable_mtls:
-                # Tests use GRPC_DEFAULT_* env vars for client's mTLS materials.
-                # RPCPluginClient's explicit mTLS path expects these in its config dict.
-                client_cert_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH)
-                client_key_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH)
-                server_ca_path_env = os.getenv(
-                    ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH
-                )  # CA client uses to verify server
-
-                if client_cert_path_env and client_key_path_env and server_ca_path_env:
-                    logger.info(
-                        "KVClient: Populating RPCPluginClient config for mTLS with paths from GRPC_DEFAULT_* env vars."
-                    )
-                    client_constructor_config["client_cert_path"] = client_cert_path_env
-                    client_constructor_config["client_key_path"] = client_key_path_env
-                    client_constructor_config["server_root_ca_path"] = server_ca_path_env
-                else:
-                    logger.warning(
-                        f"KVClient: mTLS enabled for KVClient, but not all {ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH}, "
-                        f"{ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH}, or {ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH} env vars are set. "
-                        "RPCPluginClient might not establish mTLS correctly if it relies on these config paths."
-                    )
-
-            logger.debug(
-                f"KVClient: Final client_constructor_config for RPCPluginClient: {client_constructor_config}"
-            )
+            # Create and start client
             self._client = RPCPluginClient(
                 command=server_command,
-                config=client_constructor_config,
+                config=client_config,
             )
 
             logger.debug(f"Starting RPCPluginClient (pyvider), timeout={self.connection_timeout}s")
             await asyncio.wait_for(self._client.start(), timeout=self.connection_timeout)
 
-            # Check if stderr relay is available (ManagedProcess may not expose stderr attribute)
+            # Relay stderr if available
             if (
                 self._client._process
                 and hasattr(self._client._process, "stderr")
@@ -391,10 +296,11 @@ class KVClient:
             ):
                 self._relay_stderr()
 
+            # Create gRPC stub and mark as started
             self._stub = kv_pb2_grpc.KVStub(self._client.grpc_channel)
             self.is_started = True
 
-            # Safely get PID from process (may be wrapped in ManagedProcess)
+            # Log successful connection
             pid = getattr(self._client._process, "pid", "N/A") if self._client._process else "N/A"
             logger.info(f"KVClient connected to server in {time.time() - start_time:.3f}s. Server PID: {pid}")
 
