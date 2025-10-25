@@ -232,6 +232,23 @@ soup config show
 
 ## Matrix Testing Issues
 
+### Matrix testing not available
+
+**Symptom**: `Error: Matrix testing requires the 'wrkenv' package`
+
+**Cause**: Matrix testing is an optional feature.
+
+**Solution**:
+```bash
+# Install matrix testing support
+pip install tofusoup[matrix]
+
+# Or install wrkenv directly
+pip install wrkenv
+```
+
+**Note**: Regular `soup stir` (without `--matrix`) works without this dependency.
+
 ### stir command not finding tests
 
 **Symptom**: "No tests found"

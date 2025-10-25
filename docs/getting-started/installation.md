@@ -58,11 +58,17 @@ pip install tofusoup[rpc]
 ```
 Includes: `pyvider-rpcplugin` for RPC plugin infrastructure
 
+### Matrix Testing
+```bash
+pip install tofusoup[matrix]
+```
+Includes: `wrkenv` for multi-version matrix testing with `soup stir --matrix`
+
 ### All Features
 ```bash
 pip install tofusoup[all]
 ```
-Includes all optional dependencies
+Includes all optional dependencies (cty, hcl, rpc, matrix)
 
 ## Build Test Harnesses
 
