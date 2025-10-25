@@ -28,7 +28,8 @@ from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTE
 # Optional wrknv imports
 try:
     from wrknv import WorkenvConfig, get_tool_manager
-    from ..workenv_integration import create_workenv_config_with_soup, WORKENV_AVAILABLE
+
+    from ..workenv_integration import WORKENV_AVAILABLE, create_workenv_config_with_soup
 except ImportError:
     WORKENV_AVAILABLE = False
     WorkenvConfig = None  # type: ignore

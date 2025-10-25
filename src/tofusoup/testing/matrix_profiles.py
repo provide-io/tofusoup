@@ -21,7 +21,8 @@ from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTE
 # Optional wrknv imports - graceful degradation if not available
 try:
     from wrknv import WorkenvConfig, get_tool_manager
-    from ..workenv_integration import create_workenv_config_with_soup, WORKENV_AVAILABLE
+
+    from ..workenv_integration import WORKENV_AVAILABLE, create_workenv_config_with_soup
 except ImportError:
     WORKENV_AVAILABLE = False
     WorkenvConfig = None  # type: ignore
@@ -57,7 +58,7 @@ class ProfileTestResult:
 class ProfileMatrix:
     """Manages profile-based matrix testing for TofuSoup."""
 
-    def __init__(self, config: WorkenvConfig | None = None) -> None:
+    def __init__(self, config: Any = None) -> None:
         """
         Initialize the profile matrix.
 
@@ -335,7 +336,7 @@ class ProfileMatrix:
 
 # Convenience function for soup stir integration
 async def run_profile_matrix_tests(
-    stir_directory: Path, profiles: list[str] | None = None, config: WorkenvConfig | None = None
+    stir_directory: Path, profiles: list[str] | None = None, config: Any = None
 ) -> dict[str, Any]:
     """
     Run profile-based matrix testing for soup stir.
