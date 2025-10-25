@@ -2,7 +2,56 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [Unreleased] - 2025-10-25
+
+### Removed
+- **Provider scaffolding feature** - Removed `tofusoup.provider` and `tofusoup.scaffolding` modules completely (no deprecation period)
+
+### Added
+- **New CLI command documentation**:
+  - `soup config` command documentation with comprehensive configuration management guide
+  - `soup state` command documentation with state inspection, decryption, and validation guides
+  - Complete API documentation with extensive usage examples and integration patterns
+- **Documentation infrastructure**:
+  - Placeholder READMEs for future content (tutorials, development guides, production guides, examples)
+  - Historical documentation index at `docs/historical/README.md` explaining archived documents
+  - Build artifact documentation for `harnesses/bin/` directory with troubleshooting
+  - Configuration management guide with examples for dev/CI/production environments
+  - State inspection guide with security considerations and workflows
+
+### Changed
+- **Matrix testing is now optional** - `wrknv` package no longer required for basic TofuSoup usage
+  - Only `soup stir --matrix` flag requires wrknv installation
+  - Graceful degradation with clear error messages if wrknv not installed
+  - Install separately: `pip install wrknv` or `pip install -e /path/to/wrknv`
+- **Updated all package references** from `wrkenv` to `wrknv` throughout codebase
+- **Conformance test documentation** updated to reflect actual directory structure (not aspirational)
+- **Matrix testing documentation** completely rewritten:
+  - Removed obsolete `soup workenv` command references
+  - Clarified built-in matrix testing via `soup stir --matrix`
+  - Added comprehensive configuration examples and troubleshooting
+- **Documentation organization**:
+  - Fixed all broken CONTRIBUTING.md and CLAUDE.md references
+  - Updated all internal cross-references
+  - Added extensive examples to API documentation
+
+### Fixed
+- Build artifact documentation - added note that `harnesses/bin/` is created during build
+- Empty documentation directories now have informative placeholder READMEs
+- Conformance test documentation structure now matches actual implementation
+- All cross-references and "See Also" sections in documentation
+- mkdocs build configuration - removed unused `autorefs` plugin
+
+### Documentation
+- Documentation builds successfully with `mkdocs build --strict` (no errors)
+- All CLI commands now fully documented with examples
+- API reference massively expanded with quick examples, integration patterns, and error handling
+- Troubleshooting guide updated with matrix testing and build artifact issues
+- Installation guide clarified optional dependencies
+
+---
+
+## [Previous Releases]
 
 ### Added
 - Initial implementation of the `soup` CLI with lazy-loading commands.
