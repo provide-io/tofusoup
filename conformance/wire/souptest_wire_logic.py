@@ -13,7 +13,7 @@ def sample_data() -> dict:
     return {"hello": "world", "value": 42}
 
 
-def test_convert_json_to_msgpack(tmp_path: Path, sample_data: dict):
+def test_convert_json_to_msgpack(tmp_path: Path, sample_data: dict) -> None:
     """Verify that a JSON file is correctly converted to MessagePack."""
     json_file = tmp_path / "test.json"
     json_file.write_text(json.dumps(sample_data))
@@ -24,7 +24,7 @@ def test_convert_json_to_msgpack(tmp_path: Path, sample_data: dict):
     assert msgpack.unpackb(msgpack_file.read_bytes()) == sample_data
 
 
-def test_convert_msgpack_to_json(tmp_path: Path, sample_data: dict):
+def test_convert_msgpack_to_json(tmp_path: Path, sample_data: dict) -> None:
     """Verify that a MessagePack file is correctly converted to JSON."""
     msgpack_file = tmp_path / "test.msgpack"
     msgpack_file.write_bytes(msgpack.packb(sample_data))

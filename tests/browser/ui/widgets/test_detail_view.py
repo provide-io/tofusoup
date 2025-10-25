@@ -16,7 +16,7 @@ class DetailViewScreen(Screen):
         yield DetailView()
 
 
-async def test_detail_view_initial_state(pilot: Pilot):
+async def test_detail_view_initial_state(pilot: Pilot) -> None:
     """Verify the detail view is initially empty."""
     await pilot.app.push_screen(DetailViewScreen())
     await pilot.pause()
@@ -25,7 +25,7 @@ async def test_detail_view_initial_state(pilot: Pilot):
     assert "No item selected" in view.raw_content
 
 
-async def test_detail_view_update_content(pilot: Pilot):
+async def test_detail_view_update_content(pilot: Pilot) -> None:
     """Verify the detail view can be updated with new content."""
     await pilot.app.push_screen(DetailViewScreen())
     await pilot.pause()

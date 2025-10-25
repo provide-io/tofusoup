@@ -10,11 +10,10 @@ Note: Python → Go is a known bug in pyvider-rpcplugin and is NOT tested here.
 """
 from pathlib import Path
 
-import pytest
 from provide.foundation import logger
+import pytest
 
 from tofusoup.rpc.client import KVClient
-
 
 # Test matrix: (client_type, server_path, curve, description)
 WORKING_COMBINATIONS = [
@@ -26,7 +25,7 @@ WORKING_COMBINATIONS = [
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_type,server_path,curve,description", WORKING_COMBINATIONS)
-async def test_cross_language_connection(client_type, server_path, curve, description):
+async def test_cross_language_connection(client_type, server_path, curve, description) -> None:
     """Test that a client can connect to a server with specified curve."""
     server = Path(server_path)
 
@@ -61,7 +60,7 @@ async def test_cross_language_connection(client_type, server_path, curve, descri
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
-async def test_python_to_python_all_curves(curve):
+async def test_python_to_python_all_curves(curve) -> None:
     """Test Python client → Python server with each supported curve."""
     server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
@@ -96,7 +95,7 @@ async def test_python_to_python_all_curves(curve):
     not Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go").exists(),
     reason="Go binary not found"
 )
-def test_go_to_go_connection():
+def test_go_to_go_connection() -> None:
     """
     Test Go client → Go server.
 
@@ -123,7 +122,7 @@ def test_go_to_go_connection():
     assert "completed successfully" in result.stderr, "Go→Go test did not complete successfully"
 
 
-def test_known_unsupported_combinations():
+def test_known_unsupported_combinations() -> None:
     """Document known unsupported combinations (don't test them, just document)."""
     unsupported = [
         ("python", "go", "any", "Python→Go client connections not supported (pyvider-rpcplugin bug)"),

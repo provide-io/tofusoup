@@ -66,9 +66,8 @@ def validate_curve_for_runtime(curve: str, language: str) -> None:
         )
 
     # Go supports all curves via TLSProvider
-    if language == "go":
-        if curve not in ["secp256r1", "secp384r1", "secp521r1", "auto"]:
-            logger.warning("Unknown curve for Go server", curve=curve)
+    if language == "go" and curve not in ["secp256r1", "secp384r1", "secp521r1", "auto"]:
+        logger.warning("Unknown curve for Go server", curve=curve)
 
     logger.debug("Curve validation passed", curve=curve, language=language)
 

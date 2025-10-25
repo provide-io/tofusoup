@@ -3,9 +3,12 @@
 Simple test: Python client → Go server
 """
 import asyncio
+import builtins
+import contextlib
 import os
-import time
 from pathlib import Path
+import time
+
 from tofusoup.rpc.client import KVClient
 
 # Enable debug logging
@@ -13,7 +16,7 @@ os.environ["LOG_LEVEL"] = "DEBUG"
 os.environ["PYVIDER_LOG_LEVEL"] = "DEBUG"
 
 
-async def main():
+async def main() -> int | None:
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
     print("Testing Python client → Go server")
@@ -49,10 +52,8 @@ async def main():
         print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return 1
 
 

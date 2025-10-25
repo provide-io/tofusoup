@@ -3,12 +3,15 @@
 Test Python client → Go server with AutoMTLS (go-plugin default)
 """
 import asyncio
-import time
+import builtins
+import contextlib
 from pathlib import Path
+import time
+
 from tofusoup.rpc.client import KVClient
 
 
-async def main():
+async def main() -> int | None:
     soup_go_path = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
     print("Testing Python client → Go server (AutoMTLS/auto mode)")
@@ -34,15 +37,13 @@ async def main():
         print(f"✅ Put/Get successful: {result}")
 
         await client.close()
-        print(f"\n🎉 SUCCESS! Python → Go works with AutoMTLS")
+        print("\n🎉 SUCCESS! Python → Go works with AutoMTLS")
         return 0
 
     except Exception as e:
         print(f"\n❌ FAIL: {type(e).__name__}: {str(e)[:200]}")
-        try:
+        with contextlib.suppress(builtins.BaseException):
             await client.close()
-        except:
-            pass
         return 1
 
 

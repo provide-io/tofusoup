@@ -10,15 +10,15 @@ Validates:
 import asyncio
 from pathlib import Path
 
-import pytest
 from provide.foundation import logger
+import pytest
 
 from tofusoup.rpc.client import KVClient
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
-async def test_python_server_supported_curves(curve):
+async def test_python_server_supported_curves(curve) -> None:
     """Test that Python server accepts supported curves."""
     server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
@@ -47,7 +47,7 @@ async def test_python_server_supported_curves(curve):
 
 
 @pytest.mark.asyncio
-async def test_python_server_rejects_secp521r1():
+async def test_python_server_rejects_secp521r1() -> None:
     """
     Test that secp521r1 fails gracefully with Python server.
 
@@ -79,7 +79,7 @@ async def test_python_server_rejects_secp521r1():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
-async def test_curve_consistency(curve):
+async def test_curve_consistency(curve) -> None:
     """
     Test that data written with one curve can be read back.
 
@@ -125,7 +125,7 @@ async def test_curve_consistency(curve):
         await client2.close()
 
 
-def test_document_curve_support():
+def test_document_curve_support() -> None:
     """Document which curves are supported by which runtimes."""
     support_matrix = {
         "python": {

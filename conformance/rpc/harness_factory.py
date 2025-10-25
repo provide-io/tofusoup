@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 import os
 from pathlib import Path
 import subprocess
-from typing import Any
+from typing import Any, Never
 
 from provide.foundation import logger
 
@@ -26,7 +26,7 @@ from .matrix_config import CryptoConfig
 class ReferenceKVServer:
     """Base class for KV server implementations."""
 
-    def __init__(self, crypto_config: CryptoConfig, work_dir: Path):
+    def __init__(self, crypto_config: CryptoConfig, work_dir: Path) -> None:
         self.crypto_config = crypto_config
         self.work_dir = work_dir
         self.address: str | None = None
@@ -42,12 +42,12 @@ class ReferenceKVServer:
 class GoKVServer(ReferenceKVServer):
     """Go KV server implementation using subprocess."""
 
-    def __init__(self, crypto_config: CryptoConfig, work_dir: Path):
+    def __init__(self, crypto_config: CryptoConfig, work_dir: Path) -> None:
         super().__init__(crypto_config, work_dir)
         self.process: subprocess.Popen | None = None
         self.server_port: int | None = None
 
-    async def start(self):
+    async def start(self) -> None:
         """Start Go KV server process."""
 
         # Generate certificates if needed
@@ -112,7 +112,7 @@ class GoKVServer(ReferenceKVServer):
 
         logger.info(f"Go KV server started at {self.address}")
 
-    async def stop(self):
+    async def stop(self) -> None:
         """Stop Go KV server process."""
         if self.process:
             logger.info("Stopping Go KV server")
@@ -124,7 +124,7 @@ class GoKVServer(ReferenceKVServer):
                 self.process.kill()
                 await self._wait_for_process()
 
-    async def _wait_for_process(self):
+    async def _wait_for_process(self) -> None:
         """Wait for process to terminate in async context."""
         while self.process and self.process.poll() is None:
             await asyncio.sleep(0.1)
@@ -133,11 +133,11 @@ class GoKVServer(ReferenceKVServer):
 class PythonKVServer(ReferenceKVServer):
     """Python KV server implementation - use existing TofuSoup KV server."""
 
-    def __init__(self, crypto_config: CryptoConfig, work_dir: Path):
+    def __init__(self, crypto_config: CryptoConfig, work_dir: Path) -> None:
         super().__init__(crypto_config, work_dir)
         self.process: subprocess.Popen | None = None
 
-    async def start(self):
+    async def start(self) -> None:
         """Start Python KV server using TofuSoup's server."""
 
         # Generate certificates if needed
@@ -175,7 +175,7 @@ class PythonKVServer(ReferenceKVServer):
 
         logger.info(f"Python KV server started at {self.address}")
 
-    async def stop(self):
+    async def stop(self) -> None:
         """Stop Python KV server."""
         if self.process:
             logger.info("Stopping Python KV server")
@@ -187,7 +187,7 @@ class PythonKVServer(ReferenceKVServer):
                 self.process.kill()
                 await self._wait_for_process()
 
-    async def _wait_for_process(self):
+    async def _wait_for_process(self) -> None:
         """Wait for process to terminate in async context."""
         while self.process and self.process.poll() is None:
             await asyncio.sleep(0.1)
@@ -196,7 +196,7 @@ class PythonKVServer(ReferenceKVServer):
 class ReferenceKVClient:
     """Base class for KV client implementations."""
 
-    def __init__(self, crypto_config: CryptoConfig, server_address: str, work_dir: Path):
+    def __init__(self, crypto_config: CryptoConfig, server_address: str, work_dir: Path) -> None:
         self.crypto_config = crypto_config
         self.server_address = server_address
         self.work_dir = work_dir
@@ -208,7 +208,7 @@ class ReferenceKVClient:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.stop()
 
-    async def put(self, key: str, value: bytes):
+    async def put(self, key: str, value: bytes) -> Never:
         """Put key-value pair."""
         raise NotImplementedError
 
@@ -216,7 +216,7 @@ class ReferenceKVClient:
         """Get value by key."""
         raise NotImplementedError
 
-    async def delete(self, key: str):
+    async def delete(self, key: str) -> Never:
         """Delete key."""
         raise NotImplementedError
 
@@ -224,11 +224,11 @@ class ReferenceKVClient:
 class GoKVClient(ReferenceKVClient):
     """Go KV client implementation using subprocess."""
 
-    def __init__(self, crypto_config: CryptoConfig, server_address: str, work_dir: Path):
+    def __init__(self, crypto_config: CryptoConfig, server_address: str, work_dir: Path) -> None:
         super().__init__(crypto_config, server_address, work_dir)
         self.go_client_path: str | None = None
 
-    async def start(self):
+    async def start(self) -> None:
         """Initialize Go KV client."""
         # Build Go client harness if needed
         project_root = Path(__file__).parent.parent.parent
@@ -236,11 +236,11 @@ class GoKVClient(ReferenceKVClient):
         self.go_client_path = ensure_go_harness_build("go-rpc-client", project_root, config)
         logger.info(f"Go KV client initialized with binary: {self.go_client_path}")
 
-    async def stop(self):
+    async def stop(self) -> None:
         """Cleanup Go KV client."""
         pass  # No persistent process to stop
 
-    async def _run_go_command(self, operation: str, key: str, value: bytes = None) -> bytes:
+    async def _run_go_command(self, operation: str, key: str, value: bytes | None = None) -> bytes:
         """Run Go client command and return output."""
 
         cert_manager = CertificateManager(self.work_dir)
@@ -272,7 +272,7 @@ class GoKVClient(ReferenceKVClient):
 
         return process.stdout.encode("utf-8")
 
-    async def put(self, key: str, value: bytes):
+    async def put(self, key: str, value: bytes) -> None:
         """Put key-value pair using Go client."""
         await self._run_go_command("put", key, value)
 
@@ -284,7 +284,7 @@ class GoKVClient(ReferenceKVClient):
         except RuntimeError:
             return None  # Key not found
 
-    async def delete(self, key: str):
+    async def delete(self, key: str) -> None:
         """Delete key using Go client."""
         await self._run_go_command("delete", key)
 
@@ -292,11 +292,11 @@ class GoKVClient(ReferenceKVClient):
 class PythonKVClient(ReferenceKVClient):
     """Python KV client implementation using TofuSoup's KVClient."""
 
-    def __init__(self, crypto_config: CryptoConfig, server_address: str, work_dir: Path):
+    def __init__(self, crypto_config: CryptoConfig, server_address: str, work_dir: Path) -> None:
         super().__init__(crypto_config, server_address, work_dir)
         self.client: KVClient | None = None
 
-    async def start(self):
+    async def start(self) -> None:
         """Initialize Python KV client using TofuSoup's KVClient."""
 
         # Create a simple server executable that returns the server address
@@ -311,19 +311,13 @@ sys.exit(0)
         server_script.chmod(0o755)
 
         # Configure crypto settings for KVClient
-        enable_mtls = self.crypto_config.auth_mode == "auto_mtls"
-        cert_algo = None
-        cert_curve = None
-        cert_bits = None
 
         if self.crypto_config.key_type == "rsa":
-            cert_algo = "rsa"
-            cert_bits = self.crypto_config.key_size
+            pass
         elif self.crypto_config.key_type == "ec":
-            cert_algo = "ecdsa"
             # Map EC sizes to curve names that KVClient expects
             curve_map = {256: "P-256", 384: "P-384", 521: "P-521"}
-            cert_curve = curve_map.get(self.crypto_config.key_size, "P-384")
+            curve_map.get(self.crypto_config.key_size, "P-384")
 
         # Determine tls_mode based on crypto_config
         tls_mode = "auto" if self.crypto_config.auth_mode == "auto_mtls" else "disabled"
@@ -345,13 +339,13 @@ sys.exit(0)
         await self.client.start()
         logger.info("Python KV client started")
 
-    async def stop(self):
+    async def stop(self) -> None:
         """Stop Python KV client."""
         if self.client:
             await self.client.close()
             logger.info("Python KV client stopped")
 
-    async def put(self, key: str, value: bytes):
+    async def put(self, key: str, value: bytes) -> None:
         """Put key-value pair using Python client."""
         await self.client.put(key, value)
 
@@ -359,7 +353,7 @@ sys.exit(0)
         """Get value by key using Python client."""
         return await self.client.get(key)
 
-    async def delete(self, key: str):
+    async def delete(self, key: str) -> None:
         """Delete key using Python client."""
         # TofuSoup KVClient might not have delete implemented
         pass

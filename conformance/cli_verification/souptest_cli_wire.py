@@ -11,7 +11,7 @@ HARNESS_NAME = "soup-go"
 
 
 @pytest.mark.parametrize("go_harness_executable", [HARNESS_NAME], indirect=True)
-def test_wire_cli_root_help(go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest):
+def test_wire_cli_root_help(go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest) -> None:
     test_id = request.node.name
     exit_code, stdout, stderr = run_harness_cli(
         go_harness_executable,
@@ -30,7 +30,7 @@ def test_wire_cli_root_help(go_harness_executable: Path, project_root: Path, req
 @pytest.mark.parametrize("go_harness_executable", [HARNESS_NAME], indirect=True)
 def test_wire_cli_encode_simple_string(
     go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest
-):
+) -> None:
     test_id = request.node.name
     input_json_str = json.dumps({"type": "string", "value": "test"})
 
@@ -49,6 +49,7 @@ def test_wire_cli_encode_simple_string(
     # soup-go outputs base64-encoded MessagePack for the entire JSON input
     # First decode base64, then decode MessagePack
     import base64
+
     import msgpack
 
     # Remove trailing whitespace/newline and decode base64
@@ -65,7 +66,7 @@ def test_wire_cli_encode_simple_string(
 @pytest.mark.parametrize("go_harness_executable", [HARNESS_NAME], indirect=True)
 def test_wire_cli_decode_simple_string(
     go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest
-):
+) -> None:
     test_id = request.node.name
     # Use the actual MessagePack data soup-go wire encode produces (as binary)
     input_b64_str = "gqR0eXBlpnN0cmluZ6V2YWx1ZaR0ZXN0"  # {"type": "string", "value": "test"}

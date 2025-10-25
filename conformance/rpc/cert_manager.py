@@ -19,7 +19,7 @@ from .matrix_config import CryptoConfig
 class CertificateManager:
     """Manages certificate generation for RPC K/V matrix testing using pyvider-rpcplugin."""
 
-    def __init__(self, work_dir: Path):
+    def __init__(self, work_dir: Path) -> None:
         self.work_dir = work_dir
         self.cert_dir = work_dir / "certs"
         self.cert_dir.mkdir(exist_ok=True, parents=True)
@@ -134,7 +134,7 @@ class CertificateManager:
         logger.info(f"Generated certificates for {config_name} in {self.cert_dir}")
         return cert_files
 
-    def cleanup_certificates(self, config_name: str = None):
+    def cleanup_certificates(self, config_name: str | None = None) -> None:
         """Remove generated certificates."""
         if config_name:
             # Remove certificates for specific configuration

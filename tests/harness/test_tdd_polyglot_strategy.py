@@ -2,9 +2,8 @@
 TDD Tests for the Polyglot CLI Strategy.
 """
 
-from provide.testkit.mocking import MagicMock, patch
-
 from click.testing import CliRunner
+from provide.testkit.mocking import MagicMock, patch
 import pytest
 
 from tofusoup.cli import main_cli
@@ -19,7 +18,7 @@ class TestPolyglotStrategyContract:
     def runner(self) -> CliRunner:
         return CliRunner()
 
-    def test_harness_config_is_updated(self):
+    def test_harness_config_is_updated(self) -> None:
         """CONTRACT: GO_HARNESS_CONFIG must contain `soup-go` and `pspf-packager`."""
         assert "soup-go" in GO_HARNESS_CONFIG
         assert "pspf-packager" in GO_HARNESS_CONFIG
@@ -27,7 +26,7 @@ class TestPolyglotStrategyContract:
         assert "go-cty" not in GO_HARNESS_CONFIG
         assert "go-hcl" not in GO_HARNESS_CONFIG
 
-    def test_harness_list_shows_soup_go(self, runner: CliRunner, tmp_path):
+    def test_harness_list_shows_soup_go(self, runner: CliRunner, tmp_path) -> None:
         """CONTRACT: `soup harness list` must show the unified `soup-go` harness."""
         # Create a mock pyproject.toml and soup directory
         (tmp_path / "pyproject.toml").write_text("[project]\nname = 'test'")
@@ -41,7 +40,7 @@ class TestPolyglotStrategyContract:
         assert "go-cty" not in result.output
 
     @patch("subprocess.run")
-    def test_harness_build_soup_go(self, mock_run, runner: CliRunner, tmp_path):
+    def test_harness_build_soup_go(self, mock_run, runner: CliRunner, tmp_path) -> None:
         """CONTRACT: `soup harness build soup-go` must build the unified binary."""
         # Create a mock pyproject.toml and soup directory
         (tmp_path / "pyproject.toml").write_text("[project]\nname = 'test'")
@@ -64,7 +63,7 @@ class TestPolyglotStrategyContract:
         assert "Building harness: soup-go" in result.output
         mock_run.assert_called_once()
 
-    def test_harness_build_old_name_fails(self, runner: CliRunner, tmp_path):
+    def test_harness_build_old_name_fails(self, runner: CliRunner, tmp_path) -> None:
         """CONTRACT: `soup harness build go-cty` must fail gracefully."""
         # Create a mock pyproject.toml and soup directory
         (tmp_path / "pyproject.toml").write_text("[project]\nname = 'test'")
@@ -77,7 +76,7 @@ class TestPolyglotStrategyContract:
         # The error should appear in stderr, not stdout
         assert "Failed to build Go harness 'go-cty'" in result.output or result.exit_code != 0
 
-    def test_conformance_test_command_construction(self):
+    def test_conformance_test_command_construction(self) -> None:
         """
         CONTRACT: Conformance test helpers must construct `soup-go <subcommand>` calls.
         This test simulates a helper function that might be used in conformance tests.
@@ -88,7 +87,7 @@ class TestPolyglotStrategyContract:
                 raise ValueError("Only 'soup-go' is supported.")
 
             executable_path = "/path/to/soup-go"
-            return [executable_path, subcommand] + args
+            return [executable_path, subcommand, *args]
 
         command = get_harness_command("soup-go", "cty", ["validate-value", "...", "--type", "..."])
         assert command == ["/path/to/soup-go", "cty", "validate-value", "...", "--type", "..."]
