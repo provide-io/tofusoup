@@ -211,6 +211,8 @@ def stir_cli(
 
     When --matrix is used, runs tests across multiple Terraform/OpenTofu versions
     as configured in soup.toml's [workenv.matrix] section or wrkenv.toml's [matrix] section.
+
+    Note: Matrix testing requires the optional wrknv package.
     """
     try:
         # Initialize runtime with configuration
@@ -224,9 +226,9 @@ def stir_cli(
 
                 if not WORKENV_AVAILABLE:
                     console.print(
-                        "[bold red]Error:[/bold red] Matrix testing requires the 'wrkenv' package.\n"
-                        "[yellow]Install with:[/yellow] pip install wrkenv\n"
-                        "[yellow]Or:[/yellow] pip install tofusoup[matrix]"
+                        "[bold red]Error:[/bold red] Matrix testing requires the 'wrknv' package.\n"
+                        "[yellow]Install with:[/yellow] pip install wrknv\n"
+                        "[yellow]Or from source:[/yellow] pip install -e /path/to/wrknv"
                     )
                     sys.exit(1)
 
@@ -247,7 +249,7 @@ def stir_cli(
                 console.print(
                     f"[bold red]Error:[/bold red] {e}\n"
                     "[yellow]Matrix testing is an optional feature.[/yellow]\n"
-                    "[yellow]Install with:[/yellow] pip install wrkenv or pip install tofusoup[matrix]"
+                    "[yellow]Install with:[/yellow] pip install wrknv or pip install -e /path/to/wrknv"
                 )
                 sys.exit(1)
         else:

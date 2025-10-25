@@ -59,16 +59,21 @@ pip install tofusoup[rpc]
 Includes: `pyvider-rpcplugin` for RPC plugin infrastructure
 
 ### Matrix Testing
+
+Matrix testing requires the `wrknv` package (not yet on PyPI):
+
 ```bash
-pip install tofusoup[matrix]
+# Install from local source
+pip install -e /path/to/wrknv
 ```
-Includes: `wrkenv` for multi-version matrix testing with `soup stir --matrix`
 
 ### All Features
 ```bash
 pip install tofusoup[all]
 ```
-Includes all optional dependencies (cty, hcl, rpc, matrix)
+Includes all optional dependencies (cty, hcl, rpc)
+
+**Note**: Matrix testing requires separate `wrknv` installation
 
 ## Build Test Harnesses
 
