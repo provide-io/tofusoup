@@ -56,7 +56,8 @@
       "Bash(uv sync:*)",
       "Bash(uv run python:*)",
       "Bash(uv pip show:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(./harnesses/bin/soup-go:*)"
     ],
     "deny": [],
     "ask": [],
