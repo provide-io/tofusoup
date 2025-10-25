@@ -110,4 +110,26 @@ extra_javascript:
 
 nav:
   - Home: index.md
+  - Getting Started:
+    - Installation: index.md#installation
+    - Quick Start: index.md#quick-start
+    - Configuration: CONFIGURATION.md
+  - Architecture:
+    - Overview: architecture/01-overview.md
+    - Conformance Testing Strategy: architecture/02-conformance-testing-strategy.md
+    - RPC Matrix Specification: architecture/03-rpc-matrix-specification.md
+    - Wire Protocol Details: architecture/05-wire-protocol-details.md
+    - Polyglot CLI Strategy: architecture/06-polyglot-cli-strategy.md
+    - Stock Service Design: architecture/07-stock-service-design.md
+    - soup-go vs Terraform: architecture/soup-go-vs-terraform.md
+  - Guides:
+    - Running Conformance Tests: guides/01-running-conformance-tests.md
+    - Managing Language CLIs: guides/02-managing-language-clis.md
+    - Using CTY and HCL Tools: guides/03-using-cty-and-hcl-tools.md
+    - Matrix Testing with Stir: guides/05-matrix-testing-with-stir.md
+  - Testing:
+    - Conformance Test Status: testing/conformance-test-status.md
+    - Cross-Language Compatibility: testing/cross-language-compatibility.md
+    - RPC Compatibility Matrix: rpc-compatibility-matrix.md
   - API Reference: api/index.md
+  - Changelog: CHANGELOG.md
