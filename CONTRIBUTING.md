@@ -54,21 +54,21 @@ uv sync  # This sets up the virtual environment
 
 3. Run tests to ensure everything works
 ```bash
-pytest
+uv run pytest
 ```
 
 4. Make your changes and add tests
 
 5. Run the test suite
 ```bash
-pytest -v
+uv run pytest -v
 ```
 
 6. Check code style
 ```bash
-ruff check src/
-ruff format src/
-mypy src/
+uv run ruff check .
+uv run ruff format .
+uv run mypy src/
 ```
 
 ## Testing Philosophy

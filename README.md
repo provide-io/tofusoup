@@ -22,7 +22,7 @@ It provides:
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/opentofu/tofusoup.git # Assuming this is the future location
+    git clone https://github.com/provide-io/tofusoup.git
     cd tofusoup
     ```
 
@@ -31,8 +31,8 @@ It provides:
     # Ensure uv is installed (see https://github.com/astral-sh/uv)
     # e.g., curl -LsSf https://astral.sh/uv/install.sh | sh
 
-    # Install the package in development mode
-    uv pip install -e .
+    # Set up development environment
+    uv sync
     ```
 
 3.  **Verify Installation:**
@@ -46,17 +46,17 @@ It provides:
 
 **Note on Test Artifacts:** Output from CLI verification tests (stdout, stderr of harness executions) is saved to `tofusoup/soup/output/cli_verification/<harness_name>/<test_id>/` for inspection. Other build or test artifacts may also be placed under `tofusoup/soup/output/`.
 
-## `tofusoup` Command-Line Interface (CLI)
+## `soup` Command-Line Interface (CLI)
 ---------------------------------------
 
-The `tofusoup` CLI is your primary interface for interacting with the suite. It's organized into subcommands based on the component you're working with. All commands provide enhanced terminal output using the `rich` library.
+The `soup` CLI is your primary interface for interacting with the suite. It's organized into subcommands based on the component you're working with. All commands provide enhanced terminal output using the `rich` library.
 
-**General Options (available for `tofusoup` and all subcommands):**
+**General Options (available for `soup` and all subcommands):**
 -   `--help`: Show help for the current command or subcommand.
 -   `--verbose`: Enable verbose output (shortcut for --log-level DEBUG).
--   `--log-level <LEVEL>`: Set the logging level (e.g., DEBUG, INFO). Overrides `TOFUSOUP_LOG_LEVEL` env var and `soup.toml` settings. See `docs/CONFIG_TOML.md`.
--   `--config-file <PATH>`: Path to the TofuSoup configuration file (TOML format, default: `soup.toml`). Searched in order: explicit path, `./soup.toml`, `<project_root>/soup/soup.toml`. See `docs/CONFIG_TOML.md`.
--   `--version` (only for top-level `tofusoup`): Show TofuSoup version.
+-   `--log-level <LEVEL>`: Set the logging level (e.g., DEBUG, INFO). Overrides `TOFUSOUP_LOG_LEVEL` env var and `soup.toml` settings. See `docs/CONFIGURATION.md`.
+-   `--config-file <PATH>`: Path to the TofuSoup configuration file (TOML format, default: `soup.toml`). Searched in order: explicit path, `./soup.toml`. See `docs/CONFIGURATION.md`.
+-   `--version` (only for top-level `soup`): Show TofuSoup version.
 
 * * * * *
 
@@ -210,13 +210,14 @@ Runs Pytest-based conformance test suites located in `tofusoup/conformance/`. Te
         -   `cty/`, `hcl/`, `rpc/`, `wire/`: Component-specific conformance tests.
         -   `cli_verification/`: Tests for harness CLIs.
         -   `utils/`: Shared utilities for conformance tests.
-    -   **`tofusoup/soup/soup.toml`**: Default and recommended location for the TOML configuration file for TofuSoup. An example file is provided here. The CLI also checks `<pwd>/soup.toml`.
-    -   **`tofusoup/soup/`**: Runtime data, output artifacts.
+    -   **`soup.toml`**: Configuration file for TofuSoup (in project root or current directory). See `docs/CONFIGURATION.md` for detailed documentation.
+    -   **`soup/`**: Runtime data, output artifacts (optional, created as needed).
         -   `output/`: Default directory for test artifacts, logs.
     -   **`docs/`**: Documentation files.
-        -   `CONFIG_TOML.md` (Future): Will contain detailed information about the `soup.toml` configuration file. Refer to the example at `tofusoup/soup/soup.toml` for now.
-    -   **`tofusoup/tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).
-    -   *(Note: Legacy directories like `ctytool/`, `go-harnesses/`, `kvproto/` have been removed or integrated into the new structure).*
+        -   `CONFIGURATION.md`: Complete documentation for the `soup.toml` configuration file.
+        -   `architecture/`: Architecture and design documents.
+        -   `guides/`: Step-by-step usage guides.
+    -   **`tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).
 
 ## Contributing
 ------------
