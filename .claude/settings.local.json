@@ -62,7 +62,8 @@
       "Bash(shasum:*)",
       "Bash(echo \"\" echo \"   Checking for SQL injection risks...\" grep -r \"execute.*%\" src/ --include=\"*.py\")",
       "Bash(echo \"\" echo \"📝 8. Documentation Coverage:\" echo \"\" echo \"   Files without docstrings:\" find src/tofusoup -name \"*.py\" -type f ! -name \"__init__.py\" -exec sh -c 'grep -L \"\"\"\"\\\"\"\"\"\\\"\"\"\"\\\"\"\"\"\"\"\"\" \"\"\"\"$1\"\"\"\" 2>/dev/null' _ {})",
-      "Bash(uv run mypy:*)"
+      "Bash(uv run mypy:*)",
+      "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup --version)"
     ],
     "deny": [],
     "ask": [],
