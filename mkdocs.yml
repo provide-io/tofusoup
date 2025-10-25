@@ -64,7 +64,6 @@ theme:
 
 plugins:
   - search
-  - autorefs
   - macros:
       include_dir: docs/.shared-theme/data
   - mkdocstrings:
