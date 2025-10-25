@@ -47,7 +47,8 @@
       "Read(//private/tmp/test-stir-discovery/**)",
       "Bash(uv run pytest:*)",
       "Bash(mkdocs build:*)",
-      "Bash(uv pip list:*)"
+      "Bash(uv pip list:*)",
+      "Bash(uv pip check:*)"
     ],
     "deny": [],
     "ask": [],
