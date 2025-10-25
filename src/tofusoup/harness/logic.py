@@ -88,7 +88,8 @@ def ensure_go_harness_build(
     env.update(env_vars)
 
     try:
-        result = run_command(
+        # Run build command - output not needed, relying on check=True for error handling
+        _ = run_command(
             cmd,
             cwd=harness_source_path,
             env=env,
