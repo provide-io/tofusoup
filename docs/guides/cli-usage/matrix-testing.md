@@ -1,26 +1,48 @@
-# Guide: Matrix Testing with `stir`
+# Guide: Matrix Testing with Stir
 
-The `soup stir` command is a powerful tool for running parallel integration tests for a provider. It now includes built-in **matrix testing** capabilities to validate your provider's behavior against multiple versions of Terraform or OpenTofu.
+The `soup stir` command is a powerful tool for running parallel integration tests. It includes built-in **matrix testing** capabilities to validate your Terraform configurations against multiple versions of Terraform or OpenTofu.
 
-## Built-in Matrix Testing (New!)
+## What is Matrix Testing?
 
-As of the latest version, `soup stir` includes integrated matrix testing:
+Matrix testing executes your test suite across multiple tool versions to ensure broad compatibility. This is essential for:
+- Validating provider compatibility across Terraform versions
+- Testing migration paths between OpenTofu and Terraform
+- Ensuring backward compatibility
+- Catching version-specific bugs
+
+## Basic Usage
+
+Run tests across all configured tool versions:
 
 ```bash
-# Run tests across all configured tool versions
+# Run tests with matrix testing
 soup stir tests/stir_cases --matrix
 
-# Save results to a file
+# Save detailed results
 soup stir tests/stir_cases --matrix --matrix-output results.json
 ```
 
-This uses the matrix configuration from your `soup.toml` file (under `[workenv.matrix]`) or `wrkenv.toml` file.
+## Configuration
 
-## Manual Matrix Testing
+Configure matrix testing in your `soup.toml` file:
 
-You can also manually control matrix testing using wrkenv:
+```toml
+[workenv.matrix]
+parallel_jobs = 4              # Number of parallel test jobs
+timeout_minutes = 30           # Timeout per test run
 
-## The Concept
+[workenv.matrix.versions]
+terraform = ["1.5.7", "1.6.0", "1.6.1"]
+tofu = ["1.6.2", "1.7.0", "1.8.0"]
+```
+
+### Configuration Options
+
+- **`parallel_jobs`**: Number of tool versions to test concurrently (default: 4)
+- **`timeout_minutes`**: Maximum time for each test run (default: 30)
+- **`versions`**: Map of tool names to version lists
+
+## How Matrix Testing Works
 
 The goal of matrix testing is to ensure your provider works correctly across the different IaC runtimes your users might have. The workflow is:
 
