@@ -438,7 +438,6 @@ uv.lock
 
 # Downloaded scripts
 dotnet-install.sh
-workenv/
 output/
 
 # Synced theme files (source: provide-foundry/shared-theme/)
