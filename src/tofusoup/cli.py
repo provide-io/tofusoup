@@ -27,14 +27,11 @@ LAZY_COMMANDS = {
     "cty": ("tofusoup.cty.cli", "cty_cli"),
     "hcl": ("tofusoup.hcl.cli", "hcl_cli"),
     "harness": ("tofusoup.harness.cli", "harness_cli"),
-    # Package command removed - packaging is handled by separate tools
-    "provider": ("tofusoup.provider.cli", "provider_cli"),
     "rpc": ("tofusoup.rpc.cli", "rpc_cli"),
     "state": ("tofusoup.state", "state_cli"),
     "stir": ("tofusoup.stir", "stir_cli"),
     "test": ("tofusoup.testing.cli", "test_cli"),
     "wire": ("tofusoup.wire.cli", "wire"),
-    # Note: plating command has been moved to separate plating package
 }
 
 
