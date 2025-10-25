@@ -18,7 +18,9 @@ The project focuses on ensuring compatibility between Go, Python, and other lang
 
 ## Development Environment Setup
 
-**IMPORTANT**: Use `uv sync` to set up the development environment. This creates a virtual environment at `.venv/` (NOT `workenv/`).
+**IMPORTANT**: Use `uv sync` to set up the development environment. This creates a virtual environment at `.venv/`.
+
+> **Note on "workenv"**: The project uses `.venv/` for the Python virtual environment. The `[workenv]` sections in `soup.toml` configure the `wrknv` tool for matrix testing across Terraform/OpenTofu versions - this is unrelated to the virtual environment directory.
 
 ```bash
 # Install uv if needed: https://github.com/astral-sh/uv

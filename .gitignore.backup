@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 *.so
 .venv/
-/workenv/
 
 # Build artifacts
 build/
