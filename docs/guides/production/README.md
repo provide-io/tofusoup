@@ -23,4 +23,4 @@ We plan to add guides for:
 
 ## Contributing
 
-Have production experience to share? See [CONTRIBUTING.md](../../../CONTRIBUTING.md) for contribution guidelines.
+Have production experience to share? See CONTRIBUTING.md in the project root for contribution guidelines.
