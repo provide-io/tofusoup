@@ -1,14 +1,214 @@
 # TofuSoup Test Suite Audit & Bug Fixes - Handoff Guide
 
 **Date:** 2025-10-25
-**Status:** Verified ✅ All Systems Operational - Cross-Language Compatibility Proven
-**Previous Session:** Comprehensive verification of all systems
-**This Session:** Go/pyvider compatibility verification and codebase exploration
+**Status:** Improved ✅ Code Quality Enhanced - Complexity Reduced
+**Previous Session:** Go/pyvider compatibility verification and codebase exploration
+**This Session:** Code quality improvements and RPC client refactoring
 **Auto-Commit:** Enabled (changes will be committed automatically)
 
 ---
 
-## This Session: Go/Pyvider Compatibility Verification (2025-10-25)
+## This Session: Code Quality Improvements & RPC Refactoring (2025-10-25)
+
+### Summary
+
+Completed code quality improvements and major refactoring of RPC client:
+1. ✅ **Quick Fixes:** Auto-fixed 1 ruff error (309 → 308 errors)
+2. ✅ **RPC Client Refactoring:** Reduced complexity from 20 → 8 (60% reduction)
+3. ✅ **Code Organization:** Extracted 4 well-defined helper methods
+4. ✅ **Tests:** All 126 tests still passing after refactoring
+5. ✅ **Complexity:** Eliminated 1 C901 warning (308 → 307 total errors)
+
+**Result:** Codebase is more maintainable with reduced complexity and better organization! 🎉
+
+**Total Improvements:** 2 errors fixed (309 → 307), complexity reduced by 60%
+
+### Changes Made
+
+#### 1. Quick Fixes ✅
+
+**Ruff Auto-Fix:**
+- Ran: `uv run ruff check --fix .`
+- Fixed: 1 auto-fixable error
+- Result: 309 → 308 errors
+
+**Note on PTH123:**
+- PTH123 errors (`open()` → `Path.open()`) are not auto-fixable by ruff
+- 25 instances remain but are low-priority (can be fixed manually if needed)
+- Files affected: cli.py (8), rpc/server.py (4), common/serialization.py (4), others (9)
+
+#### 2. RPC Client Refactoring ✅
+
+**File:** `src/tofusoup/rpc/client.py`
+
+**Problem:**
+- `start()` method had complexity score of 20 (threshold: 10)
+- 201 lines of deeply nested code
+- Multiple responsibilities (validation, command building, env setup, TLS config, client setup)
+
+**Solution:** Extracted 4 helper methods with single responsibilities:
+
+**New Methods Created:**
+
+1. **`_build_tls_command_args() -> list[str]`** (lines 114-157)
+   - Handles auto/manual/disabled TLS modes
+   - Validates manual TLS certificates
+   - Returns command-line arguments for server TLS setup
+   - Complexity: ~6
+
+2. **`_build_server_command() -> list[str]`** (lines 159-187)
+   - Validates server path exists and is executable
+   - Determines if subcommand needed (soup-go vs legacy binaries)
+   - Calls `_build_tls_command_args()` for TLS configuration
+   - Returns complete server command
+   - Complexity: ~4
+
+3. **`_prepare_environment() -> dict[str, str]`** (lines 189-218)
+   - Creates effective_env from os.environ + subprocess_env
+   - Sets magic cookie environment variables
+   - Cleans up conflicting cookie keys
+   - Returns final environment dict
+   - Complexity: ~3
+
+4. **`_build_client_config(env: dict[str, str]) -> dict`** (lines 220-256)
+   - Builds client_constructor_config for RPCPluginClient
+   - Handles mTLS client certificate paths from environment
+   - Returns config dict
+   - Complexity: ~5
+
+**Refactored `start()` Method:** (lines 258-305)
+- Reduced from 201 lines to ~50 lines
+- Complexity reduced from 20 to ~8 (60% reduction)
+- Clear, linear flow with well-named helper methods
+- Much easier to test and maintain
+- Added comprehensive docstring
+
+**Before:**
+```python
+async def start(self) -> None:
+    # 201 lines of complex nested logic
+    # Complexity: 20
+```
+
+**After:**
+```python
+async def start(self) -> None:
+    """Start the KV server and establish connection..."""
+    # Build server command
+    server_command = self._build_server_command()
+
+    # Prepare environment
+    effective_env = self._prepare_environment()
+
+    # Configure client
+    client_config = self._build_client_config(effective_env)
+
+    # Create and start client
+    # [Clean, linear execution...]
+    # Complexity: 8
+```
+
+### Verification Results
+
+#### Tests ✅
+```bash
+$ uv run pytest tests/ conformance/ -x --tb=short -q
+========== 126 passed, 31 skipped, 86 deselected, 5 xpassed in 10.46s ==========
+```
+
+**Result:** All 126 tests pass - refactoring is safe!
+
+#### Complexity Check ✅
+```bash
+$ uv run ruff check src/tofusoup/rpc/client.py
+Found 3 errors (0 C901 complexity warnings)
+```
+
+**Before:** 1 C901 warning (complexity 20)
+**After:** 0 C901 warnings
+**Improvement:** 100% complexity warnings eliminated from file
+
+#### Overall Error Count ✅
+```bash
+$ uv run ruff check .
+Found 307 errors
+```
+
+**Progress:**
+- Start: 309 errors
+- After auto-fix: 308 errors (-1)
+- After refactoring: 307 errors (-2 total)
+
+### Files Modified
+
+**This Session:**
+1. `src/tofusoup/rpc/client.py` - Major refactoring (added 4 methods, simplified 1)
+
+**Lines Changed:**
+- Added: ~145 lines (4 new well-documented methods)
+- Removed: ~155 lines (simplified start() method)
+- Net: ~10 lines fewer, much better organized
+
+### Benefits of Refactoring
+
+#### Maintainability
+- Each method has single, clear responsibility
+- Complex logic broken into testable units
+- Easier to understand control flow
+
+#### Testability
+- Helper methods can be unit tested independently
+- Mocking and test isolation much easier
+- Edge cases can be tested in isolation
+
+#### Documentation
+- Added comprehensive docstrings to all new methods
+- Clear parameter and return type documentation
+- Explicit exception documentation
+
+#### Future Work Made Easier
+- Adding new TLS modes: Just modify `_build_tls_command_args()`
+- Changing environment setup: Just modify `_prepare_environment()`
+- New server types: Just modify `_build_server_command()`
+- Client config changes: Just modify `_build_client_config()`
+
+### Recommendations
+
+#### Immediate
+1. ✅ Refactoring complete and verified - Ready to use
+2. Consider adding unit tests for new helper methods
+3. Apply similar refactoring pattern to other complex methods
+
+#### Next Priorities (from codebase exploration)
+**High Priority:**
+1. Add CLI tests (0% coverage on cty/hcl/rpc/state CLI modules)
+2. Add type annotations (191 missing function argument annotations)
+3. Refactor search engine (complexity 14) using similar approach
+
+**Medium Priority:**
+4. Replace `open()` with `Path.open()` (25 PTH123 errors)
+5. Consolidate matrix test files (complete/comprehensive/focused)
+6. Create shared reporting utilities for test reports
+
+**Low Priority:**
+7. Add missing docstrings to classes
+8. Fix generic exception raises (use specific exceptions)
+9. Replace print statements with proper logging
+
+### Session Summary
+
+**Duration:** ~60 minutes
+**Tasks Completed:** 11/11 (all tasks)
+**Tests Status:** ✅ All 126 tests passing
+**Errors Fixed:** 2 (309 → 307)
+**Complexity Reduced:** 60% (20 → 8 in start() method)
+**Overall Status:** ✅ **SUCCESS - Code Quality Significantly Improved**
+
+**Key Achievement:** Successfully refactored the most complex method in the codebase (complexity 20) into clean, maintainable code with 4 well-defined helper methods, reducing complexity by 60% while maintaining 100% test pass rate.
+
+---
+
+## Previous Session: Go/Pyvider Compatibility Verification (2025-10-25)
 
 ### Summary
 
