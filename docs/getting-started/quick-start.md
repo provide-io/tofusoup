@@ -195,9 +195,9 @@ See [Configuration Reference](../reference/configuration.md) for all options.
 - [Matrix Testing](../guides/cli-usage/matrix-testing.md)
 
 ### Reference Documentation
-- [CLI Reference](../reference/cli/)
 - [API Reference](../reference/api/index.md)
 - [Configuration](../reference/configuration.md)
+- [Compatibility Matrix](../reference/compatibility-matrix.md)
 
 ## Getting Help
 

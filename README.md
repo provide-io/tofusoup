@@ -77,10 +77,6 @@ Commands for working with the Configuration Type System (CTY).
     -   Example: `soup cty convert input.json output.msgpack`
     -   Example: `soup cty convert config.tf output.json --input-format hcl`
 
--   **`soup cty test [compat|all]`**
-    -   (Deprecated in favor of `soup test cty`). Runs older CTY test suites.
-    -   `compat`: Executes Python vs. Go CTY compatibility tests. Requires `soup-go` harness.
-
 -   **`soup cty benchmark [--iterations N] [--testcase <name>] [--data-file <path>] [--output-dir <path>]`**
     -   Runs CTY encoding/decoding benchmarks. Options can be defaulted in `soup.toml`.
     -   Requires `soup-go` harness. See `docs/reference/configuration.md`.
@@ -131,10 +127,6 @@ Commands for interacting with and testing RPC components, exemplified by a Key-V
     -   `--server-bin`: Path to server. Default from `PLUGIN_SERVER_PATH` env var or `soup.toml`.
     -   Example: `soup rpc kv put mykey "hello" --server-bin harnesses/bin/soup-go`
 
--   **`soup rpc test [compat|all]`**
-    -   (Deprecated in favor of `soup test rpc`). Runs older RPC test suites.
-    -   Requires `soup-go` harness.
-
 * * * * *
 
 ### 🔗 `soup wire` - Terraform Wire Protocol Utilities & Tests
@@ -150,10 +142,6 @@ Commands for working with the Terraform Wire Protocol (tfwire) objects. These co
     -   Decodes a tfwire (Base64 encoded MessagePack) object into its JSON representation (which will include 'type' and 'value' keys).
     -   Use `-` for stdin/stdout.
     -   Example: `soup wire decode value.tfw.b64 value.json`
-
--   **`soup wire test [compat|all]`**
-    -   (Deprecated in favor of `soup test wire`). Runs older tfwire compatibility tests.
-    -   Requires `soup-go` harness.
 
 * * * * *
 

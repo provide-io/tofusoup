@@ -289,15 +289,8 @@
   
     
     
-      
-  
-  
-  
-  
-    
-    
       <li class="md-tabs__item">
-        <a href="../guides/cli-usage/03-using-cty-and-hcl-tools/" class="md-tabs__link">
+        <a href="../guides/migration/" class="md-tabs__link">
           
   
   
@@ -307,9 +300,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -777,6 +767,8 @@
       
         
       
+        
+      
     
     
     
@@ -821,6 +813,29 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../guides/migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -845,10 +860,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
             
   
   
@@ -861,8 +876,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             CLI Usage
           </label>
@@ -973,10 +988,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
             
   
   
@@ -989,8 +1004,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Testing
           </label>
@@ -1667,6 +1682,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Removed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#known-issues" class="md-nav__link">
     <span class="md-ellipsis">
       Known Issues
@@ -1752,6 +1785,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Removed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#known-issues" class="md-nav__link">
     <span class="md-ellipsis">
       Known Issues
@@ -1796,16 +1847,40 @@
 <li><code>.garnish</code> documentation system with <code>scaffold</code> and <code>render</code> commands.</li>
 <li><code>workenv</code> tool management system for managing TF, Tofu, Go, etc.</li>
 <li><code>stir</code> command for parallel Terraform integration testing.</li>
+<li><strong>New migration guide</strong> (<code>docs/guides/migration.md</code>) for transitioning from old harness names to unified <code>soup-go</code> harness.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Refactored <code>pyvider-cty</code> dependencies and stabilized APIs.</li>
 <li>Consolidated test suites under the <code>soup test</code> command.</li>
 <li>Standardized on <code>soup.toml</code> for all configuration.</li>
+<li><strong>BREAKING: Unified Go harnesses</strong> - Replaced individual harnesses (<code>go-cty</code>, <code>go-hcl</code>, <code>go-rpc</code>, <code>go-wire</code>) with single <code>soup-go</code> polyglot harness.</li>
+<li><strong>Updated harness binary paths</strong> - Changed from <code>tofusoup/src/tofusoup/harness/go/bin/</code> to <code>harnesses/bin/</code>.</li>
+<li><strong>Documentation restructure</strong> - Updated all documentation to reflect unified harness architecture.</li>
+<li><strong>Configuration file references</strong> - Updated from <code>docs/CONFIG_TOML.md</code> to <code>docs/reference/configuration.md</code>.</li>
+<li><strong>Removed deprecated commands</strong> - <code>soup cty test</code>, <code>soup rpc test</code>, and <code>soup wire test</code> (use <code>soup test &lt;suite&gt;</code> instead).</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Addressed binary mismatches between Python and Go encoders for CTY and Wire protocols.</li>
+<li><strong>Fixed all harness naming inconsistencies</strong> across README.md, CLAUDE.md, and documentation.</li>
+<li><strong>Fixed broken documentation links</strong> after file reorganization.</li>
+<li><strong>Removed stale content</strong> - Moved STATUS.md, PHASE_1_FINDINGS.md, and PHASE_2_COMPLETE.md to <code>docs/historical/</code>.</li>
+<li><strong>Removed garnish references</strong> from architecture documentation (moved to separate <code>plating</code> package).</li>
+<li><strong>Removed empty CLI reference directory</strong> (<code>docs/reference/cli/</code>).</li>
+</ul>
+<h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Deprecated test commands</strong>: <code>soup cty test</code>, <code>soup rpc test</code>, <code>soup wire test</code> (replaced by <code>soup test &lt;suite&gt;</code>).</li>
+<li><strong>Individual Go harnesses</strong>: <code>go-cty</code>, <code>go-hcl</code>, <code>go-rpc</code>, <code>go-wire</code> (replaced by unified <code>soup-go</code>).</li>
+</ul>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>All references to old harness names updated to <code>soup-go</code>.</li>
+<li>All file paths updated to new harness binary location.</li>
+<li>Migration guide created to help users transition.</li>
+<li>Stale status documents moved to historical archive.</li>
+<li>Documentation build verification: <code>mkdocs build --strict</code> passes with no errors.</li>
 </ul>
 <h3 id="known-issues">Known Issues<a class="headerlink" href="#known-issues" title="Permanent link">&para;</a></h3>
 <ul>

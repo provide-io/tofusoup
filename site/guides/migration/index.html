@@ -12,24 +12,28 @@
         <meta name="author" content="provide.io">
       
       
-        <link rel="canonical" href="https://foundry.provide.io/tofusoup/PHASE_1_FINDINGS/">
+        <link rel="canonical" href="https://foundry.provide.io/tofusoup/guides/migration/">
       
       
+        <link rel="prev" href="../../core-concepts/conformance-testing/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+        <link rel="next" href="../cli-usage/03-using-cty-and-hcl-tools/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
     
     
       
-        <title>Phase 1 Findings: Options C, D, E Analysis - TofuSoup Documentation</title>
+        <title>Migration Guide - TofuSoup Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,13 +52,13 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../.shared-theme/stylesheets/provide-theme.css">
+      <link rel="stylesheet" href="../../.shared-theme/stylesheets/provide-theme.css">
     
-      <link rel="stylesheet" href="../.shared-theme/stylesheets/termynal.css">
+      <link rel="stylesheet" href="../../.shared-theme/stylesheets/termynal.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#phase-1-findings-options-c-d-e-analysis" class="md-skip">
+        <a href="#migration-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +100,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="TofuSoup Documentation" class="md-header__button md-logo" aria-label="TofuSoup Documentation" data-md-component="logo">
+    <a href="../.." title="TofuSoup Documentation" class="md-header__button md-logo" aria-label="TofuSoup Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Phase 1 Findings: Options C, D, E Analysis
+              Migration Guide
             
           </span>
         </div>
@@ -223,7 +227,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -244,7 +248,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../getting-started/what-is-tofusoup/" class="md-tabs__link">
+        <a href="../../getting-started/what-is-tofusoup/" class="md-tabs__link">
           
   
   
@@ -266,7 +270,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../core-concepts/architecture/" class="md-tabs__link">
+        <a href="../../core-concepts/architecture/" class="md-tabs__link">
           
   
   
@@ -284,18 +288,13 @@
   
   
   
-  
     
-    
-      
-  
-  
   
   
     
     
-      <li class="md-tabs__item">
-        <a href="../guides/cli-usage/03-using-cty-and-hcl-tools/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -308,9 +307,6 @@
     
   
 
-    
-  
-
       
         
   
@@ -320,7 +316,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../architecture/01-overview/" class="md-tabs__link">
+        <a href="../../architecture/01-overview/" class="md-tabs__link">
           
   
   
@@ -342,7 +338,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../reference/configuration/" class="md-tabs__link">
+        <a href="../../reference/configuration/" class="md-tabs__link">
           
   
   
@@ -364,7 +360,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../testing/conformance-test-status/" class="md-tabs__link">
+        <a href="../../testing/conformance-test-status/" class="md-tabs__link">
           
   
   
@@ -384,7 +380,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../faq/" class="md-tabs__link">
+      <a href="../../faq/" class="md-tabs__link">
         
   
   
@@ -403,7 +399,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../troubleshooting/" class="md-tabs__link">
+      <a href="../../troubleshooting/" class="md-tabs__link">
         
   
   
@@ -422,7 +418,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../glossary/" class="md-tabs__link">
+      <a href="../../glossary/" class="md-tabs__link">
         
   
   
@@ -441,7 +437,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG/" class="md-tabs__link">
+      <a href="../../CHANGELOG/" class="md-tabs__link">
         
   
   
@@ -482,7 +478,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="TofuSoup Documentation" class="md-nav__button md-logo" aria-label="TofuSoup Documentation" data-md-component="logo">
+    <a href="../.." title="TofuSoup Documentation" class="md-nav__button md-logo" aria-label="TofuSoup Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -512,7 +508,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -587,7 +583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/what-is-tofusoup/" class="md-nav__link">
+      <a href="../../getting-started/what-is-tofusoup/" class="md-nav__link">
         
   
   
@@ -610,7 +606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/installation/" class="md-nav__link">
+      <a href="../../getting-started/installation/" class="md-nav__link">
         
   
   
@@ -633,7 +629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/quick-start/" class="md-nav__link">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
         
   
   
@@ -714,7 +710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../core-concepts/architecture/" class="md-nav__link">
+      <a href="../../core-concepts/architecture/" class="md-nav__link">
         
   
   
@@ -737,7 +733,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../core-concepts/conformance-testing/" class="md-nav__link">
+      <a href="../../core-concepts/conformance-testing/" class="md-nav__link">
         
   
   
@@ -764,8 +760,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -773,25 +771,28 @@
       
         
       
+        
+      
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -804,12 +805,257 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Guides
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration Guide
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unified-harness-soup-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unified Harness (soup-go)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unified Harness (soup-go)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      What Changed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Command Migration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#harness-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Harness Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Binary Paths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-file-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration File Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing &amp; Scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deprecated-command-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deprecated Command Removal
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deprecated Command Removal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-this-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why This Change?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Steps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Migration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Migration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#harness-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Harness Not Found
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Path Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benefits-of-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits of Migration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Help
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
             
               
                 
@@ -832,19 +1078,22 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_1" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
             
   
   
@@ -857,8 +1106,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             CLI Usage
           </label>
@@ -871,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/cli-usage/03-using-cty-and-hcl-tools/" class="md-nav__link">
+      <a href="../cli-usage/03-using-cty-and-hcl-tools/" class="md-nav__link">
         
   
   
@@ -894,7 +1143,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/cli-usage/wire-protocol/" class="md-nav__link">
+      <a href="../cli-usage/wire-protocol/" class="md-nav__link">
         
   
   
@@ -917,7 +1166,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/cli-usage/matrix-testing/" class="md-nav__link">
+      <a href="../cli-usage/matrix-testing/" class="md-nav__link">
         
   
   
@@ -960,19 +1209,22 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="">
             
   
   
@@ -985,8 +1237,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Testing
           </label>
@@ -999,7 +1251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/testing/01-running-conformance-tests/" class="md-nav__link">
+      <a href="../testing/01-running-conformance-tests/" class="md-nav__link">
         
   
   
@@ -1022,7 +1274,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/testing/test-harness-development/" class="md-nav__link">
+      <a href="../testing/test-harness-development/" class="md-nav__link">
         
   
   
@@ -1121,7 +1373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/01-overview/" class="md-nav__link">
+      <a href="../../architecture/01-overview/" class="md-nav__link">
         
   
   
@@ -1144,7 +1396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/02-conformance-testing-strategy/" class="md-nav__link">
+      <a href="../../architecture/02-conformance-testing-strategy/" class="md-nav__link">
         
   
   
@@ -1167,7 +1419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/03-rpc-matrix-specification/" class="md-nav__link">
+      <a href="../../architecture/03-rpc-matrix-specification/" class="md-nav__link">
         
   
   
@@ -1190,7 +1442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/05-wire-protocol-details/" class="md-nav__link">
+      <a href="../../architecture/05-wire-protocol-details/" class="md-nav__link">
         
   
   
@@ -1213,7 +1465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/06-polyglot-cli-strategy/" class="md-nav__link">
+      <a href="../../architecture/06-polyglot-cli-strategy/" class="md-nav__link">
         
   
   
@@ -1236,7 +1488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/07-stock-service-design/" class="md-nav__link">
+      <a href="../../architecture/07-stock-service-design/" class="md-nav__link">
         
   
   
@@ -1259,7 +1511,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/soup-go-vs-terraform/" class="md-nav__link">
+      <a href="../../architecture/soup-go-vs-terraform/" class="md-nav__link">
         
   
   
@@ -1318,7 +1570,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../reference/api/" class="md-nav__link ">
+            <a href="../../reference/api/" class="md-nav__link ">
               
   
   
@@ -1351,7 +1603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/configuration/" class="md-nav__link">
+      <a href="../../reference/configuration/" class="md-nav__link">
         
   
   
@@ -1374,7 +1626,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/compatibility-matrix/" class="md-nav__link">
+      <a href="../../reference/compatibility-matrix/" class="md-nav__link">
         
   
   
@@ -1457,7 +1709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/conformance-test-status/" class="md-nav__link">
+      <a href="../../testing/conformance-test-status/" class="md-nav__link">
         
   
   
@@ -1480,7 +1732,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/cross-language-compatibility/" class="md-nav__link">
+      <a href="../../testing/cross-language-compatibility/" class="md-nav__link">
         
   
   
@@ -1510,7 +1762,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../faq/" class="md-nav__link">
+      <a href="../../faq/" class="md-nav__link">
         
   
   
@@ -1532,7 +1784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
+      <a href="../../troubleshooting/" class="md-nav__link">
         
   
   
@@ -1554,7 +1806,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../glossary/" class="md-nav__link">
+      <a href="../../glossary/" class="md-nav__link">
         
   
   
@@ -1576,7 +1828,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG/" class="md-nav__link">
+      <a href="../../CHANGELOG/" class="md-nav__link">
         
   
   
@@ -1618,37 +1870,64 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#option-d-dependency-audit-results" class="md-nav__link">
+  <a href="#unified-harness-soup-go" class="md-nav__link">
     <span class="md-ellipsis">
-      Option D: Dependency Audit Results 📦
+      Unified Harness (soup-go)
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Option D: Dependency Audit Results 📦">
+    <nav class="md-nav" aria-label="Unified Harness (soup-go)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#d1-outdated-dependencies" class="md-nav__link">
+  <a href="#what-changed" class="md-nav__link">
     <span class="md-ellipsis">
-      D1: Outdated Dependencies
+      What Changed
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#d2-dependency-conflicts" class="md-nav__link">
+  <a href="#command-migration" class="md-nav__link">
     <span class="md-ellipsis">
-      D2: Dependency Conflicts
+      Command Migration
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#d3-recommended-actions" class="md-nav__link">
+  <a href="#harness-management" class="md-nav__link">
     <span class="md-ellipsis">
-      D3: Recommended Actions
+      Harness Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Binary Paths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-file-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration File Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing &amp; Scripts
     </span>
   </a>
   
@@ -1660,88 +1939,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#option-e-coverage-report-results" class="md-nav__link">
+  <a href="#deprecated-command-removal" class="md-nav__link">
     <span class="md-ellipsis">
-      Option E: Coverage Report Results 📊
+      Deprecated Command Removal
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Option E: Coverage Report Results 📊">
+    <nav class="md-nav" aria-label="Deprecated Command Removal">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#e1-overall-coverage-statistics" class="md-nav__link">
+  <a href="#test-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      E1: Overall Coverage Statistics
+      Test Commands
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#e2-coverage-by-module" class="md-nav__link">
+  <a href="#why-this-change" class="md-nav__link">
     <span class="md-ellipsis">
-      E2: Coverage by Module
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="E2: Coverage by Module">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#excellent-coverage-80" class="md-nav__link">
-    <span class="md-ellipsis">
-      Excellent Coverage (&gt;80%) ✅
+      Why This Change?
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#good-coverage-50-79" class="md-nav__link">
+  <a href="#migration-steps" class="md-nav__link">
     <span class="md-ellipsis">
-      Good Coverage (50-79%) 🟡
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#poor-coverage-50" class="md-nav__link">
-    <span class="md-ellipsis">
-      Poor Coverage (&lt;50%) ⚠️
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#zero-coverage-0" class="md-nav__link">
-    <span class="md-ellipsis">
-      Zero Coverage (0%) ❌
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#e3-test-failures" class="md-nav__link">
-    <span class="md-ellipsis">
-      E3: Test Failures
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#e4-key-insights" class="md-nav__link">
-    <span class="md-ellipsis">
-      E4: Key Insights
+      Migration Steps
     </span>
   </a>
   
@@ -1753,46 +1981,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#option-c-documentation-structure-research" class="md-nav__link">
+  <a href="#troubleshooting-migration" class="md-nav__link">
     <span class="md-ellipsis">
-      Option C: Documentation Structure Research 📚
+      Troubleshooting Migration
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Option C: Documentation Structure Research 📚">
+    <nav class="md-nav" aria-label="Troubleshooting Migration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#current-tofusoup-structure" class="md-nav__link">
+  <a href="#harness-not-found" class="md-nav__link">
     <span class="md-ellipsis">
-      Current TofuSoup Structure
+      Harness Not Found
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pyvider-documentation-structure-target-model" class="md-nav__link">
+  <a href="#path-issues" class="md-nav__link">
     <span class="md-ellipsis">
-      Pyvider Documentation Structure (Target Model)
+      Path Issues
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#provide-foundation-structure" class="md-nav__link">
+  <a href="#configuration-errors" class="md-nav__link">
     <span class="md-ellipsis">
-      Provide-Foundation Structure
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hybrid-approach-for-tofusoup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Hybrid Approach for TofuSoup
+      Configuration Errors
     </span>
   </a>
   
@@ -1804,51 +2023,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#benefits-of-migration" class="md-nav__link">
     <span class="md-ellipsis">
-      Next Steps
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Next Steps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#immediate-actions-phase-2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Immediate Actions (Phase 2)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#success-metrics" class="md-nav__link">
-    <span class="md-ellipsis">
-      Success Metrics
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#files-generated" class="md-nav__link">
-    <span class="md-ellipsis">
-      Files Generated
+      Benefits of Migration
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#time-estimate-for-remaining-work" class="md-nav__link">
+  <a href="#getting-help" class="md-nav__link">
     <span class="md-ellipsis">
-      Time Estimate for Remaining Work
+      Getting Help
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
     </span>
   </a>
   
@@ -1873,328 +2068,165 @@
   
 
 
-<h1 id="phase-1-findings-options-c-d-e-analysis">Phase 1 Findings: Options C, D, E Analysis<a class="headerlink" href="#phase-1-findings-options-c-d-e-analysis" title="Permanent link">&para;</a></h1>
-<p><strong>Date</strong>: 2025-10-25
-<strong>Session</strong>: Documentation audit continuation</p>
-<hr />
-<h2 id="option-d-dependency-audit-results">Option D: Dependency Audit Results 📦<a class="headerlink" href="#option-d-dependency-audit-results" title="Permanent link">&para;</a></h2>
-<h3 id="d1-outdated-dependencies">D1: Outdated Dependencies<a class="headerlink" href="#d1-outdated-dependencies" title="Permanent link">&para;</a></h3>
-<p><strong>Major Updates Available</strong>:
-- <code>pyvider-rpcplugin</code>: 0.0.112 → <strong>0.0.1000</strong> (🔥 Major version jump!)
-- <code>rich</code>: 13.9.4 → <strong>14.2.0</strong> (Required by multiple packages)
-- <code>grpcio</code>: 1.75.1 → <strong>1.76.0</strong> (Required by grpcio-tools)
-- <code>textual</code>: 6.2.1 → <strong>6.4.0</strong>
-- <code>ruff</code>: 0.14.0 → <strong>0.14.2</strong>
-- <code>mkdocs-material</code>: 9.6.21 → <strong>9.6.22</strong></p>
-<p><strong>Minor/Patch Updates</strong> (39 total):
-- <code>coverage</code>: 7.10.7 → 7.11.0
-- <code>cryptography</code>: 46.0.2 → 46.0.3
-- <code>protobuf</code>: 6.32.1 → 6.33.0
-- <code>psutil</code>: 7.1.0 → 7.1.2
-- ... and 35 more</p>
-<h3 id="d2-dependency-conflicts">D2: Dependency Conflicts<a class="headerlink" href="#d2-dependency-conflicts" title="Permanent link">&para;</a></h3>
-<p><strong>4 incompatibilities found</strong>:</p>
+<h1 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h1>
+<p>This guide helps users migrate from older TofuSoup versions to the current unified harness architecture.</p>
+<h2 id="unified-harness-soup-go">Unified Harness (<code>soup-go</code>)<a class="headerlink" href="#unified-harness-soup-go" title="Permanent link">&para;</a></h2>
+<h3 id="what-changed">What Changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h3>
+<p>Previously, TofuSoup used separate Go harnesses for each component:
+- <code>go-cty</code> - CTY operations
+- <code>go-hcl</code> - HCL parsing
+- <code>go-rpc</code> - RPC server/client
+- <code>go-wire</code> - Wire protocol encoding/decoding</p>
+<p><strong>Now</strong>: All functionality is unified in a single <code>soup-go</code> harness with subcommands.</p>
+<h3 id="command-migration">Command Migration<a class="headerlink" href="#command-migration" title="Permanent link">&para;</a></h3>
+<p><strong>Old harness commands:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># OLD - separate binaries</span>
+./bin/go-cty<span class="w"> </span>validate-value<span class="w"> </span>...
+./bin/go-hcl<span class="w"> </span>parse<span class="w"> </span>...
+./bin/go-rpc<span class="w"> </span>server-start<span class="w"> </span>...
+./bin/go-wire<span class="w"> </span>encode<span class="w"> </span>...
+</code></pre></div></p>
+<p><strong>New harness commands:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># NEW - unified soup-go with subcommands</span>
+./harnesses/bin/soup-go<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span>...
+./harnesses/bin/soup-go<span class="w"> </span>hcl<span class="w"> </span>parse<span class="w"> </span>...
+./harnesses/bin/soup-go<span class="w"> </span>rpc<span class="w"> </span>server-start<span class="w"> </span>...
+./harnesses/bin/soup-go<span class="w"> </span>wire<span class="w"> </span>encode<span class="w"> </span>...
+</code></pre></div></p>
+<h3 id="harness-management">Harness Management<a class="headerlink" href="#harness-management" title="Permanent link">&para;</a></h3>
+<p><strong>Old commands:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># OLD</span>
+soup<span class="w"> </span>harness<span class="w"> </span>build<span class="w"> </span>go-cty
+soup<span class="w"> </span>harness<span class="w"> </span>build<span class="w"> </span>go-hcl<span class="w"> </span>go-rpc<span class="w"> </span>go-wire
+soup<span class="w"> </span>harness<span class="w"> </span>verify-cli<span class="w"> </span>go-cty
+</code></pre></div></p>
+<p><strong>New commands:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># NEW</span>
+soup<span class="w"> </span>harness<span class="w"> </span>build<span class="w"> </span>soup-go
+soup<span class="w"> </span>harness<span class="w"> </span>list
+soup<span class="w"> </span>harness<span class="w"> </span>verify-cli<span class="w"> </span>soup-go
+</code></pre></div></p>
+<h3 id="binary-paths">Binary Paths<a class="headerlink" href="#binary-paths" title="Permanent link">&para;</a></h3>
+<p><strong>Old paths:</strong>
+<div class="highlight"><pre><span></span><code>tofusoup/src/tofusoup/harness/go/bin/go-cty
+tofusoup/src/tofusoup/harness/go/bin/go-hcl
+tofusoup/src/tofusoup/harness/go/bin/go-rpc
+tofusoup/src/tofusoup/harness/go/bin/go-wire
+</code></pre></div></p>
+<p><strong>New paths:</strong>
+<div class="highlight"><pre><span></span><code>harnesses/bin/soup-go
+</code></pre></div></p>
+<h3 id="configuration-file-updates">Configuration File Updates<a class="headerlink" href="#configuration-file-updates" title="Permanent link">&para;</a></h3>
+<p>If you have <code>soup.toml</code> configurations referencing old harnesses:</p>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">[harness.go.cty]</span>
+<span class="n">build_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">]</span>
+
+<span class="k">[harness.go.rpc]</span>
+<span class="n">timeout_seconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span>
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">[harness.go.soup-go]</span>
+<span class="n">build_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">]</span>
+<span class="n">timeout_seconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span>
+</code></pre></div></p>
+<h3 id="testing-scripts">Testing &amp; Scripts<a class="headerlink" href="#testing-scripts" title="Permanent link">&para;</a></h3>
+<p>If you have test scripts or CI/CD pipelines using the old harnesses:</p>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># In test scripts</span>
+<span class="nv">GO_CTY_BIN</span><span class="o">=</span><span class="s2">&quot;./bin/go-cty&quot;</span>
+<span class="nv">$GO_CTY_BIN</span><span class="w"> </span>validate-value<span class="w"> </span>...
+
+<span class="c1"># In Python tests</span>
+<span class="nv">harness_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Path<span class="o">(</span><span class="s2">&quot;bin/go-cty&quot;</span><span class="o">)</span>
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># In test scripts</span>
+<span class="nv">SOUP_GO_BIN</span><span class="o">=</span><span class="s2">&quot;./harnesses/bin/soup-go&quot;</span>
+<span class="nv">$SOUP_GO_BIN</span><span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span>...
+
+<span class="c1"># In Python tests</span>
+<span class="nv">harness_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Path<span class="o">(</span><span class="s2">&quot;harnesses/bin/soup-go&quot;</span><span class="o">)</span>
+<span class="c1"># Use with subcommand: soup-go cty ...</span>
+</code></pre></div></p>
+<h2 id="deprecated-command-removal">Deprecated Command Removal<a class="headerlink" href="#deprecated-command-removal" title="Permanent link">&para;</a></h2>
+<h3 id="test-commands">Test Commands<a class="headerlink" href="#test-commands" title="Permanent link">&para;</a></h3>
+<p>The following test commands have been removed in favor of the unified <code>soup test</code> command:</p>
+<p><strong>Old (Deprecated):</strong>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>cty<span class="w"> </span><span class="nb">test</span><span class="w"> </span>compat
+soup<span class="w"> </span>rpc<span class="w"> </span><span class="nb">test</span><span class="w"> </span>all
+soup<span class="w"> </span>wire<span class="w"> </span><span class="nb">test</span><span class="w"> </span>compat
+</code></pre></div></p>
+<p><strong>New (Current):</strong>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>cty
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>rpc
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>wire
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>all<span class="w">  </span><span class="c1"># Run all suites</span>
+</code></pre></div></p>
+<h3 id="why-this-change">Why This Change?<a class="headerlink" href="#why-this-change" title="Permanent link">&para;</a></h3>
+<p>The unified <code>soup test</code> command:
+- Provides consistent interface across all test suites
+- Supports better configuration via <code>soup.toml</code>
+- Enables easier CI/CD integration
+- Allows passing pytest arguments directly</p>
+<h3 id="migration-steps">Migration Steps<a class="headerlink" href="#migration-steps" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
-<p><strong>grpcio version conflict</strong>:
-   <div class="highlight"><pre><span></span><code>grpcio-tools requires grpcio&gt;=1.76.0, but 1.75.1 is installed
-</code></pre></div>
-   <strong>Impact</strong>: Moderate - grpcio-tools may not function correctly
-   <strong>Fix</strong>: Update <code>grpcio</code> to 1.76.0</p>
+<p><strong>Update harness builds:</strong>
+   <div class="highlight"><pre><span></span><code>soup<span class="w"> </span>harness<span class="w"> </span>build<span class="w"> </span>soup-go
+</code></pre></div></p>
 </li>
 <li>
-<p><strong>rich version conflicts</strong> (3 packages):
-   <div class="highlight"><pre><span></span><code>pynguin requires rich&gt;=14.0.0,&lt;15.0.0, but 13.9.4 is installed
-supsrc requires rich&gt;=14.0.0, but 13.9.4 is installed
-wrknv requires rich&gt;=14.0.0, but 13.9.4 is installed
-</code></pre></div>
-   <strong>Impact</strong>: High - Multiple packages affected
-   <strong>Fix</strong>: Update <code>rich</code> to 14.2.0</p>
+<p><strong>Update scripts</strong> to use new harness paths</p>
+</li>
+<li>
+<p><strong>Update test commands</strong> to use <code>soup test &lt;suite&gt;</code></p>
+</li>
+<li>
+<p><strong>Update <code>soup.toml</code></strong> if you have harness-specific configurations</p>
+</li>
+<li>
+<p><strong>Verify</strong> everything works:
+   <div class="highlight"><pre><span></span><code>soup<span class="w"> </span>harness<span class="w"> </span>verify-cli<span class="w"> </span>soup-go
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>all
+</code></pre></div></p>
 </li>
 </ol>
-<h3 id="d3-recommended-actions">D3: Recommended Actions<a class="headerlink" href="#d3-recommended-actions" title="Permanent link">&para;</a></h3>
-<p><strong>Priority 1 (Must Fix)</strong>:
-- ✅ Update <code>rich</code> to 14.2.0 (resolves 3 conflicts)
-- ✅ Update <code>grpcio</code> to 1.76.0 (resolves 1 conflict)
-- ✅ Update <code>pyvider-rpcplugin</code> to 0.0.1000 (major improvement)</p>
-<p><strong>Priority 2 (Should Update)</strong>:
-- Update <code>textual</code> to 6.4.0 (UX improvements)
-- Update <code>ruff</code> to 0.14.2 (latest linter fixes)
-- Update <code>mkdocs-material</code> to 9.6.22 (docs theme)</p>
-<p><strong>Priority 3 (Nice to Have)</strong>:
-- Review remaining 35 updates for security/bug fixes
-- Consider batch update for patch versions</p>
-<hr />
-<h2 id="option-e-coverage-report-results">Option E: Coverage Report Results 📊<a class="headerlink" href="#option-e-coverage-report-results" title="Permanent link">&para;</a></h2>
-<h3 id="e1-overall-coverage-statistics">E1: Overall Coverage Statistics<a class="headerlink" href="#e1-overall-coverage-statistics" title="Permanent link">&para;</a></h3>
-<p><strong>Total Coverage</strong>: <strong>29%</strong> (3849 statements, 2560 missed)
-- <strong>Branch Coverage</strong>: 954 branches, 73 partially covered
-- <strong>Test Results</strong>: 109 passed, 8 failed, 40 skipped</p>
-<h3 id="e2-coverage-by-module">E2: Coverage by Module<a class="headerlink" href="#e2-coverage-by-module" title="Permanent link">&para;</a></h3>
-<h4 id="excellent-coverage-80">Excellent Coverage (&gt;80%) ✅<a class="headerlink" href="#excellent-coverage-80" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>registry/base.py</code>: <strong>95%</strong> (34 stmts)</li>
-<li><code>registry/models/version.py</code>: <strong>97%</strong> (29 stmts)</li>
-<li><code>wire/cli.py</code>: <strong>81%</strong> (34 stmts)</li>
-<li><code>wire/logic.py</code>: <strong>79%</strong> (20 stmts)</li>
-<li><code>registry/cli.py</code>: <strong>80%</strong> (114 stmts)</li>
-<li><code>browser/ui/widgets/search_view.py</code>: <strong>83%</strong> (65 stmts)</li>
-<li><code>browser/ui/widgets/detail_view.py</code>: <strong>85%</strong> (29 stmts)</li>
-</ul>
-<h4 id="good-coverage-50-79">Good Coverage (50-79%) 🟡<a class="headerlink" href="#good-coverage-50-79" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>harness/logic.py</code>: <strong>58%</strong> (79 stmts)</li>
-<li><code>rpc/validation.py</code>: <strong>60%</strong> (32 stmts)</li>
-<li><code>registry/search/engine.py</code>: <strong>66%</strong> (117 stmts)</li>
-<li><code>harness/proto/kv/kv_pb2_grpc.py</code>: <strong>74%</strong> (36 stmts)</li>
-</ul>
-<h4 id="poor-coverage-50">Poor Coverage (&lt;50%) ⚠️<a class="headerlink" href="#poor-coverage-50" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>cli.py</code>: <strong>18%</strong> (86 stmts) - Main CLI entry point!</li>
-<li><code>common/config.py</code>: <strong>55%</strong> (50 stmts)</li>
-<li><code>rpc/client.py</code>: <strong>50%</strong> (227 stmts)</li>
-<li><code>rpc/server.py</code>: <strong>29%</strong> (140 stmts)</li>
-</ul>
-<h4 id="zero-coverage-0">Zero Coverage (0%) ❌<a class="headerlink" href="#zero-coverage-0" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>cty/cli.py</code>: <strong>0%</strong> (79 stmts)</li>
-<li><code>hcl/cli.py</code>: <strong>0%</strong> (44 stmts)</li>
-<li><code>provider/cli.py</code>: <strong>0%</strong> (14 stmts)</li>
-<li><code>rpc/cli.py</code>: <strong>0%</strong> (133 stmts)</li>
-<li><code>rpc/logic.py</code>: <strong>0%</strong> (91 stmts)</li>
-<li><code>rpc/plugin_server.py</code>: <strong>0%</strong> (37 stmts)</li>
-<li><code>rpc/stock_cli.py</code>: <strong>0%</strong> (126 stmts)</li>
-<li><code>testing/cli.py</code>: <strong>0%</strong> (9 stmts)</li>
-<li><code>testing/logic.py</code>: <strong>0%</strong> (54 stmts)</li>
-<li><code>testing/matrix.py</code>: <strong>0%</strong> (151 stmts)</li>
-<li><code>scaffolding/*.py</code>: <strong>0%</strong> (66 stmts total)</li>
-<li><code>state.py</code>: <strong>0%</strong> (169 stmts)</li>
-<li><code>stir.py</code>: <strong>0%</strong> (2 stmts)</li>
-<li><strong>All stir/ modules</strong>: 9-26% coverage</li>
-</ul>
-<h3 id="e3-test-failures">E3: Test Failures<a class="headerlink" href="#e3-test-failures" title="Permanent link">&para;</a></h3>
-<p><strong>8 tests failed</strong> (out of 109 passed):</p>
+<h2 id="troubleshooting-migration">Troubleshooting Migration<a class="headerlink" href="#troubleshooting-migration" title="Permanent link">&para;</a></h2>
+<h3 id="harness-not-found">Harness Not Found<a class="headerlink" href="#harness-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Error:</strong> <code>harness 'go-cty' not found</code></p>
+<p><strong>Solution:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Remove old references, build new harness</span>
+soup<span class="w"> </span>harness<span class="w"> </span>clean<span class="w"> </span>--all
+soup<span class="w"> </span>harness<span class="w"> </span>build<span class="w"> </span>soup-go
+</code></pre></div></p>
+<h3 id="path-issues">Path Issues<a class="headerlink" href="#path-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Error:</strong> <code>No such file or directory: 'bin/go-cty'</code></p>
+<p><strong>Solution:</strong> Update paths to <code>harnesses/bin/soup-go</code></p>
+<h3 id="configuration-errors">Configuration Errors<a class="headerlink" href="#configuration-errors" title="Permanent link">&para;</a></h3>
+<p><strong>Error:</strong> <code>Unknown harness 'go-rpc' in soup.toml</code></p>
+<p><strong>Solution:</strong> Update configuration to use <code>soup-go</code> instead of individual harnesses</p>
+<h2 id="benefits-of-migration">Benefits of Migration<a class="headerlink" href="#benefits-of-migration" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>RPC Connection Timeouts</strong> (4 failures):</li>
-<li><code>test_pyclient_goserver_put_get_string</code></li>
-<li><code>comprehensive_matrix_test</code></li>
-<li><code>test_pyclient_goserver_no_mtls</code></li>
-<li><code>test_pyclient_goserver_with_mtls_auto</code></li>
-<li>
-<p><strong>Cause</strong>: 30-second timeout connecting Python client to Go server</p>
-</li>
-<li>
-<p><strong>Wire Protocol Binary Mismatches</strong> (3 failures):</p>
-</li>
-<li><code>list_string</code> test</li>
-<li><code>dynamic_string</code> test</li>
-<li><code>dynamic_object</code> test</li>
-<li>
-<p><strong>Cause</strong>: Python and Go encoders producing different binary output</p>
-</li>
-<li>
-<p><strong>CTY Type Error</strong> (1 failure):</p>
-</li>
-<li><code>test_marshal_unmarshal_roundtrip</code></li>
-<li><strong>Cause</strong>: <code>'UnrefinedUnknownValue' object is not subscriptable</code></li>
+<li><strong>Simpler Builds</strong>: One harness to build instead of four</li>
+<li><strong>Consistent Interface</strong>: All functionality accessible via subcommands</li>
+<li><strong>Smaller Footprint</strong>: Single binary vs multiple binaries</li>
+<li><strong>Easier Maintenance</strong>: One codebase for all harness functionality</li>
+<li><strong>Better Documentation</strong>: Unified documentation and help system</li>
 </ol>
-<h3 id="e4-key-insights">E4: Key Insights<a class="headerlink" href="#e4-key-insights" title="Permanent link">&para;</a></h3>
-<p><strong>High-Value Untested Code</strong>:
-1. <strong>CLI Commands</strong> - Almost all CLI entry points have 0% coverage
-2. <strong>Testing Framework</strong> - The test orchestration itself is untested!
-3. <strong>Stir Functionality</strong> - Matrix testing code is barely tested (9-26%)
-4. <strong>RPC Plugin System</strong> - Server and plugin infrastructure untested</p>
-<p><strong>Well-Tested Areas</strong>:
-- Registry operations (search, models, caching)
-- Wire protocol encoding/decoding
-- Basic harness management</p>
-<p><strong>Coverage Improvement Recommendations</strong>:
-1. Add integration tests for CLI commands
-2. Add unit tests for testing/stir modules
-3. Fix or skip failing RPC cross-language tests
-4. Investigate wire protocol binary mismatch issues</p>
-<hr />
-<h2 id="option-c-documentation-structure-research">Option C: Documentation Structure Research 📚<a class="headerlink" href="#option-c-documentation-structure-research" title="Permanent link">&para;</a></h2>
-<h3 id="current-tofusoup-structure">Current TofuSoup Structure<a class="headerlink" href="#current-tofusoup-structure" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>docs/
-├── index.md
-├── CONFIGURATION.md
-├── CHANGELOG.md
-├── architecture/          # 7 docs
-├── guides/                # 4 docs (01, 02, 03, 05 - missing 04!)
-├── testing/               # 2 docs
-├── rpc-compatibility-matrix.md
-├── examples/
-└── historical/            # Archived docs
-</code></pre></div>
-<p><strong>Navigation</strong>: 5 top-level sections
-- Home
-- Getting Started (minimal)
-- Architecture
-- Guides
-- Testing
-- API Reference
-- Changelog</p>
-<h3 id="pyvider-documentation-structure-target-model">Pyvider Documentation Structure (Target Model)<a class="headerlink" href="#pyvider-documentation-structure-target-model" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>docs/
-├── index.md
-├── getting-started/       # What is, Installation, Quick Start
-├── core-concepts/         # Architecture, Component Model, Schema System
-├── guides/
-│   ├── building-components/    # Creating providers/resources/etc
-│   ├── development/            # Testing, Debugging, Logging
-│   ├── production/             # Best practices, Security
-│   ├── advanced/               # Lifecycle, Advanced patterns
-│   └── usage/                  # Configuration, Managing resources
-├── schema/                # Deep dive - Types, Attributes, Blocks, etc
-├── capabilities/          # Experimental features
-├── tutorials/             # Step-by-step learning
-├── api/                   # API Reference (auto-generated)
-├── quick-reference.md     # Cheat sheet
-├── faq.md
-├── troubleshooting.md
-├── glossary.md
-├── contributing/
-└── development/           # Roadmap
-</code></pre></div>
-<p><strong>Navigation</strong>: 11 top-level sections (Diátaxis-inspired)</p>
-<h3 id="provide-foundation-structure">Provide-Foundation Structure<a class="headerlink" href="#provide-foundation-structure" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>docs/
-├── index.md
-├── explanation/           # Conceptual documentation
-├── getting-started/       # Onboarding
-├── how-to-guides/         # Task-oriented guides
-├── reference/             # Technical reference
-├── information/           # Background information
-└── specs/                 # Specifications
-</code></pre></div>
-<h3 id="hybrid-approach-for-tofusoup">Hybrid Approach for TofuSoup<a class="headerlink" href="#hybrid-approach-for-tofusoup" title="Permanent link">&para;</a></h3>
-<p><strong>Recommended Structure</strong> (combining best of both):</p>
-<div class="highlight"><pre><span></span><code>docs/
-├── index.md
-├── getting-started/
-│   ├── what-is-tofusoup.md
-│   ├── installation.md
-│   └── quick-start.md
-├── core-concepts/
-│   ├── architecture.md         # Move from architecture/01
-│   ├── conformance-testing.md  # Move from architecture/02
-│   ├── cross-language-testing.md
-│   └── test-harnesses.md
-├── guides/
-│   ├── cli-usage/
-│   │   ├── cty-commands.md
-│   │   ├── hcl-commands.md
-│   │   ├── wire-protocol.md     # New - missing guide 04!
-│   │   ├── rpc-commands.md
-│   │   └── matrix-testing.md    # Rename from 05
-│   ├── testing/
-│   │   ├── running-conformance-tests.md   # Move from guides/01
-│   │   ├── writing-conformance-tests.md   # New
-│   │   └── test-harness-development.md    # Move from guides/02
-│   ├── development/
-│   │   ├── building-harnesses.md
-│   │   ├── debugging.md
-│   │   └── contributing.md
-│   └── production/
-│       ├── ci-cd-integration.md
-│       └── best-practices.md
-├── reference/
-│   ├── cli/                # CLI command reference
-│   ├── api/                # Python API reference
-│   ├── configuration.md    # Move CONFIGURATION.md here
-│   └── compatibility-matrix.md  # Move rpc-compatibility-matrix.md
-├── tutorials/              # New - step-by-step learning
-│   └── first-conformance-test.md
-├── troubleshooting.md      # New
-├── faq.md                  # New
-├── glossary.md             # New
-├── CHANGELOG.md
-└── contributing/
-    └── guidelines.md
-</code></pre></div>
-<p><strong>Key Changes</strong>:
-1. <strong>Add Getting Started section</strong> - Proper onboarding
-2. <strong>Create Core Concepts</strong> - Consolidate architecture docs
-3. <strong>Reorganize Guides</strong> - Group by purpose (CLI usage, testing, development, production)
-4. <strong>Create Reference section</strong> - Consolidate technical references
-5. <strong>Add Support content</strong> - FAQ, Troubleshooting, Glossary
-6. <strong>Add Tutorials</strong> - Learning-oriented content</p>
-<p><strong>Navigation Structure</strong> (9 sections):
-- Home
-- Getting Started
-- Core Concepts
-- Guides (with subsections)
-- Tutorials
-- Reference
-- FAQ / Troubleshooting / Glossary
-- Changelog
-- Contributing</p>
-<hr />
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<h3 id="immediate-actions-phase-2">Immediate Actions (Phase 2)<a class="headerlink" href="#immediate-actions-phase-2" title="Permanent link">&para;</a></h3>
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
+<p>If you encounter issues during migration:</p>
 <ol>
-<li><strong>Update Dependencies</strong> (D3-D4):</li>
-<li>Update <code>rich</code> to 14.2.0</li>
-<li>Update <code>grpcio</code> to 1.76.0</li>
-<li>Update <code>pyvider-rpcplugin</code> to 0.0.1000</li>
-<li>
-<p>Update <code>textual</code>, <code>ruff</code>, <code>mkdocs-material</code></p>
-</li>
-<li>
-<p><strong>Restructure Documentation</strong> (C3):</p>
-</li>
-<li>Create new directory structure</li>
-<li>Move existing docs to new locations</li>
-<li>Create missing sections (getting-started/, core-concepts/, tutorials/)</li>
-<li>
-<p>Update mkdocs.yml with new navigation</p>
-</li>
-<li>
-<p><strong>Create Missing Content</strong> (C1, C2):</p>
-</li>
-<li>Write guide 04 (Wire Protocol)</li>
-<li>Add Getting Started content</li>
-<li>Create Troubleshooting/FAQ/Glossary</li>
-<li>
-<p>Add code examples throughout</p>
-</li>
-<li>
-<p><strong>Improve Test Coverage</strong> (E4):</p>
-</li>
-<li>Add CLI integration tests</li>
-<li>Add stir/ module tests</li>
-<li>Fix or skip failing RPC tests</li>
-<li>
-<p>Target 50%+ overall coverage</p>
-</li>
-<li>
-<p><strong>Create Deployment Workflow</strong> (C4):</p>
-</li>
-<li>Add GitHub Actions docs deployment</li>
-<li>Automate on docs/ changes</li>
+<li>Check this migration guide</li>
+<li>Review <a href="../../troubleshooting/">Troubleshooting</a></li>
+<li>Check <a href="../../faq/">FAQ</a></li>
+<li>Open an issue on <a href="https://github.com/provide-io/tofusoup/issues">GitHub</a></li>
 </ol>
-<h3 id="success-metrics">Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h3>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li>✅ 0 dependency conflicts</li>
-<li>✅ All packages updated to latest compatible versions</li>
-<li>✅ Docs restructured following pyvider/foundation patterns</li>
-<li>✅ Test coverage &gt;50%</li>
-<li>✅ All navigation links working</li>
-<li>✅ Automated docs deployment</li>
-<li>✅ 0 broken links</li>
-</ul>
-<hr />
-<h2 id="files-generated">Files Generated<a class="headerlink" href="#files-generated" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>htmlcov/</code> - HTML coverage report (open <code>htmlcov/index.html</code> to view)</li>
-<li>This summary document</li>
-</ul>
-<h2 id="time-estimate-for-remaining-work">Time Estimate for Remaining Work<a class="headerlink" href="#time-estimate-for-remaining-work" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Phase 2</strong> (Restructure &amp; Content): 4-5 hours</li>
-<li><strong>Phase 3</strong> (Polish &amp; Deploy): 1-2 hours</li>
-<li><strong>Total Remaining</strong>: 5-7 hours</li>
+<li><a href="../../reference/configuration/">Configuration Reference</a></li>
+<li><a href="../testing/test-harness-development/">Test Harness Development</a></li>
+<li><a href="../../getting-started/quick-start/">Quick Start Guide</a></li>
 </ul>
 
 
@@ -2229,6 +2261,44 @@ wrknv requires rich&gt;=14.0.0, but 13.9.4 is installed
         <footer class="md-footer">
   
     
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../core-concepts/conformance-testing/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Conformance Testing">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Conformance Testing
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../cli-usage/03-using-cty-and-hcl-tools/" class="md-footer__link md-footer__link--next" aria-label="Next: CTY and HCL Tools">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                CTY and HCL Tools
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -2258,18 +2328,18 @@ wrknv requires rich&gt;=14.0.0, but 13.9.4 is installed
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "header.autohide"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "header.autohide"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
       
-        <script src="../.shared-theme/javascripts/mermaid-init.js"></script>
+        <script src="../../.shared-theme/javascripts/mermaid-init.js"></script>
       
-        <script src="../.shared-theme/javascripts/termynal.js"></script>
+        <script src="../../.shared-theme/javascripts/termynal.js"></script>
       
-        <script src="../.shared-theme/javascripts/custom.js"></script>
+        <script src="../../.shared-theme/javascripts/custom.js"></script>
       
     
   </body>
