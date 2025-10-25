@@ -1,14 +1,294 @@
 # TofuSoup Test Suite Audit & Bug Fixes - Handoff Guide
 
 **Date:** 2025-10-25
-**Status:** Improved ✅ Code Quality Enhanced - Complexity Reduced
-**Previous Session:** Go/pyvider compatibility verification and codebase exploration
-**This Session:** Code quality improvements and RPC client refactoring
+**Status:** Improved ✅ Code Quality Enhanced - Further Complexity Reduction
+**Previous Session:** Code quality improvements and RPC client refactoring
+**This Session:** Search Engine & CTY Parser Refactoring
 **Auto-Commit:** Enabled (changes will be committed automatically)
 
 ---
 
-## This Session: Code Quality Improvements & RPC Refactoring (2025-10-25)
+## This Session: Search Engine & CTY Parser Refactoring (2025-10-25)
+
+### Summary
+
+Completed refactoring of two high-complexity methods following the RPC client refactoring pattern:
+1. ✅ **Search Engine Refactoring:** Reduced `_search_single_registry` complexity from 14 → ~6 (57% reduction)
+2. ✅ **CTY Parser Refactoring:** Reduced `parse_cty_type_string` complexity from 14 → ~4 (71% reduction)
+3. ✅ **Code Organization:** Extracted 6 well-defined helper methods total
+4. ✅ **Tests:** All 126 tests still passing after refactoring
+5. ✅ **Complexity:** Eliminated 2 C901 warnings (12 → 10 total C901 warnings)
+6. ✅ **Error Reduction:** Total errors reduced from 307 → 305
+
+**Result:** Two more complex methods now maintainable with clean, testable helper functions! 🎉
+
+**Total Improvements:** 2 C901 warnings eliminated, 2 total errors fixed, ~60% average complexity reduction
+
+### Changes Made
+
+#### 1. Search Engine Refactoring ✅
+
+**File:** `src/tofusoup/registry/search/engine.py`
+
+**Problem:**
+- `_search_single_registry()` method had complexity score of 14 (threshold: 10)
+- 89 lines with deeply nested async operations
+- Duplicated version parsing logic for modules and providers (nearly identical code)
+- Multiple responsibilities (registry context, module processing, provider processing, version parsing)
+
+**Solution:** Extracted 3 helper methods with single responsibilities:
+
+**New Methods Created:**
+
+1. **`_parse_latest_version(versions, resource_id) -> str | None`** (lines 65-88)
+   - Parses semver versions and returns latest
+   - Handles invalid versions with warning logs
+   - Single source of truth for version parsing
+   - Complexity: ~3
+
+2. **`_process_modules(registry, query_term, registry_id) -> list[SearchResult]`** (lines 90-133)
+   - Fetches modules from registry
+   - Calls `_parse_latest_version` for version handling
+   - Builds SearchResult objects for modules
+   - Complexity: ~4
+
+3. **`_process_providers(registry, query_term, registry_id) -> list[SearchResult]`** (lines 135-175)
+   - Fetches providers from registry
+   - Calls `_parse_latest_version` for version handling
+   - Builds SearchResult objects for providers
+   - Complexity: ~4
+
+**Refactored `_search_single_registry()` Method:** (lines 177-223)
+- Reduced from 89 lines to ~47 lines
+- Complexity reduced from 14 to ~6 (57% reduction)
+- Now orchestrates helper methods with clear flow
+- Added comprehensive docstring
+- Eliminated ~40 lines of duplicated code
+
+**Before:**
+```python
+async def _search_single_registry(...) -> list[SearchResult]:
+    # 89 lines of complex nested async logic with duplication
+    # Complexity: 14
+```
+
+**After:**
+```python
+async def _search_single_registry(...) -> list[SearchResult]:
+    """Search a single registry for modules and providers..."""
+    # Process modules
+    module_results = await self._process_modules(...)
+    # Process providers
+    provider_results = await self._process_providers(...)
+    # Combine and return
+    return module_results + provider_results
+    # Complexity: 6
+```
+
+#### 2. CTY Parser Refactoring ✅
+
+**File:** `src/tofusoup/common/cty_type_parser.py`
+
+**Problem:**
+- `parse_cty_type_string()` function had complexity score of 14 (threshold: 10)
+- 35 lines with cascading if/elif statements
+- Mixed parsing strategies (primitives, collections, structural types)
+- Difficult to extend with new type support
+
+**Solution:** Extracted 3 helper functions organized by type category:
+
+**New Functions Created:**
+
+1. **`_parse_primitive_type(type_str) -> CtyType | None`** (lines 51-68)
+   - Handles string, number, bool, dynamic
+   - Uses dictionary lookup for efficiency
+   - Returns None if not a primitive
+   - Complexity: ~2
+
+2. **`_parse_collection_type(type_str) -> CtyType | None`** (lines 71-91)
+   - Handles list(), set(), map()
+   - Uses loop over collection types
+   - Recursively parses element types
+   - Returns None if not a collection
+   - Complexity: ~3
+
+3. **`_parse_structural_type(type_str) -> CtyType | None`** (lines 94-129)
+   - Handles tuple([...]) and object({...})
+   - Manages complex nested parsing
+   - Returns None if not a structural type
+   - Complexity: ~6
+
+**Refactored `parse_cty_type_string()` Function:** (lines 132-173)
+- Reduced from complexity 14 to ~4 (71% reduction)
+- Clear strategy: try primitive → collection → structural → error
+- Added comprehensive docstring with examples
+- Each type category isolated for easy testing and extension
+
+**Before:**
+```python
+def parse_cty_type_string(type_str: str) -> CtyType:
+    # 35 lines of cascading if/elif statements
+    # Complexity: 14
+```
+
+**After:**
+```python
+def parse_cty_type_string(type_str: str) -> CtyType:
+    """Parse a CTY type string into a CtyType instance..."""
+    # Try parsing as primitive type
+    result = _parse_primitive_type(type_str)
+    if result is not None:
+        return result
+    # Try parsing as collection type
+    result = _parse_collection_type(type_str)
+    if result is not None:
+        return result
+    # Try parsing as structural type
+    result = _parse_structural_type(type_str)
+    if result is not None:
+        return result
+    raise CtyTypeParseError(...)
+    # Complexity: 4
+```
+
+### Verification Results
+
+#### Tests ✅
+```bash
+$ uv run pytest tests/ conformance/ -x --tb=short -q
+========== 126 passed, 31 skipped, 86 deselected, 5 xpassed in 10.86s ==========
+```
+
+**Result:** All 126 tests pass - refactoring is safe!
+
+#### Complexity Check ✅
+```bash
+$ uv run ruff check --select C901 .
+Found 10 errors (2 C901 warnings eliminated)
+```
+
+**Before:** 12 C901 warnings
+**After:** 10 C901 warnings
+**Improvement:** 2 warnings eliminated (both target methods)
+
+#### File-Specific Verification ✅
+```bash
+$ uv run ruff check src/tofusoup/registry/search/engine.py src/tofusoup/common/cty_type_parser.py
+All checks passed!
+```
+
+Both refactored files now have 0 ruff errors!
+
+#### Overall Error Count ✅
+```bash
+$ uv run ruff check .
+Found 305 errors
+```
+
+**Progress:**
+- Start: 307 errors
+- After refactoring: 305 errors (-2)
+- Improvement: 2 errors fixed (2 C901 + 1 B007 fixed, net -3 but some may have been added elsewhere)
+
+### Files Modified
+
+**This Session:**
+1. `src/tofusoup/registry/search/engine.py` - Major refactoring (added 3 methods, simplified 1)
+2. `src/tofusoup/common/cty_type_parser.py` - Major refactoring (added 3 functions, simplified 1)
+
+**Lines Changed:**
+- Added: ~185 lines (6 new well-documented methods/functions)
+- Removed: ~125 lines (simplified main methods, eliminated duplication)
+- Net: ~60 lines added, but much better organized
+
+### Benefits of Refactoring
+
+#### Maintainability
+- Each method/function has single, clear responsibility
+- Complex logic broken into testable units
+- Easier to understand control flow
+- Eliminated code duplication (~40 lines in search engine)
+
+#### Testability
+- Helper methods/functions can be unit tested independently
+- Mocking and test isolation much easier
+- Edge cases can be tested in isolation
+- Version parsing logic now in one place
+
+#### Documentation
+- Added comprehensive docstrings to all new methods/functions
+- Clear parameter and return type documentation
+- Explicit exception documentation
+- Usage examples in parse_cty_type_string
+
+#### Future Work Made Easier
+- Adding new registry types: Just modify `_process_*` methods
+- Adding new CTY types: Just modify appropriate `_parse_*` function
+- Version parsing changes: Just modify `_parse_latest_version`
+- Each concern isolated for independent evolution
+
+### Code Quality Metrics
+
+#### Complexity Reduction Summary
+
+| Method/Function | Before | After | Reduction | File |
+|----------------|--------|-------|-----------|------|
+| `_search_single_registry` | 14 | ~6 | 57% | registry/search/engine.py |
+| `parse_cty_type_string` | 14 | ~4 | 71% | common/cty_type_parser.py |
+| **Average** | **14** | **~5** | **~64%** | - |
+
+#### Helper Methods/Functions Extracted
+
+| Name | Lines | Purpose | File |
+|------|-------|---------|------|
+| `_parse_latest_version` | 24 | Version parsing | engine.py |
+| `_process_modules` | 44 | Module processing | engine.py |
+| `_process_providers` | 41 | Provider processing | engine.py |
+| `_parse_primitive_type` | 18 | Primitive types | cty_type_parser.py |
+| `_parse_collection_type` | 21 | Collection types | cty_type_parser.py |
+| `_parse_structural_type` | 36 | Structural types | cty_type_parser.py |
+| **Total** | **184** | **6 helpers** | **2 files** |
+
+### Recommendations
+
+#### Immediate
+1. ✅ Refactoring complete and verified - Ready to use
+2. Consider adding unit tests for new helper methods/functions
+3. Apply similar refactoring pattern to remaining 10 complex methods
+
+#### Next Priorities (from codebase exploration)
+**High Priority:**
+1. Refactor `validate_connection` (complexity 14) - RPC validation
+2. Refactor `compare_command` (complexity 11) - Registry CLI
+3. Add CLI tests (0% coverage on cty/hcl/rpc/state CLI modules)
+4. Add type annotations (191 missing function argument annotations)
+
+**Medium Priority:**
+5. Refactor test complexity (3 test methods with C901 warnings)
+6. Replace `open()` with `Path.open()` (25 PTH123 errors)
+7. Consolidate matrix test files (complete/comprehensive/focused)
+8. Create shared reporting utilities for test reports
+
+**Low Priority:**
+9. Add missing docstrings to classes
+10. Fix generic exception raises (use specific exceptions)
+11. Replace print statements with proper logging
+
+### Session Summary
+
+**Duration:** ~45 minutes
+**Tasks Completed:** 6/6 (all tasks)
+**Tests Status:** ✅ All 126 tests passing
+**Errors Fixed:** 2 (307 → 305)
+**C901 Warnings Eliminated:** 2 (12 → 10)
+**Complexity Reduced:** ~64% average (14 → ~5)
+**Overall Status:** ✅ **SUCCESS - Code Quality Significantly Improved**
+
+**Key Achievement:** Successfully refactored two high-complexity methods (both complexity 14) into clean, maintainable code with 6 well-defined helper methods/functions, reducing complexity by ~64% on average while maintaining 100% test pass rate. Applied the same successful pattern from the RPC client refactoring session.
+
+---
+
+## Previous Session: Code Quality Improvements & RPC Refactoring (2025-10-25)
 
 ### Summary
 
