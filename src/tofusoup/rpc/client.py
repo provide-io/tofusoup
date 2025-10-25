@@ -111,6 +111,150 @@ class KVClient:
         # No need to modify rpcplugin_config directly as it reads from environment
         logger.info(f"[KVClient.__init__] self.subprocess_env for plugin: {self.subprocess_env}")
 
+    def _build_tls_command_args(self) -> list[str]:
+        """Build command-line arguments for TLS configuration.
+
+        Returns:
+            List of command-line arguments for server TLS setup.
+
+        Raises:
+            ValueError: If manual TLS mode is specified without required certificates.
+        """
+        args: list[str] = ["--tls-mode", self.tls_mode]
+
+        if self.tls_mode == "auto":
+            # Both Go and Python servers support --tls-key-type and --tls-curve flags
+            args.extend(["--tls-key-type", self.tls_key_type])
+            args.extend(["--tls-curve", self.tls_curve])
+            logger.info(
+                f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}, curve: {self.tls_curve}"
+            )
+        elif self.tls_mode == "manual":
+            if self.cert_file and self.key_file:
+                args.extend(["--cert-file", self.cert_file])
+                args.extend(["--key-file", self.key_file])
+                logger.info(
+                    f"KVClient: Manual TLS enabled with cert: {self.cert_file}, key: {self.key_file}"
+                )
+            else:
+                # Fallback: try to get paths from environment variables
+                server_cert_path = os.getenv("PLUGIN_SERVER_CERT")
+                server_key_path = os.getenv("PLUGIN_SERVER_KEY")
+                if server_cert_path and server_key_path:
+                    args.extend(["--cert-file", server_cert_path])
+                    args.extend(["--key-file", server_key_path])
+                    logger.info(
+                        f"KVClient: Manual TLS enabled using env vars - cert: {server_cert_path}, key: {server_key_path}"
+                    )
+                else:
+                    logger.error("KVClient: Manual TLS mode requires cert-file and key-file")
+                    raise ValueError(
+                        "Manual TLS mode requires cert_file and key_file parameters or PLUGIN_SERVER_CERT/PLUGIN_SERVER_KEY environment variables"
+                    )
+        else:  # disabled
+            logger.info("KVClient: TLS disabled - running in insecure mode")
+
+        return args
+
+    def _build_server_command(self) -> list[str]:
+        """Build the complete server command with TLS arguments.
+
+        Returns:
+            Complete command list to start the server.
+
+        Raises:
+            FileNotFoundError: If server executable doesn't exist.
+            PermissionError: If server executable is not executable.
+        """
+        # Validate server path
+        if not os.path.exists(self.server_path):
+            raise FileNotFoundError(f"Server executable not found: {self.server_path}")
+        if not os.access(self.server_path, os.X_OK):
+            raise PermissionError(f"Server executable not executable: {self.server_path}")
+
+        server_command = [self.server_path]
+
+        # Check if binary name suggests it needs subcommands
+        binary_name = os.path.basename(self.server_path)
+        if binary_name in ["soup-go", "go-harness", "soup"]:
+            # New harnesses (both Go and Python) expect rpc server-start subcommand
+            server_command.extend(["rpc", "server-start"])
+
+        # Add TLS configuration arguments
+        server_command.extend(self._build_tls_command_args())
+
+        logger.info(f"Effective server command for plugin: {' '.join(server_command)}")
+        return server_command
+
+    def _prepare_environment(self) -> dict[str, str]:
+        """Prepare the environment variables for the server subprocess.
+
+        Returns:
+            Dictionary of environment variables for server subprocess.
+        """
+        # Start with current env (includes what tests might have monkeypatched)
+        effective_env = os.environ.copy()
+
+        # Merge KVClient's base env for plugin (e.g., GODEBUG, PYTHONUNBUFFERED)
+        effective_env.update(self.subprocess_env)
+
+        # Set up magic cookies in the server's effective_env
+        go_server_expected_cookie_key_name = "BASIC_PLUGIN"
+        go_server_expected_cookie_value = "hello"
+        effective_env["PLUGIN_MAGIC_COOKIE_KEY"] = go_server_expected_cookie_key_name
+        effective_env[go_server_expected_cookie_key_name] = go_server_expected_cookie_value
+
+        # Clean up any conflicting cookie keys
+        if (
+            "PLUGIN_MAGIC_COOKIE" in effective_env
+            and go_server_expected_cookie_key_name != "PLUGIN_MAGIC_COOKIE"
+        ):
+            del effective_env["PLUGIN_MAGIC_COOKIE"]
+
+        logger.info(
+            f"Final effective_env for subprocess will include: PLUGIN_MAGIC_COOKIE_KEY={effective_env.get('PLUGIN_MAGIC_COOKIE_KEY')}, {go_server_expected_cookie_key_name}={effective_env.get(go_server_expected_cookie_key_name)}"
+        )
+
+        return effective_env
+
+    def _build_client_config(self, env: dict[str, str]) -> dict:
+        """Build the configuration dictionary for RPCPluginClient.
+
+        Args:
+            env: Environment variables for the server subprocess.
+
+        Returns:
+            Configuration dictionary for RPCPluginClient constructor.
+        """
+        client_config = {
+            "plugins": {"kv": KVProtocol()},
+            "env": env,  # Env for the server subprocess it launches
+            "enable_mtls": self.enable_mtls,
+        }
+
+        if self.enable_mtls:
+            # Tests use GRPC_DEFAULT_* env vars for client's mTLS materials
+            client_cert_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH)
+            client_key_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH)
+            server_ca_path_env = os.getenv(ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH)
+
+            if client_cert_path_env and client_key_path_env and server_ca_path_env:
+                logger.info(
+                    "KVClient: Populating RPCPluginClient config for mTLS with paths from GRPC_DEFAULT_* env vars."
+                )
+                client_config["client_cert_path"] = client_cert_path_env
+                client_config["client_key_path"] = client_key_path_env
+                client_config["server_root_ca_path"] = server_ca_path_env
+            else:
+                logger.warning(
+                    f"KVClient: mTLS enabled for KVClient, but not all {ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH}, "
+                    f"{ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH}, or {ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH} env vars are set. "
+                    "RPCPluginClient might not establish mTLS correctly if it relies on these config paths."
+                )
+
+        logger.debug(f"KVClient: Final client_constructor_config for RPCPluginClient: {client_config}")
+        return client_config
+
     async def start(self) -> None:
         start_time = time.time()
         self.is_started = False
