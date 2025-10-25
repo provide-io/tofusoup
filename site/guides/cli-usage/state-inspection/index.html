@@ -12,13 +12,13 @@
         <meta name="author" content="provide.io">
       
       
-        <link rel="canonical" href="https://foundry.provide.io/tofusoup/guides/cli-usage/03-using-cty-and-hcl-tools/">
+        <link rel="canonical" href="https://foundry.provide.io/tofusoup/guides/cli-usage/state-inspection/">
       
       
-        <link rel="prev" href="../../migration/">
+        <link rel="prev" href="../configuration-management/">
       
       
-        <link rel="next" href="../wire-protocol/">
+        <link rel="next" href="../../testing/01-running-conformance-tests/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>CTY and HCL Tools - TofuSoup Documentation</title>
+        <title>State Inspection - TofuSoup Documentation</title>
       
     
     
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#guide-using-cty-and-hcl-tools" class="md-skip">
+        <a href="#guide-terraform-state-inspection" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CTY and HCL Tools
+              State Inspection
             
           </span>
         </div>
@@ -899,32 +899,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    CTY and HCL Tools
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../03-using-cty-and-hcl-tools/" class="md-nav__link">
         
   
   
@@ -935,101 +913,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#cty-utilities-soup-cty" class="md-nav__link">
-    <span class="md-ellipsis">
-      CTY Utilities (soup cty)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="CTY Utilities (soup cty)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#view-data-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      View Data Structure
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#convert-between-formats" class="md-nav__link">
-    <span class="md-ellipsis">
-      Convert Between Formats
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#validate-a-value-against-a-type" class="md-nav__link">
-    <span class="md-ellipsis">
-      Validate a Value Against a Type
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hcl-utilities-soup-hcl" class="md-nav__link">
-    <span class="md-ellipsis">
-      HCL Utilities (soup hcl)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="HCL Utilities (soup hcl)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#view-hcl-as-cty" class="md-nav__link">
-    <span class="md-ellipsis">
-      View HCL as CTY
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#convert-hcl-to-json-or-msgpack" class="md-nav__link">
-    <span class="md-ellipsis">
-      Convert HCL to JSON or Msgpack
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1108,10 +991,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../state-inspection/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    State Inspection
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1122,6 +1027,299 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-private-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Private State?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#show-state-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Show State Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show-only-resources-with-private-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Show Only Resources with Private State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show-specific-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      Show Specific Resource
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#include-encrypted-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Include Encrypted Data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decrypting-individual-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decrypting Individual Values
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decrypting Individual Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#output-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Formats
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validating-state-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validating State File
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-set-your-shared-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Set Your Shared Secret
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-view-state-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. View State Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-inspect-specific-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Inspect Specific Resource
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-validate-all-private-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Validate All Private State
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-provider-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Provider Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotating-encryption-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rotating Encryption Keys
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-state-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD State Verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-decryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Decryption
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-shared-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      Missing Shared Secret
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decryption-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decryption Failure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-file-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      State File Not Found
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Terraform
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1815,37 +2013,64 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cty-utilities-soup-cty" class="md-nav__link">
+  <a href="#what-is-private-state" class="md-nav__link">
     <span class="md-ellipsis">
-      CTY Utilities (soup cty)
+      What is Private State?
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="CTY Utilities (soup cty)">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#view-data-structure" class="md-nav__link">
+  <a href="#show-state-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      View Data Structure
+      Show State Overview
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#convert-between-formats" class="md-nav__link">
+  <a href="#show-only-resources-with-private-state" class="md-nav__link">
     <span class="md-ellipsis">
-      Convert Between Formats
+      Show Only Resources with Private State
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#validate-a-value-against-a-type" class="md-nav__link">
+  <a href="#show-specific-resource" class="md-nav__link">
     <span class="md-ellipsis">
-      Validate a Value Against a Type
+      Show Specific Resource
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#include-encrypted-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Include Encrypted Data
     </span>
   </a>
   
@@ -1857,28 +2082,19 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#hcl-utilities-soup-hcl" class="md-nav__link">
+  <a href="#decrypting-individual-values" class="md-nav__link">
     <span class="md-ellipsis">
-      HCL Utilities (soup hcl)
+      Decrypting Individual Values
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="HCL Utilities (soup hcl)">
+    <nav class="md-nav" aria-label="Decrypting Individual Values">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#view-hcl-as-cty" class="md-nav__link">
+  <a href="#output-formats" class="md-nav__link">
     <span class="md-ellipsis">
-      View HCL as CTY
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#convert-hcl-to-json-or-msgpack" class="md-nav__link">
-    <span class="md-ellipsis">
-      Convert HCL to JSON or Msgpack
+      Output Formats
     </span>
   </a>
   
@@ -1886,6 +2102,186 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validating-state-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validating State File
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-set-your-shared-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Set Your Shared Secret
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-view-state-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. View State Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-inspect-specific-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Inspect Specific Resource
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-validate-all-private-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Validate All Private State
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Use Cases
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-provider-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Provider Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotating-encryption-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rotating Encryption Keys
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-state-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD State Verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-decryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Decryption
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-shared-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      Missing Shared Secret
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decryption-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decryption Failure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-file-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      State File Not Found
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Terraform
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
   
 </li>
       
@@ -1908,40 +2304,219 @@
   
 
 
-<h1 id="guide-using-cty-and-hcl-tools">Guide: Using CTY and HCL Tools<a class="headerlink" href="#guide-using-cty-and-hcl-tools" title="Permanent link">&para;</a></h1>
-<p>TofuSoup provides powerful command-line utilities for inspecting, converting, and validating CTY and HCL data formats.</p>
-<h2 id="cty-utilities-soup-cty">CTY Utilities (<code>soup cty</code>)<a class="headerlink" href="#cty-utilities-soup-cty" title="Permanent link">&para;</a></h2>
-<h3 id="view-data-structure">View Data Structure<a class="headerlink" href="#view-data-structure" title="Permanent link">&para;</a></h3>
-<p>To view the CTY structure of a JSON, Msgpack, or HCL data file, use <code>soup cty view</code>. The output is a rich, colorized tree that shows the inferred CTY type and value.</p>
-<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>cty<span class="w"> </span>view<span class="w"> </span>data.json
-soup<span class="w"> </span>cty<span class="w"> </span>view<span class="w"> </span>config.tfvars<span class="w"> </span>--format<span class="w"> </span>hcl
+<h1 id="guide-terraform-state-inspection">Guide: Terraform State Inspection<a class="headerlink" href="#guide-terraform-state-inspection" title="Permanent link">&para;</a></h1>
+<p>TofuSoup provides tools for inspecting Terraform state files, including support for decrypting private state data stored by Pyvider providers.</p>
+<h2 id="what-is-private-state">What is Private State?<a class="headerlink" href="#what-is-private-state" title="Permanent link">&para;</a></h2>
+<p>Terraform providers can store sensitive data in "private state" - encrypted attributes that aren't visible in regular Terraform state inspection tools. Pyvider providers use this feature to securely store credentials, tokens, and other sensitive data.</p>
+<p>TofuSoup's <code>soup state</code> commands can decrypt and display this private state data when you have the appropriate decryption key.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p>To decrypt private state, you need:</p>
+<ol>
+<li>
+<p><strong>Shared Secret</strong>: Set via environment variable
+   <div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_PRIVATE_STATE_SHARED_SECRET</span><span class="o">=</span><span class="s2">&quot;your-secret-key&quot;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>State File</strong>: A Terraform state file (typically <code>terraform.tfstate</code>)</p>
+</li>
+</ol>
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
+<h3 id="show-state-overview">Show State Overview<a class="headerlink" href="#show-state-overview" title="Permanent link">&para;</a></h3>
+<p>Display an overview of all resources in a state file:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>show
 </code></pre></div>
-<h3 id="convert-between-formats">Convert Between Formats<a class="headerlink" href="#convert-between-formats" title="Permanent link">&para;</a></h3>
-<p>To convert files between CTY-compatible JSON and Msgpack, use <code>soup cty convert</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Convert JSON to MessagePack</span>
-soup<span class="w"> </span>cty<span class="w"> </span>convert<span class="w"> </span>input.json<span class="w"> </span>output.msgpack
+<p>By default, this reads <code>terraform.tfstate</code> in the current directory.</p>
+<p>You can specify a different state file:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>path/to/terraform.tfstate
 </code></pre></div>
-<h3 id="validate-a-value-against-a-type">Validate a Value Against a Type<a class="headerlink" href="#validate-a-value-against-a-type" title="Permanent link">&para;</a></h3>
-<p>You can validate a CTY value (as a JSON string) against a CTY type string using the <code>soup-go</code> harness. This is useful for checking type compatibility.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Validate a simple string</span>
-soup<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span><span class="s1">&#39;&quot;hello&quot;&#39;</span><span class="w"> </span>--type-string<span class="w"> </span>string
+<h3 id="show-only-resources-with-private-state">Show Only Resources with Private State<a class="headerlink" href="#show-only-resources-with-private-state" title="Permanent link">&para;</a></h3>
+<p>Filter to only resources that contain private state:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--private-only
+</code></pre></div>
+<h3 id="show-specific-resource">Show Specific Resource<a class="headerlink" href="#show-specific-resource" title="Permanent link">&para;</a></h3>
+<p>Display detailed information about a specific resource:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--resource<span class="w"> </span>pyvider_timed_token.example
+</code></pre></div>
+<p>Format: <code>&lt;resource_type&gt;.&lt;resource_name&gt;</code></p>
+<h3 id="include-encrypted-data">Include Encrypted Data<a class="headerlink" href="#include-encrypted-data" title="Permanent link">&para;</a></h3>
+<p>Show both decrypted and encrypted versions of private state:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--show-encrypted
+</code></pre></div>
+<p>This is useful for debugging encryption issues or verifying that decryption is working correctly.</p>
+<h2 id="decrypting-individual-values">Decrypting Individual Values<a class="headerlink" href="#decrypting-individual-values" title="Permanent link">&para;</a></h2>
+<p>Decrypt a single base64-encoded private state string:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>decrypt<span class="w"> </span><span class="s2">&quot;PaDuMfrlCnnhZsKb...&quot;</span>
+</code></pre></div>
+<h3 id="output-formats">Output Formats<a class="headerlink" href="#output-formats" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># JSON output (default)</span>
+soup<span class="w"> </span>state<span class="w"> </span>decrypt<span class="w"> </span><span class="s2">&quot;PaDuMfrlCnnhZsKb...&quot;</span><span class="w"> </span>--format<span class="w"> </span>json
 
-<span class="c1"># Validate a list of numbers</span>
-soup<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>--type-string<span class="w"> </span><span class="s2">&quot;list(number)&quot;</span>
+<span class="c1"># Raw output</span>
+soup<span class="w"> </span>state<span class="w"> </span>decrypt<span class="w"> </span><span class="s2">&quot;PaDuMfrlCnnhZsKb...&quot;</span><span class="w"> </span>--format<span class="w"> </span>raw
+</code></pre></div>
+<h2 id="validating-state-file">Validating State File<a class="headerlink" href="#validating-state-file" title="Permanent link">&para;</a></h2>
+<p>Check that all private state in a state file can be successfully decrypted:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>validate
+soup<span class="w"> </span>state<span class="w"> </span>validate<span class="w"> </span>path/to/terraform.tfstate
+</code></pre></div>
+<p>This command:
+- Scans all resources in the state file
+- Attempts to decrypt any private state data
+- Reports any decryption failures
+- Returns exit code 0 if all validations pass</p>
+<h2 id="example-workflow">Example Workflow<a class="headerlink" href="#example-workflow" title="Permanent link">&para;</a></h2>
+<h3 id="1-set-your-shared-secret">1. Set Your Shared Secret<a class="headerlink" href="#1-set-your-shared-secret" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_PRIVATE_STATE_SHARED_SECRET</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>cat<span class="w"> </span>.secrets/private-state-key<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+<h3 id="2-view-state-overview">2. View State Overview<a class="headerlink" href="#2-view-state-overview" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>show
+</code></pre></div>
+<p>Output:
+<div class="highlight"><pre><span></span><code>📋 Terraform State: terraform.tfstate
 
-<span class="c1"># Validate an object</span>
-soup<span class="w"> </span>cty<span class="w"> </span>validate-value<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;tofu&quot;,&quot;age&quot;:1}&#39;</span><span class="w"> </span>--type-string<span class="w"> </span><span class="s2">&quot;object({name=string,age=number})&quot;</span>
+Resources with Private State:
+├── pyvider_timed_token.api_token
+├── pyvider_credential.database
+└── pyvider_secret.api_key
+
+Total Resources: 15
+Resources with Private State: 3
+</code></pre></div></p>
+<h3 id="3-inspect-specific-resource">3. Inspect Specific Resource<a class="headerlink" href="#3-inspect-specific-resource" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--resource<span class="w"> </span>pyvider_timed_token.api_token
 </code></pre></div>
-<h2 id="hcl-utilities-soup-hcl">HCL Utilities (<code>soup hcl</code>)<a class="headerlink" href="#hcl-utilities-soup-hcl" title="Permanent link">&para;</a></h2>
-<h3 id="view-hcl-as-cty">View HCL as CTY<a class="headerlink" href="#view-hcl-as-cty" title="Permanent link">&para;</a></h3>
-<p>To parse an HCL file (like a <code>.tf</code> or <code>.tfvars</code> file) and display its structure as a CTY representation, use <code>soup hcl view</code>.</p>
-<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>hcl<span class="w"> </span>view<span class="w"> </span>main.tf
+<p>Output:
+<div class="highlight"><pre><span></span><code>🔍 Resource: pyvider_timed_token.api_token
+
+Public Attributes:
+├── id: &quot;token-12345&quot;
+├── expiry: &quot;2025-12-31T23:59:59Z&quot;
+└── created_at: &quot;2025-01-01T00:00:00Z&quot;
+
+Private State (Decrypted):
+├── token_value: &quot;sk-proj-abc123...&quot;
+├── refresh_token: &quot;rt-xyz789...&quot;
+└── encryption_metadata:
+    ├── algorithm: &quot;AES-256-GCM&quot;
+    └── key_id: &quot;key-001&quot;
+</code></pre></div></p>
+<h3 id="4-validate-all-private-state">4. Validate All Private State<a class="headerlink" href="#4-validate-all-private-state" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>state<span class="w"> </span>validate
 </code></pre></div>
-<h3 id="convert-hcl-to-json-or-msgpack">Convert HCL to JSON or Msgpack<a class="headerlink" href="#convert-hcl-to-json-or-msgpack" title="Permanent link">&para;</a></h3>
-<p>To convert an HCL file to a more portable format, use <code>soup hcl convert</code>. This implicitly uses CTY as the intermediate representation.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Convert HCL to JSON</span>
-soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> </span>network.tf<span class="w"> </span>network.json
+<p>Output:
+<div class="highlight"><pre><span></span><code>✅ All private state validated successfully
+- pyvider_timed_token.api_token: OK
+- pyvider_credential.database: OK
+- pyvider_secret.api_key: OK
+</code></pre></div></p>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
+<h3 id="debugging-provider-issues">Debugging Provider Issues<a class="headerlink" href="#debugging-provider-issues" title="Permanent link">&para;</a></h3>
+<p>When troubleshooting provider problems, inspect the state to verify what's stored:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># See all private state</span>
+soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--private-only
+
+<span class="c1"># Check specific resource</span>
+soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--resource<span class="w"> </span>pyvider_credential.db_creds
 </code></pre></div>
+<h3 id="rotating-encryption-keys">Rotating Encryption Keys<a class="headerlink" href="#rotating-encryption-keys" title="Permanent link">&para;</a></h3>
+<p>When rotating private state encryption keys:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Validate with old key</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_PRIVATE_STATE_SHARED_SECRET</span><span class="o">=</span><span class="s2">&quot;old-key&quot;</span>
+soup<span class="w"> </span>state<span class="w"> </span>validate
+
+<span class="c1"># After rotation, validate with new key</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_PRIVATE_STATE_SHARED_SECRET</span><span class="o">=</span><span class="s2">&quot;new-key&quot;</span>
+soup<span class="w"> </span>state<span class="w"> </span>validate
+</code></pre></div>
+<h3 id="cicd-state-verification">CI/CD State Verification<a class="headerlink" href="#cicd-state-verification" title="Permanent link">&para;</a></h3>
+<p>In CI/CD pipelines, verify state file integrity:</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="nb">set</span><span class="w"> </span>-e
+
+<span class="c1"># Load secret from CI secrets</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_PRIVATE_STATE_SHARED_SECRET</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CI_PRIVATE_STATE_KEY</span><span class="s2">&quot;</span>
+
+<span class="c1"># Validate state</span>
+soup<span class="w"> </span>state<span class="w"> </span>validate<span class="w"> </span>terraform.tfstate
+
+<span class="c1"># Show summary</span>
+soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--private-only
+</code></pre></div>
+<h3 id="manual-decryption">Manual Decryption<a class="headerlink" href="#manual-decryption" title="Permanent link">&para;</a></h3>
+<p>Decrypt individual values from logs or debug output:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># From provider logs</span>
+soup<span class="w"> </span>state<span class="w"> </span>decrypt<span class="w"> </span><span class="s2">&quot;eyJhbGciOiJkaXIi...&quot;</span>
+
+<span class="c1"># Save to file</span>
+soup<span class="w"> </span>state<span class="w"> </span>decrypt<span class="w"> </span><span class="s2">&quot;eyJhbGciOiJkaXIi...&quot;</span><span class="w"> </span>--format<span class="w"> </span>raw<span class="w"> </span>&gt;<span class="w"> </span>decrypted.txt
+</code></pre></div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="missing-shared-secret">Missing Shared Secret<a class="headerlink" href="#missing-shared-secret" title="Permanent link">&para;</a></h3>
+<p><strong>Error</strong>: <code>PYVIDER_PRIVATE_STATE_SHARED_SECRET not set</code></p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_PRIVATE_STATE_SHARED_SECRET</span><span class="o">=</span><span class="s2">&quot;your-key&quot;</span>
+</code></pre></div></p>
+<h3 id="decryption-failure">Decryption Failure<a class="headerlink" href="#decryption-failure" title="Permanent link">&para;</a></h3>
+<p><strong>Error</strong>: <code>Failed to decrypt private state</code></p>
+<p><strong>Possible causes</strong>:
+1. Wrong shared secret
+2. Corrupted encrypted data
+3. Incompatible encryption version</p>
+<p><strong>Debug steps</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Try showing encrypted data</span>
+soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--show-encrypted
+
+<span class="c1"># Validate state file</span>
+soup<span class="w"> </span>state<span class="w"> </span>validate
+
+<span class="c1"># Check provider logs</span>
+terraform<span class="w"> </span>plan
+</code></pre></div></p>
+<h3 id="state-file-not-found">State File Not Found<a class="headerlink" href="#state-file-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Error</strong>: <code>State file not found: terraform.tfstate</code></p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Specify full path</span>
+soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>/path/to/terraform.tfstate
+
+<span class="c1"># Or change directory</span>
+<span class="nb">cd</span><span class="w"> </span>/path/to/terraform/project
+soup<span class="w"> </span>state<span class="w"> </span>show
+</code></pre></div></p>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Protect Your Shared Secret</strong>: Never commit <code>PYVIDER_PRIVATE_STATE_SHARED_SECRET</code> to version control</p>
+</li>
+<li>
+<p><strong>Secure State Files</strong>: Terraform state files contain sensitive data, even without private state</p>
+</li>
+<li>
+<p><strong>Use Remote State</strong>: Consider using remote state backends with encryption at rest</p>
+</li>
+<li>
+<p><strong>Rotate Keys Regularly</strong>: Periodically rotate your private state encryption keys</p>
+</li>
+<li>
+<p><strong>Limit Access</strong>: Restrict who can decrypt private state in production environments</p>
+</li>
+</ol>
+<h2 id="integration-with-terraform">Integration with Terraform<a class="headerlink" href="#integration-with-terraform" title="Permanent link">&para;</a></h2>
+<p>TofuSoup's state inspection works alongside standard Terraform commands:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Standard Terraform state inspection</span>
+terraform<span class="w"> </span>state<span class="w"> </span>list
+terraform<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>pyvider_timed_token.example
+
+<span class="c1"># TofuSoup private state inspection</span>
+soup<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span>--resource<span class="w"> </span>pyvider_timed_token.example
+</code></pre></div>
+<p>Use <code>terraform state</code> for public attributes and <code>soup state</code> for private state data.</p>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/provide-io/pyvider">Pyvider Documentation</a> - Provider framework with private state support</li>
+<li><a href="https://www.terraform.io/docs/language/state/index.html">Terraform State</a> - Official Terraform state documentation</li>
+<li><a href="../../../troubleshooting/">Troubleshooting</a> - Common issues and solutions</li>
+</ul>
 
 
 
@@ -1979,7 +2554,7 @@ soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> <
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../migration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Migration Guide">
+          <a href="../configuration-management/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Configuration Management">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1989,20 +2564,20 @@ soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> <
                 Previous
               </span>
               <div class="md-ellipsis">
-                Migration Guide
+                Configuration Management
               </div>
             </div>
           </a>
         
         
           
-          <a href="../wire-protocol/" class="md-footer__link md-footer__link--next" aria-label="Next: Wire Protocol">
+          <a href="../../testing/01-running-conformance-tests/" class="md-footer__link md-footer__link--next" aria-label="Next: Running Conformance Tests">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Wire Protocol
+                Running Conformance Tests
               </div>
             </div>
             <div class="md-footer__button md-icon">
