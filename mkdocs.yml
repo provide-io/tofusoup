@@ -115,9 +115,26 @@ extra_javascript:
 
 nav:
   - Home: index.md
+
   - Getting Started:
-    - Configuration: CONFIGURATION.md
-  - Architecture:
+    - What is TofuSoup?: getting-started/what-is-tofusoup.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quick-start.md
+
+  - Core Concepts:
+    - Architecture: core-concepts/architecture.md
+    - Conformance Testing: core-concepts/conformance-testing.md
+
+  - Guides:
+    - CLI Usage:
+      - CTY and HCL Tools: guides/cli-usage/03-using-cty-and-hcl-tools.md
+      - Wire Protocol: guides/cli-usage/wire-protocol.md
+      - Matrix Testing: guides/cli-usage/matrix-testing.md
+    - Testing:
+      - Running Conformance Tests: guides/testing/01-running-conformance-tests.md
+      - Test Harness Development: guides/testing/test-harness-development.md
+
+  - Architecture Details:
     - Overview: architecture/01-overview.md
     - Conformance Testing Strategy: architecture/02-conformance-testing-strategy.md
     - RPC Matrix Specification: architecture/03-rpc-matrix-specification.md
@@ -125,14 +142,17 @@ nav:
     - Polyglot CLI Strategy: architecture/06-polyglot-cli-strategy.md
     - Stock Service Design: architecture/07-stock-service-design.md
     - soup-go vs Terraform: architecture/soup-go-vs-terraform.md
-  - Guides:
-    - Running Conformance Tests: guides/01-running-conformance-tests.md
-    - Managing Language CLIs: guides/02-managing-language-clis.md
-    - Using CTY and HCL Tools: guides/03-using-cty-and-hcl-tools.md
-    - Matrix Testing with Stir: guides/05-matrix-testing-with-stir.md
-  - Testing:
+
+  - Reference:
+    - Configuration: reference/configuration.md
+    - Compatibility Matrix: reference/compatibility-matrix.md
+    - API: reference/api/index.md
+
+  - Testing Status:
     - Conformance Test Status: testing/conformance-test-status.md
     - Cross-Language Compatibility: testing/cross-language-compatibility.md
-    - RPC Compatibility Matrix: rpc-compatibility-matrix.md
-  - API Reference: api/index.md
+
+  - FAQ: faq.md
+  - Troubleshooting: troubleshooting.md
+  - Glossary: glossary.md
   - Changelog: CHANGELOG.md

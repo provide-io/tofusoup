@@ -9,15 +9,19 @@
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/tofusoup/CONFIGURATION/</loc>
+         <loc>https://foundry.provide.io/tofusoup/PHASE_1_FINDINGS/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/tofusoup/rpc-compatibility-matrix/</loc>
+         <loc>https://foundry.provide.io/tofusoup/faq/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/tofusoup/api/</loc>
+         <loc>https://foundry.provide.io/tofusoup/glossary/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/troubleshooting/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
@@ -49,19 +53,55 @@
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/tofusoup/guides/01-running-conformance-tests/</loc>
+         <loc>https://foundry.provide.io/tofusoup/core-concepts/architecture/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/tofusoup/guides/02-managing-language-clis/</loc>
+         <loc>https://foundry.provide.io/tofusoup/core-concepts/conformance-testing/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/tofusoup/guides/03-using-cty-and-hcl-tools/</loc>
+         <loc>https://foundry.provide.io/tofusoup/getting-started/installation/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/tofusoup/guides/05-matrix-testing-with-stir/</loc>
+         <loc>https://foundry.provide.io/tofusoup/getting-started/quick-start/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/getting-started/what-is-tofusoup/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/guides/cli-usage/03-using-cty-and-hcl-tools/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/guides/cli-usage/matrix-testing/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/guides/cli-usage/wire-protocol/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/guides/testing/01-running-conformance-tests/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/guides/testing/test-harness-development/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/reference/compatibility-matrix/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/reference/configuration/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/tofusoup/reference/api/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>

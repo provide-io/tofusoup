@@ -147,8 +147,8 @@ $ soup harness verify-cli go-cty
 ## Documentation Structure
 
 - **[Architecture](architecture/01-overview.md)**: System design and architecture
-- **[Guides](guides/01-running-conformance-tests.md)**: Step-by-step tutorials
-- **[Configuration](CONFIGURATION.md)**: soup.toml configuration reference
+- **[Guides](guides/testing/01-running-conformance-tests.md)**: Step-by-step tutorials
+- **[Configuration](reference/configuration.md)**: soup.toml configuration reference
 - **[Testing](testing/conformance-test-status.md)**: Testing documentation
 
 ## Core Capabilities
@@ -204,7 +204,7 @@ Pytest-based conformance test suites:
 - Wire protocol encoding/decoding
 - RPC communication validation
 
-**See:** `soup test --help` and [Running Conformance Tests](guides/01-running-conformance-tests.md)
+**See:** `soup test --help` and [Running Conformance Tests](guides/testing/01-running-conformance-tests.md)
 
 ### Matrix Testing (Stir)
 
@@ -215,7 +215,7 @@ Test providers across multiple tool versions:
 - Version matrix configuration
 - Automated test reporting
 
-**See:** `soup stir --help` and [Matrix Testing Guide](guides/05-matrix-testing-with-stir.md)
+**See:** `soup stir --help` and [Matrix Testing Guide](guides/cli-usage/matrix-testing.md)
 
 ### Registry Operations
 
@@ -248,7 +248,7 @@ parallel_jobs = 4
 timeout_minutes = 30
 ```
 
-**See:** [Configuration Documentation](CONFIGURATION.md)
+**See:** [Configuration Documentation](reference/configuration.md)
 
 ## Development
 
