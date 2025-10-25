@@ -81,7 +81,7 @@ Ensure Python's bin directory is in your PATH. See [Installation Troubleshooting
 
 ### How do I contribute to TofuSoup?
 
-See [Contributing Guidelines](contributing/guidelines.md).
+See [CONTRIBUTING.md](https://github.com/provide-io/tofusoup/blob/main/CONTRIBUTING.md).
 
 ### How do I add a new conformance test?
 

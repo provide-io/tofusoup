@@ -12,13 +12,13 @@
         <meta name="author" content="provide.io">
       
       
-        <link rel="canonical" href="https://foundry.provide.io/tofusoup/architecture/02-conformance-testing-strategy/">
+        <link rel="canonical" href="https://foundry.provide.io/tofusoup/getting-started/quick-start/">
       
       
-        <link rel="prev" href="../01-overview/">
+        <link rel="prev" href="../installation/">
       
       
-        <link rel="next" href="../03-rpc-matrix-specification/">
+        <link rel="next" href="../../core-concepts/architecture/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Conformance Testing Strategy - TofuSoup Documentation</title>
+        <title>Quick Start - TofuSoup Documentation</title>
       
     
     
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#conformance-testing-strategy" class="md-skip">
+        <a href="#quick-start" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Conformance Testing Strategy
+              Quick Start
             
           </span>
         </div>
@@ -244,11 +244,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../getting-started/what-is-tofusoup/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../what-is-tofusoup/" class="md-tabs__link">
           
   
   
@@ -320,13 +322,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../01-overview/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../architecture/01-overview/" class="md-tabs__link">
           
   
   
@@ -537,8 +537,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -552,21 +554,22 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -579,7 +582,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Getting Started
@@ -593,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/what-is-tofusoup/" class="md-nav__link">
+      <a href="../what-is-tofusoup/" class="md-nav__link">
         
   
   
@@ -616,7 +619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -636,10 +639,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../getting-started/quick-start/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -650,6 +675,224 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#your-first-tofusoup-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Your First TofuSoup Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Your First TofuSoup Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-check-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Check Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-explore-available-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Explore Available Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-work-with-cty-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Work with CTY Values
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-test-wire-protocol-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Test Wire Protocol Encoding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-run-conformance-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Run Conformance Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-build-a-test-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Build a Test Harness
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-matrix-testing-with-stir" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Matrix Testing with Stir
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testing-a-provider-across-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing a Provider Across Versions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validating-cty-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validating CTY Compatibility
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-with-hcl" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with HCL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registry-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registry Operations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Next Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#learn-core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Learn Core Concepts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#follow-detailed-guides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Follow Detailed Guides
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Help
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1063,10 +1306,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1088,22 +1329,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -1116,7 +1356,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Architecture Details
@@ -1130,7 +1370,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../01-overview/" class="md-nav__link">
+      <a href="../../architecture/01-overview/" class="md-nav__link">
         
   
   
@@ -1150,32 +1390,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Conformance Testing Strategy
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../architecture/02-conformance-testing-strategy/" class="md-nav__link">
         
   
   
@@ -1186,68 +1404,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#testing-philosophy-souptest-vs-pytest" class="md-nav__link">
-    <span class="md-ellipsis">
-      Testing Philosophy: souptest vs. pytest
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architectural-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      Architectural Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architectural Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#design-principles" class="md-nav__link">
-    <span class="md-ellipsis">
-      Design Principles
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#directory-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      Directory Structure
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1260,7 +1416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-rpc-matrix-specification/" class="md-nav__link">
+      <a href="../../architecture/03-rpc-matrix-specification/" class="md-nav__link">
         
   
   
@@ -1283,7 +1439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-wire-protocol-details/" class="md-nav__link">
+      <a href="../../architecture/05-wire-protocol-details/" class="md-nav__link">
         
   
   
@@ -1306,7 +1462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../06-polyglot-cli-strategy/" class="md-nav__link">
+      <a href="../../architecture/06-polyglot-cli-strategy/" class="md-nav__link">
         
   
   
@@ -1329,7 +1485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-stock-service-design/" class="md-nav__link">
+      <a href="../../architecture/07-stock-service-design/" class="md-nav__link">
         
   
   
@@ -1352,7 +1508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../soup-go-vs-terraform/" class="md-nav__link">
+      <a href="../../architecture/soup-go-vs-terraform/" class="md-nav__link">
         
   
   
@@ -1711,37 +1867,82 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#testing-philosophy-souptest-vs-pytest" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
-      Testing Philosophy: souptest vs. pytest
+      Prerequisites
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architectural-design" class="md-nav__link">
+  <a href="#your-first-tofusoup-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      Architectural Design
+      Your First TofuSoup Commands
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Architectural Design">
+    <nav class="md-nav" aria-label="Your First TofuSoup Commands">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#design-principles" class="md-nav__link">
+  <a href="#1-check-installation" class="md-nav__link">
     <span class="md-ellipsis">
-      Design Principles
+      1. Check Installation
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#directory-structure" class="md-nav__link">
+  <a href="#2-explore-available-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      Directory Structure
+      2. Explore Available Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-work-with-cty-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Work with CTY Values
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-test-wire-protocol-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Test Wire Protocol Encoding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-run-conformance-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Run Conformance Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-build-a-test-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Build a Test Harness
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-matrix-testing-with-stir" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Matrix Testing with Stir
     </span>
   </a>
   
@@ -1749,6 +1950,117 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testing-a-provider-across-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing a Provider Across Versions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validating-cty-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validating CTY Compatibility
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-with-hcl" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with HCL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registry-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registry Operations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Next Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#learn-core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Learn Core Concepts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#follow-detailed-guides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Follow Detailed Guides
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Help
+    </span>
+  </a>
   
 </li>
       
@@ -1771,49 +2083,156 @@
   
 
 
-<h1 id="conformance-testing-strategy">Conformance Testing Strategy<a class="headerlink" href="#conformance-testing-strategy" title="Permanent link">&para;</a></h1>
-<p>This document outlines the architecture for the TofuSoup conformance testing suite.</p>
-<h2 id="testing-philosophy-souptest-vs-pytest">Testing Philosophy: <code>souptest</code> vs. <code>pytest</code><a class="headerlink" href="#testing-philosophy-souptest-vs-pytest" title="Permanent link">&para;</a></h2>
-<p>A core distinction in this project is the separation of concerns in testing:
--   <strong>Conformance Tests (<code>souptest_*.py</code>)</strong>: These tests, located in <code>tofusoup/conformance/</code>, are for verifying <strong>cross-language compatibility</strong>. They compare the behavior of Python implementations against the canonical Go harnesses. They are run via the <code>soup test</code> command.
--   <strong>Internal Tests (<code>test_*.py</code>)</strong>: These are standard unit and integration tests for the <code>tofusoup</code> tool <strong>itself</strong>. They are located in <code>tofusoup/tests/</code> and are run using <code>pytest</code> directly.</p>
-<h2 id="architectural-design">Architectural Design<a class="headerlink" href="#architectural-design" title="Permanent link">&para;</a></h2>
-<p>The conformance suite is organized into a hierarchical and purpose-driven structure to ensure clarity, prevent duplication, and provide a scalable foundation for comprehensive testing.</p>
-<h3 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Hierarchical Organization</strong>: Reflect test complexity and dependencies.</li>
-<li><strong>Cross-Cutting Separation</strong>: Create dedicated areas for security, performance, and integration.</li>
-<li><strong>Single Source of Truth</strong>: Eliminate duplication in test scenarios and fixtures.</li>
-<li><strong>Clear Purpose</strong>: Each directory has an explicit, non-overlapping responsibility.</li>
-</ol>
-<h3 id="directory-structure">Directory Structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>conformance/
-├── README.md                           # Testing strategy and execution guide
-├── conftest.py                         # Global fixtures and matrix configurations
-│
-├── unit/                               # Individual protocol conformance
-│   ├── souptest_cty_conformance.py
-│   ├── souptest_wire_conformance.py
-│   └── souptest_rpc_conformance.py
-│
-├── integration/                        # Cross-protocol integration testing
-│   ├── souptest_full_stack_matrix.py      # Complete CTY→Wire→RPC flow
-│   └── souptest_provider_lifecycle.py     # Full Terraform provider scenarios
-│
-├── security/                           # Security-focused conformance
-│   └── souptest_crypto_matrix.py          # All cipher/curve combinations
-│
-├── scenarios/                          # End-to-end BDD-style scenario testing
-│   ├── terraform_equivalence/
-│   │   ├── basic_operations.feature
-│   │   └── step_definitions/
-│   └── souptest_scenario_runner.py
-│
-└── fixtures/                           # Shared test data and configuration
-    ├── cty_data/
-    └── certificates/
+<h1 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h1>
+<p>Get up and running with TofuSoup in minutes.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>TofuSoup installed (see <a href="../installation/">Installation</a>)</li>
+<li>Python 3.11+</li>
+<li>Go 1.21+ (for harness operations)</li>
+</ul>
+<h2 id="your-first-tofusoup-commands">Your First TofuSoup Commands<a class="headerlink" href="#your-first-tofusoup-commands" title="Permanent link">&para;</a></h2>
+<h3 id="1-check-installation">1. Check Installation<a class="headerlink" href="#1-check-installation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>--version
 </code></pre></div>
-<p>This architecture provides a robust framework for implementing matrix-based testing and ensuring systematic validation of TofuSoup components against their canonical Go counterparts.</p>
+<p>Expected output:
+<div class="highlight"><pre><span></span><code>soup, version 0.0.11
+</code></pre></div></p>
+<h3 id="2-explore-available-commands">2. Explore Available Commands<a class="headerlink" href="#2-explore-available-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>--help
+</code></pre></div>
+<p>You'll see commands organized by functionality:
+- <code>cty</code> - CTY operations
+- <code>hcl</code> - HCL operations
+- <code>wire</code> - Wire protocol operations
+- <code>rpc</code> - RPC testing
+- <code>test</code> - Conformance tests
+- <code>stir</code> - Matrix testing
+- <code>registry</code> - Registry operations
+- <code>harness</code> - Test harness management</p>
+<h3 id="3-work-with-cty-values">3. Work with CTY Values<a class="headerlink" href="#3-work-with-cty-values" title="Permanent link">&para;</a></h3>
+<p>Create a simple JSON file:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;value&quot;: &quot;hello&quot;, &quot;type&quot;: &quot;string&quot;}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>test.json
+</code></pre></div>
+<p>View it as a CTY structure:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>cty<span class="w"> </span>view<span class="w"> </span>test.json
+</code></pre></div>
+<h3 id="4-test-wire-protocol-encoding">4. Test Wire Protocol Encoding<a class="headerlink" href="#4-test-wire-protocol-encoding" title="Permanent link">&para;</a></h3>
+<p>Encode a value to Terraform's wire format:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>wire<span class="w"> </span>encode<span class="w"> </span>test.json<span class="w"> </span>test.tfw.b64
+</code></pre></div>
+<p>Decode it back:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>wire<span class="w"> </span>decode<span class="w"> </span>test.tfw.b64<span class="w"> </span>decoded.json
+cat<span class="w"> </span>decoded.json
+</code></pre></div>
+<h3 id="5-run-conformance-tests">5. Run Conformance Tests<a class="headerlink" href="#5-run-conformance-tests" title="Permanent link">&para;</a></h3>
+<p>Run CTY conformance tests:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>cty
+</code></pre></div>
+<p>This validates that Python and Go implementations produce identical results.</p>
+<h3 id="6-build-a-test-harness">6. Build a Test Harness<a class="headerlink" href="#6-build-a-test-harness" title="Permanent link">&para;</a></h3>
+<p>List available harnesses:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>harness<span class="w"> </span>list
+</code></pre></div>
+<p>Build the Go harness:</p>
+<div class="highlight"><pre><span></span><code>soup<span class="w"> </span>harness<span class="w"> </span>build<span class="w"> </span>soup-go
+</code></pre></div>
+<h3 id="7-matrix-testing-with-stir">7. Matrix Testing with Stir<a class="headerlink" href="#7-matrix-testing-with-stir" title="Permanent link">&para;</a></h3>
+<p>If you have Terraform test cases:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a test directory</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>my_tests/basic
+<span class="nb">cd</span><span class="w"> </span>my_tests/basic
+
+<span class="c1"># Create main.tf</span>
+cat<span class="w"> </span>&gt;<span class="w"> </span>main.tf<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">terraform {</span>
+<span class="s">  required_version = &quot;&gt;= 1.0&quot;</span>
+<span class="s">}</span>
+
+<span class="s">output &quot;test&quot; {</span>
+<span class="s">  value = &quot;hello world&quot;</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+
+<span class="c1"># Run tests</span>
+<span class="nb">cd</span><span class="w"> </span>..
+soup<span class="w"> </span>stir<span class="w"> </span>basic/
+</code></pre></div>
+<h2 id="common-workflows">Common Workflows<a class="headerlink" href="#common-workflows" title="Permanent link">&para;</a></h2>
+<h3 id="testing-a-provider-across-versions">Testing a Provider Across Versions<a class="headerlink" href="#testing-a-provider-across-versions" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Configure matrix in soup.toml</span>
+cat<span class="w"> </span>&gt;<span class="w"> </span>soup.toml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">[workenv.matrix.versions]</span>
+<span class="s">terraform = [&quot;1.5.7&quot;, &quot;1.6.0&quot;]</span>
+<span class="s">tofu = [&quot;1.8.0&quot;, &quot;1.9.0&quot;]</span>
+<span class="s">EOF</span>
+
+<span class="c1"># Run matrix tests</span>
+soup<span class="w"> </span>stir<span class="w"> </span>my_provider_tests/<span class="w"> </span>--matrix
+</code></pre></div>
+<h3 id="validating-cty-compatibility">Validating CTY Compatibility<a class="headerlink" href="#validating-cty-compatibility" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Test Python implementation against Go reference</span>
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>cty<span class="w"> </span>-v
+
+<span class="c1"># Check wire protocol compatibility</span>
+soup<span class="w"> </span><span class="nb">test</span><span class="w"> </span>wire<span class="w"> </span>-v
+</code></pre></div>
+<h3 id="working-with-hcl">Working with HCL<a class="headerlink" href="#working-with-hcl" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># View HCL structure</span>
+soup<span class="w"> </span>hcl<span class="w"> </span>view<span class="w"> </span>main.tf
+
+<span class="c1"># Convert HCL to JSON</span>
+soup<span class="w"> </span>hcl<span class="w"> </span>convert<span class="w"> </span>main.tf<span class="w"> </span>main.json
+</code></pre></div>
+<h3 id="registry-operations">Registry Operations<a class="headerlink" href="#registry-operations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Search for a provider</span>
+soup<span class="w"> </span>registry<span class="w"> </span>search<span class="w"> </span>provider<span class="w"> </span>aws
+
+<span class="c1"># Get provider details</span>
+soup<span class="w"> </span>registry<span class="w"> </span>info<span class="w"> </span>hashicorp/aws
+
+<span class="c1"># Launch interactive browser</span>
+soup<span class="w"> </span>sui
+</code></pre></div>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<p>Create <code>soup.toml</code> in your project:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[global_settings]</span>
+<span class="n">default_python_log_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span>
+
+<span class="k">[harness_defaults.go]</span>
+<span class="n">build_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">]</span>
+
+<span class="k">[workenv.matrix.versions]</span>
+<span class="n">terraform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;1.6.0&quot;</span><span class="p">]</span>
+<span class="n">tofu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;1.8.0&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>See <a href="../../reference/configuration/">Configuration Reference</a> for all options.</p>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h3 id="learn-core-concepts">Learn Core Concepts<a class="headerlink" href="#learn-core-concepts" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../../core-concepts/architecture/">Architecture</a></li>
+<li><a href="../../core-concepts/conformance-testing/">Conformance Testing</a></li>
+</ul>
+<h3 id="follow-detailed-guides">Follow Detailed Guides<a class="headerlink" href="#follow-detailed-guides" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../../guides/cli-usage/03-using-cty-and-hcl-tools/">Using CTY and HCL Tools</a></li>
+<li><a href="../../guides/cli-usage/wire-protocol/">Wire Protocol Operations</a></li>
+<li><a href="../../guides/testing/01-running-conformance-tests/">Running Conformance Tests</a></li>
+<li><a href="../../guides/cli-usage/matrix-testing/">Matrix Testing</a></li>
+</ul>
+<h3 id="reference-documentation">Reference Documentation<a class="headerlink" href="#reference-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../reference/cli/">CLI Reference</a></li>
+<li><a href="../../reference/api/">API Reference</a></li>
+<li><a href="../../reference/configuration/">Configuration</a></li>
+</ul>
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>CLI Help</strong>: <code>soup &lt;command&gt; --help</code></li>
+<li><strong><a href="../../faq/">FAQ</a></strong>: Frequently asked questions</li>
+<li><strong><a href="../../troubleshooting/">Troubleshooting</a></strong>: Common issues and solutions</li>
+<li><strong><a href="https://github.com/provide-io/tofusoup/issues">GitHub Issues</a></strong>: Report bugs or request features</li>
+</ul>
 
 
 
@@ -1851,7 +2270,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../01-overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+          <a href="../installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Installation">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1861,20 +2280,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Overview
+                Installation
               </div>
             </div>
           </a>
         
         
           
-          <a href="../03-rpc-matrix-specification/" class="md-footer__link md-footer__link--next" aria-label="Next: RPC Matrix Specification">
+          <a href="../../core-concepts/architecture/" class="md-footer__link md-footer__link--next" aria-label="Next: Architecture">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                RPC Matrix Specification
+                Architecture
               </div>
             </div>
             <div class="md-footer__button md-icon">
