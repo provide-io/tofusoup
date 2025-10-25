@@ -50,7 +50,8 @@
       "Bash(uv pip list:*)",
       "Bash(uv pip check:*)",
       "Bash(ls:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(uv run mkdocs build:*)"
     ],
     "deny": [],
     "ask": [],
