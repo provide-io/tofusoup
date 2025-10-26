@@ -37,7 +37,8 @@
       "Bash(python test_logging_demo.py:*)",
       "Bash(.venv/bin/pytest conformance/rpc/souptest_cross_language_comprehensive.py::test_python_to_go -v --tb=short)",
       "Bash(.venv/bin/pytest:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(timeout 2 /Users/tim/code/gh/provide-io/tofusoup/bin/soup-go rpc kv server:*)"
     ],
     "deny": [],
     "ask": [],
