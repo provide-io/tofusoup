@@ -210,20 +210,19 @@ func (k *KVImpl) Put(key string, value []byte) error {
 	filePath := k.storageDir + "/kv-data-" + key
 	lock := flock.New(filePath)
 
-	// Use a timeout for locking to prevent indefinite blocking
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	locked, err := lock.TryLockContext(ctx, 100*time.Millisecond)
-	if err != nil {
+	k.logger.Debug("Attempting to acquire lock", "key", key)
+	if err := lock.Lock(); err != nil {
 		k.logger.Error("failed to acquire file lock", "key", key, "error", err)
 		return fmt.Errorf("failed to acquire lock for key %s: %w", key, err)
 	}
-	if !locked {
-		k.logger.Error("could not acquire file lock in time", "key", key)
-		return fmt.Errorf("could not acquire lock for key %s in time", key)
-	}
-	defer lock.Unlock()
+	k.logger.Debug("Lock acquired", "key", key)
+
+	defer func() {
+		if err := lock.Unlock(); err != nil {
+			k.logger.Error("failed to unlock file", "key", key, "error", err)
+		}
+		k.logger.Debug("Lock released", "key", key)
+	}()
 
 	k.logger.Debug("🗄️📤 putting value",
 		"key", key,
