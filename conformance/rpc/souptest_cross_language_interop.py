@@ -183,16 +183,16 @@ class TestCrossLanguageInterop:
             text=True
         )
 
-            # Wait for the server to start and output its handshake
-            await asyncio.sleep(2) # Give server time to start and print handshake
-            stdout, stderr = server_process.communicate(timeout=5)
-            full_output = stdout + stderr
-            
-            handshake_line = ""
-            for line in full_output.splitlines():
-                if "core_version" in line:
-                    handshake_line = line.strip()
-                    break
+        # Wait for the server to start and output its handshake
+        await asyncio.sleep(2) # Give server time to start and print handshake
+        stdout, stderr = server_process.communicate(timeout=5)
+        full_output = stdout + stderr
+        
+        handshake_line = ""
+        for line in full_output.splitlines():
+            if "core_version" in line:
+                handshake_line = line.strip()
+                break
         assert handshake_line, "Python server did not output handshake line"
         
         # Extract port from handshake line
