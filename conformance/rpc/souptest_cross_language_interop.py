@@ -150,34 +150,84 @@ class TestCrossLanguageInterop:
     @pytest.mark.harness_go
     @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
-    async def test_go_client_python_server(self, go_client_path: str) -> None:
-        """Test: Go Client ↔ Python Server using soup-go rpc client test soup"""
+    async def test_go_client_python_server(self, go_client_path: str, soup_path: Path | None) -> None:
+        """Test: Go Client ↔ Python Server by explicitly starting server and client."""
         if not go_client_path:
             pytest.skip("Go client binary not available")
+        if soup_path is None:
+            pytest.skip("soup executable not found in PATH")
 
         logger.info("🐹↔🐍 Testing Go Client ↔ Python Server")
 
-        # Use soup-go's built-in RPC client test which will:
-        # 1. Launch 'soup' (Python server) as a subprocess
-        # 2. Perform handshake via go-plugin protocol
-        # 3. Test Put/Get operations
-        # 4. Verify the connection works
-        cmd = [go_client_path, "rpc", "client", "test", "soup"]
+        env = os.environ.copy()
+        env["KV_STORAGE_DIR"] = "/tmp"
+        env["LOG_LEVEL"] = "INFO"
 
-        logger.info(f"Running Go client test: {' '.join(cmd)}")
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        # 1. Start the Python server
+        server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+        server_process = subprocess.Popen(
+            server_command,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
 
-        if result.returncode == 0:
-            logger.info("✅ Go client → Python server test passed")
-            logger.info(f"Output: {result.stdout}")
-            # Verify success messages in output
-            assert "Put operation successful" in result.stdout or "successful" in result.stdout.lower()
-        else:
-            logger.error(f"Go client stderr: {result.stderr}")
-            logger.error(f"Go client stdout: {result.stdout}")
-            raise AssertionError(
-                f"Go→Python test failed (exit code {result.returncode}): {result.stderr}"
-            )
+        # Wait for the server to start and output its handshake
+        handshake_line = ""
+        for _ in range(20):  # Try reading for up to 10 seconds
+            line = server_process.stdout.readline()
+            if "core_version" in line: # Look for the handshake line
+                handshake_line = line.strip()
+                break
+            await asyncio.sleep(0.5)
+
+        assert handshake_line, "Python server did not output handshake line"
+        
+        # Extract port from handshake line
+        parts = handshake_line.split('|')
+        assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
+        address_part = parts[3]
+        port = address_part.split(':')[-1]
+
+        # 2. Run the Go client to put a value
+        put_key = "go-py-key-interop"
+        put_value = "Hello from Go client to Python server (interop)!"
+        put_command = [
+            go_client_path, "rpc", "kv", "put",
+            f"--address=127.0.0.1:{port}",
+            put_key, put_value
+        ]
+        put_result = subprocess.run(
+            put_command,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        assert put_result.returncode == 0, f"Go client Put failed: {put_result.stderr}"
+        assert f"Key {put_key} put successfully." in put_result.stdout
+
+        # 3. Run the Go client to get the value
+        get_command = [
+            go_client_path, "rpc", "kv", "get",
+            f"--address=127.0.0.1:{port}",
+            put_key
+        ]
+        get_result = subprocess.run(
+            get_command,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        assert get_result.returncode == 0, f"Go client Get failed: {get_result.stderr}"
+        assert put_value in get_result.stdout
+
+        # Clean up server process
+        server_process.terminate()
+        server_process.wait(timeout=5)
+        assert server_process.returncode is not None, "Python server process did not terminate"
 
         logger.info("🐹↔🐍 ✅ Go Client ↔ Python Server: SUCCESS")
 

@@ -305,7 +305,7 @@ func initKVPutCmd() *cobra.Command {
 // Override the validateconnection command with real implementation
 func initValidateConnectionCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "validateconnection",
+		Use:   "connection",
 		Short: "Validate connection to the RPC KV server",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {

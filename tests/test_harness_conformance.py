@@ -62,7 +62,7 @@ class TestHarnessConformance:
         hcl_file.write_text('test_attr = "test_value"')
 
         result = subprocess.run(
-            [str(go_harness_path), "hcl", "parse", str(hcl_file)], capture_output=True, text=True
+            [str(go_harness_path), "hcl", "view", str(hcl_file)], capture_output=True, text=True
         )
         assert result.returncode == 0
         # Should return JSON with success and body containing parsed HCL
