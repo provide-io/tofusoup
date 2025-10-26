@@ -66,7 +66,15 @@
       "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup --version)",
       "Read(//Users/tim/code/grpc-kv-examples/**)",
       "Bash(uv pip uninstall:*)",
-      "Bash(LOG_LEVEL=DEBUG uv run pytest:*)"
+      "Bash(LOG_LEVEL=DEBUG uv run pytest:*)",
+      "Bash(LOG_LEVEL=INFO python3:*)",
+      "Bash(PYVIDER_LOG_LEVEL=TRACE LOG_LEVEL=TRACE python3:*)",
+      "Read(//private/tmp/**)",
+      "Bash(echo:*)",
+      "Bash(for curve in secp256r1 secp384r1 secp521r1)",
+      "Bash(do)",
+      "Bash(done)",
+      "Bash(do echo \"   $ soup rpc validate-connection --client python --server bin/soup-go --curve $curve\" soup rpc validate-connection --client python --server bin/soup-go --curve $curve)"
     ],
     "deny": [],
     "ask": [],
