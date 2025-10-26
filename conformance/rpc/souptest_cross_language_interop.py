@@ -150,90 +150,36 @@ class TestCrossLanguageInterop:
     @pytest.mark.harness_go
     @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
-    async def test_go_client_python_server(
-        self, go_client_path: str, python_server_address: str, tmp_path: Path
-    ) -> None:
-        """Test: Go Client ↔ Python Server"""
+    async def test_go_client_python_server(self, go_client_path: str) -> None:
+        """Test: Go Client ↔ Python Server using soup-go rpc client test soup"""
         if not go_client_path:
             pytest.skip("Go client binary not available")
 
         logger.info("🐹↔🐍 Testing Go Client ↔ Python Server")
 
-        # Create a temporary bridge script in our isolated temp directory
-        bridge_path = tmp_path / "bridge.py"
-        with bridge_path.open("w") as f:
-            # Create a Python script that acts as a bridge
-            bridge_script = f"""#!/usr/bin/env python3
-import sys
-import os
-sys.path.insert(0, '{os.getcwd()}')
-sys.path.insert(0, '{os.getcwd()}/src')
+        # Use soup-go's built-in RPC client test which will:
+        # 1. Launch 'soup' (Python server) as a subprocess
+        # 2. Perform handshake via go-plugin protocol
+        # 3. Test Put/Get operations
+        # 4. Verify the connection works
+        cmd = [go_client_path, "rpc", "client", "test", "soup"]
 
-import grpc
-from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
+        logger.info(f"Running Go client test: {' '.join(cmd)}")
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
-class BridgeHandler(kv_pb2_grpc.KVServicer):
-    def __init__(self):
-        # Connect to the already-running Python server
-        self.channel = grpc.insecure_channel('{python_server_address}')
-        self.stub = kv_pb2_grpc.KVStub(self.channel)
-
-    def Get(self, request, context):
-        return self.stub.Get(request)
-
-    def Put(self, request, context):
-        return self.stub.Put(request)
-
-if __name__ == '__main__':
-    import grpc
-    from concurrent import futures
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    handler = BridgeHandler()
-    kv_pb2_grpc.add_KVServicer_to_server(handler, server)
-    port = server.add_insecure_port('[::]:0')
-    server.start()
-    print(f"Bridge server started on port {{port}}")
-    server.wait_for_termination()
-"""
-            f.write(bridge_script)
-
-        try:
-            bridge_path.chmod(0o755)
-
-            # Test using subprocess to call go client
-            # Note: This is a simplified test - in practice, the go-plugin system is more complex
-            cmd = [
-                go_client_path,
-                "--key",
-                "go-to-python",
-                "--value",
-                "Hello from Go client to Python server!",
-                "--server",
-                str(bridge_path),
-            ]
-
-            logger.info(f"Running Go client: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-
-            if result.returncode == 0:
-                logger.info("✅ Go client executed successfully")
-                logger.info(f"Go client stdout: {result.stdout}")
-            else:
-                logger.warning(f"Go client stderr: {result.stderr}")
-                # Don't fail the test if Go client has different interface expectations
-                # The important thing is that the proto compatibility is proven
-
-        except subprocess.TimeoutExpired:
-            logger.warning(
-                "Go client test timed out - this may be expected due to different interface expectations"
+        if result.returncode == 0:
+            logger.info("✅ Go client → Python server test passed")
+            logger.info(f"Output: {result.stdout}")
+            # Verify success messages in output
+            assert "Put operation successful" in result.stdout or "successful" in result.stdout.lower()
+        else:
+            logger.error(f"Go client stderr: {result.stderr}")
+            logger.error(f"Go client stdout: {result.stdout}")
+            raise AssertionError(
+                f"Go→Python test failed (exit code {result.returncode}): {result.stderr}"
             )
-        except Exception as e:
-            logger.warning(f"Go client test had issues: {e}")
-        finally:
-            if bridge_path.exists():
-                bridge_path.unlink()
 
-        logger.info("🐹↔🐍 Go Client ↔ Python Server: Test completed (compatibility proven at proto level)")
+        logger.info("🐹↔🐍 ✅ Go Client ↔ Python Server: SUCCESS")
 
     @pytest.mark.integration_rpc
     def test_proto_compatibility(self) -> None:
