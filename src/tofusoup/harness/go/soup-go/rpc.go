@@ -23,6 +23,7 @@ import (
 	proto "github.com/provide-io/tofusoup/proto/kv"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // getCurve returns the elliptic curve for the given curve name
@@ -419,8 +420,12 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 func newDirectGRPCClient(address string, logger hclog.Logger) (KV, func() error, error) {
 	logger.Debug("Creating direct gRPC connection", "address", address)
 
-	// Create insecure connection (matching the server's configuration)
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	// Create insecure connection using the non-deprecated API
+	// Note: This assumes the server is running without TLS or with a compatible setup
+	conn, err := grpc.Dial(address,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to %s: %w", address, err)
 	}
