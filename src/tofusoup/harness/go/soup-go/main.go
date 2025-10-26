@@ -220,9 +220,9 @@ func init() {
 	hclConvertCmd = initHclConvertCmd()
 	wireEncodeCmd = initWireEncodeCmd()
 	wireDecodeCmd = initWireDecodeCmd()
-	getCmd = initRpcKVGetCmd()
-	putCmd = initRpcKVPutCmd()
-	connectionCmd = initRpcValidateConnectionCmd()
+	getCmd = initKVGetCmd()
+	putCmd = initKVPutCmd()
+	connectionCmd = initValidateConnectionCmd()
 	
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
