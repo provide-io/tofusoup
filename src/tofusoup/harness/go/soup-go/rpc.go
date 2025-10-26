@@ -426,6 +426,7 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 			return nil, nil, nil, "", fmt.Errorf("invalid handshake format: expected at least 5 parts, got %d", len(parts))
 		}
 
+		network := parts[2]
 		address := parts[3]
 		protocol := parts[4]
 
@@ -433,13 +434,27 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 			return nil, nil, nil, "", fmt.Errorf("unsupported protocol: %s (expected grpc)", protocol)
 		}
 
-		tcpAddr, err := net.ResolveTCPAddr("tcp", address)
-		if err != nil {
-			return nil, nil, nil, "", fmt.Errorf("failed to parse address from handshake: %w", err)
-		}
+		// Parse address based on network type (tcp or unix)
+		var addr net.Addr
+		var hostname string
+		var err error
 
-		// Extract hostname for ServerName (SNI)
-		hostname := tcpAddr.IP.String()
+		if network == "unix" {
+			// Unix domain socket
+			addr, err = net.ResolveUnixAddr("unix", address)
+			if err != nil {
+				return nil, nil, nil, "", fmt.Errorf("failed to parse unix address from handshake: %w", err)
+			}
+			hostname = "localhost" // Unix sockets don't have hostnames, use localhost for SNI
+		} else {
+			// TCP address (default)
+			tcpAddr, tcpErr := net.ResolveTCPAddr("tcp", address)
+			if tcpErr != nil {
+				return nil, nil, nil, "", fmt.Errorf("failed to parse tcp address from handshake: %w", tcpErr)
+			}
+			addr = tcpAddr
+			hostname = tcpAddr.IP.String()
+		}
 
 		// Check if certificate is provided (field 6)
 		var tlsConfig *tls.Config
@@ -455,7 +470,7 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 		return &plugin.ReattachConfig{
 			Protocol:        plugin.ProtocolGRPC,
 			ProtocolVersion: 1,
-			Addr:            tcpAddr,
+			Addr:            addr,
 		}, tlsConfig, serverCert, hostname, nil
 	}
 
