@@ -16,29 +16,35 @@ from tofusoup.rpc.client import KVClient
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="Python→Go is a known bug, testing it would just waste time")
-async def test_python_to_go_fails_gracefully() -> None:
+async def test_python_to_go_succeeds() -> None:
     """
-    Test that Python → Go connection fails with a clear error.
+    Test that Python → Go connection WORKS correctly.
 
-    This is a known bug in pyvider-rpcplugin. We skip this test but document it.
+    This was previously a known bug but has been FIXED!
     """
-    go_server = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
+    go_server = Path("bin/soup-go")
 
     if not go_server.exists():
-        pytest.skip("Go server not found")
+        pytest.skip("Go server not found at bin/soup-go")
 
     client = KVClient(
         server_path=str(go_server),
         tls_mode="auto",
         tls_key_type="ec",
-        tls_curve="secp384r1"
+        tls_curve="P-384"
     )
-    client.connection_timeout = 5
+    client.connection_timeout = 10
 
-    # This is expected to fail
-    with pytest.raises((TimeoutError, Exception)):
+    try:
         await client.start()
+
+        # Verify we can actually do K/V operations
+        await client.put("test-key", b"test-value")
+        result = await client.get("test-key")
+        assert result == b"test-value"
+
+        logger.info("✅ Python→Go connection works correctly!")
+    finally:
         await client.close()
 
 
@@ -62,45 +68,60 @@ async def test_missing_server_binary_fails_early() -> None:
 
 
 @pytest.mark.asyncio
-async def test_timeout_on_broken_connection() -> None:
-    """Test that broken connections timeout gracefully."""
-    # This tests the timeout mechanism when server doesn't respond
-    # For this test, we'd need a mock server that accepts connections but doesn't handshake
-    # Skipping for now as it requires complex setup
-    pytest.skip("Requires mock server implementation")
+async def test_timeout_on_invalid_server() -> None:
+    """Test that connections to invalid servers timeout gracefully."""
+    # Use a non-executable file as "server" to test timeout behavior
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.sh', delete=False) as f:
+        f.write("#!/bin/bash\nsleep 100\n")  # Server that never responds
+        invalid_server = Path(f.name)
+
+    try:
+        invalid_server.chmod(0o755)
+
+        client = KVClient(
+            server_path=str(invalid_server),
+            tls_mode="disabled"
+        )
+        client.connection_timeout = 2  # Short timeout
+
+        # Should timeout gracefully
+        with pytest.raises((TimeoutError, Exception)) as exc_info:
+            await client.start()
+
+        logger.info("Timeout handled gracefully", error=str(exc_info.value))
+    finally:
+        invalid_server.unlink()
 
 
-def test_document_known_failures() -> None:
-    """Document all known failure modes for reference."""
-    known_failures = [
-        {
-            "scenario": "Python client → Go server",
-            "error": "TLS handshake failure / Timeout",
-            "reason": "pyvider-rpcplugin doesn't handle go-plugin servers correctly",
-            "workaround": "Use Go client → Python server instead",
-        },
-        {
-            "scenario": "Python with secp521r1",
-            "error": "Timeout / SSL error",
-            "reason": "grpcio doesn't support P-521 curve",
-            "workaround": "Use secp256r1 or secp384r1 instead",
-        },
+def test_document_limitations() -> None:
+    """Document current limitations and edge cases for reference."""
+    limitations = [
         {
             "scenario": "Incompatible TLS modes",
             "error": "Connection refused / Handshake failure",
             "reason": "Client and server TLS configurations must be compatible",
             "workaround": "Ensure both use 'auto' mode or matching manual config",
         },
+        {
+            "scenario": "Missing server binary",
+            "error": "FileNotFoundError",
+            "reason": "Server executable not found at specified path",
+            "workaround": "Verify server binary exists and is executable",
+        },
     ]
 
-    for failure in known_failures:
+    for limitation in limitations:
         logger.info(
-            "Known failure mode",
-            scenario=failure["scenario"],
-            error=failure["error"],
-            reason=failure["reason"],
-            workaround=failure["workaround"]
+            "Known limitation",
+            scenario=limitation["scenario"],
+            error=limitation["error"],
+            reason=limitation["reason"],
+            workaround=limitation["workaround"]
         )
+
+    # Note: Previously documented "Python→Go doesn't work" - THIS IS NOW FIXED! ✅
+    # Note: Previously documented "P-521 unsupported" - THIS NOW WORKS! ✅
 
 
 # 🍲🥄🧪🪄
