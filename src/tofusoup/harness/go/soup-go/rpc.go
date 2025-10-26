@@ -493,19 +493,33 @@ func parseCertificateFromHandshake(certBase64 string, hostname string, logger hc
 	certPool := x509.NewCertPool()
 	certPool.AddCert(cert)
 
+	// Determine appropriate ServerName
+	// If connecting to an IP address, we need to use a DNS name from the cert SANs
+	// because the cert has "127.0.0.1" as a DNS SAN, not an IP SAN
+	serverName := hostname
+	if hostname == "127.0.0.1" && len(cert.DNSNames) > 0 {
+		// Use "localhost" if available in DNS SANs
+		for _, dnsName := range cert.DNSNames {
+			if dnsName == "localhost" {
+				serverName = "localhost"
+				break
+			}
+		}
+	}
+
 	// Create TLS config for client that trusts this server cert
-	// ServerName MUST match the hostname we're connecting to for proper certificate verification
 	tlsConfig := &tls.Config{
 		RootCAs:            certPool,
 		InsecureSkipVerify: false,  // We're properly verifying with the cert pool
 		MinVersion:         tls.VersionTLS12,
-		ServerName:         hostname,  // Set explicitly to match the connection address
+		ServerName:         serverName,  // Set to a DNS name that matches the cert SANs
 	}
 
 	logger.Info("Created TLS config with server certificate for mTLS",
 		"cert_cn", cert.Subject.CommonName,
-		"cert_sans", cert.DNSNames,
-		"server_name", hostname)
+		"dns_sans", cert.DNSNames,
+		"ip_sans", cert.IPAddresses,
+		"server_name", serverName)
 	return tlsConfig, nil
 }
 
