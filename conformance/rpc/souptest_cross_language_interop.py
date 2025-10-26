@@ -199,7 +199,8 @@ class TestCrossLanguageInterop:
         while time.time() - start_time < timeout_seconds:
             line = server_process.stdout.readline()
             if line:
-                if "core_version" in line:
+                # Look for the go-plugin handshake pattern: starts with "1|1|tcp|"
+                if line.startswith("1|1|tcp|") or "|tcp|" in line:
                     handshake_line = line.strip()
                     break
             else:
