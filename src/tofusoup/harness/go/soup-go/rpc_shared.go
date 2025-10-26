@@ -236,7 +236,7 @@ func (k *KVImpl) Put(key string, value []byte) error {
 	}
 
 	// fsync to ensure data is flushed to disk
-	file, err := os.Open(filePath)
+	file, err := os.OpenFile(filePath, os.O_WRONLY, 0644)
 	if err != nil {
 		k.logger.Error("failed to open file for fsync", "key", key, "error", err)
 		return err
