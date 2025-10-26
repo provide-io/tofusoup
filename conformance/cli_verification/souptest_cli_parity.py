@@ -131,7 +131,15 @@ class TestCLIParityMatrix:
         # RPC commands
         "rpc": {
             "common_args": {"help"},
-            "expected_subcommands": {"kvget", "kvput"},  # Normalized soup-go has kv, soup has kv-get/kv-put
+            "expected_subcommands": {"kv", "validate"},
+        },
+        "rpc kv": {
+            "common_args": {"help"},
+            "expected_subcommands": {"get", "put", "server"},
+        },
+        "rpc validate": {
+            "common_args": {"help"},
+            "expected_subcommands": {"connection"},
         },
     }
 
@@ -161,7 +169,7 @@ class TestCLIParityMatrix:
         return project_root / "harnesses" / "bin" / "soup-go"
 
     @pytest.mark.parametrize(
-        "command_path", ["", "cty", "cty view", "cty convert", "hcl", "hcl view", "hcl convert", "rpc"]
+        "command_path", ["", "cty", "cty view", "cty convert", "hcl", "hcl view", "hcl convert", "rpc", "rpc kv", "rpc validate"]
     )
     def test_command_structure_parity(
         self, soup_executable: Path, soup_go_executable: Path, command_path: str
