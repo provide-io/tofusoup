@@ -119,13 +119,15 @@ async def test_go_to_go_connection() -> None:
     )
 
     # Wait for the server to start and output its handshake
+    await asyncio.sleep(2) # Give server time to start and print handshake
+    stdout, stderr = server_process.communicate(timeout=5)
+    full_output = stdout + stderr
+    
     handshake_line = ""
-    for _ in range(20):  # Try reading for up to 10 seconds
-        line = server_process.stdout.readline()
-        if "core_version" in line: # Look for the handshake line
+    for line in full_output.splitlines():
+        if "core_version" in line:
             handshake_line = line.strip()
             break
-        await asyncio.sleep(0.5)
 
     assert handshake_line, "Go server did not output handshake line"
     
