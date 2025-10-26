@@ -1,14 +1,200 @@
 # TofuSoup Test Suite Audit & Bug Fixes - Handoff Guide
 
 **Date:** 2025-10-26
-**Status:** ✅ Test Suite Cleaned - Naming Conventions Enforced & Stale Code Removed
-**Previous Session:** RPC Test Failure Analysis & Fix Planning
-**This Session:** Test Naming Convention Enforcement & Code Cleanup
+**Status:** ✅ Matrix Tests Organized - All Cross-Language Tests Properly Located
+**Previous Session:** Test Naming Convention Enforcement & Code Cleanup
+**This Session:** RPC Matrix Test Organization & Cleanup
 **Auto-Commit:** Enabled (changes will be committed automatically)
 
 ---
 
-## This Session: Test Naming Convention Enforcement & Code Cleanup (2025-10-26)
+## This Session: RPC Matrix Test Organization & Cleanup (2025-10-26)
+
+### Summary
+
+Organized and cleaned up all RPC matrix tests:
+1. ✅ **Matrix Tests Verified:** 3 souptest files properly test cross-language RPC matrix
+2. ✅ **Obsolete Code Deleted:** Removed standalone script that wasn't a pytest test
+3. ✅ **Misplaced Test Moved:** Relocated cross-language test from tests/ to conformance/
+4. ✅ **Hardcoded Paths Removed:** Fixed tests to use proper fixtures instead of hardcoded paths
+5. ✅ **Runner Script Fixed:** Updated test runner to reference correct file names
+
+**Result:** All matrix tests now in correct location with proper naming and no hardcoded paths! 🎯
+
+### Changes Made
+
+#### 1. Matrix Tests Reviewed ✅
+
+**Verified 3 proper matrix test files in conformance/rpc/:**
+
+1. **`souptest_cross_language_matrix.py`** - 5 tests
+   - `test_python_to_python_all_curves[secp256r1]`
+   - `test_python_to_python_all_curves[secp384r1]`
+   - `test_python_to_go_all_curves`
+   - `test_go_to_go_connection`
+   - `test_known_unsupported_combinations`
+   - Tests Python↔Python, Python→Go, Go→Go combinations
+   - Uses KVClient infrastructure
+
+2. **`souptest_rpc_kv_matrix.py`** - 20 test combinations
+   - Full matrix: 2 client langs × 2 server langs × 5 crypto configs = 20 tests
+   - Tests all combinations: go-go, go-pyvider, pyvider-go, pyvider-pyvider
+   - Each combination tested with: rsa_2048, rsa_4096, ec_256, ec_384, ec_521
+   - Uses harness factory pattern
+
+3. **`souptest_simple_matrix.py`** - 5 tests
+   - Simplified matrix with known working combinations
+   - Tests: Python→Go (no mTLS, auto mTLS, ECDSA mTLS)
+   - Tests: Python→Python (no mTLS, with mTLS)
+   - Quick smoke tests for matrix functionality
+
+#### 2. Obsolete Code Deleted ✅
+
+**Deleted:** `conformance/rpc/souptest_matrix_proof.py`
+
+**Reason:** Not a pytest test - just a standalone async function
+- Function name: `comprehensive_matrix_test()` (no test_ prefix)
+- Missing @pytest decorators
+- pytest collected it but never ran it as a test
+- Was obsolete proof-of-concept code
+
+#### 3. Misplaced Test Moved ✅
+
+**Moved:** `tests/integration/test_cross_language_matrix.py` → `conformance/rpc/souptest_cross_language_matrix.py`
+
+**Reason:**
+- Tests cross-language conformance (Go ↔ Python), not tofusoup unit tests
+- Was in wrong directory (tests/ is for tofusoup library tests)
+- Should use souptest_ prefix for cross-language tests
+
+#### 4. Hardcoded Paths Removed ✅
+
+**Updated:** `souptest_cross_language_matrix.py`
+
+**Issues Fixed:**
+- Removed hardcoded path: `/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup`
+- Removed hardcoded path: `/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go`
+- Removed hardcoded path in skipif decorator
+
+**Replaced With:**
+```python
+@pytest.fixture
+def soup_path() -> Path | None:
+    """Find the soup executable (Python)."""
+    soup = shutil.which("soup")
+    if soup:
+        return Path(soup)
+    return None
+
+@pytest.fixture
+def soup_go_path() -> Path | None:
+    """Find the soup-go executable."""
+    candidates = [
+        Path("bin/soup-go"),
+        Path("harnesses/bin/soup-go"),
+        Path(__file__).parent.parent.parent / "bin" / "soup-go",
+    ]
+    for path in candidates:
+        if path.exists():
+            return path.resolve()
+    return None
+```
+
+**Added Plugin Environment Variables:**
+```python
+env["BASIC_PLUGIN"] = "hello"
+env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
+```
+
+#### 5. Test Runner Updated ✅
+
+**Updated:** `conformance/rpc/run_matrix_tests.py`
+
+**Changed:**
+```python
+# Before:
+test_file = str(script_dir / "test_rpc_kv_matrix.py")
+
+# After:
+test_file = str(script_dir / "souptest_rpc_kv_matrix.py")
+```
+
+**Reason:** File was renamed from `test_*` to `souptest_*` in previous session
+
+### Final Matrix Test Organization
+
+**conformance/rpc/ directory:**
+
+**Matrix Test Files (3):**
+- `souptest_cross_language_matrix.py` - 5 tests (Python↔Python, Python→Go, Go→Go)
+- `souptest_rpc_kv_matrix.py` - 20 tests (full 2×2×5 matrix)
+- `souptest_simple_matrix.py` - 5 tests (simplified quick matrix)
+
+**Configuration/Support Files (2):**
+- `matrix_config.py` - Configuration classes for full matrix tests
+- `run_matrix_tests.py` - Convenience runner script (updated)
+
+**Total Matrix Test Coverage:** 30 test combinations across 3 files
+
+### Benefits
+
+#### Proper Organization
+- All matrix tests in conformance/ directory
+- All use souptest_ prefix (cross-language tests)
+- No matrix tests in tests/ directory (unit tests only)
+
+#### No Hardcoded Paths
+- All tests use proper pytest fixtures
+- Tests find executables via PATH or standard locations
+- Tests portable across environments
+
+#### No Obsolete Code
+- Deleted non-functioning standalone script
+- All remaining files are actual pytest tests
+- Runner script references correct file names
+
+#### Clear Naming
+- `souptest_cross_language_matrix.py` - General cross-language matrix
+- `souptest_rpc_kv_matrix.py` - Full comprehensive K/V matrix
+- `souptest_simple_matrix.py` - Simplified quick matrix
+
+### Verification Results
+
+#### File Structure ✅
+```bash
+conformance/rpc/
+├── souptest_cross_language_matrix.py   # 5 tests
+├── souptest_rpc_kv_matrix.py           # 20 tests
+├── souptest_simple_matrix.py           # 5 tests
+├── matrix_config.py                    # Config
+└── run_matrix_tests.py                 # Runner
+```
+
+#### Test Collection ✅
+```bash
+$ pytest conformance/rpc/souptest_cross_language_matrix.py --collect-only
+collected 5 items
+  - test_python_to_python_all_curves[secp256r1]
+  - test_python_to_python_all_curves[secp384r1]
+  - test_python_to_go_all_curves
+  - test_go_to_go_connection
+  - test_known_unsupported_combinations
+```
+
+### Session Summary
+
+**Duration:** ~30 minutes
+**Files Deleted:** 1 (obsolete standalone script)
+**Files Moved:** 1 (misplaced cross-language test)
+**Files Updated:** 2 (hardcoded paths removed, runner fixed)
+**Tests Affected:** 30 total matrix tests
+**Overall Status:** ✅ **SUCCESS - Clean Matrix Test Organization**
+
+**Key Achievement:** All RPC matrix tests now properly organized in conformance/ directory with souptest_ prefix, no hardcoded paths, and working test runner. Clear separation between comprehensive matrix tests and simplified quick tests.
+
+---
+
+## Previous Session: Test Naming Convention Enforcement & Code Cleanup (2025-10-26)
 
 ### Summary
 
