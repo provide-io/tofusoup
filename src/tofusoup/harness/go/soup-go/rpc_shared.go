@@ -202,6 +202,9 @@ func NewKVImpl(logger hclog.Logger, storageDir string) *KVImpl {
 }
 
 func (k *KVImpl) Put(key string, value []byte) error {
+	pid := os.Getpid()
+	k.logger.Debug("Put called", "pid", pid, "key", key, "value", string(value))
+
 	if key == "" {
 		return nil
 	}
@@ -209,42 +212,42 @@ func (k *KVImpl) Put(key string, value []byte) error {
 	filePath := k.storageDir + "/kv-data-" + key
 	lock := flock.New(filePath)
 
-	k.logger.Debug("Attempting to acquire lock", "key", key)
+	k.logger.Debug("Attempting to acquire lock", "pid", pid, "key", key)
 	if err := lock.Lock(); err != nil {
-		k.logger.Error("failed to acquire file lock", "key", key, "error", err)
+		k.logger.Error("failed to acquire file lock", "pid", pid, "key", key, "error", err)
 		return fmt.Errorf("failed to acquire lock for key %s: %w", key, err)
 	}
-	k.logger.Debug("Lock acquired", "key", key)
+	k.logger.Debug("Lock acquired", "pid", pid, "key", key)
 
 	defer func() {
 		if err := lock.Unlock(); err != nil {
-			k.logger.Error("failed to unlock file", "key", key, "error", err)
+			k.logger.Error("failed to unlock file", "pid", pid, "key", key, "error", err)
 		}
-		k.logger.Debug("Lock released", "key", key)
+		k.logger.Debug("Lock released", "pid", pid, "key", key)
 	}()
 
-	k.logger.Debug("🗄️📤 putting value",
-		"key", key,
-		"value_length", len(value))
+	k.logger.Debug("🗄️📤 putting value", "pid", pid, "key", key, "value_length", len(value))
 
 	// Write the file
 	if err := os.WriteFile(filePath, value, 0644); err != nil {
-		k.logger.Error("failed to write file", "key", key, "error", err)
+		k.logger.Error("failed to write file", "pid", pid, "key", key, "error", err)
 		return err
 	}
+	k.logger.Debug("File written", "pid", pid, "key", key)
 
 	// fsync to ensure data is flushed to disk
 	file, err := os.OpenFile(filePath, os.O_WRONLY, 0644)
 	if err != nil {
-		k.logger.Error("failed to open file for fsync", "key", key, "error", err)
+		k.logger.Error("failed to open file for fsync", "pid", pid, "key", key, "error", err)
 		return err
 	}
 	defer file.Close()
 
 	if err := file.Sync(); err != nil {
-		k.logger.Error("failed to fsync file", "key", key, "error", err)
+		k.logger.Error("failed to fsync file", "pid", pid, "key", key, "error", err)
 		return err
 	}
+	k.logger.Debug("File synced", "pid", pid, "key", key)
 
 	return nil
 }
