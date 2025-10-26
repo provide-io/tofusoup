@@ -20,6 +20,7 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	proto "github.com/provide-io/tofusoup/proto/kv"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
