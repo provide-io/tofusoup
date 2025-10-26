@@ -556,12 +556,23 @@ func parseCertificateFromHandshake(certBase64 string, hostname string, logger hc
 // newReattachClient creates a go-plugin client that reattaches to an existing server
 // This is used when --address flag is provided
 func newReattachClient(addressOrHandshake string, tlsCurve string, logger hclog.Logger) (*plugin.Client, error) {
-	logger.Debug("Creating reattach client for existing server", "input", addressOrHandshake, "tls_curve", tlsCurve)
+	logger.Info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	logger.Info("🔌 Creating reattach client for existing server")
+	logger.Info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	logger.Info("📥 Input parameters", "address_or_handshake", addressOrHandshake[:min(80, len(addressOrHandshake))], "tls_curve", tlsCurve)
 
 	reattachConfig, tlsConfig, serverCert, hostname, err := parseHandshakeOrAddress(addressOrHandshake, logger)
 	if err != nil {
+		logger.Error("❌ Failed to parse handshake/address", "error", err)
 		return nil, err
 	}
+
+	logger.Info("✅ Handshake parsed successfully",
+		"address", reattachConfig.Addr.String(),
+		"protocol", reattachConfig.Protocol,
+		"hostname", hostname,
+		"has_tls", tlsConfig != nil,
+		"has_server_cert", serverCert != nil)
 
 	// Build client config
 	clientConfig := &plugin.ClientConfig{
@@ -581,56 +592,74 @@ func newReattachClient(addressOrHandshake string, tlsCurve string, logger hclog.
 
 	// If TLS config is provided, configure mTLS with curve-compatible client certificate
 	if tlsConfig != nil {
+		logger.Info("🔐 Configuring TLS/mTLS for client connection")
+
 		// Determine which curve to use for client certificate
 		clientCurve := tlsCurve
 		if tlsCurve == "auto" && serverCert != nil {
+			logger.Info("🔍 Auto-detecting curve from server certificate...")
 			// Auto-detect curve from server certificate
 			detectedCurve, err := detectCurveFromCert(serverCert, logger)
 			if err != nil {
-				logger.Warn("Failed to detect curve from server cert, defaulting to P-256", "error", err)
+				logger.Warn("⚠️  Failed to detect curve from server cert, defaulting to P-256", "error", err)
 				clientCurve = "secp256r1"
 			} else {
 				clientCurve = detectedCurve
-				logger.Info("Auto-detected client curve from server certificate", "curve", clientCurve)
+				logger.Info("✅ Auto-detected client curve from server certificate",
+					"detected_curve", clientCurve,
+					"server_cert_subject", serverCert.Subject.CommonName)
 			}
+		} else {
+			logger.Info("📌 Using explicitly specified curve", "curve", clientCurve)
 		}
 
 		// Generate client certificate with compatible curve
-		logger.Info("Generating client certificate for mTLS", "curve", clientCurve)
+		logger.Info("🔑 Generating client certificate for mTLS", "curve", clientCurve)
 		clientCertPEM, clientKeyPEM, err := generateCertWithCurve(logger, clientCurve)
 		if err != nil {
+			logger.Error("❌ Failed to generate client certificate", "error", err)
 			return nil, fmt.Errorf("failed to generate client certificate: %w", err)
 		}
+		logger.Info("✅ Client certificate generated successfully", "curve", clientCurve)
 
 		// Load client certificate
 		clientCert, err := tls.X509KeyPair(clientCertPEM, clientKeyPEM)
 		if err != nil {
+			logger.Error("❌ Failed to load client certificate", "error", err)
 			return nil, fmt.Errorf("failed to load client certificate: %w", err)
 		}
 
 		// Add client certificate to TLS config
 		tlsConfig.Certificates = []tls.Certificate{clientCert}
+		logger.Info("✅ Client certificate added to TLS config")
 
-		logger.Info("Enabling mTLS with custom client certificate",
+		logger.Info("🔐 Enabling mTLS with custom client certificate",
 			"hostname", hostname,
 			"client_curve", clientCurve,
-			"server_name", tlsConfig.ServerName)
+			"server_name", tlsConfig.ServerName,
+			"server_cert_dns_names", serverCert.DNSNames,
+			"min_tls_version", tlsConfig.MinVersion)
 
 		// Configure TLS through GRPCDialOptions
 		// DO NOT set AutoMTLS = true as it would override our custom certificate with P-521
 		clientConfig.GRPCDialOptions = []grpc.DialOption{
 			grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)),
 		}
+		logger.Info("✅ gRPC TLS credentials configured (NOT using AutoMTLS - using custom cert!)")
 	} else {
-		logger.Info("No TLS config found, using insecure connection")
+		logger.Info("ℹ️  No TLS config found, using insecure connection")
 	}
 
 	// Create client with reattach config
 	client := plugin.NewClient(clientConfig)
 
-	logger.Info("Reattach client created successfully",
-		"address", reattachConfig.Addr,
-		"mtls", tlsConfig != nil,
-		"tls_curve", tlsCurve)
+	logger.Info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	logger.Info("✅ Reattach client created successfully!")
+	logger.Info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	logger.Info("📊 Connection Summary:",
+		"server_address", reattachConfig.Addr,
+		"protocol", reattachConfig.Protocol,
+		"mtls_enabled", tlsConfig != nil,
+		"tls_curve_setting", tlsCurve)
 	return client, nil
 }
