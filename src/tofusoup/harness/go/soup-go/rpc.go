@@ -441,8 +441,12 @@ func newReattachClient(address string, logger hclog.Logger) (*plugin.Client, err
 	reattachConfig.Addr = tcpAddr
 
 	// Create client with reattach config
+	// When using reattach, we also need to provide the Plugins for compatibility
 	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig:  Handshake,
+		HandshakeConfig: Handshake,
+		Plugins: map[string]plugin.Plugin{
+			"kv_grpc": &KVGRPCPlugin{},
+		},
 		VersionedPlugins: map[int]plugin.PluginSet{
 			1: {
 				"kv_grpc": &KVGRPCPlugin{},
