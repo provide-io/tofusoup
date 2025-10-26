@@ -78,7 +78,9 @@
       "Bash(touch:*)",
       "Bash(for file in conformance/rpc/property_test*.py conformance/wire/property_test*.py conformance/property_test*.py)",
       "Bash(do echo \"=== $file ===\")",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(for f in property_test_*.py)",
+      "Bash(do mv \"$f\" \"test_$f#property_test_\")"
     ],
     "deny": [],
     "ask": [],
