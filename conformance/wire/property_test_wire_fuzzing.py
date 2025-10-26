@@ -13,6 +13,7 @@ from decimal import Decimal
 from hypothesis import given, settings, strategies as st, HealthCheck
 import pytest
 
+from pyvider.cty import CtyValue
 from pyvider.cty.conversion import cty_to_native
 from pyvider.cty.types import (
     CtyBool,
@@ -23,7 +24,6 @@ from pyvider.cty.types import (
     CtyObject,
     CtySet,
     CtyString,
-    CtyValue,
 )
 
 
