@@ -3,7 +3,8 @@
     "allow": [
       "Bash(for f in /tmp/rpc_matrix_proof/*.json)",
       "Bash(while read f)",
-      "Bash(do echo \"=== $f ===\")"
+      "Bash(do echo \"=== $f ===\")",
+      "Bash(uv run pytest:*)"
     ],
     "deny": [],
     "ask": [],

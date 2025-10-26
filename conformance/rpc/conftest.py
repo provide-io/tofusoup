@@ -35,6 +35,21 @@ def go_harness_executable(project_root: pathlib.Path, loaded_tofusoup_config: di
         pytest.fail(f"Failed to build 'soup-go' harness: {e}", pytrace=False)
 
 
+@pytest.fixture(scope="session")
+def test_artifacts_dir(tmp_path_factory) -> pathlib.Path:
+    """
+    Creates a session-wide directory for all RPC test artifacts.
+
+    All test outputs (proof manifests, KV storage files, server logs) will be
+    written to subdirectories within this directory, organized by test name.
+
+    Returns:
+        Path to the test artifacts directory (cleaned up automatically after session)
+    """
+    artifacts_dir = tmp_path_factory.mktemp("rpc_matrix_proof")
+    return artifacts_dir
+
+
 # Add other shared RPC fixtures here if needed in the future.
 
 
