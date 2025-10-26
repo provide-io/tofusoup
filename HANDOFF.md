@@ -1,14 +1,166 @@
 # TofuSoup Test Suite Audit & Bug Fixes - Handoff Guide
 
 **Date:** 2025-10-26
-**Status:** ⚠️ Test Suite Issues Identified - RPC Tests Need Environment Fixes
-**Previous Session:** Search Engine, CTY Parser & RPC Validation Refactoring
-**This Session:** RPC Test Failure Analysis & Fix Planning
+**Status:** ✅ Test Suite Cleaned - Naming Conventions Enforced & Stale Code Removed
+**Previous Session:** RPC Test Failure Analysis & Fix Planning
+**This Session:** Test Naming Convention Enforcement & Code Cleanup
 **Auto-Commit:** Enabled (changes will be committed automatically)
 
 ---
 
-## This Session: RPC Test Failure Analysis & Fix Planning (2025-10-26)
+## This Session: Test Naming Convention Enforcement & Code Cleanup (2025-10-26)
+
+### Summary
+
+Enforced test file naming conventions and removed stale code:
+1. ✅ **Naming Convention Enforced:** `test_*.py` for tofusoup tests, `souptest_*.py` for cross-language tests
+2. ✅ **Files Renamed:** 10 files renamed to follow convention (6 → souptest, 1 → non-test config)
+3. ✅ **Stale Code Removed:** Deleted 2 obsolete test files with non-existent command references
+4. ✅ **Plugin Env Vars Added:** Fixed 2 RPC tests that spawn Python server subprocesses
+5. ✅ **Tests Organized:** 9 souptest files (cross-language), 7 test files (tofusoup unit/property tests)
+
+**Result:** Clean test organization following established naming patterns! 🎯
+
+### Changes Made
+
+#### 1. Naming Convention Clarified ✅
+
+**Convention:**
+- `test_*.py` - Tests **tofusoup itself** (src/tofusoup code - unit/integration/property tests)
+- `souptest_*.py` - Tests **cross-language/TF-specific conformance** (Go ↔ Python compatibility)
+
+**Examples from CTY:**
+- `souptest_cty_compat.py` - Tests Go harness executable via subprocess
+- `souptest_cty_interop.py` - Tests cross-language Python ↔ Go CTY compatibility
+- Files in `tests/` directory - Unit tests of tofusoup library code
+
+#### 2. Files Renamed to souptest_*.py (Cross-Language Tests) ✅
+
+**Renamed 7 files** from `test_*.py` → `souptest_*.py` (cross-language conformance):
+
+1. `test_cross_language_comprehensive.py` → `souptest_cross_language_comprehensive.py`
+   - Tests Python client ↔ Go server cross-language communication
+
+2. `test_curve_compatibility.py` → `souptest_curve_compatibility.py`
+   - Tests Python client ↔ Go server with different elliptic curves
+
+3. `test_matrix_proof.py` → `souptest_matrix_proof.py`
+   - Standalone script testing Python client → Go server matrix
+
+4. `test_rpc_kv_matrix.py` → `souptest_rpc_kv_matrix.py`
+   - Tests all combinations of Python/Go clients × Python/Go servers
+
+5. `test_simple_matrix.py` → `souptest_simple_matrix.py`
+   - Tests known working cross-language combinations
+
+6. `automtls_test.py` → `souptest_automtls.py`
+   - Tests Python client → Go server autoMTLS compatibility
+
+#### 3. Configuration File Renamed ✅
+
+**Renamed 1 file** to remove misleading `test_` prefix:
+
+- `test_config.py` → `rpc_mtls_config.py`
+  - NOT a test file, just configuration for mTLS matrix tests
+  - pytest would try to collect it with `test_` prefix
+
+#### 4. Stale Code Removed ✅
+
+**Deleted 2 files** referencing non-existent `soup-go rpc client test` command:
+
+1. `test_go_to_python.py` - Only contained call to non-existent command
+2. `test_go_to_py_direct.sh` - Shell script calling non-existent command
+
+#### 5. Plugin Environment Variables Fixed ✅
+
+**Updated 2 files** to add required plugin env vars for subprocess tests:
+
+Files modified:
+- `souptest_cross_language_interop.py` - Added `BASIC_PLUGIN` and `PLUGIN_MAGIC_COOKIE_KEY`
+- `souptest_cross_language_comprehensive.py` - Added plugin env vars
+
+Added environment variables:
+```python
+env["BASIC_PLUGIN"] = "hello"
+env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
+```
+
+These are required when spawning Python RPC server as subprocess, preventing "Magic cookie mismatch" errors.
+
+### Final File Organization
+
+**conformance/rpc/ directory:**
+
+**Cross-Language Tests (souptest_*.py): 9 files**
+- `souptest_automtls.py` - autoMTLS cross-language compatibility
+- `souptest_cross_language_comprehensive.py` - Python ↔ Go comprehensive tests
+- `souptest_cross_language_interop.py` - Cross-language interoperability matrix
+- `souptest_cross_language.py` - General cross-language tests
+- `souptest_curve_compatibility.py` - Elliptic curve compatibility across languages
+- `souptest_matrix_proof.py` - Matrix testing proof
+- `souptest_rpc_kv_matrix.py` - Full RPC K/V matrix (clients × servers × crypto)
+- `souptest_rpc_pyclient_goserver.py` - Python client → Go server tests
+- `souptest_simple_matrix.py` - Simple known-working combinations
+
+**TofuSoup Unit/Property Tests (test_*.py): 7 files**
+- `test_concurrent.py` - Property tests for concurrent client connections (Hypothesis)
+- `test_failure_modes.py` - Property tests for failure scenarios (Hypothesis)
+- `test_malformed.py` - Property tests for malformed inputs (Hypothesis)
+- `test_python_to_python.py` - Unit tests for Python → Python RPC
+- `test_resources.py` - Property tests for resource management (Hypothesis)
+- `test_rpc_stress.py` - Property tests for RPC stress scenarios (Hypothesis)
+- `test_tls.py` - Property tests for TLS configurations (Hypothesis)
+
+**Configuration/Support Files:**
+- `matrix_config.py` - Configuration for `souptest_rpc_kv_matrix.py`
+- `rpc_mtls_config.py` - Configuration for mTLS matrix tests
+- `harness_factory.py` - Factory for creating test harnesses
+- `cert_manager.py` - Certificate management utilities
+- `run_matrix_tests.py` - Matrix test runner script
+
+### Benefits
+
+#### Clear Organization
+- Easy to distinguish unit tests from conformance tests
+- File naming immediately indicates test purpose
+- Follows established project conventions
+
+#### Pytest Collection
+- All test files now match pytest patterns: `test_*.py`, `souptest_*.py`
+- No confusion with config files that had `test_` prefix
+- Proper discovery of all test types
+
+#### Reduced Confusion
+- Removed references to non-existent commands
+- Deleted obsolete shell scripts
+- No more stale code misleading developers
+
+### Verification Results
+
+#### File Counts ✅
+```bash
+souptest_*.py files: 9
+test_*.py files: 7
+Total test files: 16
+```
+
+#### Pytest Collection ✅
+All files now match pytest discovery patterns:
+- `python_files = ["test_*.py", "*_test.py", "souptest_*.py"]`
+
+### Session Summary
+
+**Duration:** ~30 minutes
+**Files Renamed:** 7 cross-language tests → souptest_*.py, 1 config → rpc_mtls_config.py
+**Files Deleted:** 2 obsolete files with stale commands
+**Files Modified:** 2 files with plugin env var fixes
+**Overall Status:** ✅ **SUCCESS - Clean Test Organization**
+
+**Key Achievement:** Enforced naming convention across entire RPC test suite, making it immediately clear which tests are for tofusoup itself vs cross-language conformance. Removed all references to non-existent commands.
+
+---
+
+## Previous Session: RPC Test Failure Analysis & Fix Planning (2025-10-26)
 
 ### Summary
 
