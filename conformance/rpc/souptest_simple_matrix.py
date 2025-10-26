@@ -22,7 +22,7 @@ import pytest
 from tofusoup.rpc.client import KVClient
 
 # Proof directory for matrix test verification
-PROOF_DIR = Path("/tmp/rpc_matrix_proof")
+PROOF_DIR = Path("/tmp/tofusoup_rpc_test_proof")
 
 
 def write_test_proof(test_name: str, client_type: str, server_type: str,
