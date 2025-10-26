@@ -38,7 +38,8 @@
       "Bash(.venv/bin/pytest conformance/rpc/souptest_cross_language_comprehensive.py::test_python_to_go -v --tb=short)",
       "Bash(.venv/bin/pytest:*)",
       "Bash(pkill:*)",
-      "Bash(timeout 2 /Users/tim/code/gh/provide-io/tofusoup/bin/soup-go rpc kv server:*)"
+      "Bash(timeout 2 /Users/tim/code/gh/provide-io/tofusoup/bin/soup-go rpc kv server:*)",
+      "Bash(LOG_LEVEL=ERROR BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN timeout 2 ./bin/soup-go:*)"
     ],
     "deny": [],
     "ask": [],

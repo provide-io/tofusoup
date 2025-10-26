@@ -147,8 +147,8 @@ async def test_go_to_go_connection(soup_go_path: Path | None, test_artifacts_dir
     while time.time() - start_time < timeout_seconds:
         line = server_process.stdout.readline()
         if line:
-            # Look for the go-plugin handshake pattern: starts with "1|1|tcp|"
-            if line.startswith("1|1|tcp|") or "|tcp|" in line:
+            # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
+            if line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line:
                 handshake_line = line.strip()
                 break
         else:
