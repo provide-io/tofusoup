@@ -221,3 +221,40 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     server_process.terminate()
     server_process.wait(timeout=5)
     assert server_process.returncode is not None, "Python server process did not terminate"
+
+
+@pytest.mark.asyncio
+async def test_go_to_go(soup_go_path: Path | None) -> None:
+    """Test Go client → Go server (completes the 2x2 matrix)."""
+    if soup_go_path is None:
+        pytest.skip("soup-go executable not found")
+
+    from tofusoup.rpc.client import KVClient
+
+    # Create client with Go server
+    client = KVClient(
+        server_path=str(soup_go_path),
+        tls_mode="auto",
+        tls_key_type="ec",
+        tls_curve="P-256"
+    )
+
+    try:
+        await asyncio.wait_for(client.start(), timeout=15.0)
+
+        # Test put operation
+        test_key = "test-gogo-proof"
+        test_value = b"Hello from Go server to Go client (via Python orchestration)!"
+
+        await client.put(test_key, test_value)
+
+        # Test get operation
+        retrieved = await client.get(test_key)
+
+        assert retrieved == test_value, f"Value mismatch: expected {test_value!r}, got {retrieved!r}"
+
+    finally:
+        try:
+            await client.close()
+        except Exception:
+            pass
