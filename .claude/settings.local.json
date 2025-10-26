@@ -17,7 +17,8 @@
       "Bash(ls:*)",
       "Bash(done)",
       "Bash(find:*)",
-      "Bash(soup test:*)"
+      "Bash(soup test:*)",
+      "Bash(soup harness build:*)"
     ],
     "deny": [],
     "ask": [],
