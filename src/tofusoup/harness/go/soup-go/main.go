@@ -202,6 +202,14 @@ var configShowCmd = &cobra.Command{
 	},
 }
 
+var generateCmd = &cobra.Command{
+	Use:   "generate",
+	Short: "Generate test data or configurations",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("generate command is a placeholder")
+	},
+}
+
 func init() {
 	// Initialize commands with real implementations
 	ctyValidateCmd = initCtyValidateCmd()
@@ -238,6 +246,7 @@ func init() {
 	rootCmd.AddCommand(rpcCmd)
 	rootCmd.AddCommand(harnessCmd)
 	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(generateCmd)
 	
 	// CTY subcommands
 	ctyCmd.AddCommand(ctyValidateCmd)

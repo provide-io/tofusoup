@@ -20,6 +20,7 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
 
@@ -233,7 +234,7 @@ func decodeAndLogCertificate(certPEM string, logger hclog.Logger) error {
 	return nil
 }
 
-var rpcClientTestCmd *cobra.Command
+
 
 // Override the kvget command with real implementation
 func initRpcKVGetCmd() *cobra.Command {
