@@ -20,10 +20,8 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	proto "github.com/provide-io/tofusoup/proto/kv"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 // getCurve returns the elliptic curve for the given curve name
@@ -249,36 +247,28 @@ func initKVGetCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			key := args[0]
 
-			var kv KV
-			var cleanup func() error
+			var client *plugin.Client
+			var err error
 
-			// Use direct connection if --address is provided
+			// Use reattach if --address is provided, otherwise spawn server
 			if address != "" {
-				directClient, cleanupFn, err := newDirectGRPCClient(address, logger)
+				client, err = newReattachClient(address, logger)
 				if err != nil {
 					return err
 				}
-				kv = directClient
-				cleanup = cleanupFn
 			} else {
-				// Use go-plugin client (spawn server)
-				client, err := newRPCClient(logger)
+				client, err = newRPCClient(logger)
 				if err != nil {
 					return err
 				}
-				defer client.Kill()
-
-				raw, err := client.Client()
-				if err != nil {
-					return fmt.Errorf("failed to create RPC client: %w", err)
-				}
-				kv = raw.(KV)
 			}
+			defer client.Kill()
 
-			// Cleanup direct connection if used
-			if cleanup != nil {
-				defer cleanup()
+			raw, err := client.Client()
+			if err != nil {
+				return fmt.Errorf("failed to create RPC client: %w", err)
 			}
+			kv := raw.(KV)
 
 			value, err := kv.Get(key)
 			if err != nil {
@@ -306,36 +296,28 @@ func initKVPutCmd() *cobra.Command {
 			key := args[0]
 			value := []byte(args[1])
 
-			var kv KV
-			var cleanup func() error
+			var client *plugin.Client
+			var err error
 
-			// Use direct connection if --address is provided
+			// Use reattach if --address is provided, otherwise spawn server
 			if address != "" {
-				directClient, cleanupFn, err := newDirectGRPCClient(address, logger)
+				client, err = newReattachClient(address, logger)
 				if err != nil {
 					return err
 				}
-				kv = directClient
-				cleanup = cleanupFn
 			} else {
-				// Use go-plugin client (spawn server)
-				client, err := newRPCClient(logger)
+				client, err = newRPCClient(logger)
 				if err != nil {
 					return err
 				}
-				defer client.Kill()
-
-				raw, err := client.Client()
-				if err != nil {
-					return fmt.Errorf("failed to create RPC client: %w", err)
-				}
-				kv = raw.(KV)
 			}
+			defer client.Kill()
 
-			// Cleanup direct connection if used
-			if cleanup != nil {
-				defer cleanup()
+			raw, err := client.Client()
+			if err != nil {
+				return fmt.Errorf("failed to create RPC client: %w", err)
 			}
+			kv := raw.(KV)
 
 			if err := kv.Put(key, value); err != nil {
 				return fmt.Errorf("failed to put key %s: %w", key, err)
@@ -415,31 +397,50 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 	return client, nil
 }
 
-// newDirectGRPCClient creates a direct gRPC client connection to an address
-// This is used when --address flag is provided, bypassing go-plugin
-func newDirectGRPCClient(address string, logger hclog.Logger) (KV, func() error, error) {
-	logger.Debug("Creating direct gRPC connection", "address", address)
+// newReattachClient creates a go-plugin client that reattaches to an existing server
+// This is used when --address flag is provided
+func newReattachClient(address string, logger hclog.Logger) (*plugin.Client, error) {
+	logger.Debug("Creating reattach client for existing server", "address", address)
 
-	// Create insecure connection using the non-deprecated API
-	// Note: This assumes the server is running without TLS or with a compatible setup
-	conn, err := grpc.Dial(address,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
+	// Parse address to get network and addr
+	// Address format: "127.0.0.1:50051" or "host:port"
+	network := "tcp"
+
+	// Create reattach config for the existing server
+	reattachConfig := &plugin.ReattachConfig{
+		Protocol:        plugin.ProtocolGRPC,
+		ProtocolVersion: 1,
+		Addr: &net.TCPAddr{
+			IP:   net.ParseIP(address[:strings.LastIndex(address, ":")]),
+			Port: 0, // Will be parsed below
+		},
+	}
+
+	// Parse port
+	portStr := address[strings.LastIndex(address, ":")+1:]
+	port := 0
+	fmt.Sscanf(portStr, "%d", &port)
+
+	// Create proper TCP address
+	tcpAddr, err := net.ResolveTCPAddr(network, address)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to connect to %s: %w", address, err)
+		return nil, fmt.Errorf("failed to resolve address %s: %w", address, err)
 	}
+	reattachConfig.Addr = tcpAddr
 
-	client := &GRPCClient{
-		client: proto.NewKVClient(conn),
-		logger: logger,
-	}
+	// Create client with reattach config
+	client := plugin.NewClient(&plugin.ClientConfig{
+		HandshakeConfig:  Handshake,
+		VersionedPlugins: map[int]plugin.PluginSet{
+			1: {
+				"kv_grpc": &KVGRPCPlugin{},
+			},
+		},
+		Reattach:         reattachConfig,
+		Logger:           logger,
+		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
+	})
 
-	// Return client and cleanup function
-	cleanup := func() error {
-		return conn.Close()
-	}
-
-	logger.Info("Direct gRPC client connected successfully", "address", address)
-	return client, cleanup, nil
+	logger.Info("Reattach client created successfully", "address", address)
+	return client, nil
 }
