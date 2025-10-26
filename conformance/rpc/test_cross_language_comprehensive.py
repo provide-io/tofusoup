@@ -52,35 +52,6 @@ def soup_path() -> Path | None:
 
 
 @pytest.mark.asyncio
-async def test_go_to_go(soup_go_path: Path | None) -> None:
-    """Test Go client → Go server using built-in test command."""
-    if soup_go_path is None:
-        pytest.skip("soup-go executable not found")
-
-    env = os.environ.copy()
-    env["KV_STORAGE_DIR"] = "/tmp"
-    env["LOG_LEVEL"] = "INFO"
-    env["BASIC_PLUGIN"] = "hello"
-    env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
-
-    # NOTE: This test calls a non-existent command "soup-go rpc client test"
-    # This command was never part of the correct architecture and should not exist.
-    # pytest handles ALL cross-language testing, not Go binaries.
-    # This test should be rewritten or deleted.
-    result = subprocess.run(
-        [str(soup_go_path), "rpc", "client", "test", str(soup_go_path)],
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=30
-    )
-
-    assert result.returncode == 0, f"Go→Go test failed: {result.stderr}"
-    assert "Put operation successful" in result.stdout
-    assert "Get operation successful" in result.stdout
-
-
-@pytest.mark.asyncio
 async def test_python_to_python(soup_path: Path | None) -> None:
     """Test Python client → Python server."""
     if soup_path is None:
