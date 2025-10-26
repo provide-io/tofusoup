@@ -39,7 +39,8 @@
       "Bash(.venv/bin/pytest:*)",
       "Bash(pkill:*)",
       "Bash(timeout 2 /Users/tim/code/gh/provide-io/tofusoup/bin/soup-go rpc kv server:*)",
-      "Bash(LOG_LEVEL=ERROR BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN timeout 2 ./bin/soup-go:*)"
+      "Bash(LOG_LEVEL=ERROR BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN timeout 2 ./bin/soup-go:*)",
+      "Bash(LOG_LEVEL=INFO .venv/bin/pytest:*)"
     ],
     "deny": [],
     "ask": [],
