@@ -409,36 +409,58 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 	return client, nil
 }
 
-// newReattachClient creates a go-plugin client that reattaches to an existing server
-// This is used when --address flag is provided
-func newReattachClient(address string, logger hclog.Logger) (*plugin.Client, error) {
-	logger.Debug("Creating reattach client for existing server", "address", address)
+// parseHandshakeOrAddress parses either a simple address or a full go-plugin handshake line
+// Returns the ReattachConfig
+func parseHandshakeOrAddress(addressOrHandshake string) (*plugin.ReattachConfig, error) {
+	// Check if this is a full handshake (contains pipes)
+	if strings.Contains(addressOrHandshake, "|") {
+		// Parse go-plugin handshake format: core_version|protocol_version|network|address|protocol|cert
+		parts := strings.Split(addressOrHandshake, "|")
+		if len(parts) < 5 {
+			return nil, fmt.Errorf("invalid handshake format: expected at least 5 parts, got %d", len(parts))
+		}
 
-	// Parse address to get network and addr
-	// Address format: "127.0.0.1:50051" or "host:port"
-	network := "tcp"
+		address := parts[3]
+		protocol := parts[4]
 
-	// Create reattach config for the existing server
-	reattachConfig := &plugin.ReattachConfig{
+		if protocol != "grpc" {
+			return nil, fmt.Errorf("unsupported protocol: %s (expected grpc)", protocol)
+		}
+
+		tcpAddr, err := net.ResolveTCPAddr("tcp", address)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse address from handshake: %w", err)
+		}
+
+		return &plugin.ReattachConfig{
+			Protocol:        plugin.ProtocolGRPC,
+			ProtocolVersion: 1,
+			Addr:            tcpAddr,
+		}, nil
+	}
+
+	// Simple address format
+	tcpAddr, err := net.ResolveTCPAddr("tcp", addressOrHandshake)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve address %s: %w", addressOrHandshake, err)
+	}
+
+	return &plugin.ReattachConfig{
 		Protocol:        plugin.ProtocolGRPC,
 		ProtocolVersion: 1,
-		Addr: &net.TCPAddr{
-			IP:   net.ParseIP(address[:strings.LastIndex(address, ":")]),
-			Port: 0, // Will be parsed below
-		},
-	}
+		Addr:            tcpAddr,
+	}, nil
+}
 
-	// Parse port
-	portStr := address[strings.LastIndex(address, ":")+1:]
-	port := 0
-	fmt.Sscanf(portStr, "%d", &port)
+// newReattachClient creates a go-plugin client that reattaches to an existing server
+// This is used when --address flag is provided
+func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.Client, error) {
+	logger.Debug("Creating reattach client for existing server", "input", addressOrHandshake)
 
-	// Create proper TCP address
-	tcpAddr, err := net.ResolveTCPAddr(network, address)
+	reattachConfig, err := parseHandshakeOrAddress(addressOrHandshake)
 	if err != nil {
-		return nil, fmt.Errorf("failed to resolve address %s: %w", address, err)
+		return nil, err
 	}
-	reattachConfig.Addr = tcpAddr
 
 	// Create client with reattach config
 	// When using reattach, we also need to provide the Plugins for compatibility
@@ -455,8 +477,10 @@ func newReattachClient(address string, logger hclog.Logger) (*plugin.Client, err
 		Reattach:         reattachConfig,
 		Logger:           logger,
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
+		// Note: For mTLS support, the full handshake with cert would be needed
+		// Currently this works for insecure connections only
 	})
 
-	logger.Info("Reattach client created successfully", "address", address)
+	logger.Info("Reattach client created successfully", "address", reattachConfig.Addr)
 	return client, nil
 }
