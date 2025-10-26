@@ -100,9 +100,10 @@ class KVClient:
             "PLUGIN_AUTO_MTLS": "true" if use_auto_mtls else "false",
         }
 
-        # Map TLS key type to legacy environment variables if needed
+        # Map TLS key type to environment variables for pyvider-rpcplugin
         if self.tls_key_type == "ec":
             self.subprocess_env["PYVIDER_CLIENT_CERT_ALGO"] = "ecdsa"
+            # Set curve for client certificate generation (used by pyvider-rpcplugin)
             self.subprocess_env["PYVIDER_CLIENT_CERT_CURVE"] = self.tls_curve
         elif self.tls_key_type == "rsa":
             self.subprocess_env["PYVIDER_CLIENT_CERT_ALGO"] = "rsa"
