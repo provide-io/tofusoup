@@ -15,7 +15,8 @@ from tofusoup.rpc.client import KVClient
 
 
 # Test data strategies
-test_keys = st.text(min_size=1, max_size=100, alphabet=st.characters(blacklist_categories=("Cs",)))
+# NOTE: Exclude null bytes and whitespace-only keys (filesystem limitation)
+test_keys = st.text(min_size=1, max_size=100, alphabet=st.characters(blacklist_categories=("Cs",))).filter(lambda k: '\x00' not in k and k.strip())
 test_values = st.binary(min_size=0, max_size=10000)
 
 
