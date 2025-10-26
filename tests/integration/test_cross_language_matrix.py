@@ -95,31 +95,84 @@ async def test_python_to_python_all_curves(curve) -> None:
     not Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go").exists(),
     reason="Go binary not found"
 )
-def test_go_to_go_connection() -> None:
-    """
-    Test Go client → Go server.
-
-    This is tested via the Go test harness (soup-go rpc client test soup-go).
-    We invoke it here to prove it works.
-    """
+@pytest.mark.asyncio
+async def test_go_to_go_connection() -> None:
+    """Test Go client → Go server by explicitly starting server and client."""
     import subprocess
+    import asyncio
+    import os
 
     go_binary = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
 
-    # Run Go client connecting to Go server
-    result = subprocess.run(
-        [str(go_binary), "rpc", "client", "test", str(go_binary)],
-        capture_output=True,
-        text=True,
-        timeout=15
+    env = os.environ.copy()
+    env["KV_STORAGE_DIR"] = "/tmp"
+    env["LOG_LEVEL"] = "INFO"
+
+    # 1. Start the Go server
+    server_command = [str(go_binary), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+    server_process = subprocess.Popen(
+        server_command,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
     )
 
-    logger.debug("Go→Go test output", stdout=result.stdout, stderr=result.stderr)
+    # Wait for the server to start and output its handshake
+    handshake_line = ""
+    for _ in range(20):  # Try reading for up to 10 seconds
+        line = server_process.stdout.readline()
+        if "core_version" in line: # Look for the handshake line
+            handshake_line = line.strip()
+            break
+        await asyncio.sleep(0.5)
 
-    # Check if test passed
-    assert result.returncode == 0, f"Go→Go test failed: {result.stderr}"
-    # The Go binary writes success messages to stderr, not stdout
-    assert "completed successfully" in result.stderr, "Go→Go test did not complete successfully"
+    assert handshake_line, "Go server did not output handshake line"
+    
+    # Extract port from handshake line
+    parts = handshake_line.split('|')
+    assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
+    address_part = parts[3]
+    port = address_part.split(':')[-1]
+    
+    # 2. Run the Go client to put a value
+    put_key = "go-go-key-matrix"
+    put_value = "Hello from Go client to Go server (matrix)!"
+    put_command = [
+        str(go_binary), "rpc", "kv", "put",
+        f"--address=127.0.0.1:{port}",
+        put_key, put_value
+    ]
+    put_result = subprocess.run(
+        put_command,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+    assert put_result.returncode == 0, f"Go client Put failed: {put_result.stderr}"
+    assert f"Key {put_key} put successfully." in put_result.stdout
+
+    # 3. Run the Go client to get the value
+    get_command = [
+        str(go_binary), "rpc", "kv", "get",
+        f"--address=127.0.0.1:{port}",
+        put_key
+    ]
+    get_result = subprocess.run(
+        get_command,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+    assert get_result.returncode == 0, f"Go client Get failed: {get_result.stderr}"
+    assert put_value in get_result.stdout
+
+    # Clean up server process
+    server_process.terminate()
+    server_process.wait(timeout=5)
+    assert server_process.returncode is not None, "Go server process did not terminate"
 
 
 def test_known_unsupported_combinations() -> None:
