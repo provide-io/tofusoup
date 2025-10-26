@@ -120,4 +120,13 @@ def tls_cert_paths_rsa4096(certs_base_dir: Path) -> dict[str, str]:
     return _get_cert_paths(certs_base_dir, "rsa-4096-mtls")
 
 
+# Register Hypothesis profiles for property testing
+try:
+    from hypothesis import settings
+    settings.register_profile("quick", max_examples=10, deadline=10000)
+    settings.register_profile("thorough", max_examples=1000, deadline=None)
+except ImportError:
+    pass  # Hypothesis not installed
+
+
 # 🍲🥄🧪🪄
