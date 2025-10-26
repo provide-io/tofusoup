@@ -69,7 +69,9 @@
     "deny": [],
     "ask": [],
     "additionalDirectories": [
-      "/Users/tim/code/gh/provide-io"
+      "/Users/tim/code/gh/provide-io",
+      "/Users/tim/code/gh/docs-archive/deprecated/bak/mono-flavor/upstream/grpc-kv-examples",
+      "/Users/tim/code/grpc-kv-examples"
     ]
   }
 }
