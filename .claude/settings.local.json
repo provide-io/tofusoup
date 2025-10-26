@@ -16,7 +16,8 @@
       "Bash(for dir in /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-0/rpc_matrix_proof0/*/)",
       "Bash(ls:*)",
       "Bash(done)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(soup test:*)"
     ],
     "deny": [],
     "ask": [],
