@@ -1,14 +1,291 @@
 # TofuSoup Test Suite Audit & Bug Fixes - Handoff Guide
 
-**Date:** 2025-10-25
-**Status:** Improved ✅ Code Quality Enhanced - Continued Complexity Reduction
-**Previous Session:** Code quality improvements and RPC client refactoring
-**This Session:** Search Engine, CTY Parser & RPC Validation Refactoring
+**Date:** 2025-10-26
+**Status:** ⚠️ Test Suite Issues Identified - RPC Tests Need Environment Fixes
+**Previous Session:** Search Engine, CTY Parser & RPC Validation Refactoring
+**This Session:** RPC Test Failure Analysis & Fix Planning
 **Auto-Commit:** Enabled (changes will be committed automatically)
 
 ---
 
-## This Session: Search Engine, CTY Parser & RPC Validation Refactoring (2025-10-25)
+## This Session: RPC Test Failure Analysis & Fix Planning (2025-10-26)
+
+### Summary
+
+Conducted comprehensive test suite analysis to understand RPC test failures:
+1. ✅ **Root Cause Identified:** RPC tests missing plugin environment variables in subprocess calls
+2. ✅ **Architecture Clarified:** pytest handles ALL cross-RPC verification (not Go binaries)
+3. ✅ **Obsolete Code Found:** Shell script references non-existent Go command
+4. ✅ **Test Infrastructure Issues:** conftest.py conflicts, bfiles import errors
+5. ⚠️ **Status:** Ready for fixes - clear understanding of all issues
+
+**Result:** Test failures are NOT due to missing Go commands - they're due to incomplete test environment setup! 🔍
+
+**Key Finding:** There should be NO `soup-go rpc client test` command - pytest does all cross-language testing
+
+### Analysis Results
+
+#### 1. RPC Test Failures - Real Root Cause ✅
+
+**Initial Assumption (INCORRECT):**
+- Missing `soup-go rpc client test` command causing 112 test failures
+- Go harness needs additional commands restored
+
+**Actual Problem (CORRECT):**
+- RPC tests spawn Python server as subprocess but missing required plugin environment variables
+- Server immediately exits with error: "Magic cookie mismatch. Environment variable 'BASIC_PLUGIN' not set"
+- Tests fail because server doesn't start, not because of missing commands
+
+**Evidence:**
+```bash
+# Failing test: conformance/rpc/souptest_cross_language_interop.py::test_go_client_python_server
+# Error message:
+Server process terminated prematurely. Stderr:
+2025-10-26 12:24:36 [error] 🔹 Magic cookie mismatch.
+Environment variable 'BASIC_PLUGIN' not set.
+This server is a plugin and not meant to be executed directly.
+```
+
+**Test Code (souptest_cross_language_interop.py:179):**
+```python
+# 1. Start the Python server
+server_command = [str(soup_path), "rpc", "kv", "server",
+                  "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+server_process = subprocess.Popen(
+    server_command,
+    env=env,  # ❌ Missing BASIC_PLUGIN and PLUGIN_MAGIC_COOKIE_KEY!
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True
+)
+```
+
+**Required Environment (missing from test):**
+```python
+env["BASIC_PLUGIN"] = "hello"  # ❌ NOT SET
+env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"  # ❌ NOT SET
+```
+
+#### 2. Architecture Clarification ✅
+
+**Correct Architecture:**
+- **pytest** handles ALL cross-language RPC verification
+- Tests spawn servers/clients as subprocesses and verify communication
+- NO need for `soup-go rpc client test` command
+- Tests use direct subprocess calls to `soup-go rpc kv put/get` commands
+
+**Test Pattern:**
+```python
+# Start Python server subprocess
+server_process = subprocess.Popen([soup, "rpc", "kv", "server", ...], env=env)
+
+# Run Go client against Python server
+put_command = [go_client, "rpc", "kv", "put", "--address=...", key, value]
+put_result = subprocess.run(put_command, env=env, capture_output=True)
+
+# Verify results
+assert put_result.returncode == 0
+```
+
+**This Pattern Works For:**
+- Python client ↔ Python server (direct Python API)
+- Python client ↔ Go server (direct Python API)
+- Go client ↔ Python server (subprocess: `soup-go rpc kv put/get`)
+- Go client ↔ Go server (subprocess: `soup-go rpc kv put/get`)
+
+#### 3. Obsolete Code Found ✅
+
+**File to Delete:** `test_go_to_py_direct.sh`
+
+**Reason:**
+```bash
+# Line 21-24 of test_go_to_py_direct.sh
+echo "Running: $SOUP_GO rpc client test $SOUP"
+timeout 45 "$SOUP_GO" rpc client test "$SOUP" 2>&1 | head -100
+```
+
+This script calls non-existent `soup-go rpc client test` command. The command was never part of the correct architecture and shouldn't exist.
+
+**Replacement:** Use pytest tests in `conformance/rpc/` instead
+
+#### 4. Test Infrastructure Issues ✅
+
+**Problem 1: Collection Errors (385 errors)**
+
+Multiple conftest.py conflicts:
+```
+ImportPathMismatchError: import file mismatch:
+imported module 'conftest' has this __file__ attribute:
+  /Users/tim/code/grpc-kv-examples/bfiles/tests/conftest.py
+which is not the same as the test file we want to collect:
+  /Users/tim/code/gh/provide-io/tofusoup/conformance/conftest.py
+```
+
+**Root Cause:** Multiple conftest.py files in working directories cause pytest confusion
+
+**Problem 2: Missing Imports**
+- `SetproctitleImportBlocker` from provide-testkit
+- `temp_directory` fixture (already fixed previously with `tmp_path`)
+- bfiles module imports (9 errors)
+
+**Problem 3: Property Test Failures**
+
+Many property tests failing due to:
+- Missing environment variables in test setup
+- Hypothesis generating edge cases that expose environment issues
+- TLS/mTLS configuration problems in test harnesses
+
+### Issues Breakdown
+
+| Issue | Count | Severity | Fix Complexity |
+|-------|-------|----------|----------------|
+| Missing plugin env vars | ~25 tests | HIGH | Easy - add 2 env vars |
+| conftest.py conflicts | 385 errors | MEDIUM | Medium - pytest config |
+| Obsolete shell script | 1 file | LOW | Easy - delete file |
+| bfiles imports | 9 errors | LOW | Easy - install/fix imports |
+| Property test issues | ~87 tests | MEDIUM | Medium - test harness fixes |
+
+### Files Requiring Changes
+
+**To Fix:**
+1. `conformance/rpc/souptest_cross_language_interop.py` - Add plugin env vars to test
+2. `conformance/rpc/test_cross_language_comprehensive.py` - Add plugin env vars
+3. `conformance/rpc/test_go_to_python.py` - Add plugin env vars
+4. `pytest.ini` or `pyproject.toml` - Fix conftest.py discovery
+5. Various property test files - Fix test harness setup
+
+**To Delete:**
+1. `test_go_to_py_direct.sh` - Obsolete script
+
+### Proposed Fix Plan
+
+#### Phase 1: Fix Environment Setup (HIGH PRIORITY)
+
+1. **Add plugin environment variables to all RPC subprocess tests:**
+   ```python
+   env = os.environ.copy()
+   env["KV_STORAGE_DIR"] = "/tmp"
+   env["LOG_LEVEL"] = "INFO"
+   env["BASIC_PLUGIN"] = "hello"  # ✅ ADD THIS
+   env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"  # ✅ ADD THIS
+   ```
+
+2. **Files to modify:**
+   - `conformance/rpc/souptest_cross_language_interop.py` (test_go_client_python_server)
+   - `conformance/rpc/test_cross_language_comprehensive.py` (test_go_to_python)
+   - `conformance/rpc/test_go_to_python.py` (test_go_client_python_server)
+   - Any other tests spawning Python RPC server as subprocess
+
+3. **Expected outcome:** ~25 RPC tests should start passing
+
+#### Phase 2: Clean Up Obsolete Code (LOW PRIORITY)
+
+1. **Delete obsolete shell script:**
+   ```bash
+   rm test_go_to_py_direct.sh
+   ```
+
+2. **Update documentation (if referenced):**
+   - Check `docs/historical/CROSS_LANGUAGE_TEST_RESULTS.md`
+   - Remove references to non-existent `soup-go rpc client test` command
+
+#### Phase 3: Fix Test Infrastructure (MEDIUM PRIORITY)
+
+1. **Fix conftest.py conflicts:**
+
+   Option A: Configure pytest to ignore external conftest
+   ```toml
+   # pyproject.toml
+   [tool.pytest.ini_options]
+   confcutdir = "/Users/tim/code/gh/provide-io/tofusoup"
+   ```
+
+   Option B: Use separate pytest invocations
+   ```bash
+   # Only collect from tofusoup directory
+   pytest --ignore=/Users/tim/code/grpc-kv-examples
+   ```
+
+2. **Fix bfiles import errors:**
+   - Verify bfiles package installed
+   - Run `uv sync` to ensure all dependencies present
+   - Check if bfiles should be in dependencies
+
+3. **Fix provide-testkit imports:**
+   - Verify `provide-testkit[all]` installed
+   - Check if `SetproctitleImportBlocker` still exists in latest version
+   - Update imports if API changed
+
+#### Phase 4: Fix Property Tests (MEDIUM PRIORITY)
+
+1. **Review property test failures:**
+   - Many use Hypothesis to generate test cases
+   - Failures may expose real edge cases
+   - Need to ensure test harnesses handle all generated scenarios
+
+2. **Common property test issues:**
+   - TLS configuration edge cases
+   - Concurrent connection handling
+   - Resource cleanup
+   - Malformed input handling
+
+### Expected Outcomes
+
+**After Phase 1 (Environment Fixes):**
+- 25+ RPC tests should pass (currently failing due to missing env vars)
+- Server processes should start successfully
+- Cross-language communication tests should execute
+
+**After Phase 2 (Cleanup):**
+- Obsolete shell script removed
+- Documentation updated to reflect correct architecture
+- No references to non-existent commands
+
+**After Phase 3 (Test Infrastructure):**
+- Collection errors reduced from 385 to near-zero
+- All tests discoverable and runnable
+- Clean pytest output
+
+**After Phase 4 (Property Tests):**
+- Property tests either pass or properly skip with clear reasons
+- Test harnesses handle edge cases correctly
+- Hypothesis finds fewer real issues
+
+### Key Decisions Made
+
+#### 1. Correct Architecture Understanding
+- **Decision:** pytest is the ONLY cross-language test framework
+- **Rationale:** Go binaries should NOT have test commands - they're test subjects, not test runners
+- **Impact:** No need to restore any Go commands - tests are correctly structured
+
+#### 2. Fix Strategy
+- **Decision:** Start with environment fixes (highest impact, lowest effort)
+- **Rationale:** 25+ tests can be fixed by adding 2 environment variables
+- **Impact:** Quick wins demonstrate progress and validate approach
+
+#### 3. Shell Script Deletion
+- **Decision:** Delete `test_go_to_py_direct.sh` without replacement
+- **Rationale:** pytest tests in `conformance/rpc/` provide better coverage
+- **Impact:** Reduces confusion and eliminates obsolete code
+
+### Session Summary
+
+**Duration:** ~45 minutes
+**Tasks Completed:** Analysis and planning (no code changes yet)
+**Tests Status:** ⚠️ Issues identified, fixes planned
+**Overall Status:** ✅ **Analysis Complete - Ready for Fixes**
+
+**Key Achievement:** Corrected fundamental misunderstanding about test architecture. The Go harness is correctly implemented - the issue is incomplete test environment setup in pytest tests.
+
+**Next Steps:**
+1. Add plugin environment variables to RPC subprocess tests
+2. Delete obsolete shell script
+3. Fix conftest.py conflicts
+4. Verify all fixes with full test suite run
+
+---
+
+## Previous Session: Search Engine, CTY Parser & RPC Validation Refactoring (2025-10-25)
 
 ### Summary
 
