@@ -10,13 +10,42 @@ Tests the key known working combinations:
 Uses the existing working KVClient infrastructure.
 """
 
+from datetime import datetime
+import json
 from pathlib import Path
+import time
 import uuid
 
 from provide.foundation import logger
 import pytest
 
 from tofusoup.rpc.client import KVClient
+
+# Proof directory for matrix test verification
+PROOF_DIR = Path("/tmp/rpc_matrix_proof")
+
+
+def write_test_proof(test_name: str, client_type: str, server_type: str,
+                     tls_mode: str, crypto_type: str, keys_written: list[str]) -> Path:
+    """Write proof manifest that this test ran and what it wrote."""
+    PROOF_DIR.mkdir(exist_ok=True, parents=True)
+
+    manifest = {
+        "test_name": test_name,
+        "client_type": client_type,
+        "server_type": server_type,
+        "tls_mode": tls_mode,
+        "crypto_type": crypto_type,
+        "keys_written": keys_written,
+        "timestamp": datetime.now().isoformat(),
+        "status": "success"
+    }
+
+    manifest_file = PROOF_DIR / f"{test_name}_{int(time.time())}.json"
+    manifest_file.write_text(json.dumps(manifest, indent=2))
+    logger.info(f"📝 Test proof written to {manifest_file}")
+
+    return manifest_file
 
 
 @pytest.mark.integration_rpc
@@ -31,8 +60,10 @@ async def test_pyclient_goserver_no_mtls(project_root: Path) -> None:
 
     client = KVClient(server_path=str(go_server_path), tls_mode="disabled")
 
-    test_key = f"simple-test-{uuid.uuid4()}"
-    test_value = b"Hello from simple matrix test"
+    # Identity-embedded key and value
+    test_id = str(uuid.uuid4())[:8]
+    test_key = f"pyclient_goserver_no_mtls_{test_id}"
+    test_value = b"Python_client->Go_server(no_mTLS)"
 
     try:
         await client.start()
@@ -40,6 +71,18 @@ async def test_pyclient_goserver_no_mtls(project_root: Path) -> None:
         retrieved = await client.get(test_key)
         assert retrieved == test_value
         logger.info("✅ Python client → Go server (no mTLS) - PASSED")
+        logger.info(f"   Key: {test_key}")
+        logger.info(f"   Value: {test_value.decode()}")
+
+        # Write proof manifest
+        write_test_proof(
+            test_name="pyclient_goserver_no_mtls",
+            client_type="python",
+            server_type="go",
+            tls_mode="disabled",
+            crypto_type="none",
+            keys_written=[test_key]
+        )
     finally:
         await client.close()
 
@@ -60,8 +103,10 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path) -> None:
         tls_key_type="rsa",
     )
 
-    test_key = f"mtls-test-{uuid.uuid4()}"
-    test_value = b"Hello from mTLS test"
+    # Identity-embedded key and value
+    test_id = str(uuid.uuid4())[:8]
+    test_key = f"pyclient_goserver_mtls_rsa_{test_id}"
+    test_value = b"Python_client->Go_server(auto_mTLS_RSA)"
 
     try:
         await client.start()
@@ -69,6 +114,18 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path) -> None:
         retrieved = await client.get(test_key)
         assert retrieved == test_value
         logger.info("✅ Python client → Go server (auto mTLS RSA) - PASSED")
+        logger.info(f"   Key: {test_key}")
+        logger.info(f"   Value: {test_value.decode()}")
+
+        # Write proof manifest
+        write_test_proof(
+            test_name="pyclient_goserver_mtls_rsa",
+            client_type="python",
+            server_type="go",
+            tls_mode="auto",
+            crypto_type="rsa",
+            keys_written=[test_key]
+        )
     finally:
         await client.close()
 
@@ -90,8 +147,10 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path) -> None:
         tls_curve="P-256",
     )
 
-    test_key = f"ecdsa-test-{uuid.uuid4()}"
-    test_value = b"Hello from ECDSA mTLS test"
+    # Identity-embedded key and value
+    test_id = str(uuid.uuid4())[:8]
+    test_key = f"pyclient_goserver_mtls_ecdsa_{test_id}"
+    test_value = b"Python_client->Go_server(auto_mTLS_ECDSA_P256)"
 
     try:
         await client.start()
@@ -99,6 +158,18 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path) -> None:
         retrieved = await client.get(test_key)
         assert retrieved == test_value
         logger.info("✅ Python client → Go server (auto mTLS ECDSA) - PASSED")
+        logger.info(f"   Key: {test_key}")
+        logger.info(f"   Value: {test_value.decode()}")
+
+        # Write proof manifest
+        write_test_proof(
+            test_name="pyclient_goserver_mtls_ecdsa",
+            client_type="python",
+            server_type="go",
+            tls_mode="auto",
+            crypto_type="ecdsa_p256",
+            keys_written=[test_key]
+        )
     finally:
         await client.close()
 
@@ -117,8 +188,10 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path) -> None:
 
     client = KVClient(server_path=soup_path, tls_mode="disabled")
 
-    test_key = f"py2py-test-{uuid.uuid4()}"
-    test_value = b"Hello from Python to Python"
+    # Identity-embedded key and value
+    test_id = str(uuid.uuid4())[:8]
+    test_key = f"pyclient_pyserver_no_mtls_{test_id}"
+    test_value = b"Python_client->Python_server(no_mTLS)"
 
     try:
         await client.start()
@@ -126,6 +199,18 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path) -> None:
         retrieved = await client.get(test_key)
         assert retrieved == test_value
         logger.info("✅ Python client → Python server (no mTLS) - PASSED")
+        logger.info(f"   Key: {test_key}")
+        logger.info(f"   Value: {test_value.decode()}")
+
+        # Write proof manifest
+        write_test_proof(
+            test_name="pyclient_pyserver_no_mtls",
+            client_type="python",
+            server_type="python",
+            tls_mode="disabled",
+            crypto_type="none",
+            keys_written=[test_key]
+        )
     finally:
         await client.close()
 
@@ -144,8 +229,10 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path) -> None:
 
     client = KVClient(server_path=soup_path, tls_mode="auto", tls_key_type="rsa")
 
-    test_key = f"py2py-mtls-{uuid.uuid4()}"
-    test_value = b"Hello from Python to Python with mTLS"
+    # Identity-embedded key and value
+    test_id = str(uuid.uuid4())[:8]
+    test_key = f"pyclient_pyserver_mtls_rsa_{test_id}"
+    test_value = b"Python_client->Python_server(auto_mTLS_RSA)"
 
     try:
         await client.start()
@@ -153,6 +240,18 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path) -> None:
         retrieved = await client.get(test_key)
         assert retrieved == test_value
         logger.info("✅ Python client → Python server (auto mTLS) - PASSED")
+        logger.info(f"   Key: {test_key}")
+        logger.info(f"   Value: {test_value.decode()}")
+
+        # Write proof manifest
+        write_test_proof(
+            test_name="pyclient_pyserver_mtls_rsa",
+            client_type="python",
+            server_type="python",
+            tls_mode="auto",
+            crypto_type="rsa",
+            keys_written=[test_key]
+        )
     finally:
         await client.close()
 
