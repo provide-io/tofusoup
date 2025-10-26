@@ -133,7 +133,7 @@ async def _run_pytest_suite(
 
     try:
         with error_boundary(
-            catch=Exception,
+            Exception,
             fallback=_get_fallback_result(),
             log_errors=True,
             reraise=False,
