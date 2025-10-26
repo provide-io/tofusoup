@@ -65,7 +65,8 @@
       "Bash(uv run mypy:*)",
       "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup --version)",
       "Read(//Users/tim/code/grpc-kv-examples/**)",
-      "Bash(uv pip uninstall:*)"
+      "Bash(uv pip uninstall:*)",
+      "Bash(LOG_LEVEL=DEBUG uv run pytest:*)"
     ],
     "deny": [],
     "ask": [],
