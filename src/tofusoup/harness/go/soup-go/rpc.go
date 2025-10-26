@@ -278,7 +278,7 @@ func testRPCClient(logger hclog.Logger, serverPath string) error {
 	// Test Put operation
 	testKey := "go_client_test_key"
 	testValue := []byte("Hello from Go client to Go server!")
-	
+
 	logger.Info("🌐📤 testing Put operation", "key", testKey, "value_size", len(testValue))
 	err = kv.Put(testKey, testValue)
 	if err != nil {
@@ -286,6 +286,7 @@ func testRPCClient(logger hclog.Logger, serverPath string) error {
 		return err
 	}
 	logger.Info("🌐✅ Put operation successful")
+	fmt.Println("Put operation successful")  // Output to stdout for test verification
 
 	// Test Get operation
 	logger.Info("🌐📥 testing Get operation", "key", testKey)
@@ -296,12 +297,13 @@ func testRPCClient(logger hclog.Logger, serverPath string) error {
 	}
 
 	if string(retrievedValue) != string(testValue) {
-		logger.Error("🌐❌ Retrieved value doesn't match", 
-			"expected", string(testValue), 
+		logger.Error("🌐❌ Retrieved value doesn't match",
+			"expected", string(testValue),
 			"got", string(retrievedValue))
 		return err
 	}
 	logger.Info("🌐✅ Get operation successful", "value", string(retrievedValue))
+	fmt.Println("Get operation successful")  // Output to stdout for test verification
 
 	// Test Get non-existent key
 	logger.Info("🌐📥 testing Get operation for non-existent key")
