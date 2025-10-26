@@ -75,6 +75,16 @@ var rpcCmd = &cobra.Command{
 	Long:  `Manage RPC servers and clients for plugin communication.`,
 }
 
+var kvCmd = &cobra.Command{
+	Use:   "kv",
+	Short: "Key-Value store operations",
+}
+
+var validateCmd = &cobra.Command{
+	Use:   "validate",
+	Short: "Validation operations",
+}
+
 var (
 	rpcPort       int
 	rpcTLSMode    string
