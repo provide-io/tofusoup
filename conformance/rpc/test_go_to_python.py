@@ -58,7 +58,12 @@ def test_go_client_python_server(soup_go_path: Path | None, soup_path: Path | No
     env = os.environ.copy()
     env["KV_STORAGE_DIR"] = "/tmp"
     env["LOG_LEVEL"] = "INFO"
+    env["BASIC_PLUGIN"] = "hello"
+    env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
+    # NOTE: This test calls a non-existent command "soup-go rpc client test"
+    # This test should be rewritten or deleted - see test_cross_language_comprehensive.py
+    # for the correct implementation of Go client → Python server testing
     result = subprocess.run(
         [str(soup_go_path), "rpc", "client", "test", str(soup_path)],
         env=env,

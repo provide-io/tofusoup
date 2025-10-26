@@ -60,9 +60,13 @@ async def test_go_to_go(soup_go_path: Path | None) -> None:
     env = os.environ.copy()
     env["KV_STORAGE_DIR"] = "/tmp"
     env["LOG_LEVEL"] = "INFO"
+    env["BASIC_PLUGIN"] = "hello"
+    env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
-    # Run the built-in Go client test
-    # This command starts a Go server internally and tests against it
+    # NOTE: This test calls a non-existent command "soup-go rpc client test"
+    # This command was never part of the correct architecture and should not exist.
+    # pytest handles ALL cross-language testing, not Go binaries.
+    # This test should be rewritten or deleted.
     result = subprocess.run(
         [str(soup_go_path), "rpc", "client", "test", str(soup_go_path)],
         env=env,
@@ -160,6 +164,8 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None) -
     env = os.environ.copy()
     env["KV_STORAGE_DIR"] = "/tmp"
     env["LOG_LEVEL"] = "INFO"
+    env["BASIC_PLUGIN"] = "hello"
+    env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
     # 1. Start the Python server
     server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
