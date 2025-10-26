@@ -143,10 +143,8 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     env["BASIC_PLUGIN"] = "hello"
     env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
-    # 1. Start the Python server
-    # Note: Using disabled TLS mode for go-plugin reattach compatibility
-    # The --address flag doesn't support passing certificates yet
-    server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "disabled"]
+    # 1. Start the Python server with mTLS enabled
+    server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
     server_process = subprocess.Popen(
         server_command,
         env=env,
@@ -178,19 +176,18 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
             raise AssertionError(f"Server process terminated prematurely. Stderr: {stderr_output}")
 
     assert handshake_line, "Python server did not output handshake line"
-    
-    # Extract port from handshake line
+
+    # Verify handshake format
     parts = handshake_line.split('|')
     assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
-    address_part = parts[3]
-    port = address_part.split(':')[-1]
 
     # 2. Run the Go client to put a value
+    # Pass the FULL handshake line (including certificate) to --address for mTLS support
     put_key = "go-py-key"
     put_value = "Hello from Go client to Python server!"
     put_command = [
         str(soup_go_path), "rpc", "kv", "put",
-        f"--address=127.0.0.1:{port}",
+        f"--address={handshake_line}",  # Pass full handshake with certificate
         put_key, put_value
     ]
     put_result = subprocess.run(
@@ -206,7 +203,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     # 3. Run the Go client to get the value
     get_command = [
         str(soup_go_path), "rpc", "kv", "get",
-        f"--address=127.0.0.1:{port}",
+        f"--address={handshake_line}",  # Pass full handshake with certificate
         put_key
     ]
     get_result = subprocess.run(
