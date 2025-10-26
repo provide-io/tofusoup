@@ -192,29 +192,59 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
         "crypto_type": "rsa",
         "key": test_key,
         "timestamp": datetime.now().isoformat(),
-        "status": "success"
+        "status": "pending",  # Changed to pending until test completes
+        "user_data": {  # Optional user payload
+            "description": "Testing Python client to Go server with auto mTLS (RSA)",
+            "test_iteration": 1,
+        }
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
     try:
+        start_time = time.time()
         await client.start()
+        connection_time = time.time() - start_time
+
         await client.put(test_key, test_value)
         retrieved = await client.get(test_key)
-        assert retrieved == test_value
 
         # Verify the retrieved value is valid JSON with correct content
         retrieved_manifest = json.loads(retrieved.decode())
         assert retrieved_manifest["test_name"] == "pyclient_goserver_mtls_rsa"
-        assert retrieved_manifest["crypto_type"] == "rsa"
+        assert retrieved_manifest["client_type"] == "python"
+        assert retrieved_manifest["server_type"] == "go"
+
+        # Verify server added its handshake
+        assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
+        logger.info("✅ Server handshake detected in retrieved value")
+
+        # Add client handshake information
+        client_handshake = {
+            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
+            "tls_mode": client.tls_mode,
+            "tls_config": {
+                "key_type": client.tls_key_type,
+                "curve": client.tls_curve if client.tls_key_type == "ec" else None,
+            },
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "timestamp": datetime.now().isoformat(),
+            "connection_time": round(connection_time, 3),
+        }
+        retrieved_manifest["client_handshake"] = client_handshake
+
+        # Update status to success
+        retrieved_manifest["status"] = "success"
 
         logger.info("✅ Python client → Go server (auto mTLS RSA) - PASSED")
         logger.info(f"   Key: {test_key}")
-        logger.info(f"   Value: {retrieved_manifest['test_name']} proof manifest")
+        logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
+        logger.info(f"   Client connection time: {connection_time:.3f}s")
 
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        # Write final proof manifest showing complete round-trip with both handshakes
         retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
         manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
         manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
@@ -259,29 +289,59 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path, test_artifa
         "crypto_type": "ecdsa_p256",
         "key": test_key,
         "timestamp": datetime.now().isoformat(),
-        "status": "success"
+        "status": "pending",  # Changed to pending until test completes
+        "user_data": {  # Optional user payload
+            "description": "Testing Python client to Go server with auto mTLS (ECDSA P-256)",
+            "test_iteration": 1,
+        }
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
     try:
+        start_time = time.time()
         await client.start()
+        connection_time = time.time() - start_time
+
         await client.put(test_key, test_value)
         retrieved = await client.get(test_key)
-        assert retrieved == test_value
 
         # Verify the retrieved value is valid JSON with correct content
         retrieved_manifest = json.loads(retrieved.decode())
         assert retrieved_manifest["test_name"] == "pyclient_goserver_mtls_ecdsa"
-        assert retrieved_manifest["crypto_type"] == "ecdsa_p256"
+        assert retrieved_manifest["client_type"] == "python"
+        assert retrieved_manifest["server_type"] == "go"
+
+        # Verify server added its handshake
+        assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
+        logger.info("✅ Server handshake detected in retrieved value")
+
+        # Add client handshake information
+        client_handshake = {
+            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
+            "tls_mode": client.tls_mode,
+            "tls_config": {
+                "key_type": client.tls_key_type,
+                "curve": client.tls_curve if client.tls_key_type == "ec" else None,
+            },
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "timestamp": datetime.now().isoformat(),
+            "connection_time": round(connection_time, 3),
+        }
+        retrieved_manifest["client_handshake"] = client_handshake
+
+        # Update status to success
+        retrieved_manifest["status"] = "success"
 
         logger.info("✅ Python client → Go server (auto mTLS ECDSA) - PASSED")
         logger.info(f"   Key: {test_key}")
-        logger.info(f"   Value: {retrieved_manifest['test_name']} proof manifest")
+        logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
+        logger.info(f"   Client connection time: {connection_time:.3f}s")
 
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        # Write final proof manifest showing complete round-trip with both handshakes
         retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
         manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
         manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
@@ -323,29 +383,59 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path, test_artifacts_dir:
         "crypto_type": "none",
         "key": test_key,
         "timestamp": datetime.now().isoformat(),
-        "status": "success"
+        "status": "pending",  # Changed to pending until test completes
+        "user_data": {  # Optional user payload
+            "description": "Testing Python client to Python server without mTLS",
+            "test_iteration": 1,
+        }
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
     try:
+        start_time = time.time()
         await client.start()
+        connection_time = time.time() - start_time
+
         await client.put(test_key, test_value)
         retrieved = await client.get(test_key)
-        assert retrieved == test_value
 
         # Verify the retrieved value is valid JSON with correct content
         retrieved_manifest = json.loads(retrieved.decode())
         assert retrieved_manifest["test_name"] == "pyclient_pyserver_no_mtls"
+        assert retrieved_manifest["client_type"] == "python"
         assert retrieved_manifest["server_type"] == "python"
+
+        # Verify server added its handshake
+        assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
+        logger.info("✅ Server handshake detected in retrieved value")
+
+        # Add client handshake information
+        client_handshake = {
+            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
+            "tls_mode": client.tls_mode,
+            "tls_config": {
+                "key_type": client.tls_key_type,
+                "curve": client.tls_curve if client.tls_key_type == "ec" else None,
+            },
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "timestamp": datetime.now().isoformat(),
+            "connection_time": round(connection_time, 3),
+        }
+        retrieved_manifest["client_handshake"] = client_handshake
+
+        # Update status to success
+        retrieved_manifest["status"] = "success"
 
         logger.info("✅ Python client → Python server (no mTLS) - PASSED")
         logger.info(f"   Key: {test_key}")
-        logger.info(f"   Value: {retrieved_manifest['test_name']} proof manifest")
+        logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
+        logger.info(f"   Client connection time: {connection_time:.3f}s")
 
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        # Write final proof manifest showing complete round-trip with both handshakes
         retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
         manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
         manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
@@ -391,29 +481,59 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
         "crypto_type": "rsa",
         "key": test_key,
         "timestamp": datetime.now().isoformat(),
-        "status": "success"
+        "status": "pending",  # Changed to pending until test completes
+        "user_data": {  # Optional user payload
+            "description": "Testing Python client to Python server with auto mTLS (RSA)",
+            "test_iteration": 1,
+        }
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
     try:
+        start_time = time.time()
         await client.start()
+        connection_time = time.time() - start_time
+
         await client.put(test_key, test_value)
         retrieved = await client.get(test_key)
-        assert retrieved == test_value
 
         # Verify the retrieved value is valid JSON with correct content
         retrieved_manifest = json.loads(retrieved.decode())
         assert retrieved_manifest["test_name"] == "pyclient_pyserver_mtls_rsa"
+        assert retrieved_manifest["client_type"] == "python"
         assert retrieved_manifest["server_type"] == "python"
+
+        # Verify server added its handshake
+        assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
+        logger.info("✅ Server handshake detected in retrieved value")
+
+        # Add client handshake information
+        client_handshake = {
+            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
+            "tls_mode": client.tls_mode,
+            "tls_config": {
+                "key_type": client.tls_key_type,
+                "curve": client.tls_curve if client.tls_key_type == "ec" else None,
+            },
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "timestamp": datetime.now().isoformat(),
+            "connection_time": round(connection_time, 3),
+        }
+        retrieved_manifest["client_handshake"] = client_handshake
+
+        # Update status to success
+        retrieved_manifest["status"] = "success"
 
         logger.info("✅ Python client → Python server (auto mTLS) - PASSED")
         logger.info(f"   Key: {test_key}")
-        logger.info(f"   Value: {retrieved_manifest['test_name']} proof manifest")
+        logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
+        logger.info(f"   Client connection time: {connection_time:.3f}s")
 
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        # Write final proof manifest showing complete round-trip with both handshakes
         retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
         manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
         manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))

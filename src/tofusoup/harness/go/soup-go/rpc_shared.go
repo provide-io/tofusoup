@@ -2,15 +2,20 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/gofrs/flock"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
 	"github.com/provide-io/tofusoup/proto/kv"
@@ -80,8 +85,9 @@ func (p *KVGRPCPlugin) GRPCServer(broker *plugin.GRPCBroker, s *grpc.Server) err
 	}
 
 	server := &GRPCServer{
-		Impl:   p.Impl,
-		logger: logger,
+		Impl:      p.Impl,
+		logger:    logger,
+		startTime: time.Now(),
 	}
 
 	proto.RegisterKVServer(s, server)
@@ -136,8 +142,87 @@ func (m *GRPCClient) Get(key string) ([]byte, error) {
 // GRPCServer is the gRPC server that GRPCClient talks to.
 type GRPCServer struct {
 	proto.UnimplementedKVServer
-	Impl   KV
-	logger hclog.Logger
+	Impl      KV
+	logger    hclog.Logger
+	startTime time.Time
+}
+
+// enrichJSONWithHandshake enriches JSON values with server handshake information.
+// If the value is valid JSON object, adds a 'server_handshake' field with connection metadata.
+// If not JSON, returns the original bytes unchanged.
+func (m *GRPCServer) enrichJSONWithHandshake(ctx context.Context, value []byte) ([]byte, error) {
+	// Try to parse as JSON
+	var jsonData map[string]interface{}
+	if err := json.Unmarshal(value, &jsonData); err != nil {
+		// Not JSON or not an object - return original
+		m.logger.Debug("Value is not JSON object, storing as-is")
+		return value, nil
+	}
+
+	// Get peer information from context
+	peerInfo, ok := peer.FromContext(ctx)
+	endpoint := "unknown"
+	if ok && peerInfo.Addr != nil {
+		endpoint = peerInfo.Addr.String()
+	}
+
+	// Build server handshake information
+	serverHandshake := map[string]interface{}{
+		"endpoint":          endpoint,
+		"protocol_version":  os.Getenv("PLUGIN_PROTOCOL_VERSIONS"),
+		"tls_mode":          os.Getenv("TLS_MODE"),
+		"timestamp":         time.Now().UTC().Format(time.RFC3339),
+		"received_at":       time.Since(m.startTime).Seconds(),
+	}
+
+	// Set default protocol version if not set
+	if serverHandshake["protocol_version"] == "" {
+		serverHandshake["protocol_version"] = "1"
+	}
+
+	// Set default tls_mode if not set
+	if serverHandshake["tls_mode"] == "" {
+		serverHandshake["tls_mode"] = "unknown"
+	}
+
+	// Add TLS config if available
+	tlsCurve := os.Getenv("TLS_CURVE")
+	tlsKeyType := os.Getenv("TLS_KEY_TYPE")
+	if tlsCurve != "" || tlsKeyType != "" {
+		serverHandshake["tls_config"] = map[string]interface{}{
+			"key_type": tlsKeyType,
+			"curve":    tlsCurve,
+		}
+	}
+
+	// Add certificate fingerprint if mTLS is enabled
+	serverCertPath := os.Getenv("PLUGIN_SERVER_CERT")
+	if serverCertPath != "" {
+		certData, err := os.ReadFile(serverCertPath)
+		if err == nil {
+			hash := sha256.Sum256(certData)
+			serverHandshake["cert_fingerprint"] = hex.EncodeToString(hash[:])
+		} else {
+			serverHandshake["cert_fingerprint"] = nil
+		}
+	} else {
+		serverHandshake["cert_fingerprint"] = nil
+	}
+
+	// Add server handshake to JSON
+	jsonData["server_handshake"] = serverHandshake
+
+	// Marshal back to JSON
+	enrichedJSON, err := json.Marshal(jsonData)
+	if err != nil {
+		m.logger.Warn("Failed to marshal enriched JSON, using original", "error", err)
+		return value, nil
+	}
+
+	m.logger.Debug("Enriched JSON value with server handshake",
+		"original_size", len(value),
+		"enriched_size", len(enrichedJSON))
+	return enrichedJSON, nil
 }
 
 func (m *GRPCServer) Put(ctx context.Context, req *proto.PutRequest) (*proto.Empty, error) {
@@ -145,7 +230,16 @@ func (m *GRPCServer) Put(ctx context.Context, req *proto.PutRequest) (*proto.Emp
 		"key", req.Key,
 		"value_size", len(req.Value))
 
-	if err := m.Impl.Put(req.Key, req.Value); err != nil {
+	// Enrich JSON values with server handshake information
+	enrichedValue, err := m.enrichJSONWithHandshake(ctx, req.Value)
+	if err != nil {
+		m.logger.Error("📡❌ Failed to enrich value",
+			"key", req.Key,
+			"error", err)
+		return nil, err
+	}
+
+	if err := m.Impl.Put(req.Key, enrichedValue); err != nil {
 		m.logger.Error("📡❌ Put operation failed",
 			"key", req.Key,
 			"error", err)
@@ -153,7 +247,9 @@ func (m *GRPCServer) Put(ctx context.Context, req *proto.PutRequest) (*proto.Emp
 	}
 
 	m.logger.Debug("📡✅ Put operation completed successfully",
-		"key", req.Key)
+		"key", req.Key,
+		"original_size", len(req.Value),
+		"stored_size", len(enrichedValue))
 	return &proto.Empty{}, nil
 }
 
