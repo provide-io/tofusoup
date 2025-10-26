@@ -104,7 +104,10 @@ var rpcServerCmd = &cobra.Command{
 	},
 }
 
-var rpcClientCmd = &cobra.Command{
+var rpcClientCmd *cobra.Command
+var rpcKVGetCmd *cobra.Command
+var rpcKVPutCmd *cobra.Command
+var rpcValidateConnectionCmd *cobra.Command
 	Use:   "client",
 	Short: "RPC client operations",
 	Run: func(cmd *cobra.Command, args []string) {
