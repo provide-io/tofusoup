@@ -4,73 +4,57 @@ Cross-language RPC compatibility test matrix.
 
 Tests all working language pair combinations:
 - Python → Python (secp256r1, secp384r1)
-- Go → Python (AutoMTLS)
+- Python → Go (various curves)
 
-Note: Python → Go is a known bug in pyvider-rpcplugin and is NOT tested here.
+Note: These tests use KVClient infrastructure to test cross-language compatibility.
 """
 from pathlib import Path
-
-import time
+import shutil
 
 from provide.foundation import logger
 import pytest
 
 from tofusoup.rpc.client import KVClient
 
-# Test matrix: (client_type, server_path, curve, description)
-WORKING_COMBINATIONS = [
-    ("python", "/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup", "secp256r1", "Python→Python with P-256"),
-    ("python", "/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup", "secp384r1", "Python→Python with P-384"),
-    # Note: Go client → Python server tested separately in Go code
-]
+
+@pytest.fixture
+def soup_path() -> Path | None:
+    """Find the soup executable (Python)."""
+    soup = shutil.which("soup")
+    if soup:
+        return Path(soup)
+    return None
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_type,server_path,curve,description", WORKING_COMBINATIONS)
-async def test_cross_language_connection(client_type, server_path, curve, description) -> None:
-    """Test that a client can connect to a server with specified curve."""
-    server = Path(server_path)
+@pytest.fixture
+def soup_go_path() -> Path | None:
+    """Find the soup-go executable."""
+    candidates = [
+        Path("bin/soup-go"),
+        Path("harnesses/bin/soup-go"),
+        Path(__file__).parent.parent.parent / "bin" / "soup-go",
+    ]
 
-    if not server.exists():
-        pytest.skip(f"Server not found: {server}")
+    for path in candidates:
+        if path.exists():
+            return path.resolve()
 
-    # Create client
-    client = KVClient(
-        server_path=str(server),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve=curve
-    )
-    client.connection_timeout = 10
+    soup_go = shutil.which("soup-go")
+    if soup_go:
+        return Path(soup_go)
 
-    try:
-        # Test connection
-        await client.start()
-
-        # Test basic operations
-        test_key = f"test-{curve}"
-        test_value = f"Test value for {description}".encode()
-
-        await client.put(test_key, test_value)
-        result = await client.get(test_key)
-
-        assert result == test_value, f"Value mismatch for {description}"
-
-    finally:
-        await client.close()
+    return None
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
-async def test_python_to_python_all_curves(curve) -> None:
+async def test_python_to_python_all_curves(soup_path: Path | None, curve: str) -> None:
     """Test Python client → Python server with each supported curve."""
-    server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
-
-    if not server_path.exists():
-        pytest.skip(f"Python server not found: {server_path}")
+    if soup_path is None:
+        pytest.skip("Python server (soup) not found in PATH")
 
     client = KVClient(
-        server_path=str(server_path),
+        server_path=str(soup_path),
         tls_mode="auto",
         tls_key_type="ec",
         tls_curve=curve
@@ -93,25 +77,55 @@ async def test_python_to_python_all_curves(curve) -> None:
         await client.close()
 
 
-@pytest.mark.skipif(
-    not Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go").exists(),
-    reason="Go binary not found"
-)
 @pytest.mark.asyncio
-async def test_go_to_go_connection() -> None:
+async def test_python_to_go_all_curves(soup_go_path: Path | None) -> None:
+    """Test Python client → Go server with supported curves."""
+    if soup_go_path is None:
+        pytest.skip("Go server (soup-go) not found")
+
+    for curve in ["secp256r1", "secp384r1"]:
+        client = KVClient(
+            server_path=str(soup_go_path),
+            tls_mode="auto",
+            tls_key_type="ec",
+            tls_curve=curve
+        )
+        client.connection_timeout = 10
+
+        try:
+            await client.start()
+
+            test_key = f"py-go-matrix-{curve}"
+            test_value = f"Python→Go with {curve}".encode()
+
+            await client.put(test_key, test_value)
+            result = await client.get(test_key)
+
+            assert result == test_value
+
+        finally:
+            await client.close()
+
+
+@pytest.mark.asyncio
+async def test_go_to_go_connection(soup_go_path: Path | None) -> None:
     """Test Go client → Go server by explicitly starting server and client."""
     import subprocess
     import asyncio
     import os
+    import time
 
-    go_binary = Path("/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go")
+    if soup_go_path is None:
+        pytest.skip("Go binary (soup-go) not found")
 
     env = os.environ.copy()
     env["KV_STORAGE_DIR"] = "/tmp"
     env["LOG_LEVEL"] = "INFO"
+    env["BASIC_PLUGIN"] = "hello"
+    env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
     # 1. Start the Go server
-    server_command = [str(go_binary), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+    server_command = [str(soup_go_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
     server_process = subprocess.Popen(
         server_command,
         env=env,
@@ -151,7 +165,7 @@ async def test_go_to_go_connection() -> None:
     put_key = "go-go-key-matrix"
     put_value = "Hello from Go client to Go server (matrix)!"
     put_command = [
-        str(go_binary), "rpc", "kv", "put",
+        str(soup_go_path), "rpc", "kv", "put",
         f"--address=127.0.0.1:{port}",
         put_key, put_value
     ]
@@ -167,7 +181,7 @@ async def test_go_to_go_connection() -> None:
 
     # 3. Run the Go client to get the value
     get_command = [
-        str(go_binary), "rpc", "kv", "get",
+        str(soup_go_path), "rpc", "kv", "get",
         f"--address=127.0.0.1:{port}",
         put_key
     ]
