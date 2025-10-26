@@ -211,7 +211,7 @@ class TestCrossLanguageInterop:
                 stderr_output = server_process.stderr.read()
                 raise AssertionError(f"Server process terminated prematurely. Stderr: {stderr_output}")
         assert handshake_line, "Python server did not output handshake line"
-        
+
         # Extract port from handshake line
         parts = handshake_line.split('|')
         assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
@@ -219,11 +219,12 @@ class TestCrossLanguageInterop:
         port = address_part.split(':')[-1]
 
         # 2. Run the Go client to put a value
+        # IMPORTANT: Pass the FULL handshake line (including certificate) so Go client can auto-detect TLS curve
         put_key = "go-py-key-interop"
         put_value = "Hello from Go client to Python server (interop)!"
         put_command = [
             go_client_path, "rpc", "kv", "put",
-            f"--address=127.0.0.1:{port}",
+            f"--address={handshake_line}",  # Pass full handshake with certificate for TLS curve auto-detection
             put_key, put_value
         ]
         put_result = subprocess.run(
@@ -239,7 +240,7 @@ class TestCrossLanguageInterop:
         # 3. Run the Go client to get the value
         get_command = [
             go_client_path, "rpc", "kv", "get",
-            f"--address=127.0.0.1:{port}",
+            f"--address={handshake_line}",  # Pass full handshake with certificate
             put_key
         ]
         get_result = subprocess.run(
