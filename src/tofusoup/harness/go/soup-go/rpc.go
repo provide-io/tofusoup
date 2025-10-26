@@ -466,26 +466,23 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 
 // parseCertificateFromHandshake decodes and parses the base64-encoded certificate from the handshake
 func parseCertificateFromHandshake(certBase64 string, logger hclog.Logger) (*tls.Config, error) {
-	// Decode base64 certificate
-	certPEM, err := base64.StdEncoding.DecodeString(certBase64)
+	// Decode base64 certificate (DER format, not PEM)
+	certDER, err := base64.StdEncoding.DecodeString(certBase64)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode base64 certificate: %w", err)
 	}
 
-	// Parse PEM certificate
-	block, _ := pem.Decode(certPEM)
-	if block == nil {
-		return nil, fmt.Errorf("failed to decode PEM certificate")
-	}
-
-	cert, err := x509.ParseCertificate(block.Bytes)
+	// Parse DER-encoded certificate directly
+	cert, err := x509.ParseCertificate(certDER)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse x509 certificate: %w", err)
 	}
 
 	logger.Debug("Parsed server certificate",
 		"subject", cert.Subject.CommonName,
-		"issuer", cert.Issuer.CommonName)
+		"issuer", cert.Issuer.CommonName,
+		"not_before", cert.NotBefore,
+		"not_after", cert.NotAfter)
 
 	// Create certificate pool with server cert for trust verification
 	certPool := x509.NewCertPool()
@@ -496,9 +493,11 @@ func parseCertificateFromHandshake(certBase64 string, logger hclog.Logger) (*tls
 		RootCAs:            certPool,
 		InsecureSkipVerify: false,  // We're properly verifying with the cert pool
 		MinVersion:         tls.VersionTLS12,
+		ServerName:         cert.Subject.CommonName,  // For SNI and hostname verification
 	}
 
-	logger.Info("Created TLS config with server certificate for mTLS")
+	logger.Info("Created TLS config with server certificate for mTLS",
+		"server_name", cert.Subject.CommonName)
 	return tlsConfig, nil
 }
 
@@ -528,10 +527,11 @@ func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 	}
 
-	// If TLS config is provided, configure secure communication
+	// If TLS config is provided, enable AutoMTLS and let go-plugin handle it
 	if tlsConfig != nil {
-		logger.Info("Configuring mTLS for server connection")
-		// Use GRPCDialOptions to configure TLS for the gRPC connection
+		logger.Info("Enabling AutoMTLS for server connection")
+		clientConfig.AutoMTLS = true
+		// Configure TLS through GRPCDialOptions
 		clientConfig.GRPCDialOptions = []grpc.DialOption{
 			grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)),
 		}
@@ -542,6 +542,6 @@ func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.
 	// Create client with reattach config
 	client := plugin.NewClient(clientConfig)
 
-	logger.Info("Reattach client created successfully", "address", reattachConfig.Addr, "tls", tlsConfig != nil)
+	logger.Info("Reattach client created successfully", "address", reattachConfig.Addr, "auto_mtls", tlsConfig != nil)
 	return client, nil
 }
