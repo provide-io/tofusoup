@@ -180,8 +180,8 @@ class KVClient:
         # Check if binary name suggests it needs subcommands
         binary_name = os.path.basename(self.server_path)
         if binary_name in ["soup-go", "go-harness", "soup"]:
-            # New harnesses (both Go and Python) expect rpc server-start subcommand
-            server_command.extend(["rpc", "server-start"])
+            # New harnesses (both Go and Python) expect rpc kv server subcommand
+            server_command.extend(["rpc", "kv", "server"])
 
         # Add TLS configuration arguments
         server_command.extend(self._build_tls_command_args())
