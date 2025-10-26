@@ -74,7 +74,8 @@
       "Bash(for curve in secp256r1 secp384r1 secp521r1)",
       "Bash(do)",
       "Bash(done)",
-      "Bash(do echo \"   $ soup rpc validate-connection --client python --server bin/soup-go --curve $curve\" soup rpc validate-connection --client python --server bin/soup-go --curve $curve)"
+      "Bash(do echo \"   $ soup rpc validate-connection --client python --server bin/soup-go --curve $curve\" soup rpc validate-connection --client python --server bin/soup-go --curve $curve)",
+      "Bash(touch:*)"
     ],
     "deny": [],
     "ask": [],
