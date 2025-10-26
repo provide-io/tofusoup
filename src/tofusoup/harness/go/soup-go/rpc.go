@@ -233,6 +233,139 @@ func decodeAndLogCertificate(certPEM string, logger hclog.Logger) error {
 	return nil
 }
 
+var rpcClientTestCmd *cobra.Command
+
+// Override the kvget command with real implementation
+func initRpcKVGetCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "kvget [key]",
+		Short: "Get a value from the RPC KV server",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			key := args[0]
+			
+			client, err := newRPCClient(logger)
+			if err != nil {
+				return err
+			}
+			defer client.Kill()
+
+			raw, err := client.Client()
+			if err != nil {
+				return fmt.Errorf("failed to create RPC client: %w", err)
+			}
+			kv := raw.(KV)
+
+			value, err := kv.Get(key)
+			if err != nil {
+				return fmt.Errorf("failed to get key %s: %w", key, err)
+			}
+
+			fmt.Printf("%s\n", value)
+			return nil
+		},
+	}
+	return cmd
+}
+
+// Override the kvput command with real implementation
+func initRpcKVPutCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "kvput [key] [value]",
+		Short: "Put a key-value pair into the RPC KV server",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			key := args[0]
+			value := []byte(args[1])
+
+			client, err := newRPCClient(logger)
+			if err != nil {
+				return err
+			}
+			defer client.Kill()
+
+			raw, err := client.Client()
+			if err != nil {
+				return fmt.Errorf("failed to create RPC client: %w", err)
+			}
+			kv := raw.(KV)
+
+			if err := kv.Put(key, value); err != nil {
+				return fmt.Errorf("failed to put key %s: %w", key, err)
+			}
+
+			fmt.Printf("Key %s put successfully.\n", key)
+			return nil
+		},
+	}
+	return cmd
+}
+
+// Override the validateconnection command with real implementation
+func initRpcValidateConnectionCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "validateconnection",
+		Short: "Validate connection to the RPC KV server",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// This will attempt to connect and perform a simple operation
+			// If it succeeds, the connection is valid.
+			client, err := newRPCClient(logger)
+			if err != nil {
+				return err
+			}
+			defer client.Kill()
+
+			raw, err := client.Client()
+			if err != nil {
+				return fmt.Errorf("failed to create RPC client: %w", err)
+			}
+			kv := raw.(KV)
+
+			// Perform a simple Get on a non-existent key to validate connection
+			_, err = kv.Get("__connection_test_key__")
+			if err != nil && !strings.Contains(err.Error(), "key not found") {
+				return fmt.Errorf("connection validation failed: %w", err)
+			}
+
+			fmt.Println("RPC connection validated successfully.")
+			return nil
+		},
+	}
+	return cmd
+}
+
+// newRPCClient creates a new go-plugin client for the KV service
+func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
+	// Create command with environment variables
+	serverPath := os.Getenv("PLUGIN_SERVER_PATH")
+	if serverPath == "" {
+		return nil, fmt.Errorf("PLUGIN_SERVER_PATH environment variable not set")
+	}
+
+	cmd := exec.Command(serverPath, "rpc", "server-start")
+	cmd.Env = append(os.Environ(),
+		"PLUGIN_AUTO_MTLS=true",  // Explicitly enable AutoMTLS for Python server
+		"KV_STORAGE_DIR=/tmp",    // Set storage directory
+	)
+
+	// Create client
+	client := plugin.NewClient(&plugin.ClientConfig{
+		HandshakeConfig:  Handshake,
+		VersionedPlugins: map[int]plugin.PluginSet{
+			1: {
+				"kv_grpc": &KVGRPCPlugin{},
+			},
+		},
+		Cmd:             cmd,
+		Logger:          logger,
+		AutoMTLS:        true,
+		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
+	})
+
+	return client, nil
+}
+
 func testRPCClient(logger hclog.Logger, serverPath string) error {
 	logger.Info("🌐🧪 starting RPC client test", "server_path", serverPath)
 
