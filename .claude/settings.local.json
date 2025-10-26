@@ -26,7 +26,8 @@
       "Bash(./bin/soup-go rpc:*)",
       "Bash(./bin/soup-go:*)",
       "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go rpc kv:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Read(//tmp/**)"
     ],
     "deny": [],
     "ask": [],
