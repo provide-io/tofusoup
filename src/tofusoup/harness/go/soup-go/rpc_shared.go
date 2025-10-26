@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"sync"
-	"time"
 
 	"github.com/gofrs/flock"
 	"github.com/hashicorp/go-hclog"
