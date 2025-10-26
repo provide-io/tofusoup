@@ -10,6 +10,8 @@ Note: Python → Go is a known bug in pyvider-rpcplugin and is NOT tested here.
 """
 from pathlib import Path
 
+import time
+
 from provide.foundation import logger
 import pytest
 
