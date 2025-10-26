@@ -77,7 +77,8 @@
       "Bash(do echo \"   $ soup rpc validate-connection --client python --server bin/soup-go --curve $curve\" soup rpc validate-connection --client python --server bin/soup-go --curve $curve)",
       "Bash(touch:*)",
       "Bash(for file in conformance/rpc/property_test*.py conformance/wire/property_test*.py conformance/property_test*.py)",
-      "Bash(do echo \"=== $file ===\")"
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": [],
