@@ -37,23 +37,13 @@ def soup_go_path() -> Path | None:
 
 
 @pytest.mark.parametrize("curve", [
-    pytest.param("P-256", id="P-256 (secp256r1)", marks=pytest.mark.xfail(
-        reason="Python client → Go server is not supported (known issue in pyvider-rpcplugin)",
-        raises=(ConnectionError, TimeoutError),
-        strict=False
-    )),
-    pytest.param("P-384", id="P-384 (secp384r1)", marks=pytest.mark.xfail(
-        reason="Python client → Go server is not supported (known issue in pyvider-rpcplugin)",
-        raises=(ConnectionError, TimeoutError),
-        strict=False
-    )),
-    pytest.param("P-521", id="P-521 (secp521r1)", marks=pytest.mark.xfail(
-        reason="P-521 is known to be incompatible with Python client due to secp521r1 curve support differences"
-    )),
+    pytest.param("P-256", id="P-256 (secp256r1)"),
+    pytest.param("P-384", id="P-384 (secp384r1)"),
+    pytest.param("P-521", id="P-521 (secp521r1)"),
 ])
 @pytest.mark.asyncio
 async def test_python_to_go_curve(soup_go_path: Path | None, curve: str) -> None:
-    """Test Python client → Go server with specific elliptic curve (known to be unsupported)."""
+    """Test Python client → Go server with specific elliptic curve."""
     if soup_go_path is None:
         pytest.skip("soup-go executable not found")
 
