@@ -53,7 +53,7 @@ def soup_path() -> Path | None:
 
 @pytest.mark.asyncio
 async def test_go_to_go(soup_go_path: Path | None) -> None:
-    """Test Go client → Go server using built-in test command."""
+    """Test Go client → Go server by explicitly starting server and client."""
     if soup_go_path is None:
         pytest.skip("soup-go executable not found")
 
@@ -61,19 +61,71 @@ async def test_go_to_go(soup_go_path: Path | None) -> None:
     env["KV_STORAGE_DIR"] = "/tmp"
     env["LOG_LEVEL"] = "INFO"
 
-    # Run the built-in Go client test
-    # This command starts a Go server internally and tests against it
-    result = subprocess.run(
-        [str(soup_go_path), "rpc", "client", "test", str(soup_go_path)],
+    # 1. Start the Go server
+    server_command = [str(soup_go_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+    server_process = subprocess.Popen(
+        server_command,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
+    # Wait for the server to start and output its handshake
+    handshake_line = ""
+    for _ in range(10):  # Try reading for a few seconds
+        line = server_process.stdout.readline()
+        if "core_version" in line: # Look for the handshake line
+            handshake_line = line.strip()
+            break
+        await asyncio.sleep(0.5)
+
+    assert handshake_line, "Go server did not output handshake line"
+    
+    # Extract port from handshake line
+    parts = handshake_line.split('|')
+    assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
+    address_part = parts[3]
+    port = address_part.split(':')[-1]
+    
+    # 2. Run the Go client to put a value
+    put_key = "go-go-key"
+    put_value = "Hello from Go client to Go server!"
+    put_command = [
+        str(soup_go_path), "rpc", "kv", "put",
+        f"--address=127.0.0.1:{port}",
+        put_key, put_value
+    ]
+    put_result = subprocess.run(
+        put_command,
         env=env,
         capture_output=True,
         text=True,
-        timeout=30
+        timeout=10
     )
+    assert put_result.returncode == 0, f"Go client Put failed: {put_result.stderr}"
+    assert f"Key {put_key} put successfully." in put_result.stdout
 
-    assert result.returncode == 0, f"Go→Go test failed: {result.stderr}"
-    assert "Put operation successful" in result.stdout
-    assert "Get operation successful" in result.stdout
+    # 3. Run the Go client to get the value
+    get_command = [
+        str(soup_go_path), "rpc", "kv", "get",
+        f"--address=127.0.0.1:{port}",
+        put_key
+    ]
+    get_result = subprocess.run(
+        get_command,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+    assert get_result.returncode == 0, f"Go client Get failed: {get_result.stderr}"
+    assert put_value in get_result.stdout
+
+    # Clean up server process
+    server_process.terminate()
+    server_process.wait(timeout=5)
+    assert server_process.returncode is not None, "Go server process did not terminate"
 
 
 @pytest.mark.asyncio
