@@ -186,7 +186,7 @@ class TestCrossLanguageCompatibility:
 
         # Try to start the server with a timeout
         process = subprocess.Popen(
-            [str(go_binary), "rpc", "server-start", "--port", "50099"],
+            [str(go_binary), "rpc", "kv", "server", "--port", "50099"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
