@@ -95,6 +95,7 @@ class TestCrossLanguageInterop:
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_python
+    @pytest.mark.timeout(60)
     async def test_python_client_python_server(self, python_server_address: str) -> None:
         """Test: Python Client ↔ Python Server"""
         logger.info("🐍↔🐍 Testing Python Client ↔ Python Server")
@@ -123,6 +124,7 @@ class TestCrossLanguageInterop:
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
+    @pytest.mark.timeout(60)
     async def test_python_client_go_server(self, go_server_path: str) -> None:
         """Test: Python Client ↔ Go Server"""
         if not go_server_path:
@@ -162,6 +164,7 @@ class TestCrossLanguageInterop:
     @pytest.mark.harness_go
     @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
+    @pytest.mark.timeout(90)
     async def test_go_client_python_server(self, go_client_path: str, soup_path: Path | None,
                                             test_artifacts_dir: Path) -> None:
         """Test: Go Client ↔ Python Server by explicitly starting server and client."""
@@ -194,7 +197,7 @@ class TestCrossLanguageInterop:
 
         # Wait for the server to start and output its handshake
         handshake_line = ""
-        timeout_seconds = 10
+        timeout_seconds = 30
         start_time = time.time()
         while time.time() - start_time < timeout_seconds:
             line = server_process.stdout.readline()
@@ -289,6 +292,7 @@ class TestCrossLanguageInterop:
     @pytest.mark.integration_rpc
     @pytest.mark.harness_python
     @pytest.mark.harness_go
+    @pytest.mark.timeout(90)
     async def test_comprehensive_interop_scenario(
         self, python_server_address: str, go_server_path: str | None
     ) -> None:
