@@ -32,7 +32,9 @@
       "Bash(for f in /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-11/rpc_matrix_proof0/*/pyclient_*.json)",
       "Bash(do echo \"=== $f ===\" cat \"$f\")",
       "Bash(./harnesses/bin/soup-go:*)",
-      "Bash(uv pip list:*)"
+      "Bash(uv pip list:*)",
+      "Bash(LOG_LEVEL=INFO uv run pytest:*)",
+      "Bash(python test_logging_demo.py:*)"
     ],
     "deny": [],
     "ask": [],
