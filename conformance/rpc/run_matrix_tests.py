@@ -83,7 +83,7 @@ def main() -> None:
 
     # Build command
     base_cmd = ["python", "-m", "pytest"]
-    test_file = str(script_dir / "test_rpc_kv_matrix.py")
+    test_file = str(script_dir / "souptest_rpc_kv_matrix.py")
     cmd = base_cmd + [test_file] + config["args"]
 
     # Add any additional arguments from command line
