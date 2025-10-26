@@ -264,9 +264,15 @@ func initKVGetCmd() *cobra.Command {
 			}
 			defer client.Kill()
 
-			raw, err := client.Client()
+			rpcClient, err := client.Client()
 			if err != nil {
 				return fmt.Errorf("failed to create RPC client: %w", err)
+			}
+
+			// Dispense the plugin to get our KV interface
+			raw, err := rpcClient.Dispense("kv_grpc")
+			if err != nil {
+				return fmt.Errorf("failed to dispense plugin: %w", err)
 			}
 			kv := raw.(KV)
 
@@ -313,9 +319,15 @@ func initKVPutCmd() *cobra.Command {
 			}
 			defer client.Kill()
 
-			raw, err := client.Client()
+			rpcClient, err := client.Client()
 			if err != nil {
 				return fmt.Errorf("failed to create RPC client: %w", err)
+			}
+
+			// Dispense the plugin to get our KV interface
+			raw, err := rpcClient.Dispense("kv_grpc")
+			if err != nil {
+				return fmt.Errorf("failed to dispense plugin: %w", err)
 			}
 			kv := raw.(KV)
 
