@@ -138,20 +138,27 @@ class TestCLIParityMatrix:
     @pytest.fixture
     def soup_executable(self) -> Path:
         """Get path to soup executable."""
-        # Try to find soup in PATH
-        result = subprocess.run(["which", "soup"], capture_output=True, text=True)
-        if result.returncode == 0:
-            return Path(result.stdout.strip())
+        import shutil
+        # Try to find soup in PATH first
+        soup_path = shutil.which("soup")
+        if soup_path:
+            return Path(soup_path)
 
-        # Fallback: assume it's in the project
+        # Fallback: assume it's in the project .venv
         project_root = Path(__file__).parent.parent.parent
-        return project_root / ".venv_darwin_arm64" / "bin" / "soup"
+        return project_root / ".venv" / "bin" / "soup"
 
     @pytest.fixture
     def soup_go_executable(self) -> Path:
         """Get path to soup-go executable."""
         project_root = Path(__file__).parent.parent.parent
-        return project_root / "src" / "tofusoup" / "harness" / "go" / "bin" / "soup-go"
+        # Check bin/ first (standard location after build)
+        bin_path = project_root / "bin" / "soup-go"
+        if bin_path.exists():
+            return bin_path
+
+        # Fallback to harnesses/bin
+        return project_root / "harnesses" / "bin" / "soup-go"
 
     @pytest.mark.parametrize(
         "command_path", ["", "cty", "cty view", "cty convert", "hcl", "hcl view", "hcl convert", "rpc"]
