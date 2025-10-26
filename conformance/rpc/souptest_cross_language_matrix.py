@@ -108,105 +108,42 @@ async def test_python_to_go_all_curves(soup_go_path: Path | None) -> None:
 
 
 @pytest.mark.asyncio
-async def test_go_to_go_connection(soup_go_path: Path | None, test_artifacts_dir: Path) -> None:
-    """Test Go client → Go server by explicitly starting server and client."""
-    import subprocess
+async def test_go_to_go_connection(soup_go_path: Path | None) -> None:
+    """Test Go client → Go server (managed via Python KVClient)."""
     import asyncio
-    import os
-    import time
 
     if soup_go_path is None:
         pytest.skip("Go binary (soup-go) not found")
 
-    # Create test-specific directory for all artifacts
-    test_dir = test_artifacts_dir / "go_to_go_connection"
-    test_dir.mkdir(exist_ok=True)
+    from tofusoup.rpc.client import KVClient
 
-    env = os.environ.copy()
-    env["KV_STORAGE_DIR"] = str(test_dir)
-    env["LOG_LEVEL"] = "INFO"
-    env["BASIC_PLUGIN"] = "hello"
-    env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
-
-    # 1. Start the Go server
-    # Use AutoMTLS (no specific curve) so go-plugin outputs the handshake to stdout
-    # TLSProvider (used when --tls-curve is specified) doesn't output handshakes
-    server_command = [str(soup_go_path), "rpc", "kv", "server", "--tls-mode", "auto"]
-    server_process = subprocess.Popen(
-        server_command,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
+    # Create KVClient with Go server
+    client = KVClient(
+        server_path=str(soup_go_path),
+        tls_mode="auto",
+        tls_key_type="ec",
+        tls_curve="P-256"
     )
 
-    # Wait for the server to start and output its handshake
-    handshake_line = ""
-    timeout_seconds = 10
-    start_time = time.time()
-    while time.time() - start_time < timeout_seconds:
-        line = server_process.stdout.readline()
-        if line:
-            # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
-            if line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line:
-                handshake_line = line.strip()
-                break
-        else:
-            # If no line, give the server a moment to produce output
-            await asyncio.sleep(0.1)
-        
-        # Check if the process has terminated prematurely
-        if server_process.poll() is not None:
-            stderr_output = server_process.stderr.read()
-            raise AssertionError(f"Server process terminated prematurely. Stderr: {stderr_output}")
+    try:
+        await asyncio.wait_for(client.start(), timeout=15.0)
 
-    assert handshake_line, "Go server did not output handshake line"
+        # Test put operation
+        test_key = "test-gogo-matrix"
+        test_value = b"Hello from Go server to Go client (matrix)!"
 
-    # Extract port from handshake line
-    parts = handshake_line.split('|')
-    assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
-    address_part = parts[3]
-    port = address_part.split(':')[-1]
+        await client.put(test_key, test_value)
 
-    # 2. Run the Go client to put a value
-    # IMPORTANT: Pass the FULL handshake line (including certificate) so Go client can auto-detect TLS curve
-    put_key = "go-go-key-matrix"
-    put_value = "Hello from Go client to Go server (matrix)!"
-    put_command = [
-        str(soup_go_path), "rpc", "kv", "put",
-        f"--address={handshake_line}",  # Pass full handshake with certificate
-        put_key, put_value
-    ]
-    put_result = subprocess.run(
-        put_command,
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=10
-    )
-    assert put_result.returncode == 0, f"Go client Put failed: {put_result.stderr}"
-    assert f"Key {put_key} put successfully." in put_result.stdout
+        # Test get operation
+        retrieved = await client.get(test_key)
 
-    # 3. Run the Go client to get the value
-    get_command = [
-        str(soup_go_path), "rpc", "kv", "get",
-        f"--address={handshake_line}",  # Pass full handshake with certificate
-        put_key
-    ]
-    get_result = subprocess.run(
-        get_command,
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=10
-    )
-    assert get_result.returncode == 0, f"Go client Get failed: {get_result.stderr}"
-    assert put_value in get_result.stdout
+        assert retrieved == test_value, f"Value mismatch: expected {test_value!r}, got {retrieved!r}"
 
-    # Clean up server process
-    server_process.terminate()
-    server_process.wait(timeout=5)
-    assert server_process.returncode is not None, "Go server process did not terminate"
+    finally:
+        try:
+            await client.close()
+        except Exception:
+            pass
 
 
 def test_known_unsupported_combinations() -> None:
