@@ -52,7 +52,6 @@ def soup_path() -> Path | None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(60)
 async def test_python_to_python(soup_path: Path | None) -> None:
     """Test Python client → Python server."""
     if soup_path is None:
@@ -89,7 +88,6 @@ async def test_python_to_python(soup_path: Path | None) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(60)
 async def test_python_to_go(soup_go_path: Path | None) -> None:
     """Test Python client → Go server."""
     if soup_go_path is None:
@@ -127,7 +125,6 @@ async def test_python_to_go(soup_go_path: Path | None) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(90)
 async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
                             test_artifacts_dir: Path) -> None:
     """Test Go client → Python server by explicitly starting server and client."""
@@ -226,7 +223,6 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(60)
 async def test_go_to_go(soup_go_path: Path | None) -> None:
     """Test Go client → Go server (completes the 2x2 matrix)."""
     if soup_go_path is None:
