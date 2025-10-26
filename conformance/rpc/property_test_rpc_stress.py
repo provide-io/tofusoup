@@ -20,12 +20,18 @@ from tofusoup.rpc.client import KVClient
 
 
 # Hypothesis strategies for aggressive testing
-# NOTE: Exclude null bytes and empty/whitespace-only keys as they're invalid for filesystem-backed KV stores
+# NOTE: Keys must be filesystem-safe (ASCII alphanumeric + safe punctuation)
+# The Go KV server uses keys directly as filenames, which imposes limits:
+# - Valid characters: alphanumeric + -.@_
+# - Max length: ~240 chars (filesystem NAME_MAX is usually 255, minus "kv-data-" prefix)
+SAFE_KEY_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.@"
+MAX_KEY_LENGTH = 200  # Safe limit well under filesystem max
+
 extreme_keys = st.one_of(
-    st.text(min_size=1, max_size=10000).filter(lambda k: k.strip() and '\x00' not in k),  # Huge keys (no null, no whitespace-only)
-    st.text(min_size=1, max_size=100, alphabet="abcdefghijklmnopqrstuvwxyz0123456789-_"),  # Safe keys
-    st.just("🔥" * 100),  # Many emoji
-    st.text(alphabet=st.characters(blacklist_categories=("Cs",)), min_size=1, max_size=100).filter(lambda k: '\x00' not in k and k.strip()),  # Unicode (no null)
+    st.text(min_size=1, max_size=MAX_KEY_LENGTH, alphabet=SAFE_KEY_ALPHABET),  # Long safe keys
+    st.text(min_size=1, max_size=100, alphabet=SAFE_KEY_ALPHABET),  # Normal safe keys
+    st.text(min_size=1, max_size=50, alphabet="0123456789"),  # Numeric keys
+    st.just("a" * MAX_KEY_LENGTH),  # Max length key
 )
 
 extreme_values = st.one_of(
@@ -93,7 +99,7 @@ async def test_rpc_handles_extreme_data(key: str, value: bytes, curve: str) -> N
 @pytest.mark.harness_go
 @given(keys_and_values=st.lists(
     st.tuples(
-        st.text(min_size=1, max_size=100, alphabet=st.characters(blacklist_categories=("Cs",))).filter(lambda k: '\x00' not in k and k.strip()),
+        st.text(min_size=1, max_size=100, alphabet=SAFE_KEY_ALPHABET),
         st.binary(min_size=0, max_size=1000)
     ),
     min_size=5,
