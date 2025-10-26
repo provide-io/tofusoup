@@ -100,10 +100,10 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest to same directory (with storage file info)
-        proof_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
-        manifest_file = test_dir / f"{proof_manifest['test_name']}_{int(time.time())}.json"
-        manifest_file.write_text(json.dumps(proof_manifest, indent=2))
+        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
+        manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
+        manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
         logger.info(f"📝 Test proof written to {manifest_file}")
     finally:
         await client.close()
@@ -166,10 +166,10 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest to same directory (with storage file info)
-        proof_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
-        manifest_file = test_dir / f"{proof_manifest['test_name']}_{int(time.time())}.json"
-        manifest_file.write_text(json.dumps(proof_manifest, indent=2))
+        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
+        manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
+        manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
         logger.info(f"📝 Test proof written to {manifest_file}")
     finally:
         await client.close()
@@ -233,10 +233,10 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path, test_artifa
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest to same directory (with storage file info)
-        proof_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
-        manifest_file = test_dir / f"{proof_manifest['test_name']}_{int(time.time())}.json"
-        manifest_file.write_text(json.dumps(proof_manifest, indent=2))
+        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
+        manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
+        manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
         logger.info(f"📝 Test proof written to {manifest_file}")
     finally:
         await client.close()
@@ -297,10 +297,10 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path, test_artifacts_dir:
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest to same directory (with storage file info)
-        proof_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
-        manifest_file = test_dir / f"{proof_manifest['test_name']}_{int(time.time())}.json"
-        manifest_file.write_text(json.dumps(proof_manifest, indent=2))
+        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
+        manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
+        manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
         logger.info(f"📝 Test proof written to {manifest_file}")
     finally:
         await client.close()
@@ -365,10 +365,10 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest to same directory (with storage file info)
-        proof_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
-        manifest_file = test_dir / f"{proof_manifest['test_name']}_{int(time.time())}.json"
-        manifest_file.write_text(json.dumps(proof_manifest, indent=2))
+        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
+        manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
+        manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))
         logger.info(f"📝 Test proof written to {manifest_file}")
     finally:
         await client.close()
