@@ -154,19 +154,22 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     )
 
     # Wait for the server to start and output its handshake
+    # Handshake format: core_version|protocol_version|network|address|protocol|cert
+    # Example: 1|1|tcp|127.0.0.1:54321|grpc|CERT_BASE64
     handshake_line = ""
     timeout_seconds = 10
     start_time = time.time()
     while time.time() - start_time < timeout_seconds:
         line = server_process.stdout.readline()
         if line:
-            if "core_version" in line:
+            # Look for the go-plugin handshake pattern: starts with "1|1|tcp|"
+            if line.startswith("1|1|tcp|") or "|tcp|" in line:
                 handshake_line = line.strip()
                 break
         else:
             # If no line, give the server a moment to produce output
             await asyncio.sleep(0.1)
-        
+
         # Check if the process has terminated prematurely
         if server_process.poll() is not None:
             stderr_output = server_process.stderr.read()
