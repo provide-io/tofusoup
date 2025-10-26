@@ -118,10 +118,11 @@ async def test_go_to_go_connection(soup_go_path: Path | None) -> None:
     from tofusoup.rpc.client import KVClient
 
     # Create KVClient with Go server
-    # Use disabled TLS for Go→Go testing to avoid curve mismatch issues
     client = KVClient(
         server_path=str(soup_go_path),
-        tls_mode="disabled"
+        tls_mode="auto",
+        tls_key_type="ec",
+        tls_curve="P-256"
     )
 
     try:
