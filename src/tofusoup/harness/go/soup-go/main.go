@@ -118,20 +118,7 @@ var getCmd *cobra.Command
 var putCmd *cobra.Command
 var connectionCmd *cobra.Command
 
-var rpcClientTestCmd = &cobra.Command{
-	Use:   "test [server-path]",
-	Short: "Test RPC client connection",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		serverPath := args[0]
-		logger.Info("Testing RPC client", "server_path", serverPath)
-		
-		if err := testRPCClient(logger, serverPath); err != nil {
-			logger.Error("RPC client test failed", "error", err)
-			os.Exit(1)
-		}
-	},
-}
+
 
 // Harness command (for compatibility testing)
 var harnessCmd = &cobra.Command{
@@ -265,7 +252,7 @@ func init() {
 	// RPC subcommands
 	rpcCmd.AddCommand(kvCmd)
 	rpcCmd.AddCommand(validateCmd)
-	rpcCmd.AddCommand(rpcClientTestCmd)
+
 
 	// KV subcommands
 	kvCmd.AddCommand(getCmd)
