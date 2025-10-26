@@ -144,7 +144,9 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
     # 1. Start the Python server
-    server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+    # Note: Using disabled TLS mode for go-plugin reattach compatibility
+    # The --address flag doesn't support passing certificates yet
+    server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "disabled"]
     server_process = subprocess.Popen(
         server_command,
         env=env,
