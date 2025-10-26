@@ -237,7 +237,7 @@ func decodeAndLogCertificate(certPEM string, logger hclog.Logger) error {
 
 
 // Override the kvget command with real implementation
-func initRpcKVGetCmd() *cobra.Command {
+func initKVGetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "kvget [key]",
 		Short: "Get a value from the RPC KV server",
@@ -270,7 +270,7 @@ func initRpcKVGetCmd() *cobra.Command {
 }
 
 // Override the kvput command with real implementation
-func initRpcKVPutCmd() *cobra.Command {
+func initKVPutCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "kvput [key] [value]",
 		Short: "Put a key-value pair into the RPC KV server",
@@ -303,7 +303,7 @@ func initRpcKVPutCmd() *cobra.Command {
 }
 
 // Override the validateconnection command with real implementation
-func initRpcValidateConnectionCmd() *cobra.Command {
+func initValidateConnectionCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "validateconnection",
 		Short: "Validate connection to the RPC KV server",
