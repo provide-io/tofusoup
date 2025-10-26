@@ -125,15 +125,20 @@ async def test_python_to_go(soup_go_path: Path | None) -> None:
 
 
 @pytest.mark.asyncio
-async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None) -> None:
+async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
+                            test_artifacts_dir: Path) -> None:
     """Test Go client → Python server by explicitly starting server and client."""
     if soup_go_path is None:
         pytest.skip("soup-go executable not found")
     if soup_path is None:
         pytest.skip("soup executable not found in PATH")
 
+    # Create test-specific directory for all artifacts
+    test_dir = test_artifacts_dir / "go_to_python"
+    test_dir.mkdir(exist_ok=True)
+
     env = os.environ.copy()
-    env["KV_STORAGE_DIR"] = "/tmp"
+    env["KV_STORAGE_DIR"] = str(test_dir)
     env["LOG_LEVEL"] = "INFO"
     env["BASIC_PLUGIN"] = "hello"
     env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
