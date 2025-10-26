@@ -20,7 +20,8 @@
       "Bash(soup test:*)",
       "Bash(soup harness build:*)",
       "Bash(go build:*)",
-      "Bash(./bin/soup-go rpc kv kvput:*)"
+      "Bash(./bin/soup-go rpc kv kvput:*)",
+      "Bash(./bin/soup-go rpc kv:*)"
     ],
     "deny": [],
     "ask": [],
