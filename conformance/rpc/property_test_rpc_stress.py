@@ -20,13 +20,12 @@ from tofusoup.rpc.client import KVClient
 
 
 # Hypothesis strategies for aggressive testing
+# NOTE: Exclude null bytes and empty/whitespace-only keys as they're invalid for filesystem-backed KV stores
 extreme_keys = st.one_of(
-    st.text(min_size=0, max_size=10000),  # Huge keys
-    st.binary(min_size=0, max_size=1000).map(lambda b: b.decode('utf-8', errors='replace')),  # Binary as string
-    st.just(""),  # Empty key
-    st.just("\x00"),  # Null character
+    st.text(min_size=1, max_size=10000).filter(lambda k: k.strip() and '\x00' not in k),  # Huge keys (no null, no whitespace-only)
+    st.text(min_size=1, max_size=100, alphabet="abcdefghijklmnopqrstuvwxyz0123456789-_"),  # Safe keys
     st.just("🔥" * 100),  # Many emoji
-    st.text(alphabet=st.characters(blacklist_categories=("Cs",)), min_size=1, max_size=100),  # Unicode
+    st.text(alphabet=st.characters(blacklist_categories=("Cs",)), min_size=1, max_size=100).filter(lambda k: '\x00' not in k and k.strip()),  # Unicode (no null)
 )
 
 extreme_values = st.one_of(
@@ -92,7 +91,14 @@ async def test_rpc_handles_extreme_data(key: str, value: bytes, curve: str) -> N
 
 @pytest.mark.integration_rpc
 @pytest.mark.harness_go
-@given(keys_and_values=st.lists(st.tuples(st.text(min_size=1, max_size=100), st.binary(min_size=0, max_size=1000)), min_size=5, max_size=20))
+@given(keys_and_values=st.lists(
+    st.tuples(
+        st.text(min_size=1, max_size=100, alphabet=st.characters(blacklist_categories=("Cs",))).filter(lambda k: '\x00' not in k and k.strip()),
+        st.binary(min_size=0, max_size=1000)
+    ),
+    min_size=5,
+    max_size=20
+))
 @settings(max_examples=20, deadline=60000, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @pytest.mark.asyncio
 async def test_rpc_handles_rapid_operations(keys_and_values: list[tuple[str, bytes]]) -> None:
