@@ -265,6 +265,7 @@ func init() {
 	// RPC subcommands
 	rpcCmd.AddCommand(kvCmd)
 	rpcCmd.AddCommand(validateCmd)
+	rpcCmd.AddCommand(rpcClientTestCmd)
 
 	// KV subcommands
 	kvCmd.AddCommand(getCmd)
