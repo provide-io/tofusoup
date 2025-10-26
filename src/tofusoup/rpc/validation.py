@@ -131,17 +131,7 @@ def validate_language_pair(client_lang: str, server_path: Path | str) -> None:
     """
     server_lang = detect_server_language(server_path)
 
-    # Python → Go is not supported (known bug in pyvider-rpcplugin)
-    if client_lang == "python" and server_lang == "go":
-        raise LanguagePairNotSupportedError(
-            "Python client → Go server connections are not currently supported "
-            "(known issue in pyvider-rpcplugin). "
-            "\n\nWorkarounds:\n"
-            "  - Use Go client → Python server instead\n"
-            "  - Use Python client → Python server\n"
-            "  - Use Go client → Go server"
-        )
-
+    # All language pairs are now supported
     logger.debug("Language pair validation passed", client=client_lang, server=server_lang)
 
 

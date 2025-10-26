@@ -86,9 +86,10 @@ class KVClient:
         go_server_expected_cookie_value = "hello"
         go_server_protocol_version = "1"
 
-        # Note: Don't set PLUGIN_AUTO_MTLS when using TLSProvider (specific curve)
-        # AutoMTLS and TLSProvider are mutually exclusive in go-plugin
-        use_auto_mtls = self.enable_mtls and (self.tls_curve == "auto" or not self.tls_curve)
+        # CRITICAL: Always use AutoMTLS when TLS is enabled
+        # AutoMTLS is what sends the server cert in the handshake (field 6)
+        # Without it, server_cert is None and TLS connection fails
+        use_auto_mtls = self.enable_mtls
 
         self.subprocess_env = {
             "PLUGIN_MAGIC_COOKIE_KEY": go_server_expected_cookie_key,
@@ -124,11 +125,12 @@ class KVClient:
         args: list[str] = ["--tls-mode", self.tls_mode]
 
         if self.tls_mode == "auto":
-            # Both Go and Python servers support --tls-key-type and --tls-curve flags
-            args.extend(["--tls-key-type", self.tls_key_type])
-            args.extend(["--tls-curve", self.tls_curve])
+            # CRITICAL: Don't pass --tls-curve to Go server!
+            # Passing it makes Go use TLSProvider which doesn't send cert in handshake
+            # Just use --tls-mode auto which enables AutoMTLS (sends cert in handshake)
+            # The curve setting is only used for Python CLIENT certificate generation
             logger.info(
-                f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}, curve: {self.tls_curve}"
+                f"KVClient: Auto TLS enabled (server will use AutoMTLS, client cert curve: {self.tls_curve})"
             )
         elif self.tls_mode == "manual":
             if self.cert_file and self.key_file:
