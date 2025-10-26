@@ -46,36 +46,39 @@ class TestCrossLanguageInterop:
     @pytest.fixture
     def go_server_path(self) -> str | None:
         """Return path to Go server binary if it exists."""
-        # Look for the Go server binary
+        # Use the new unified soup-go harness
         go_server_candidates = [
-            "/Users/tim/code/pyv/mono/tofusoup/harnesses/go/go-rpc/kv/plugin-go-server/main",
-            "/Users/tim/code/pyv/mono/tofusoup/dist/harnesses/go-rpc-server",
-            "harnesses/go/go-rpc/kv/plugin-go-server/main",
+            "bin/soup-go",
+            "harnesses/bin/soup-go",
+            Path(__file__).parent.parent.parent / "bin" / "soup-go",
         ]
 
         for candidate in go_server_candidates:
-            if os.path.exists(candidate) and os.access(candidate, os.X_OK):
-                logger.info(f"Found Go server at {candidate}")
-                return candidate
+            candidate_path = Path(candidate) if isinstance(candidate, str) else candidate
+            if candidate_path.exists() and os.access(candidate_path, os.X_OK):
+                logger.info(f"Found Go server at {candidate_path}")
+                return str(candidate_path)
 
-        logger.warning("Go server binary not found, skipping Go server tests")
+        logger.warning("soup-go binary not found, skipping Go server tests")
         return None
 
     @pytest.fixture
     def go_client_path(self) -> str | None:
         """Return path to Go client binary if it exists."""
+        # Use the new unified soup-go harness for client testing too
         go_client_candidates = [
-            "/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/go-rpc/kv/plugin-go-client/main.go",
-            "/Users/tim/code/pyv/mono/tofusoup/dist/harnesses/go-rpc-client",
-            "tofusoup/src/tofusoup/harness/go/go-rpc/kv/plugin-go-client/main.go",
+            "bin/soup-go",
+            "harnesses/bin/soup-go",
+            Path(__file__).parent.parent.parent / "bin" / "soup-go",
         ]
 
         for candidate in go_client_candidates:
-            if os.path.exists(candidate) and os.access(candidate, os.X_OK):
-                logger.info(f"Found Go client at {candidate}")
-                return candidate
+            candidate_path = Path(candidate) if isinstance(candidate, str) else candidate
+            if candidate_path.exists() and os.access(candidate_path, os.X_OK):
+                logger.info(f"Found Go client at {candidate_path}")
+                return str(candidate_path)
 
-        logger.warning("Go client binary not found, skipping Go client tests")
+        logger.warning("soup-go binary not found, skipping Go client tests")
         return None
 
     @pytest.mark.integration_rpc
@@ -115,8 +118,8 @@ class TestCrossLanguageInterop:
 
         logger.info("🐍↔🐹 Testing Python Client ↔ Go Server")
 
-        # Use our KVClient to connect to Go server
-        client = KVClient(server_path=go_server_path, tls_mode="disabled")
+        # Use our KVClient to connect to Go server with auto TLS
+        client = KVClient(server_path=go_server_path, tls_mode="auto", tls_key_type="ec", tls_curve="P-256")
 
         try:
             await client.start()
