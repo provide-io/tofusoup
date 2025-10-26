@@ -205,12 +205,14 @@ def start_kv_server(
             server_cert_pem = cert_obj.cert_pem
             server_key_pem = cert_obj.key_pem
 
-            # Create SSL credentials for mTLS
-            # For auto-mTLS, we accept any client cert (root_certificates=None means trust all)
+            # Create SSL credentials for TLS (not full mTLS validation)
+            # In go-plugin's AutoMTLS protocol, the server provides its cert to the client,
+            # but the server doesn't validate the client's cert at the gRPC level.
+            # The client validation happens via the go-plugin handshake mechanism instead.
             server_credentials = grpc.ssl_server_credentials(
                 [(server_key_pem.encode("utf-8"), server_cert_pem.encode("utf-8"))],
-                root_certificates=None,  # Accept any client certificate for auto-mTLS
-                require_client_auth=True,  # mTLS: client MUST present a certificate
+                root_certificates=None,
+                require_client_auth=False,  # Don't require client cert validation at gRPC level
             )
             port = server.add_secure_port("[::]:0", server_credentials)
             logger.info(f"Server listening on secure port {port} with auto-generated certificate")
