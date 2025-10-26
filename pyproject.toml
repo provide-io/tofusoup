@@ -110,7 +110,6 @@ asyncio_default_fixture_loop_scope = "function"
 asyncio_default_test_loop_scope = "function"
 pythonpath = ["src", "."]
 testpaths = ["tests", "conformance"]
-confcutdir = "."
 python_files = ["test_*.py", "*_test.py", "souptest_*.py"]
 python_classes = ["Test*", "*Tests"]
 python_functions = ["test_*", "*_test"]
