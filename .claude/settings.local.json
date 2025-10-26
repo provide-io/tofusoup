@@ -34,7 +34,8 @@
       "Bash(./harnesses/bin/soup-go:*)",
       "Bash(uv pip list:*)",
       "Bash(LOG_LEVEL=INFO uv run pytest:*)",
-      "Bash(python test_logging_demo.py:*)"
+      "Bash(python test_logging_demo.py:*)",
+      "Bash(.venv/bin/pytest conformance/rpc/souptest_cross_language_comprehensive.py::test_python_to_go -v --tb=short)"
     ],
     "deny": [],
     "ask": [],
