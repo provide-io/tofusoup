@@ -10,7 +10,12 @@
       "Bash(xargs ls:*)",
       "Bash(xargs cat:*)",
       "Bash(python3:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(xargs rm -rf)",
+      "Bash(tree:*)",
+      "Bash(for dir in /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-0/rpc_matrix_proof0/*/)",
+      "Bash(ls:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": [],
