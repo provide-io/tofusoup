@@ -158,19 +158,20 @@ async def test_go_to_go_connection(soup_go_path: Path | None, test_artifacts_dir
             raise AssertionError(f"Server process terminated prematurely. Stderr: {stderr_output}")
 
     assert handshake_line, "Go server did not output handshake line"
-    
+
     # Extract port from handshake line
     parts = handshake_line.split('|')
     assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
     address_part = parts[3]
     port = address_part.split(':')[-1]
-    
+
     # 2. Run the Go client to put a value
+    # IMPORTANT: Pass the FULL handshake line (including certificate) so Go client can auto-detect TLS curve
     put_key = "go-go-key-matrix"
     put_value = "Hello from Go client to Go server (matrix)!"
     put_command = [
         str(soup_go_path), "rpc", "kv", "put",
-        f"--address=127.0.0.1:{port}",
+        f"--address={handshake_line}",  # Pass full handshake with certificate
         put_key, put_value
     ]
     put_result = subprocess.run(
@@ -186,7 +187,7 @@ async def test_go_to_go_connection(soup_go_path: Path | None, test_artifacts_dir
     # 3. Run the Go client to get the value
     get_command = [
         str(soup_go_path), "rpc", "kv", "get",
-        f"--address=127.0.0.1:{port}",
+        f"--address={handshake_line}",  # Pass full handshake with certificate
         put_key
     ]
     get_result = subprocess.run(
