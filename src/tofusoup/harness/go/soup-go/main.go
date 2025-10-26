@@ -104,10 +104,7 @@ var rpcServerCmd = &cobra.Command{
 	},
 }
 
-var rpcClientCmd *cobra.Command
-var rpcKVGetCmd *cobra.Command
-var rpcKVPutCmd *cobra.Command
-var rpcValidateConnectionCmd *cobra.Command
+var rpcClientCmd = &cobra.Command{
 	Use:   "client",
 	Short: "RPC client operations",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -115,6 +112,10 @@ var rpcValidateConnectionCmd *cobra.Command
 		fmt.Println("RPC client operations")
 	},
 }
+
+var rpcKVGetCmd *cobra.Command
+var rpcKVPutCmd *cobra.Command
+var rpcValidateConnectionCmd *cobra.Command
 
 var rpcClientTestCmd = &cobra.Command{
 	Use:   "test [server-path]",
@@ -210,6 +211,9 @@ func init() {
 	hclConvertCmd = initHclConvertCmd()
 	wireEncodeCmd = initWireEncodeCmd()
 	wireDecodeCmd = initWireDecodeCmd()
+	rpcKVGetCmd = initRpcKVGetCmd()
+	rpcKVPutCmd = initRpcKVPutCmd()
+	rpcValidateConnectionCmd = initRpcValidateConnectionCmd()
 	
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
@@ -251,6 +255,9 @@ func init() {
 	// RPC subcommands
 	rpcCmd.AddCommand(rpcServerCmd)
 	rpcCmd.AddCommand(rpcClientCmd)
+	rpcCmd.AddCommand(rpcKVGetCmd)
+	rpcCmd.AddCommand(rpcKVPutCmd)
+	rpcCmd.AddCommand(rpcValidateConnectionCmd)
 	
 	// RPC client subcommands
 	rpcClientCmd.AddCommand(rpcClientTestCmd)
