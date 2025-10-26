@@ -13,6 +13,27 @@ from pathlib import Path
 from provide.foundation import logger
 
 
+# Curve name mapping for normalization
+CURVE_NAME_ALIASES = {
+    # secp256r1 / P-256 / prime256v1
+    "secp256r1": "secp256r1",
+    "p-256": "secp256r1",
+    "p256": "secp256r1",
+    "prime256v1": "secp256r1",
+    # secp384r1 / P-384
+    "secp384r1": "secp384r1",
+    "p-384": "secp384r1",
+    "p384": "secp384r1",
+    # secp521r1 / P-521
+    "secp521r1": "secp521r1",
+    "p-521": "secp521r1",
+    "p521": "secp521r1",
+    # Special case for auto
+    "auto": "auto",
+    "": "auto",
+}
+
+
 class CurveNotSupportedError(ValueError):
     """Raised when a curve is not supported by the runtime."""
 
@@ -23,6 +44,31 @@ class LanguagePairNotSupportedError(ValueError):
     """Raised when a language pair combination is not supported."""
 
     pass
+
+
+def normalize_curve_name(curve: str) -> str:
+    """
+    Normalize curve name to standard format (secp256r1, secp384r1, secp521r1).
+
+    Accepts various aliases like P-256, p256, etc. and converts them to the
+    canonical secpXXXr1 format.
+
+    Args:
+        curve: Curve name in any supported format
+
+    Returns:
+        Normalized curve name (secp256r1, secp384r1, secp521r1, or auto)
+
+    Raises:
+        ValueError: If curve name is not recognized
+    """
+    normalized = CURVE_NAME_ALIASES.get(curve.lower())
+    if normalized is None:
+        raise ValueError(
+            f"Unknown curve name: {curve}. "
+            f"Supported formats: P-256/p256/secp256r1, P-384/p384/secp384r1, P-521/p521/secp521r1"
+        )
+    return normalized
 
 
 def detect_server_language(server_path: Path | str) -> str:

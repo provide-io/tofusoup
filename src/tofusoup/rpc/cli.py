@@ -20,6 +20,7 @@ from .validation import (
     detect_server_language,
     get_compatibility_matrix,
     get_supported_curves,
+    normalize_curve_name,
     validate_curve_for_runtime,
     validate_language_pair,
 )
@@ -80,9 +81,9 @@ def kv_get(address: str, key: str) -> None:
 )
 @click.option(
     "--tls-curve",
-    type=click.Choice(["secp256r1", "secp384r1", "secp521r1"]),
+    type=click.Choice(["secp256r1", "secp384r1", "secp521r1", "P-256", "P-384", "P-521", "p256", "p384", "p521"]),
     default="secp384r1",
-    help="Elliptic curve for EC key type: 'secp256r1', 'secp384r1', or 'secp521r1'",
+    help="Elliptic curve for EC key type: 'secp256r1'/'P-256', 'secp384r1'/'P-384', or 'secp521r1'/'P-521'",
 )
 @click.option("--cert-file", help="Path to certificate file (required for manual TLS)")
 @click.option("--key-file", help="Path to private key file (required for manual TLS)")
@@ -91,6 +92,9 @@ def server_start(
 ) -> None:
     """Starts the KV plugin server."""
     from provide.foundation import logger
+
+    # Normalize curve name to standard format (secp256r1, secp384r1, secp521r1)
+    tls_curve = normalize_curve_name(tls_curve)
 
     # Validate TLS configuration
     if tls_mode == "manual":
