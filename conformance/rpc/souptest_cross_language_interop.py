@@ -174,6 +174,8 @@ class TestCrossLanguageInterop:
         env = os.environ.copy()
         env["KV_STORAGE_DIR"] = "/tmp"
         env["LOG_LEVEL"] = "INFO"
+        env["BASIC_PLUGIN"] = "hello"
+        env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
         # 1. Start the Python server
         server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
