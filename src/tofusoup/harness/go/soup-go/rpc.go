@@ -489,15 +489,20 @@ func parseCertificateFromHandshake(certBase64 string, logger hclog.Logger) (*tls
 	certPool.AddCert(cert)
 
 	// Create TLS config for client that trusts this server cert
+	// ServerName should match the hostname we're connecting to (from the address),
+	// not necessarily the cert's CommonName. The cert will be verified against its SANs.
+	// Since we're connecting to 127.0.0.1, use that as ServerName.
 	tlsConfig := &tls.Config{
 		RootCAs:            certPool,
 		InsecureSkipVerify: false,  // We're properly verifying with the cert pool
 		MinVersion:         tls.VersionTLS12,
-		ServerName:         cert.Subject.CommonName,  // For SNI and hostname verification
+		// Don't set ServerName - let it default to the hostname from the connection address
+		// This allows the cert's SANs (127.0.0.1, localhost) to match correctly
 	}
 
 	logger.Info("Created TLS config with server certificate for mTLS",
-		"server_name", cert.Subject.CommonName)
+		"cert_cn", cert.Subject.CommonName,
+		"cert_sans", cert.DNSNames)
 	return tlsConfig, nil
 }
 
