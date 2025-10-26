@@ -31,7 +31,8 @@
       "Bash(sort:*)",
       "Bash(for f in /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-11/rpc_matrix_proof0/*/pyclient_*.json)",
       "Bash(do echo \"=== $f ===\" cat \"$f\")",
-      "Bash(./harnesses/bin/soup-go:*)"
+      "Bash(./harnesses/bin/soup-go:*)",
+      "Bash(uv pip list:*)"
     ],
     "deny": [],
     "ask": [],
