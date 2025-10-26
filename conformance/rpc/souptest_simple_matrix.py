@@ -26,7 +26,8 @@ PROOF_DIR = Path("/tmp/rpc_matrix_proof")
 
 
 def write_test_proof(test_name: str, client_type: str, server_type: str,
-                     tls_mode: str, crypto_type: str, keys_written: list[str]) -> Path:
+                     tls_mode: str, crypto_type: str, keys_written: list[str],
+                     kv_storage_files: list[str] | None = None) -> Path:
     """Write proof manifest that this test ran and what it wrote."""
     PROOF_DIR.mkdir(exist_ok=True, parents=True)
 
@@ -37,6 +38,7 @@ def write_test_proof(test_name: str, client_type: str, server_type: str,
         "tls_mode": tls_mode,
         "crypto_type": crypto_type,
         "keys_written": keys_written,
+        "kv_storage_files": kv_storage_files or [],
         "timestamp": datetime.now().isoformat(),
         "status": "success"
     }
@@ -48,11 +50,28 @@ def write_test_proof(test_name: str, client_type: str, server_type: str,
     return manifest_file
 
 
+def verify_kv_storage(storage_dir: Path, key: str) -> Path | None:
+    """Verify that a KV storage file exists for the given key."""
+    # KV storage files are typically stored with the key name as the filename
+    storage_file = storage_dir / key
+    if storage_file.exists():
+        logger.info(f"✅ KV storage file found: {storage_file}")
+        return storage_file
+    else:
+        logger.warning(f"⚠️  KV storage file not found: {storage_file}")
+        # List what files are in the directory
+        if storage_dir.exists():
+            files = list(storage_dir.glob("*"))
+            logger.info(f"   Files in {storage_dir}: {[f.name for f in files]}")
+        return None
+
+
 @pytest.mark.integration_rpc
 @pytest.mark.harness_go
 @pytest.mark.asyncio
 async def test_pyclient_goserver_no_mtls(project_root: Path) -> None:
     """Test Python client -> Go server without mTLS (known working case)"""
+    import os
     go_server_path = project_root / "bin" / "soup-go"
 
     if not go_server_path.exists():
@@ -65,6 +84,9 @@ async def test_pyclient_goserver_no_mtls(project_root: Path) -> None:
     test_key = f"pyclient_goserver_no_mtls_{test_id}"
     test_value = b"Python_client->Go_server(no_mTLS)"
 
+    # KV storage directory (default is /tmp)
+    storage_dir = Path(os.environ.get("KV_STORAGE_DIR", "/tmp"))
+
     try:
         await client.start()
         await client.put(test_key, test_value)
@@ -74,14 +96,19 @@ async def test_pyclient_goserver_no_mtls(project_root: Path) -> None:
         logger.info(f"   Key: {test_key}")
         logger.info(f"   Value: {test_value.decode()}")
 
+        # Verify KV storage file exists
+        storage_file = verify_kv_storage(storage_dir, test_key)
+
         # Write proof manifest
+        kv_files = [str(storage_file)] if storage_file else []
         write_test_proof(
             test_name="pyclient_goserver_no_mtls",
             client_type="python",
             server_type="go",
             tls_mode="disabled",
             crypto_type="none",
-            keys_written=[test_key]
+            keys_written=[test_key],
+            kv_storage_files=kv_files
         )
     finally:
         await client.close()
