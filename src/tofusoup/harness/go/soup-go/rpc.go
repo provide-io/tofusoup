@@ -238,24 +238,45 @@ func decodeAndLogCertificate(certPEM string, logger hclog.Logger) error {
 
 // Override the kvget command with real implementation
 func initKVGetCmd() *cobra.Command {
+	var address string
+
 	cmd := &cobra.Command{
 		Use:   "get [key]",
 		Short: "Get a value from the RPC KV server",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			key := args[0]
-			
-			client, err := newRPCClient(logger)
-			if err != nil {
-				return err
-			}
-			defer client.Kill()
 
-			raw, err := client.Client()
-			if err != nil {
-				return fmt.Errorf("failed to create RPC client: %w", err)
+			var kv KV
+			var cleanup func() error
+
+			// Use direct connection if --address is provided
+			if address != "" {
+				directClient, cleanupFn, err := newDirectGRPCClient(address, logger)
+				if err != nil {
+					return err
+				}
+				kv = directClient
+				cleanup = cleanupFn
+			} else {
+				// Use go-plugin client (spawn server)
+				client, err := newRPCClient(logger)
+				if err != nil {
+					return err
+				}
+				defer client.Kill()
+
+				raw, err := client.Client()
+				if err != nil {
+					return fmt.Errorf("failed to create RPC client: %w", err)
+				}
+				kv = raw.(KV)
 			}
-			kv := raw.(KV)
+
+			// Cleanup direct connection if used
+			if cleanup != nil {
+				defer cleanup()
+			}
 
 			value, err := kv.Get(key)
 			if err != nil {
@@ -266,11 +287,15 @@ func initKVGetCmd() *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().StringVar(&address, "address", "", "Address of existing server (e.g., 127.0.0.1:50051)")
 	return cmd
 }
 
 // Override the kvput command with real implementation
 func initKVPutCmd() *cobra.Command {
+	var address string
+
 	cmd := &cobra.Command{
 		Use:   "put [key] [value]",
 		Short: "Put a key-value pair into the RPC KV server",
@@ -279,17 +304,36 @@ func initKVPutCmd() *cobra.Command {
 			key := args[0]
 			value := []byte(args[1])
 
-			client, err := newRPCClient(logger)
-			if err != nil {
-				return err
-			}
-			defer client.Kill()
+			var kv KV
+			var cleanup func() error
 
-			raw, err := client.Client()
-			if err != nil {
-				return fmt.Errorf("failed to create RPC client: %w", err)
+			// Use direct connection if --address is provided
+			if address != "" {
+				directClient, cleanupFn, err := newDirectGRPCClient(address, logger)
+				if err != nil {
+					return err
+				}
+				kv = directClient
+				cleanup = cleanupFn
+			} else {
+				// Use go-plugin client (spawn server)
+				client, err := newRPCClient(logger)
+				if err != nil {
+					return err
+				}
+				defer client.Kill()
+
+				raw, err := client.Client()
+				if err != nil {
+					return fmt.Errorf("failed to create RPC client: %w", err)
+				}
+				kv = raw.(KV)
 			}
-			kv := raw.(KV)
+
+			// Cleanup direct connection if used
+			if cleanup != nil {
+				defer cleanup()
+			}
 
 			if err := kv.Put(key, value); err != nil {
 				return fmt.Errorf("failed to put key %s: %w", key, err)
@@ -299,6 +343,8 @@ func initKVPutCmd() *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().StringVar(&address, "address", "", "Address of existing server (e.g., 127.0.0.1:50051)")
 	return cmd
 }
 
@@ -365,4 +411,29 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 	})
 
 	return client, nil
+}
+
+// newDirectGRPCClient creates a direct gRPC client connection to an address
+// This is used when --address flag is provided, bypassing go-plugin
+func newDirectGRPCClient(address string, logger hclog.Logger) (KV, func() error, error) {
+	logger.Debug("Creating direct gRPC connection", "address", address)
+
+	// Create insecure connection (matching the server's configuration)
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to connect to %s: %w", address, err)
+	}
+
+	client := &GRPCClient{
+		client: proto.NewKVClient(conn),
+		logger: logger,
+	}
+
+	// Return client and cleanup function
+	cleanup := func() error {
+		return conn.Close()
+	}
+
+	logger.Info("Direct gRPC client connected successfully", "address", address)
+	return client, cleanup, nil
 }
