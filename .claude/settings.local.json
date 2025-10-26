@@ -22,7 +22,9 @@
       "Bash(go build:*)",
       "Bash(./bin/soup-go rpc kv kvput:*)",
       "Bash(./bin/soup-go rpc kv:*)",
-      "Bash(soup rpc kv:*)"
+      "Bash(soup rpc kv:*)",
+      "Bash(./bin/soup-go rpc:*)",
+      "Bash(./bin/soup-go:*)"
     ],
     "deny": [],
     "ask": [],
