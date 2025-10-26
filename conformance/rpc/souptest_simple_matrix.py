@@ -11,6 +11,7 @@ Uses the existing working KVClient infrastructure.
 """
 
 from datetime import datetime
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -20,6 +21,24 @@ from provide.foundation import logger
 import pytest
 
 from tofusoup.rpc.client import KVClient
+
+
+def _get_cert_fingerprint(cert_pem: str | bytes | None) -> str | None:
+    """Get SHA256 fingerprint of a PEM certificate.
+
+    Args:
+        cert_pem: PEM-encoded certificate as string or bytes
+
+    Returns:
+        Hexadecimal SHA256 fingerprint, or None if cert is invalid
+    """
+    if not cert_pem:
+        return None
+    try:
+        cert_bytes = cert_pem.encode() if isinstance(cert_pem, str) else cert_pem
+        return hashlib.sha256(cert_bytes).hexdigest()
+    except Exception:
+        return None
 
 def verify_kv_storage(storage_dir: Path, key: str) -> Path | None:
     """Verify that a KV storage file exists for the given key.
@@ -77,15 +96,21 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
         "crypto_type": "none",
         "key": test_key,
         "timestamp": datetime.now().isoformat(),
-        "status": "success"
+        "status": "pending",  # Changed to pending until test completes
+        "user_data": {  # Optional user payload
+            "description": "Testing Python client to Go server without mTLS",
+            "test_iteration": 1,
+        }
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
     try:
+        start_time = time.time()
         await client.start()
+        connection_time = time.time() - start_time
+
         await client.put(test_key, test_value)
         retrieved = await client.get(test_key)
-        assert retrieved == test_value
 
         # Verify the retrieved value is valid JSON with correct content
         retrieved_manifest = json.loads(retrieved.decode())
@@ -93,14 +118,37 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
         assert retrieved_manifest["client_type"] == "python"
         assert retrieved_manifest["server_type"] == "go"
 
+        # Verify server added its handshake
+        assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
+        logger.info("✅ Server handshake detected in retrieved value")
+
+        # Add client handshake information
+        client_handshake = {
+            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
+            "tls_mode": client.tls_mode,
+            "tls_config": {
+                "key_type": client.tls_key_type,
+                "curve": client.tls_curve if client.tls_key_type == "ec" else None,
+            },
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "timestamp": datetime.now().isoformat(),
+            "connection_time": round(connection_time, 3),
+        }
+        retrieved_manifest["client_handshake"] = client_handshake
+
+        # Update status to success
+        retrieved_manifest["status"] = "success"
+
         logger.info("✅ Python client → Go server (no mTLS) - PASSED")
         logger.info(f"   Key: {test_key}")
-        logger.info(f"   Value: {retrieved_manifest['test_name']} proof manifest")
+        logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
+        logger.info(f"   Client connection time: {connection_time:.3f}s")
 
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest showing what was RETRIEVED (proving round-trip)
+        # Write final proof manifest showing complete round-trip with both handshakes
         retrieved_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
         manifest_file = test_dir / f"{retrieved_manifest['test_name']}_{int(time.time())}.json"
         manifest_file.write_text(json.dumps(retrieved_manifest, indent=2))

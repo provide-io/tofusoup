@@ -3,6 +3,10 @@
 # tofusoup/rpc/server.py
 #
 from concurrent import futures
+from datetime import datetime
+import hashlib
+import json
+import os
 import re
 import sys
 import time
@@ -24,6 +28,7 @@ class KV(kv_pb2_grpc.KVServicer):
         """
         self.storage_dir = storage_dir
         self.key_pattern = re.compile(r"^[a-zA-Z0-9._-]+$")
+        self.start_time = time.time()
         logger.debug("Initialized KV servicer", storage_dir=storage_dir)
 
     def _validate_key(self, key: str) -> bool:
@@ -32,7 +37,78 @@ class KV(kv_pb2_grpc.KVServicer):
 
     def _get_file_path(self, key: str) -> str:
         """Get the file path for a given key"""
-        return f"{self.storage_dir}/soup-kv-{key}"
+        return f"{self.storage_dir}/kv-data-{key}"
+
+    def _enrich_json_with_handshake(self, value_bytes: bytes, context: grpc.ServicerContext) -> bytes:
+        """
+        Enrich JSON value with server handshake information.
+
+        If the value is valid JSON, adds a 'server_handshake' field with connection metadata.
+        If not JSON, returns the original bytes unchanged.
+
+        Args:
+            value_bytes: The value bytes to potentially enrich
+            context: gRPC service context
+
+        Returns:
+            Enriched JSON bytes if input was JSON, otherwise original bytes
+        """
+        try:
+            # Try to parse as JSON
+            value_str = value_bytes.decode('utf-8')
+            json_data = json.loads(value_str)
+
+            # Only enrich if it's a dict (not array or primitive)
+            if not isinstance(json_data, dict):
+                return value_bytes
+
+            # Build server handshake information
+            peer = context.peer()  # e.g., "ipv4:127.0.0.1:54321"
+
+            server_handshake = {
+                "endpoint": peer if peer else "unknown",
+                "protocol_version": os.getenv("PLUGIN_PROTOCOL_VERSIONS", "1"),
+                "tls_mode": os.getenv("TLS_MODE", "unknown"),
+                "timestamp": datetime.now().isoformat(),
+                "received_at": round(time.time() - self.start_time, 3),
+            }
+
+            # Add TLS config if available
+            tls_curve = os.getenv("TLS_CURVE")
+            tls_key_type = os.getenv("TLS_KEY_TYPE")
+            if tls_curve or tls_key_type:
+                server_handshake["tls_config"] = {
+                    "key_type": tls_key_type,
+                    "curve": tls_curve,
+                }
+
+            # Add certificate fingerprint if mTLS is enabled
+            server_cert = os.getenv("PLUGIN_SERVER_CERT")
+            if server_cert:
+                try:
+                    with open(server_cert, 'rb') as f:
+                        cert_bytes = f.read()
+                        cert_fingerprint = hashlib.sha256(cert_bytes).hexdigest()
+                        server_handshake["cert_fingerprint"] = cert_fingerprint
+                except Exception:
+                    server_handshake["cert_fingerprint"] = None
+
+            # Add server handshake to JSON
+            json_data["server_handshake"] = server_handshake
+
+            # Return enriched JSON as bytes
+            enriched_json = json.dumps(json_data, indent=2)
+            logger.debug("Enriched JSON value with server handshake", key_count=len(json_data))
+            return enriched_json.encode('utf-8')
+
+        except (json.JSONDecodeError, UnicodeDecodeError, AttributeError):
+            # Not JSON or not decodable - return original bytes
+            logger.debug("Value is not JSON, storing as-is")
+            return value_bytes
+        except Exception as e:
+            # Unexpected error - log and return original
+            logger.warning("Failed to enrich JSON with handshake", error=str(e))
+            return value_bytes
 
     def Get(self, request: kv_pb2.GetRequest, context: grpc.ServicerContext) -> kv_pb2.GetResponse:
         logger.info("🔌➡️📥 Received Get request", key=request.key)
@@ -89,13 +165,17 @@ class KV(kv_pb2_grpc.KVServicer):
         logger.debug("Storing value to file", key=request.key, file=file_path)
 
         try:
+            # Enrich JSON values with server handshake information
+            enriched_value = self._enrich_json_with_handshake(request.value, context)
+
             with open(file_path, "wb") as f:
-                f.write(request.value)
+                f.write(enriched_value)
             logger.info(
                 "Successfully stored value",
                 key=request.key,
                 file=file_path,
-                bytes=len(request.value),
+                bytes=len(enriched_value),
+                original_bytes=len(request.value),
             )
             return kv_pb2.Empty()
         except Exception as e:
