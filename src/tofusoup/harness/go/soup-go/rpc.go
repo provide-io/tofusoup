@@ -241,6 +241,7 @@ func decodeAndLogCertificate(certPEM string, logger hclog.Logger) error {
 // Override the kvget command with real implementation
 func initKVGetCmd() *cobra.Command {
 	var address string
+	var tlsCurve string
 
 	cmd := &cobra.Command{
 		Use:   "get [key]",
@@ -254,7 +255,7 @@ func initKVGetCmd() *cobra.Command {
 
 			// Use reattach if --address is provided, otherwise spawn server
 			if address != "" {
-				client, err = newReattachClient(address, logger)
+				client, err = newReattachClient(address, tlsCurve, logger)
 				if err != nil {
 					return err
 				}
@@ -289,12 +290,14 @@ func initKVGetCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&address, "address", "", "Address of existing server (e.g., 127.0.0.1:50051)")
+	cmd.Flags().StringVar(&tlsCurve, "tls-curve", "auto", "Client cert curve: auto (detect from server), secp256r1, secp384r1, secp521r1")
 	return cmd
 }
 
 // Override the kvput command with real implementation
 func initKVPutCmd() *cobra.Command {
 	var address string
+	var tlsCurve string
 
 	cmd := &cobra.Command{
 		Use:   "put [key] [value]",
@@ -309,7 +312,7 @@ func initKVPutCmd() *cobra.Command {
 
 			// Use reattach if --address is provided, otherwise spawn server
 			if address != "" {
-				client, err = newReattachClient(address, logger)
+				client, err = newReattachClient(address, tlsCurve, logger)
 				if err != nil {
 					return err
 				}
@@ -343,6 +346,7 @@ func initKVPutCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&address, "address", "", "Address of existing server (e.g., 127.0.0.1:50051)")
+	cmd.Flags().StringVar(&tlsCurve, "tls-curve", "auto", "Client cert curve: auto (detect from server), secp256r1, secp384r1, secp521r1")
 	return cmd
 }
 
@@ -412,26 +416,26 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 }
 
 // parseHandshakeOrAddress parses either a simple address or a full go-plugin handshake line
-// Returns the ReattachConfig, optional TLS config, and the hostname for SNI
-func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*plugin.ReattachConfig, *tls.Config, string, error) {
+// Returns the ReattachConfig, optional TLS config, optional server certificate, and the hostname for SNI
+func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*plugin.ReattachConfig, *tls.Config, *x509.Certificate, string, error) {
 	// Check if this is a full handshake (contains pipes)
 	if strings.Contains(addressOrHandshake, "|") {
 		// Parse go-plugin handshake format: core_version|protocol_version|network|address|protocol|cert
 		parts := strings.Split(addressOrHandshake, "|")
 		if len(parts) < 5 {
-			return nil, nil, "", fmt.Errorf("invalid handshake format: expected at least 5 parts, got %d", len(parts))
+			return nil, nil, nil, "", fmt.Errorf("invalid handshake format: expected at least 5 parts, got %d", len(parts))
 		}
 
 		address := parts[3]
 		protocol := parts[4]
 
 		if protocol != "grpc" {
-			return nil, nil, "", fmt.Errorf("unsupported protocol: %s (expected grpc)", protocol)
+			return nil, nil, nil, "", fmt.Errorf("unsupported protocol: %s (expected grpc)", protocol)
 		}
 
 		tcpAddr, err := net.ResolveTCPAddr("tcp", address)
 		if err != nil {
-			return nil, nil, "", fmt.Errorf("failed to parse address from handshake: %w", err)
+			return nil, nil, nil, "", fmt.Errorf("failed to parse address from handshake: %w", err)
 		}
 
 		// Extract hostname for ServerName (SNI)
@@ -439,11 +443,12 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 
 		// Check if certificate is provided (field 6)
 		var tlsConfig *tls.Config
+		var serverCert *x509.Certificate
 		if len(parts) >= 6 && parts[5] != "" {
 			logger.Debug("Parsing server certificate from handshake")
-			tlsConfig, err = parseCertificateFromHandshake(parts[5], hostname, logger)
+			tlsConfig, serverCert, err = parseCertificateFromHandshake(parts[5], hostname, logger)
 			if err != nil {
-				return nil, nil, "", fmt.Errorf("failed to parse certificate: %w", err)
+				return nil, nil, nil, "", fmt.Errorf("failed to parse certificate: %w", err)
 			}
 		}
 
@@ -451,13 +456,13 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 			Protocol:        plugin.ProtocolGRPC,
 			ProtocolVersion: 1,
 			Addr:            tcpAddr,
-		}, tlsConfig, hostname, nil
+		}, tlsConfig, serverCert, hostname, nil
 	}
 
 	// Simple address format (no TLS)
 	tcpAddr, err := net.ResolveTCPAddr("tcp", addressOrHandshake)
 	if err != nil {
-		return nil, nil, "", fmt.Errorf("failed to resolve address %s: %w", addressOrHandshake, err)
+		return nil, nil, nil, "", fmt.Errorf("failed to resolve address %s: %w", addressOrHandshake, err)
 	}
 
 	hostname := tcpAddr.IP.String()
@@ -466,21 +471,46 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 		Protocol:        plugin.ProtocolGRPC,
 		ProtocolVersion: 1,
 		Addr:            tcpAddr,
-	}, nil, hostname, nil
+	}, nil, nil, hostname, nil
+}
+
+// detectCurveFromCert detects the elliptic curve used by a certificate's public key
+func detectCurveFromCert(cert *x509.Certificate, logger hclog.Logger) (string, error) {
+	// Check if the public key is ECDSA
+	pubKey, ok := cert.PublicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return "", fmt.Errorf("certificate does not use ECDSA key (got %T)", cert.PublicKey)
+	}
+
+	// Determine which curve is used
+	switch pubKey.Curve {
+	case elliptic.P256():
+		logger.Debug("Detected P-256 curve from server certificate")
+		return "secp256r1", nil
+	case elliptic.P384():
+		logger.Debug("Detected P-384 curve from server certificate")
+		return "secp384r1", nil
+	case elliptic.P521():
+		logger.Debug("Detected P-521 curve from server certificate")
+		return "secp521r1", nil
+	default:
+		return "", fmt.Errorf("unknown elliptic curve: %v", pubKey.Curve.Params().Name)
+	}
 }
 
 // parseCertificateFromHandshake decodes and parses the base64-encoded certificate from the handshake
-func parseCertificateFromHandshake(certBase64 string, hostname string, logger hclog.Logger) (*tls.Config, error) {
+// Returns the TLS config and the parsed certificate for curve detection
+func parseCertificateFromHandshake(certBase64 string, hostname string, logger hclog.Logger) (*tls.Config, *x509.Certificate, error) {
 	// Decode base64 certificate (DER format, not PEM)
 	certDER, err := base64.StdEncoding.DecodeString(certBase64)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode base64 certificate: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode base64 certificate: %w", err)
 	}
 
 	// Parse DER-encoded certificate directly
 	cert, err := x509.ParseCertificate(certDER)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse x509 certificate: %w", err)
+		return nil, nil, fmt.Errorf("failed to parse x509 certificate: %w", err)
 	}
 
 	logger.Debug("Parsed server certificate",
@@ -520,15 +550,15 @@ func parseCertificateFromHandshake(certBase64 string, hostname string, logger hc
 		"dns_sans", cert.DNSNames,
 		"ip_sans", cert.IPAddresses,
 		"server_name", serverName)
-	return tlsConfig, nil
+	return tlsConfig, cert, nil
 }
 
 // newReattachClient creates a go-plugin client that reattaches to an existing server
 // This is used when --address flag is provided
-func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.Client, error) {
-	logger.Debug("Creating reattach client for existing server", "input", addressOrHandshake)
+func newReattachClient(addressOrHandshake string, tlsCurve string, logger hclog.Logger) (*plugin.Client, error) {
+	logger.Debug("Creating reattach client for existing server", "input", addressOrHandshake, "tls_curve", tlsCurve)
 
-	reattachConfig, tlsConfig, hostname, err := parseHandshakeOrAddress(addressOrHandshake, logger)
+	reattachConfig, tlsConfig, serverCert, hostname, err := parseHandshakeOrAddress(addressOrHandshake, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -549,11 +579,45 @@ func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 	}
 
-	// If TLS config is provided, enable AutoMTLS and configure TLS
+	// If TLS config is provided, configure mTLS with curve-compatible client certificate
 	if tlsConfig != nil {
-		logger.Info("Enabling AutoMTLS for server connection", "hostname", hostname)
-		clientConfig.AutoMTLS = true
+		// Determine which curve to use for client certificate
+		clientCurve := tlsCurve
+		if tlsCurve == "auto" && serverCert != nil {
+			// Auto-detect curve from server certificate
+			detectedCurve, err := detectCurveFromCert(serverCert, logger)
+			if err != nil {
+				logger.Warn("Failed to detect curve from server cert, defaulting to P-256", "error", err)
+				clientCurve = "secp256r1"
+			} else {
+				clientCurve = detectedCurve
+				logger.Info("Auto-detected client curve from server certificate", "curve", clientCurve)
+			}
+		}
+
+		// Generate client certificate with compatible curve
+		logger.Info("Generating client certificate for mTLS", "curve", clientCurve)
+		clientCertPEM, clientKeyPEM, err := generateCertWithCurve(logger, clientCurve)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate client certificate: %w", err)
+		}
+
+		// Load client certificate
+		clientCert, err := tls.X509KeyPair(clientCertPEM, clientKeyPEM)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load client certificate: %w", err)
+		}
+
+		// Add client certificate to TLS config
+		tlsConfig.Certificates = []tls.Certificate{clientCert}
+
+		logger.Info("Enabling mTLS with custom client certificate",
+			"hostname", hostname,
+			"client_curve", clientCurve,
+			"server_name", tlsConfig.ServerName)
+
 		// Configure TLS through GRPCDialOptions
+		// DO NOT set AutoMTLS = true as it would override our custom certificate with P-521
 		clientConfig.GRPCDialOptions = []grpc.DialOption{
 			grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)),
 		}
@@ -564,6 +628,9 @@ func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.
 	// Create client with reattach config
 	client := plugin.NewClient(clientConfig)
 
-	logger.Info("Reattach client created successfully", "address", reattachConfig.Addr, "auto_mtls", tlsConfig != nil)
+	logger.Info("Reattach client created successfully",
+		"address", reattachConfig.Addr,
+		"mtls", tlsConfig != nil,
+		"tls_curve", tlsCurve)
 	return client, nil
 }
