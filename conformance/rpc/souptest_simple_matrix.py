@@ -65,19 +65,28 @@ def write_test_proof(test_name: str, client_type: str, server_type: str,
 
 
 def verify_kv_storage(storage_dir: Path, key: str) -> Path | None:
-    """Verify that a KV storage file exists for the given key."""
-    # KV storage files are typically stored with the key name as the filename
+    """Verify that a KV storage file exists for the given key.
+
+    The server may prefix the key with "kv-data-" when writing to disk.
+    """
+    # Try direct key name first
     storage_file = storage_dir / key
     if storage_file.exists():
         logger.info(f"✅ KV storage file found: {storage_file}")
         return storage_file
-    else:
-        logger.warning(f"⚠️  KV storage file not found: {storage_file}")
-        # List what files are in the directory
-        if storage_dir.exists():
-            files = list(storage_dir.glob("*"))
-            logger.info(f"   Files in {storage_dir}: {[f.name for f in files]}")
-        return None
+
+    # Try with "kv-data-" prefix (used by some server implementations)
+    storage_file_prefixed = storage_dir / f"kv-data-{key}"
+    if storage_file_prefixed.exists():
+        logger.info(f"✅ KV storage file found: {storage_file_prefixed}")
+        return storage_file_prefixed
+
+    # File not found - log warning and list directory contents
+    logger.warning(f"⚠️  KV storage file not found: {storage_file} or {storage_file_prefixed}")
+    if storage_dir.exists():
+        files = list(storage_dir.glob("*"))
+        logger.info(f"   Files in {storage_dir}: {[f.name for f in files]}")
+    return None
 
 
 @pytest.mark.integration_rpc
