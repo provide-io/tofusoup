@@ -162,7 +162,8 @@ class TestCrossLanguageInterop:
     @pytest.mark.harness_go
     @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
-    async def test_go_client_python_server(self, go_client_path: str, soup_path: Path | None) -> None:
+    async def test_go_client_python_server(self, go_client_path: str, soup_path: Path | None,
+                                            test_artifacts_dir: Path) -> None:
         """Test: Go Client ↔ Python Server by explicitly starting server and client."""
         if not go_client_path:
             pytest.skip("Go client binary not available")
@@ -171,8 +172,12 @@ class TestCrossLanguageInterop:
 
         logger.info("🐹↔🐍 Testing Go Client ↔ Python Server")
 
+        # Create test-specific directory for all artifacts
+        test_dir = test_artifacts_dir / "go_client_python_server"
+        test_dir.mkdir(exist_ok=True)
+
         env = os.environ.copy()
-        env["KV_STORAGE_DIR"] = "/tmp"
+        env["KV_STORAGE_DIR"] = str(test_dir)
         env["LOG_LEVEL"] = "INFO"
         env["BASIC_PLUGIN"] = "hello"
         env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
