@@ -72,6 +72,7 @@ pyvider = { path = "../pyvider", editable = true }
 dev = [
     "provide-testkit[standard,advanced-testing,build]",
     "tofusoup[test-rpc]",
+    "pytest-json-report>=1.5.0",
     # Note: wrknv has dependency conflicts with plating (rich version)
     # Install separately if needed for matrix testing
 ]

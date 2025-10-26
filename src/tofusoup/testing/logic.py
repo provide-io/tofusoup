@@ -76,6 +76,7 @@ async def _run_pytest_suite(
         sys.executable,
         "-m",
         "pytest",
+        f"--json-report",
         f"--json-report-file={report_path}",
         "-o",
         "python_files=souptest_*.py",
@@ -93,8 +94,8 @@ async def _run_pytest_suite(
     )
     await process.wait()
 
-    @error_boundary(
-        fallback_result=lambda: TestSuiteResult(
+    def _get_fallback_result() -> TestSuiteResult:
+        return TestSuiteResult(
             suite_name=suite_name,
             success=False,
             duration=0,
@@ -104,7 +105,7 @@ async def _run_pytest_suite(
             errors=1,
             failures=[{"nodeid": "runner_error", "longrepr": "Test report processing failed"}],
         )
-    )
+
     def _process_test_report() -> TestSuiteResult:
         try:
             with open(report_path) as f:
@@ -131,7 +132,15 @@ async def _run_pytest_suite(
         )
 
     try:
-        return _process_test_report()
+        with error_boundary(
+            catch=Exception,
+            fallback=_get_fallback_result(),
+            log_errors=True,
+            reraise=False,
+        ):
+            return _process_test_report()
+        # If error_boundary caught an exception, return fallback
+        return _get_fallback_result()
     finally:
         # Keep report files for debugging - they're in a well-organized location
         # and will be cleaned up by project cleanup scripts if needed
