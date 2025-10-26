@@ -26,6 +26,16 @@ from tofusoup.rpc.client import KVClient
 from tofusoup.rpc.server import serve
 
 
+@pytest.fixture
+def soup_path() -> Path | None:
+    """Find the soup executable (Python)."""
+    import shutil
+    soup = shutil.which("soup")
+    if soup:
+        return Path(soup)
+    return None
+
+
 class TestCrossLanguageInterop:
     """Test cross-language RPC interoperability."""
 
