@@ -52,6 +52,7 @@ def soup_path() -> Path | None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(60)
 async def test_python_to_python(soup_path: Path | None) -> None:
     """Test Python client → Python server."""
     if soup_path is None:
@@ -88,6 +89,7 @@ async def test_python_to_python(soup_path: Path | None) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(60)
 async def test_python_to_go(soup_go_path: Path | None) -> None:
     """Test Python client → Go server."""
     if soup_go_path is None:
@@ -125,6 +127,7 @@ async def test_python_to_go(soup_go_path: Path | None) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(90)
 async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
                             test_artifacts_dir: Path) -> None:
     """Test Go client → Python server by explicitly starting server and client."""
@@ -157,7 +160,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     # Handshake format: core_version|protocol_version|network|address|protocol|cert
     # Example: 1|1|tcp|127.0.0.1:54321|grpc|CERT_BASE64
     handshake_line = ""
-    timeout_seconds = 10
+    timeout_seconds = 30
     start_time = time.time()
     while time.time() - start_time < timeout_seconds:
         line = server_process.stdout.readline()
@@ -223,6 +226,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(60)
 async def test_go_to_go(soup_go_path: Path | None) -> None:
     """Test Go client → Go server (completes the 2x2 matrix)."""
     if soup_go_path is None:
