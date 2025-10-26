@@ -24,7 +24,8 @@
       "Bash(./bin/soup-go rpc kv:*)",
       "Bash(soup rpc kv:*)",
       "Bash(./bin/soup-go rpc:*)",
-      "Bash(./bin/soup-go:*)"
+      "Bash(./bin/soup-go:*)",
+      "Bash(/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go rpc kv:*)"
     ],
     "deny": [],
     "ask": [],
