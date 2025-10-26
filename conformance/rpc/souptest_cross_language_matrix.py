@@ -129,7 +129,9 @@ async def test_go_to_go_connection(soup_go_path: Path | None, test_artifacts_dir
     env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
     # 1. Start the Go server
-    server_command = [str(soup_go_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+    # Use AutoMTLS (no specific curve) so go-plugin outputs the handshake to stdout
+    # TLSProvider (used when --tls-curve is specified) doesn't output handshakes
+    server_command = [str(soup_go_path), "rpc", "kv", "server", "--tls-mode", "auto"]
     server_process = subprocess.Popen(
         server_command,
         env=env,
