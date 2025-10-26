@@ -7,6 +7,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"encoding/pem"
 	"fmt"
 	"math/big"
@@ -22,6 +23,7 @@ import (
 	"github.com/hashicorp/go-plugin"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 // getCurve returns the elliptic curve for the given curve name
@@ -410,46 +412,94 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 }
 
 // parseHandshakeOrAddress parses either a simple address or a full go-plugin handshake line
-// Returns the ReattachConfig
-func parseHandshakeOrAddress(addressOrHandshake string) (*plugin.ReattachConfig, error) {
+// Returns the ReattachConfig and optional TLS config
+func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*plugin.ReattachConfig, *tls.Config, error) {
 	// Check if this is a full handshake (contains pipes)
 	if strings.Contains(addressOrHandshake, "|") {
 		// Parse go-plugin handshake format: core_version|protocol_version|network|address|protocol|cert
 		parts := strings.Split(addressOrHandshake, "|")
 		if len(parts) < 5 {
-			return nil, fmt.Errorf("invalid handshake format: expected at least 5 parts, got %d", len(parts))
+			return nil, nil, fmt.Errorf("invalid handshake format: expected at least 5 parts, got %d", len(parts))
 		}
 
 		address := parts[3]
 		protocol := parts[4]
 
 		if protocol != "grpc" {
-			return nil, fmt.Errorf("unsupported protocol: %s (expected grpc)", protocol)
+			return nil, nil, fmt.Errorf("unsupported protocol: %s (expected grpc)", protocol)
 		}
 
 		tcpAddr, err := net.ResolveTCPAddr("tcp", address)
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse address from handshake: %w", err)
+			return nil, nil, fmt.Errorf("failed to parse address from handshake: %w", err)
+		}
+
+		// Check if certificate is provided (field 6)
+		var tlsConfig *tls.Config
+		if len(parts) >= 6 && parts[5] != "" {
+			logger.Debug("Parsing server certificate from handshake")
+			tlsConfig, err = parseCertificateFromHandshake(parts[5], logger)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to parse certificate: %w", err)
+			}
 		}
 
 		return &plugin.ReattachConfig{
 			Protocol:        plugin.ProtocolGRPC,
 			ProtocolVersion: 1,
 			Addr:            tcpAddr,
-		}, nil
+		}, tlsConfig, nil
 	}
 
-	// Simple address format
+	// Simple address format (no TLS)
 	tcpAddr, err := net.ResolveTCPAddr("tcp", addressOrHandshake)
 	if err != nil {
-		return nil, fmt.Errorf("failed to resolve address %s: %w", addressOrHandshake, err)
+		return nil, nil, fmt.Errorf("failed to resolve address %s: %w", addressOrHandshake, err)
 	}
 
 	return &plugin.ReattachConfig{
 		Protocol:        plugin.ProtocolGRPC,
 		ProtocolVersion: 1,
 		Addr:            tcpAddr,
-	}, nil
+	}, nil, nil
+}
+
+// parseCertificateFromHandshake decodes and parses the base64-encoded certificate from the handshake
+func parseCertificateFromHandshake(certBase64 string, logger hclog.Logger) (*tls.Config, error) {
+	// Decode base64 certificate
+	certPEM, err := base64.StdEncoding.DecodeString(certBase64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode base64 certificate: %w", err)
+	}
+
+	// Parse PEM certificate
+	block, _ := pem.Decode(certPEM)
+	if block == nil {
+		return nil, fmt.Errorf("failed to decode PEM certificate")
+	}
+
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse x509 certificate: %w", err)
+	}
+
+	logger.Debug("Parsed server certificate",
+		"subject", cert.Subject.CommonName,
+		"issuer", cert.Issuer.CommonName)
+
+	// Create certificate pool with server cert for trust verification
+	certPool := x509.NewCertPool()
+	certPool.AddCert(cert)
+
+	// Create TLS config for client that trusts this server cert
+	tlsConfig := &tls.Config{
+		RootCAs:            certPool,
+		InsecureSkipVerify: false,  // We're properly verifying with the cert pool
+		MinVersion:         tls.VersionTLS12,
+	}
+
+	logger.Info("Created TLS config with server certificate for mTLS")
+	return tlsConfig, nil
 }
 
 // newReattachClient creates a go-plugin client that reattaches to an existing server
@@ -457,14 +507,13 @@ func parseHandshakeOrAddress(addressOrHandshake string) (*plugin.ReattachConfig,
 func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.Client, error) {
 	logger.Debug("Creating reattach client for existing server", "input", addressOrHandshake)
 
-	reattachConfig, err := parseHandshakeOrAddress(addressOrHandshake)
+	reattachConfig, tlsConfig, err := parseHandshakeOrAddress(addressOrHandshake, logger)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create client with reattach config
-	// When using reattach, we also need to provide the Plugins for compatibility
-	client := plugin.NewClient(&plugin.ClientConfig{
+	// Build client config
+	clientConfig := &plugin.ClientConfig{
 		HandshakeConfig: Handshake,
 		Plugins: map[string]plugin.Plugin{
 			"kv_grpc": &KVGRPCPlugin{},
@@ -477,10 +526,22 @@ func newReattachClient(addressOrHandshake string, logger hclog.Logger) (*plugin.
 		Reattach:         reattachConfig,
 		Logger:           logger,
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
-		// Note: For mTLS support, the full handshake with cert would be needed
-		// Currently this works for insecure connections only
-	})
+	}
 
-	logger.Info("Reattach client created successfully", "address", reattachConfig.Addr)
+	// If TLS config is provided, configure secure communication
+	if tlsConfig != nil {
+		logger.Info("Configuring mTLS for server connection")
+		// Use GRPCDialOptions to configure TLS for the gRPC connection
+		clientConfig.GRPCDialOptions = []grpc.DialOption{
+			grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)),
+		}
+	} else {
+		logger.Info("No TLS config found, using insecure connection")
+	}
+
+	// Create client with reattach config
+	client := plugin.NewClient(clientConfig)
+
+	logger.Info("Reattach client created successfully", "address", reattachConfig.Addr, "tls", tlsConfig != nil)
 	return client, nil
 }
