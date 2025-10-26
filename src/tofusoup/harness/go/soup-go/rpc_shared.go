@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
+	"github.com/gofrs/flock"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc"
@@ -201,19 +203,52 @@ func NewKVImpl(logger hclog.Logger, storageDir string) *KVImpl {
 }
 
 func (k *KVImpl) Put(key string, value []byte) error {
-	k.mu.Lock()
-	defer k.mu.Unlock()
-
 	if key == "" {
 		return nil
 	}
+
+	filePath := k.storageDir + "/kv-data-" + key
+	lock := flock.New(filePath)
+
+	// Use a timeout for locking to prevent indefinite blocking
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	locked, err := lock.TryLockContext(ctx, 100*time.Millisecond)
+	if err != nil {
+		k.logger.Error("failed to acquire file lock", "key", key, "error", err)
+		return fmt.Errorf("failed to acquire lock for key %s: %w", key, err)
+	}
+	if !locked {
+		k.logger.Error("could not acquire file lock in time", "key", key)
+		return fmt.Errorf("could not acquire lock for key %s in time", key)
+	}
+	defer lock.Unlock()
 
 	k.logger.Debug("🗄️📤 putting value",
 		"key", key,
 		"value_length", len(value))
 
-	filePath := k.storageDir + "/kv-data-" + key
-	return os.WriteFile(filePath, value, 0644)
+	// Write the file
+	if err := os.WriteFile(filePath, value, 0644); err != nil {
+		k.logger.Error("failed to write file", "key", key, "error", err)
+		return err
+	}
+
+	// fsync to ensure data is flushed to disk
+	file, err := os.Open(filePath)
+	if err != nil {
+		k.logger.Error("failed to open file for fsync", "key", key, "error", err)
+		return err
+	}
+	defer file.Close()
+
+	if err := file.Sync(); err != nil {
+		k.logger.Error("failed to fsync file", "key", key, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (k *KVImpl) Get(key string) ([]byte, error) {
