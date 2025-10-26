@@ -220,9 +220,9 @@ func init() {
 	hclConvertCmd = initHclConvertCmd()
 	wireEncodeCmd = initWireEncodeCmd()
 	wireDecodeCmd = initWireDecodeCmd()
-	rpcKVGetCmd = initRpcKVGetCmd()
-	rpcKVPutCmd = initRpcKVPutCmd()
-	rpcValidateConnectionCmd = initRpcValidateConnectionCmd()
+	getCmd = initRpcKVGetCmd()
+	putCmd = initRpcKVPutCmd()
+	connectionCmd = initRpcValidateConnectionCmd()
 	
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
@@ -233,12 +233,12 @@ func init() {
 	configShowCmd.Flags().Bool("json", false, "Output in JSON format")
 	
 	// RPC server flags
-	rpcServerCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port")
-	rpcServerCmd.Flags().StringVar(&rpcTLSMode, "tls-mode", "disabled", "TLS mode: disabled, auto, manual")
-	rpcServerCmd.Flags().StringVar(&rpcTLSKeyType, "tls-key-type", "ec", "Key type for auto TLS: 'ec' or 'rsa'")
-	rpcServerCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "auto", "Elliptic curve for EC key type: 'auto' (AutoMTLS P-521), 'secp256r1', 'secp384r1', 'secp521r1'")
-	rpcServerCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS)")
-	rpcServerCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS)")
+	serverCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port")
+	serverCmd.Flags().StringVar(&rpcTLSMode, "tls-mode", "disabled", "TLS mode: disabled, auto, manual")
+	serverCmd.Flags().StringVar(&rpcTLSKeyType, "tls-key-type", "ec", "Key type for auto TLS: 'ec' or 'rsa'")
+	serverCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "auto", "Elliptic curve for EC key type: 'auto' (AutoMTLS P-521), 'secp256r1', 'secp384r1', 'secp521r1'")
+	serverCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS)")
+	serverCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS)")
 	
 	// Build command tree
 	rootCmd.AddCommand(ctyCmd)
@@ -263,14 +263,16 @@ func init() {
 	wireCmd.AddCommand(wireDecodeCmd)
 	
 	// RPC subcommands
-	rpcCmd.AddCommand(rpcServerCmd)
-	rpcCmd.AddCommand(rpcClientCmd)
-	rpcCmd.AddCommand(rpcKVGetCmd)
-	rpcCmd.AddCommand(rpcKVPutCmd)
-	rpcCmd.AddCommand(rpcValidateConnectionCmd)
-	
-	// RPC client subcommands
-	rpcClientCmd.AddCommand(rpcClientTestCmd)
+	rpcCmd.AddCommand(kvCmd)
+	rpcCmd.AddCommand(validateCmd)
+
+	// KV subcommands
+	kvCmd.AddCommand(getCmd)
+	kvCmd.AddCommand(putCmd)
+	kvCmd.AddCommand(serverCmd)
+
+	// Validate subcommands
+	validateCmd.AddCommand(connectionCmd)
 	
 	// Harness subcommands
 	harnessCmd.AddCommand(harnessListCmd)
