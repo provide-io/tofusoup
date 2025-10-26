@@ -107,35 +107,47 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
     client = KVClient(server_path=str(go_server_path), tls_mode="disabled")
     client.subprocess_env["KV_STORAGE_DIR"] = str(test_dir)
 
-    # Identity-embedded key and value
+    # Identity-embedded key
     test_id = str(uuid.uuid4())[:8]
-    test_key = f"pyclient_goserver_no_mtls_{test_id}"
-    test_value = b"Python_client->Go_server(no_mTLS)"
+    test_key = f"proof_pyclient_goserver_no_mtls_{test_id}"
+
+    # Create proof manifest as the value to store
+    proof_manifest = {
+        "test_name": "pyclient_goserver_no_mtls",
+        "client_type": "python",
+        "server_type": "go",
+        "tls_mode": "disabled",
+        "crypto_type": "none",
+        "key": test_key,
+        "timestamp": datetime.now().isoformat(),
+        "status": "success"
+    }
+    test_value = json.dumps(proof_manifest, indent=2).encode()
 
     try:
         await client.start()
         await client.put(test_key, test_value)
         retrieved = await client.get(test_key)
         assert retrieved == test_value
+
+        # Verify the retrieved value is valid JSON with correct content
+        retrieved_manifest = json.loads(retrieved.decode())
+        assert retrieved_manifest["test_name"] == "pyclient_goserver_no_mtls"
+        assert retrieved_manifest["client_type"] == "python"
+        assert retrieved_manifest["server_type"] == "go"
+
         logger.info("✅ Python client → Go server (no mTLS) - PASSED")
         logger.info(f"   Key: {test_key}")
-        logger.info(f"   Value: {test_value.decode()}")
+        logger.info(f"   Value: {retrieved_manifest['test_name']} proof manifest")
 
         # Verify KV storage file exists in test directory
         storage_file = verify_kv_storage(test_dir, test_key)
 
-        # Write proof manifest to same directory
-        kv_files = [str(storage_file)] if storage_file else []
-        write_test_proof(
-            test_name="pyclient_goserver_no_mtls",
-            client_type="python",
-            server_type="go",
-            tls_mode="disabled",
-            crypto_type="none",
-            keys_written=[test_key],
-            kv_storage_files=kv_files,
-            proof_dir=test_dir
-        )
+        # Write proof manifest to same directory (with storage file info)
+        proof_manifest["kv_storage_files"] = [str(storage_file)] if storage_file else []
+        manifest_file = test_dir / f"{proof_manifest['test_name']}_{int(time.time())}.json"
+        manifest_file.write_text(json.dumps(proof_manifest, indent=2))
+        logger.info(f"📝 Test proof written to {manifest_file}")
     finally:
         await client.close()
 
