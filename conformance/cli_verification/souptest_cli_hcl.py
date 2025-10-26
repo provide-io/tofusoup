@@ -37,7 +37,7 @@ def test_hcl_cli_parse(
     test_id = request.node.callspec.id
     hcl_file = tmp_path / filename
     hcl_file.write_text(hcl_content)
-    args = ["hcl", "parse", str(hcl_file), "--output-format", "json", "--log-level", "debug"]
+    args = ["hcl", "view", str(hcl_file), "--output-format", "json", "--log-level", "debug"]
     exit_code, stdout, stderr = run_harness_cli(
         go_harness_executable,
         args,
