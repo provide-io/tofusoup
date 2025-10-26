@@ -36,7 +36,8 @@
       "Bash(LOG_LEVEL=INFO uv run pytest:*)",
       "Bash(python test_logging_demo.py:*)",
       "Bash(.venv/bin/pytest conformance/rpc/souptest_cross_language_comprehensive.py::test_python_to_go -v --tb=short)",
-      "Bash(.venv/bin/pytest:*)"
+      "Bash(.venv/bin/pytest:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": [],
