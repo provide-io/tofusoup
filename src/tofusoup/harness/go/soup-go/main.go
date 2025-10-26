@@ -53,8 +53,9 @@ var hclCmd = &cobra.Command{
 }
 
 // These will be initialized with real implementations
-var hclParseCmd *cobra.Command
+var hclViewCmd *cobra.Command
 var hclValidateCmd *cobra.Command
+var hclConvertCmd *cobra.Command
 
 // Wire command
 var wireCmd = &cobra.Command{
@@ -201,8 +202,9 @@ func init() {
 	// Initialize commands with real implementations
 	ctyValidateCmd = initCtyValidateCmd()
 	ctyConvertCmd = initCtyConvertCmd()
-	hclParseCmd = initHclParseCmd()
+	hclViewCmd = initHclViewCmd()
 	hclValidateCmd = initHclValidateCmd()
+	hclConvertCmd = initHclConvertCmd()
 	wireEncodeCmd = initWireEncodeCmd()
 	wireDecodeCmd = initWireDecodeCmd()
 	
@@ -235,8 +237,9 @@ func init() {
 	ctyCmd.AddCommand(ctyConvertCmd)
 	
 	// HCL subcommands
-	hclCmd.AddCommand(hclParseCmd)
+	hclCmd.AddCommand(hclViewCmd)
 	hclCmd.AddCommand(hclValidateCmd)
+	hclCmd.AddCommand(hclConvertCmd)
 	
 	// Wire subcommands
 	wireCmd.AddCommand(wireEncodeCmd)

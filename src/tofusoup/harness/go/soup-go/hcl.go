@@ -12,16 +12,103 @@ import (
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
+	ctymsgpack "github.com/zclconf/go-cty/cty/msgpack"
 )
 
 // HCL output format flag
 var hclOutputFormat string
+var hclConvertOutputFormat string
+
+// Override the convert command with real implementation
+func initHclConvertCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert [input] [output]",
+		Short: "Convert HCL to JSON or Msgpack",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inputPath := args[0]
+			outputPath := args[1]
+
+			// Read the HCL file
+			content, err := os.ReadFile(inputPath)
+			if err != nil {
+				return fmt.Errorf("failed to read input file: %w", err)
+			}
+
+			// Parse the HCL file
+			parser := hclparse.NewParser()
+			file, diags := parser.ParseHCL(content, inputPath)
+			if diags.HasErrors() {
+				return fmt.Errorf("HCL parse errors: %s", diags.Error())
+			}
+
+			// Convert to JSON representation first
+			jsonResult, err := hclFileToJSON(file)
+			if err != nil {
+				return fmt.Errorf("failed to convert HCL to intermediate JSON: %w", err)
+			}
+
+			// Marshal to final output format
+			var outputData []byte
+			switch hclConvertOutputFormat {
+			case "json":
+				outputData, err = json.MarshalIndent(jsonResult, "", "  ")
+				if err != nil {
+					return fmt.Errorf("failed to marshal to JSON: %w", err)
+				}
+			case "msgpack":
+				// For msgpack, we need to convert the JSON representation to a cty.Value first
+				// This is a simplification; a full implementation would directly convert HCL to cty.Value
+				// For now, we'll use the JSON as an intermediate step.
+				jsonBytes, err := json.Marshal(jsonResult)
+				if err != nil {
+					return fmt.Errorf("failed to marshal intermediate JSON for msgpack: %w", err)
+				}
+				
+				// Infer cty type from the JSON
+				impliedType, err := ctyjson.ImpliedType(jsonBytes)
+				if err != nil {
+					return fmt.Errorf("failed to infer cty type for msgpack conversion: %w", err)
+				}
+				
+				ctyValue, err := ctyjson.Unmarshal(jsonBytes, impliedType)
+				if err != nil {
+					return fmt.Errorf("failed to unmarshal JSON to cty.Value for msgpack: %w", err)
+				}
+				
+				outputData, err = ctymsgpack.Marshal(ctyValue, impliedType)
+				if err != nil {
+					return fmt.Errorf("failed to marshal to msgpack: %w", err)
+				}
+			default:
+				return fmt.Errorf("unsupported output format: %s", hclConvertOutputFormat)
+			}
+
+			// Write output
+			if outputPath == "-" {
+				_, err = os.Stdout.Write(outputData)
+			} else {
+				err = os.WriteFile(outputPath, outputData, 0644)
+			}
+			if err != nil {
+				return fmt.Errorf("failed to write output: %w", err)
+			}
+
+			return nil
+		},
+	}
+	
+	// Add flags
+	cmd.Flags().StringVar(&hclConvertOutputFormat, "output-format", "json", "Output format (json, msgpack)")
+	
+	return cmd
+}
 
 // Override the parse command with real implementation
-func initHclParseCmd() *cobra.Command {
+func initHclViewCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "parse [file]",
-		Short: "Parse an HCL file",
+		Use:   "view [file]",
+		Short: "Parse an HCL file and view its structure",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			filename := args[0]
