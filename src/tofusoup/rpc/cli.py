@@ -70,13 +70,7 @@ def kv_get(address: str, key: str) -> None:
         click.echo(f"RPC Error: {e.details()}", err=True)
 
 
-@kv_cli.group("server")
-def server_cli() -> None:
-    """Commands for the KV server."""
-    pass
-
-
-@server_cli.command("start")
+@kv_cli.command("server")
 @click.option(
     "--tls-mode",
     type=click.Choice(["disabled", "auto", "manual"]),
@@ -299,4 +293,3 @@ def _print_validation_summary(errors: list[str], warnings: list[str]) -> None:
 
 rpc_cli.add_command(kv_cli)
 rpc_cli.add_command(validate_cli)
-

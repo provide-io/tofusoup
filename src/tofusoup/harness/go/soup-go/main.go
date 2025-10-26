@@ -94,9 +94,9 @@ var (
 	rpcKeyFile    string
 )
 
-var rpcServerCmd = &cobra.Command{
-	Use:   "server-start",
-	Short: "Start an RPC server",
+var serverCmd = &cobra.Command{
+	Use:   "server",
+	Short: "Start a KV RPC server",
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Info("Starting RPC server",
 			"port", rpcPort,
@@ -114,18 +114,9 @@ var rpcServerCmd = &cobra.Command{
 	},
 }
 
-var rpcClientCmd = &cobra.Command{
-	Use:   "client",
-	Short: "RPC client operations",
-	Run: func(cmd *cobra.Command, args []string) {
-		logger.Info("RPC client operations")
-		fmt.Println("RPC client operations")
-	},
-}
-
-var rpcKVGetCmd *cobra.Command
-var rpcKVPutCmd *cobra.Command
-var rpcValidateConnectionCmd *cobra.Command
+var getCmd *cobra.Command
+var putCmd *cobra.Command
+var connectionCmd *cobra.Command
 
 var rpcClientTestCmd = &cobra.Command{
 	Use:   "test [server-path]",
