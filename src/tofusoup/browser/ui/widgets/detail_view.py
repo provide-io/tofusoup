@@ -65,7 +65,4 @@ class DetailView(VerticalScroll):
             self._raw_markdown_content = no_item_content
             self._markdown.update(no_item_content)
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

@@ -49,7 +49,4 @@ def tfwire_go_encode(
 
     return stdout.strip().encode("utf-8")
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

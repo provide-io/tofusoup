@@ -187,7 +187,4 @@ async def run_all_test_suites(
     tasks = [run_test_suite(name, project_root, loaded_config, verbose, None) for name in TEST_SUITE_CONFIG]
     return await asyncio.gather(*tasks)
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

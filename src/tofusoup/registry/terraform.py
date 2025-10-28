@@ -171,7 +171,4 @@ class IBMTerraformRegistry(BaseTfRegistry):
             )
             return []
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

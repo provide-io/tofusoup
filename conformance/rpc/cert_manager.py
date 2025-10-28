@@ -193,6 +193,4 @@ if __name__ == "__main__":
                 file_size = file_path.stat().st_size
                 print(f"    {cert_type}: {file_path.name} ({file_size} bytes)")
 
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

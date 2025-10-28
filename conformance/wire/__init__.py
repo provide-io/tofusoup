@@ -5,6 +5,4 @@
 
 """Conformance tests for Terraform Wire Protocol implementations."""
 
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

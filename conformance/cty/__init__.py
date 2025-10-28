@@ -5,8 +5,4 @@
 
 """Conformance tests for CTY implementations."""
 
-# <3 🍲 🍜 🍥>
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

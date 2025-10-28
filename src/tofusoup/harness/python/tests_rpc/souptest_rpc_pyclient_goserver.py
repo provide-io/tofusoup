@@ -79,7 +79,6 @@ async def test_pyclient_goserver_put_get(go_kvstore_harness: Path, tmp_path: Pat
             await client.close()  # This stops the Go server subprocess
 
 
-# <3 🍲 🍜 🍥>
 
 
 # 🍲🥄🧪🪄

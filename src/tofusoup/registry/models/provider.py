@@ -42,7 +42,4 @@ class Provider:
     latest_version: ProviderVersion | None = field(default=None)
     registry_source: str | None = field(default=None)
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

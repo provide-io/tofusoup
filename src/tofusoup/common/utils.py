@@ -73,7 +73,6 @@ class DecimalAwareJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-# <3 🍲 🍜 🍥>
 
 
 # 🍲🥄🛠️🪄

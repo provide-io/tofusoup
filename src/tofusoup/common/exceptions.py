@@ -59,7 +59,6 @@ class HarnessError(ProcessError):
         )
 
 
-# <3 🍲 🍜 🍥>
 
 
 # 🍲🥄⚠️🪄

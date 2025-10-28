@@ -159,7 +159,4 @@ def start_go_plugin_server_process(
     except Exception as e:
         raise TofuSoupError(f"Failed to start Go plugin server '{harness_name}': {e}") from e
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

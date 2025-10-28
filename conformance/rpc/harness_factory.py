@@ -411,7 +411,4 @@ def get_factory_info() -> dict[str, Any]:
         "supported_ec_curves": [256, 384, 521],
     }
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

@@ -36,7 +36,4 @@ class KVProtocol(RPCPluginProtocol):
         # Register the KV service implementation
         kv_pb2_grpc.add_KVServicer_to_server(handler, server)
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

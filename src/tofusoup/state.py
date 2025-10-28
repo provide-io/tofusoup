@@ -348,7 +348,4 @@ def validate_private_state(state_file: str) -> None:
 if __name__ == "__main__":
     state_cli()
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

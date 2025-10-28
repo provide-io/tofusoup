@@ -5,6 +5,4 @@
 
 """Conformance tests for HCL implementations."""
 
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

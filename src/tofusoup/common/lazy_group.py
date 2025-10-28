@@ -46,7 +46,4 @@ class LazyGroup(click.Group):
                 raise click.UsageError(f"Error loading command '{cmd_name}': {e}") from e
         return super().get_command(ctx, cmd_name)
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

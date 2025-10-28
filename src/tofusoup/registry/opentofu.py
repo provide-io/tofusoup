@@ -173,7 +173,4 @@ class OpenTofuRegistry(BaseTfRegistry):
             )
             return []
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

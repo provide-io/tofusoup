@@ -122,7 +122,4 @@ class TFBrowserApp(App[None]):
     def on_mount(self) -> None:
         self.push_screen(MainSearchScreen())
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

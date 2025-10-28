@@ -15,6 +15,4 @@ __all__ = [
     "tfwire_go_encode",
 ]
 
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

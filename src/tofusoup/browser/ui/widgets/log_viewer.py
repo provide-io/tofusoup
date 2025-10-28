@@ -49,7 +49,4 @@ class LogViewer(Widget):
         """Clear the log."""
         self._log_widget.clear()
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

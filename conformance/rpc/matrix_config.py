@@ -90,6 +90,4 @@ if __name__ == "__main__":
         client, server, crypto = param.values
         print(f"{i:2d}. {param.id}")
 
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

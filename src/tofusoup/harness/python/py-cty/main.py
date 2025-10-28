@@ -47,7 +47,4 @@ def to_hcl_json(input_file) -> None:
 if __name__ == "__main__":
     cli()
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚

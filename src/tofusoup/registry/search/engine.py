@@ -286,7 +286,4 @@ async def async_search_runner(search_term: str, registry_choice: str) -> list[Se
 
     return results
 
-
-# 🍲🥄📄🪄
-
 # 🍲🔍🔚
