@@ -43,7 +43,7 @@ dependencies = [
     "semver>=3.0.0",
     "jinja2>=3.1.6",
     "tomli-w>=1.0.0",
-    "plating>=0.0.0.dev0",
+    "plating",
     "mkdocs-material>=9.6.20",
     "pyvider",  # For state inspection encryption (pyvider.common.encryption)
 ]
