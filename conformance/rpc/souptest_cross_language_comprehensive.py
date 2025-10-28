@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Cross-Language RPC Conformance Tests
 
@@ -17,8 +22,8 @@ import shutil
 import subprocess
 import time
 
-import pytest
 from provide.foundation import logger
+import pytest
 
 
 @pytest.fixture
@@ -155,7 +160,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     # 1. Start the Python server with mTLS enabled
     server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
     logger.info(f"🚀 Starting Python server with command: {' '.join(server_command)}")
-    logger.info(f"🔐 TLS Configuration: mode=auto, curve=secp256r1 (P-256)")
+    logger.info("🔐 TLS Configuration: mode=auto, curve=secp256r1 (P-256)")
     server_process = subprocess.Popen(
         server_command,
         env=env,
@@ -195,7 +200,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     parts = handshake_line.split('|')
     assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
 
-    logger.info(f"🔍 Handshake parts:")
+    logger.info("🔍 Handshake parts:")
     logger.info(f"  - Core version: {parts[0]}")
     logger.info(f"  - Protocol version: {parts[1]}")
     logger.info(f"  - Network: {parts[2]}")
@@ -216,11 +221,11 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
         put_key, put_value
     ]
 
-    logger.info(f"📤 Executing Go client PUT operation:")
+    logger.info("📤 Executing Go client PUT operation:")
     logger.info(f"   Command: {' '.join(put_command[:4])} [handshake] {put_key} {put_value}")
     logger.info(f"   Key: {put_key}")
     logger.info(f"   Value: {put_value}")
-    logger.info(f"   TLS: Auto-detect curve from server cert (should detect P-256)")
+    logger.info("   TLS: Auto-detect curve from server cert (should detect P-256)")
 
     put_result = subprocess.run(
         put_command,
@@ -231,12 +236,12 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     )
 
     if put_result.returncode != 0:
-        logger.error(f"❌ Go client PUT failed!")
+        logger.error("❌ Go client PUT failed!")
         logger.error(f"   Exit code: {put_result.returncode}")
         logger.error(f"   Stdout: {put_result.stdout}")
         logger.error(f"   Stderr: {put_result.stderr}")
     else:
-        logger.info(f"✅ Go client PUT succeeded!")
+        logger.info("✅ Go client PUT succeeded!")
         logger.info(f"   Output: {put_result.stdout.strip()}")
 
     assert put_result.returncode == 0, f"Go client Put failed: {put_result.stderr}"
@@ -249,7 +254,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
         put_key
     ]
 
-    logger.info(f"📥 Executing Go client GET operation:")
+    logger.info("📥 Executing Go client GET operation:")
     logger.info(f"   Command: {' '.join(get_command[:4])} [handshake] {put_key}")
     logger.info(f"   Key: {put_key}")
     logger.info(f"   Expected value: {put_value}")
@@ -263,23 +268,23 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     )
 
     if get_result.returncode != 0:
-        logger.error(f"❌ Go client GET failed!")
+        logger.error("❌ Go client GET failed!")
         logger.error(f"   Exit code: {get_result.returncode}")
         logger.error(f"   Stdout: {get_result.stdout}")
         logger.error(f"   Stderr: {get_result.stderr}")
     else:
-        logger.info(f"✅ Go client GET succeeded!")
+        logger.info("✅ Go client GET succeeded!")
         logger.info(f"   Retrieved value: {get_result.stdout.strip()}")
 
     assert get_result.returncode == 0, f"Go client Get failed: {get_result.stderr}"
     assert put_value in get_result.stdout
 
     # Clean up server process
-    logger.info(f"🛑 Terminating Python server...")
+    logger.info("🛑 Terminating Python server...")
     server_process.terminate()
     server_process.wait(timeout=5)
     assert server_process.returncode is not None, "Python server process did not terminate"
-    logger.info(f"✅ Server terminated successfully")
+    logger.info("✅ Server terminated successfully")
 
     logger.info("="*80)
     logger.info("✅ TEST PASSED: Go Client → Python Server")
@@ -300,9 +305,9 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
 
     Workaround: Use single-connection scenarios or fix Go server to have --persistent flag.
     """
+    import os
     import subprocess
     import time
-    import os
 
     if soup_go_path is None:
         pytest.skip("soup-go executable not found")
@@ -340,7 +345,7 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         line = server_process.stdout.readline()
         if line and (line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line):
             handshake_line = line.strip()
-            logger.info(f"✅ Server handshake received")
+            logger.info("✅ Server handshake received")
             break
         await asyncio.sleep(0.1)
 
@@ -398,3 +403,5 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
     logger.info("="*80)
     logger.info("✅ Go Client → Go Server: SUCCESS")
     logger.info("="*80)
+
+# 🍲🔍🔚

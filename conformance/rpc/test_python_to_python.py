@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Python-to-Python RPC Conformance Tests
 
@@ -135,3 +140,5 @@ async def test_python_to_python_p384(soup_path: Path | None) -> None:
             await client.close()
         except Exception:
             pass
+
+# 🍲🔍🔚

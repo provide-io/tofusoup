@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Cross-Language Interoperability Test for TofuSoup
 
@@ -17,7 +21,6 @@ import asyncio
 import os
 from pathlib import Path
 import subprocess
-
 import time
 
 import grpc.aio
@@ -206,7 +209,7 @@ class TestCrossLanguageInterop:
             else:
                 # If no line, give the server a moment to produce output
                 await asyncio.sleep(0.1)
-            
+
             # Check if the process has terminated prematurely
             if server_process.poll() is not None:
                 stderr_output = server_process.stderr.read()
@@ -360,3 +363,5 @@ if __name__ == "__main__":
     asyncio.run(manual_test())
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

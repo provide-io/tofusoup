@@ -1,6 +1,10 @@
 #
-# tofusoup/cty/logic.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 import pathlib
 from typing import Any
 
@@ -131,3 +135,5 @@ def dump_cty_value_to_msgpack_bytes(value: CtyValue) -> bytes:
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

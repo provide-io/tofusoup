@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/wire/cli.py
-#
+
+"""TODO: Add module docstring."""
+
 import json
 from pathlib import Path
 
@@ -72,5 +75,4 @@ def to_json(input_path: Path, output_path: Path | None, pretty: bool) -> None:
     except Exception as e:
         raise click.ClickException(f"An unexpected error occurred: {e}")
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

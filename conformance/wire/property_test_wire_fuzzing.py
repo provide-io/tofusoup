@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Aggressive Property-Based Fuzzing for Wire Protocol
 
@@ -8,17 +12,16 @@ Uses hypothesis to generate extreme CTY values and test wire protocol encoding/d
 - Large numbers and high-precision decimals
 - Edge cases: empty collections, null values
 """
-from decimal import Decimal
-import math
 
-from hypothesis import given, settings, strategies as st, HealthCheck
+from decimal import Decimal
+
+from hypothesis import given, settings, strategies as st
 import pytest
 
 from pyvider.cty import CtyValue
 from pyvider.cty.conversion import cty_to_native
 from pyvider.cty.types import (
     CtyBool,
-    CtyDynamic,
     CtyList,
     CtyMap,
     CtyNumber,
@@ -26,7 +29,6 @@ from pyvider.cty.types import (
     CtySet,
     CtyString,
 )
-
 
 # Hypothesis strategies for CTY types
 cty_strings = st.one_of(
@@ -228,3 +230,5 @@ def test_wire_protocol_nested_roundtrip(nested: CtyValue) -> None:
 
 
 # 🍲🥄📦🧪
+
+# 🍲🔍🔚

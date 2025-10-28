@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Property-Based Concurrent Connection Testing
 
@@ -8,10 +12,11 @@ Tests multiple simultaneous clients to detect:
 - Concurrent read/write consistency
 - Resource leaks under load
 """
+
 import asyncio
 from pathlib import Path
 
-from hypothesis import given, settings, strategies as st, HealthCheck
+from hypothesis import HealthCheck, given, settings, strategies as st
 import pytest
 
 from tofusoup.rpc.client import KVClient
@@ -240,3 +245,5 @@ async def test_concurrent_readers(num_readers: int, key: str, value: bytes) -> N
 
 
 # 🍲🥄🔀🧪
+
+# 🍲🔍🔚

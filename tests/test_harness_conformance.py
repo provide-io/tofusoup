@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tests/test_harness_conformance.py
-#
+
 """
 Cross-language conformance tests for TofuSoup harnesses.
 
@@ -292,3 +293,5 @@ def test_capability_matrix() -> None:
 if __name__ == "__main__":
     # Run tests with pytest
     pytest.main([__file__, "-v", "--tb=short"])
+
+# 🍲🔍🔚

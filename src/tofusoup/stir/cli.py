@@ -1,6 +1,9 @@
 #
-# tofusoup/stir/cli.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 import asyncio
 from pathlib import Path
@@ -274,3 +277,5 @@ def stir_cli(
         console.print(f"[bold red]💥 Fatal error:[/bold red] {e}")
         console.print_exception()
         sys.exit(1)
+
+# 🍲🔍🔚

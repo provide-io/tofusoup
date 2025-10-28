@@ -1,6 +1,10 @@
 #
-# tofusoup/browser/ui/widgets/detail_view.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 from textual.containers import VerticalScroll
 from textual.widgets import Markdown
 
@@ -63,3 +67,5 @@ class DetailView(VerticalScroll):
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

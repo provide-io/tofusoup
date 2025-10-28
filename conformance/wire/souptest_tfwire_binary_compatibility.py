@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 # This test suite is temporarily disabled as it requires a full rewrite of the
@@ -6,3 +13,5 @@ import pytest
 pytest.skip("Skipping binary compatibility tests pending marshaller rewrite", allow_module_level=True)
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,6 +1,8 @@
 #
-# tofusoup/wire/logging.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
 """Centralized logging configuration using Pyvider Telemetry."""
 
 from provide.foundation import LoggingConfig, TelemetryConfig, get_hub
@@ -31,3 +33,5 @@ def configure_logging() -> None:
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

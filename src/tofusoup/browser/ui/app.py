@@ -1,6 +1,9 @@
 #
-# tofusoup/browser/ui/app.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 from provide.foundation import LoggingConfig, TelemetryConfig, get_hub, logger
 from textual.app import App, ComposeResult
@@ -121,3 +124,5 @@ class TFBrowserApp(App[None]):
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

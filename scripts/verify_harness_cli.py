@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Script to verify the Command Line Interface (CLI) of TofuSoup's Go harnesses.
 
@@ -199,5 +203,4 @@ def run_verification() -> None:
 if __name__ == "__main__":
     run_verification()
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

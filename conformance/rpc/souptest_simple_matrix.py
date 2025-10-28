@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Simple RPC K/V Matrix Testing
 
@@ -543,3 +548,5 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

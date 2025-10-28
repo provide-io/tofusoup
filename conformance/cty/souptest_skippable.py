@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import os
 
 import pytest
@@ -21,3 +28,5 @@ def test_check_env_vars_cty_suite() -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/testing/cli.py
-#
+
+"""TODO: Add module docstring."""
+
 import asyncio
 import sys
 
@@ -80,5 +83,4 @@ for suite_name_key in TEST_SUITE_CONFIG:
             logger.error(f"Unexpected error in test suite '{snk}': {e}", exc_info=verbose)
             sys.exit(1)
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

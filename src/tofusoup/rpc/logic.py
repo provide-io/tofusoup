@@ -1,6 +1,8 @@
 #
-# tofusoup/rpc/logic.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
 """
 Core logic for RPC operations, including test orchestration.
 """
@@ -163,3 +165,5 @@ def run_rpc_compatibility_tests(project_root: pathlib.Path, loaded_config: dict)
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

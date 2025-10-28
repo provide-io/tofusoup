@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import base64
 from pathlib import Path
 from typing import Any
@@ -71,3 +78,5 @@ def test_python_and_go_encoders_are_identical(
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

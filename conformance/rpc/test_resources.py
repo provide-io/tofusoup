@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Property-Based Resource Exhaustion Testing
 
@@ -8,9 +12,10 @@ Tests system behavior under resource pressure:
 - File descriptor limits
 - Disk space constraints
 """
+
 from pathlib import Path
 
-from hypothesis import given, settings, strategies as st, HealthCheck, assume
+from hypothesis import HealthCheck, given, settings, strategies as st
 import pytest
 
 from tofusoup.rpc.client import KVClient
@@ -284,3 +289,5 @@ async def test_binary_data_integrity(binary_pattern: bytes) -> None:
 
 
 # 🍲🥄💾🧪
+
+# 🍲🔍🔚

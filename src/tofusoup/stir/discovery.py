@@ -1,5 +1,6 @@
 #
-# tofusoup/stir/discovery.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
 
 """Enhanced test discovery for hierarchical and flexible test detection."""
@@ -418,3 +419,5 @@ def discover_tests_with_patterns(
 
 
 # 🍲🔍🔍🪄
+
+# 🍲🔍🔚

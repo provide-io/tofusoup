@@ -1,4 +1,10 @@
-# tofusoup/conformance/cli_verification/souptest_cli_hcl.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import json
 from pathlib import Path
 from typing import Any
@@ -60,3 +66,5 @@ def test_hcl_cli_parse(
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

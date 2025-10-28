@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Elliptic Curve Compatibility Tests
 
@@ -9,7 +14,6 @@ Consolidates test_ec_curves.py and test_all_curves.py from the project root.
 
 from __future__ import annotations
 
-import asyncio
 from pathlib import Path
 import shutil
 
@@ -107,3 +111,5 @@ async def test_auto_curve(soup_go_path: Path | None) -> None:
             await client.close()
         except Exception:
             pass
+
+# 🍲🔍🔚

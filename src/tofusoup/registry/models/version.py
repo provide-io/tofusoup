@@ -1,6 +1,8 @@
 #
-# tofusoup/registry/models/version.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
 """Data models for versioning information."""
 
 from datetime import datetime
@@ -64,3 +66,5 @@ class VersionInfo:
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

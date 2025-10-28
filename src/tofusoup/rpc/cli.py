@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/rpc/cli.py
-#
+
+"""TODO: Add module docstring."""
+
 import os
 from pathlib import Path
 import sys
@@ -293,3 +296,5 @@ def _print_validation_summary(errors: list[str], warnings: list[str]) -> None:
 
 rpc_cli.add_command(kv_cli)
 rpc_cli.add_command(validate_cli)
+
+# 🍲🔍🔚

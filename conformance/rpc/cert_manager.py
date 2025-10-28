@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Certificate Management for RPC K/V Matrix Testing
 
@@ -189,3 +194,5 @@ if __name__ == "__main__":
                 print(f"    {cert_type}: {file_path.name} ({file_size} bytes)")
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

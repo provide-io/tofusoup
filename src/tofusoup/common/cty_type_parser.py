@@ -1,6 +1,10 @@
 #
-# tofusoup/common/cty_type_parser.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 from pyvider.cty import (
     CtyBool,
     CtyDynamic,
@@ -174,3 +178,5 @@ def parse_cty_type_string(type_str: str) -> CtyType:
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

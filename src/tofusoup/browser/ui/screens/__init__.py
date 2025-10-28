@@ -1,6 +1,8 @@
 #
-# tofusoup/browser/ui/screens/__init__.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
 """Screens for the tfbrowser TUI application."""
 
 # Example:
@@ -18,3 +20,5 @@
 
 
 # 🍲🥄🚀🪄
+
+# 🍲🔍🔚

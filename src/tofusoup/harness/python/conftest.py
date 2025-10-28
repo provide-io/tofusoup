@@ -1,6 +1,10 @@
 #
-# tofusoup/harness/python/conftest.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 import os
 from pathlib import Path
 import subprocess
@@ -181,3 +185,5 @@ def go_kvstore_harness(request) -> Path:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -61,3 +68,5 @@ def test_cli_handles_logic_errors(monkeypatch) -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/cty/cli.py
-#
+
+"""TODO: Add module docstring."""
+
 import json
 from pathlib import Path
 import sys
@@ -169,5 +172,4 @@ def validate_value_command(value: str, type_spec: str) -> None:
         click.echo(f"❌ Validation failed: {e}", err=True)
         sys.exit(1)
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

@@ -1,6 +1,9 @@
 #
-# tofusoup/stir/executor.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 import asyncio
 import json
@@ -231,3 +234,5 @@ async def execute_tests(test_dirs: list[Path], runtime: StirRuntime) -> list[Tes
     semaphore = asyncio.Semaphore(MAX_CONCURRENT_TESTS)
     tasks = [run_test_lifecycle(d, semaphore, runtime) for d in test_dirs]
     return await asyncio.gather(*tasks, return_exceptions=True)
+
+# 🍲🔍🔚

@@ -1,6 +1,10 @@
 #
-# tofusoup/testing/logic.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 import asyncio
 import json
 import os
@@ -76,7 +80,7 @@ async def _run_pytest_suite(
         sys.executable,
         "-m",
         "pytest",
-        f"--json-report",
+        "--json-report",
         f"--json-report-file={report_path}",
         "-o",
         "python_files=souptest_*.py",
@@ -185,3 +189,5 @@ async def run_all_test_suites(
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

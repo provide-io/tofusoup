@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/registry/cli.py
-#
+
+"""TODO: Add module docstring."""
 
 import asyncio
 
@@ -440,5 +442,4 @@ def compare_command(resource: str) -> None:
 
     safe_async_run(compare_resources)
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

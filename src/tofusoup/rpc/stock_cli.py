@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/rpc/stock_cli.py
-#
+
 """
 Stock service CLI commands for direct gRPC testing.
 Supports multiple language implementations without plugin handshake.
@@ -232,5 +233,4 @@ def put_cmd(key: str, value: str, client: str, server: str) -> None:
     ctx = click.get_current_context()
     ctx.invoke(client_cmd, language=client, operation="put", args=(key, value), server=server)
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

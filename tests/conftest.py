@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import importlib.util
 from pathlib import Path
 import sys
@@ -97,3 +104,5 @@ def go_soup_harness_path() -> Path:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

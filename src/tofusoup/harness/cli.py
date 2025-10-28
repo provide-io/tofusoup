@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/harness/cli.py
-#
+
+"""TODO: Add module docstring."""
+
 import os
 import sys
 
@@ -111,5 +114,4 @@ def build_harness_command(ctx, harness_names: tuple[str, ...], force_rebuild: bo
             logger.error(f"Failed to build Go harness '{name}': {e}")
             sys.exit(1)
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

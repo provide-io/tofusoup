@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Cross-language RPC compatibility test matrix.
 
@@ -8,6 +12,7 @@ Tests all working language pair combinations:
 
 Note: These tests use KVClient infrastructure to test cross-language compatibility.
 """
+
 from pathlib import Path
 import shutil
 
@@ -169,3 +174,5 @@ def test_known_unsupported_combinations() -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

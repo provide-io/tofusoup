@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Property-Based Testing for TLS Certificate Generation and Handling
 
@@ -7,13 +11,13 @@ Tests that certificate generation works correctly across:
 - Different key types
 - Rapid generation/destruction cycles
 """
+
 from pathlib import Path
 
-from hypothesis import given, settings, strategies as st, HealthCheck
+from hypothesis import HealthCheck, given, settings, strategies as st
 import pytest
 
 from tofusoup.rpc.client import KVClient
-
 
 curves = st.sampled_from(["secp256r1", "secp384r1", "secp521r1", "P-256", "P-384", "P-521"])
 key_types = st.sampled_from(["ec", "rsa"])
@@ -140,3 +144,5 @@ async def test_python_server_tls_compatibility(curve: str, key_type: str) -> Non
 
 
 # 🍲🥄🔐🧪
+
+# 🍲🔍🔚

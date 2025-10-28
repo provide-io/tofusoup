@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 autoMTLS Compatibility Verification Test
 Tests the asymmetric behavior: Go→Python works, but Python→Go fails with autoMTLS
@@ -119,3 +123,5 @@ if __name__ == "__main__":
     asyncio.run(test_automtls_compatibility())
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,6 +1,10 @@
 #
-# tofusoup/registry/search/engine.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 import asyncio
 from collections.abc import AsyncGenerator
 
@@ -284,3 +288,5 @@ async def async_search_runner(search_term: str, registry_choice: str) -> list[Se
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Test elliptic curve support across different server implementations.
 
@@ -7,6 +11,7 @@ Validates:
 - Python servers reject secp521r1 (grpcio limitation)
 - Go servers support all curves (when using TLSProvider)
 """
+
 from pathlib import Path
 
 from provide.foundation import logger
@@ -151,3 +156,5 @@ def test_document_curve_support() -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

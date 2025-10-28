@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Property-Based Malformed Data and Protocol Testing
 
@@ -8,9 +12,10 @@ Tests system resilience against:
 - Protocol violations
 - Edge case error handling
 """
+
 from pathlib import Path
 
-from hypothesis import given, settings, strategies as st, HealthCheck, assume
+from hypothesis import HealthCheck, assume, given, settings, strategies as st
 import pytest
 
 from tofusoup.rpc.client import KVClient
@@ -312,3 +317,5 @@ async def test_rapid_connect_disconnect() -> None:
 
 
 # 🍲🥄❌🧪
+
+# 🍲🔍🔚

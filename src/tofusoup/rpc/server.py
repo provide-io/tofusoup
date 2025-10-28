@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/rpc/server.py
-#
+
+"""TODO: Add module docstring."""
+
 from concurrent import futures
 from datetime import datetime
 import hashlib
@@ -373,3 +376,5 @@ if __name__ == "__main__":
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

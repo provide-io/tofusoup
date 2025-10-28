@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Test error scenarios and failure modes for cross-language RPC.
 
@@ -7,6 +11,7 @@ Validates that:
 - Missing server binaries fail early with clear errors
 - Invalid curves are rejected
 """
+
 from pathlib import Path
 
 from provide.foundation import logger
@@ -125,3 +130,5 @@ def test_document_limitations() -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

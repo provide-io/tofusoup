@@ -1,4 +1,10 @@
-# tofusoup/conformance/cli_verification/souptest_cli_cty.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pathlib import Path
 
 import pytest
@@ -48,3 +54,5 @@ VALIDATE_CASES = [
 # def test_cty_cli_validate(...): ...
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

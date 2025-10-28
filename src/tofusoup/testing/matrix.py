@@ -1,6 +1,8 @@
 #
-# tofusoup/testing/matrix.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
 """
 Matrix testing functionality for TofuSoup.
 
@@ -413,3 +415,5 @@ async def run_matrix_stir_tests(
 
 
 # 🍲🧪🔢🪄
+
+# 🍲🔍🔚

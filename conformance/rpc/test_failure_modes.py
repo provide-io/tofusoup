@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Property-Based Error Injection and Failure Mode Testing
 
@@ -8,9 +12,10 @@ Tests how the system handles:
 - Invalid configurations
 - Edge case errors
 """
+
 from pathlib import Path
 
-from hypothesis import given, settings, strategies as st, HealthCheck, assume
+from hypothesis import HealthCheck, assume, given, settings, strategies as st
 import pytest
 
 from tofusoup.rpc.client import KVClient
@@ -154,3 +159,5 @@ async def test_empty_key_behavior(key_size: int) -> None:
 
 
 # 🍲🥄💥🧪
+
+# 🍲🔍🔚

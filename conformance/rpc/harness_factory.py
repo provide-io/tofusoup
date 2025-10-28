@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Harness Factory for RPC K/V Matrix Testing
 
@@ -408,3 +413,5 @@ def get_factory_info() -> dict[str, Any]:
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Profile-based matrix testing for TofuSoup.
 
@@ -351,3 +356,5 @@ async def run_profile_matrix_tests(
     """
     matrix = ProfileMatrix(config)
     return await matrix.run_profile_tests(stir_directory, profiles)
+
+# 🍲🔍🔚

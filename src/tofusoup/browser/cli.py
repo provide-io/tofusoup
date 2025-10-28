@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/browser/cli.py
-#
+
+"""TODO: Add module docstring."""
 
 import click
 from provide.foundation import get_hub, logger
@@ -44,5 +46,4 @@ def tui_command(ctx: click.Context, registry_name: str | None) -> None:
         hub.initialize_foundation()  # Re-initialize to default stderr logging
         logger.info("TUI browser exited.")
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

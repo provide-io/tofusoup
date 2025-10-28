@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 CLI Verification Tests for RPC Commands
 
 Tests that all soup-go rpc commands have correct CLI flags and work as expected.
 This catches issues like missing flags, incorrect flag names, etc.
 """
-import subprocess
+
 from pathlib import Path
+import subprocess
 
 import pytest
 
@@ -138,3 +143,5 @@ def test_rpc_command_structure(soup_go_path: Path):
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

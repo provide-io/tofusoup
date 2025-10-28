@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 RPC K/V Matrix Testing
 
@@ -350,3 +355,5 @@ if __name__ == "__main__":
     )
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

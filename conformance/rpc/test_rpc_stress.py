@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Aggressive Property-Based Stress Testing for RPC
 
@@ -11,13 +15,13 @@ Uses hypothesis to generate extreme edge cases and stress test the RPC implement
 
 This is designed to "abuse" the integration and find breaking points.
 """
+
 from pathlib import Path
 
-from hypothesis import given, settings, strategies as st, HealthCheck
+from hypothesis import HealthCheck, given, settings, strategies as st
 import pytest
 
 from tofusoup.rpc.client import KVClient
-
 
 # Hypothesis strategies for aggressive testing
 # NOTE: Keys must be filesystem-safe (ASCII alphanumeric + safe punctuation)
@@ -89,7 +93,7 @@ async def test_rpc_handles_extreme_data(key: str, value: bytes, curve: str) -> N
         result = await client.get(key)
 
         # Verify roundtrip is identity
-        assert result == value, f"Roundtrip failed for key={repr(key)}, value length={len(value)}"
+        assert result == value, f"Roundtrip failed for key={key!r}, value length={len(value)}"
 
     finally:
         await client.close()
@@ -141,3 +145,5 @@ async def test_rpc_handles_rapid_operations(keys_and_values: list[tuple[str, byt
 
 
 # 🍲🥄🧪🔥
+
+# 🍲🔍🔚

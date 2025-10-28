@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 from textual.pilot import Pilot
 from textual.screen import Screen
@@ -47,3 +54,5 @@ async def test_detail_view_update_content(pilot: Pilot) -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 RPC connection validation utilities.
 
@@ -11,7 +15,6 @@ Provides validation for:
 from pathlib import Path
 
 from provide.foundation import logger
-
 
 # Curve name mapping for normalization
 CURVE_NAME_ALIASES = {
@@ -174,3 +177,5 @@ def get_compatibility_matrix() -> dict[str, dict[str, bool]]:
 
 
 # 🍲🥄📋🪄
+
+# 🍲🔍🔚

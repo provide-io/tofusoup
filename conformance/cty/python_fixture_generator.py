@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Generates canonical MessagePack fixtures and a JSON manifest from pyvider.cty.
 This script is the "source of truth" for the reverse compatibility test.
@@ -151,3 +156,5 @@ if __name__ == "__main__":
     main()
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

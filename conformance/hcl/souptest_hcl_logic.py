@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from decimal import Decimal
 from pathlib import Path
 
@@ -31,3 +38,5 @@ def test_load_hcl_file_as_cty_simple(tmp_path: Path) -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

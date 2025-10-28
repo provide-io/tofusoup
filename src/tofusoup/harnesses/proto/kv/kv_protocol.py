@@ -1,6 +1,10 @@
 #
-# tofusoup/harnesses/proto/kv/kv_protocol.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 from provide.foundation import logger
@@ -34,3 +38,5 @@ class KVProtocol(RPCPluginProtocol):
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

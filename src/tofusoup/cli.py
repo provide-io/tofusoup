@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/cli.py
-#
+
+"""TODO: Add module docstring."""
+
 import os
 import pathlib
 import sys
@@ -259,5 +262,4 @@ def entry_point() -> None:
 if __name__ == "__main__":
     entry_point()
 
-
-# 🍲🥄🖥️🪄
+# 🍲🔍🔚

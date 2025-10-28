@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import json
 from pathlib import Path
 from typing import Any
@@ -44,3 +51,5 @@ def tfwire_go_encode(
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

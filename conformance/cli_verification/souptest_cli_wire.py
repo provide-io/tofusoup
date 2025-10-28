@@ -1,4 +1,10 @@
-# tofusoup/conformance/cli_verification/souptest_cli_wire.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import base64
 import json
 from pathlib import Path
@@ -86,3 +92,5 @@ def test_wire_cli_decode_simple_string(
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 from tofusoup.registry.base import RegistryConfig
@@ -119,3 +126,5 @@ async def test_list_provider_versions(httpx_mock) -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

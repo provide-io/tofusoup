@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from provide.testkit.mocking import AsyncMock
 import pytest
 
@@ -156,3 +163,5 @@ async def test_search_engine_empty_query() -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

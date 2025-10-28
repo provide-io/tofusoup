@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pathlib import Path
 import subprocess
 
@@ -52,3 +59,5 @@ def test_ensure_go_harness_build_failure(tmp_path: Path) -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

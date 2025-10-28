@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from collections.abc import Awaitable, Callable
 
 import pytest_asyncio
@@ -37,3 +44,5 @@ async def pilot_with_message_capture() -> Callable[[list[Message]], Awaitable[Pi
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

@@ -1,6 +1,10 @@
 #
-# tofusoup/harness/logic.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
+
 import os
 import pathlib
 import subprocess
@@ -157,3 +161,5 @@ def start_go_plugin_server_process(
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

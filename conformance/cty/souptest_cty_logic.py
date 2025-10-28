@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from decimal import Decimal
 
 import pytest
@@ -34,3 +41,5 @@ def test_marshal_unmarshal_roundtrip() -> None:
 
 
 # 🍲🥄🧪🪄
+
+# 🍲🔍🔚

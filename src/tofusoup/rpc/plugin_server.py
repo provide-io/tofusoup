@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/rpc/plugin_server.py
-#
+
 """
 TofuSoup Python KV Plugin Server
 
@@ -86,3 +87,5 @@ if __name__ == "__main__":
 
 
 # 🍲🥄📄🪄
+
+# 🍲🔍🔚

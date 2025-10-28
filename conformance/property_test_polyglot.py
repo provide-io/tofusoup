@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Property-Based Testing for Cross-Language Compatibility
 
 Ensures that Python and Go implementations produce identical results for the same inputs.
 This is critical for polyglot systems where different languages must interoperate.
 """
-from pathlib import Path
-import subprocess
 
-from hypothesis import given, settings, strategies as st, HealthCheck
+from pathlib import Path
+
+from hypothesis import HealthCheck, given, settings, strategies as st
 import pytest
 
 from tofusoup.rpc.client import KVClient
-
 
 # Test data strategies
 # NOTE: Keys must be filesystem-safe (Go server uses keys as filenames)
@@ -171,3 +174,5 @@ async def test_batch_operations_consistency(data: list[tuple[str, bytes]]) -> No
 
 
 # 🍲🥄🌍🧪
+
+# 🍲🔍🔚
