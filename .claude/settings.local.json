@@ -40,7 +40,12 @@
       "Bash(pkill:*)",
       "Bash(timeout 2 /Users/tim/code/gh/provide-io/tofusoup/bin/soup-go rpc kv server:*)",
       "Bash(LOG_LEVEL=ERROR BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN timeout 2 ./bin/soup-go:*)",
-      "Bash(LOG_LEVEL=INFO .venv/bin/pytest:*)"
+      "Bash(LOG_LEVEL=INFO .venv/bin/pytest:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git mv:*)",
+      "Bash(for f in conformance/cty/python_fixture_generator.py conformance/rpc/cert_manager.py conformance/rpc/harness_factory.py conformance/rpc/matrix_config.py conformance/rpc/run_matrix_tests.py conformance/utils/go_interaction.py)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": [],

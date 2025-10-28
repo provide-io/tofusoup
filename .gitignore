@@ -445,3 +445,4 @@ docs/.shared-theme/
 *bfiles*
 site
 bf-*
+*.local.json
