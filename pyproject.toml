@@ -2,6 +2,10 @@
 # tofusoup/pyproject.toml
 #
 
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "tofusoup"
 description = "Cross-language conformance test suite for OpenTofu tooling."

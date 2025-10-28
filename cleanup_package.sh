@@ -79,9 +79,7 @@ find . -name "*.swp" -type f -delete 2>/dev/null || true
 find . -name "*.swo" -type f -delete 2>/dev/null || true
 find . -name "*~" -type f -delete 2>/dev/null || true
 
-# Remove .garnish-tests output directories
-echo "🧪 Cleaning .garnish-tests..."
-find .garnish-tests -name ".soup" -type d -exec rm -rf {} + 2>/dev/null || true
+
 
 # Remove empty directories
 echo "📁 Removing empty directories..."

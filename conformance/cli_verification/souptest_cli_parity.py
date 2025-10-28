@@ -103,7 +103,6 @@ class TestCLIParityMatrix:
                 "harness",
                 "test",
                 "wire",
-                "garnish",
                 "stir",
                 "drink",
                 "state",

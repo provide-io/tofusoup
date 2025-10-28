@@ -58,7 +58,7 @@ All notable changes to this project will be documented in this file.
 - Core modules for `cty`, `hcl`, `wire`, `rpc`, `harness`, and `testing`.
 - Go harnesses for CTY, HCL, Wire, and RPC (K/V store).
 - Pytest-based conformance testing framework.
-- `.garnish` documentation system with `scaffold` and `render` commands.
+
 - `workenv` tool management system for managing TF, Tofu, Go, etc.
 - `stir` command for parallel Terraform integration testing.
 - **New migration guide** (`docs/guides/migration.md`) for transitioning from old harness names to unified `soup-go` harness.
@@ -78,7 +78,7 @@ All notable changes to this project will be documented in this file.
 - **Fixed all harness naming inconsistencies** across README.md, CLAUDE.md, and documentation.
 - **Fixed broken documentation links** after file reorganization.
 - **Removed stale content** - Moved STATUS.md, PHASE_1_FINDINGS.md, and PHASE_2_COMPLETE.md to `docs/historical/`.
-- **Removed garnish references** from architecture documentation (moved to separate `plating` package).
+
 - **Removed empty CLI reference directory** (`docs/reference/cli/`).
 
 ### Removed

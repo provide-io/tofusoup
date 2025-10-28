@@ -19,8 +19,7 @@ This directory contains archived documentation from earlier phases of TofuSoup d
 
 ### Deprecated Features
 
-- **04-garnish-asset-bundle-system.md** - Documentation for the garnish asset bundle system (moved to separate `plating` package)
-- **04-authoring-garnish-bundles.md** - Guide for authoring garnish bundles (moved to `plating` package)
+
 
 ## Note
 

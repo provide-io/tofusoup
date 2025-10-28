@@ -119,7 +119,7 @@ docs/
 - `api/index.md` → `reference/api/index.md`
 
 **Archived Files**:
-- `guides/04-authoring-garnish-bundles.md` → `historical/`
+
 - `STATUS.md`, `NEXT_STEPS.md`, `TODO.md`, `CROSS_LANGUAGE_TEST_RESULTS.md` → `historical/`
 
 ### Link Fixes
