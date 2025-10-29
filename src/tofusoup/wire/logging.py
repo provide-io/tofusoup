@@ -28,4 +28,5 @@ def configure_logging() -> None:
     hub = get_hub()
     hub.initialize_foundation(config=config)
 
+
 # 🍲🔍🔚

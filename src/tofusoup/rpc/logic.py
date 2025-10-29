@@ -160,4 +160,5 @@ def run_rpc_compatibility_tests(project_root: pathlib.Path, loaded_config: dict)
 
     return overall_success
 
+
 # 🍲🔍🔚

@@ -442,4 +442,5 @@ def compare_command(resource: str) -> None:
 
     safe_async_run(compare_resources)
 
+
 # 🍲🔍🔚

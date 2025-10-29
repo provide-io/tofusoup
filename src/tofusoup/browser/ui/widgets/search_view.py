@@ -128,4 +128,5 @@ class SearchView(Vertical):
         self.query_one(LoadingIndicator).display = show
         self.query_one(DataTable).display = not show
 
+
 # 🍲🔍🔚

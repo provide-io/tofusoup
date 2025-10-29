@@ -75,4 +75,5 @@ def to_json(input_path: Path, output_path: Path | None, pretty: bool) -> None:
     except Exception as e:
         raise click.ClickException(f"An unexpected error occurred: {e}")
 
+
 # 🍲🔍🔚

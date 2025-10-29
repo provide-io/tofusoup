@@ -88,7 +88,9 @@ def kv_get(address: str, key: str) -> None:
 )
 @click.option(
     "--tls-curve",
-    type=click.Choice(["secp256r1", "secp384r1", "secp521r1", "P-256", "P-384", "P-521", "p256", "p384", "p521"]),
+    type=click.Choice(
+        ["secp256r1", "secp384r1", "secp521r1", "P-256", "P-384", "P-521", "p256", "p384", "p521"]
+    ),
     default="secp384r1",
     help="Elliptic curve for EC key type: 'secp256r1'/'P-256', 'secp384r1'/'P-384', or 'secp521r1'/'P-521'",
 )
@@ -213,9 +215,7 @@ def _detect_server_language(server: str) -> tuple[str, str]:
     return server_lang, str(server_path)
 
 
-def _validate_language_pair_with_output(
-    client: str, server_lang: str, server_path_str: str
-) -> list[str]:
+def _validate_language_pair_with_output(client: str, server_lang: str, server_path_str: str) -> list[str]:
     from provide.foundation import perr, pout
 
     errors = []
@@ -237,9 +237,7 @@ def _validate_language_pair_with_output(
     return errors
 
 
-def _validate_curve_compatibility_with_output(
-    curve: str, client: str, server_lang: str
-) -> list[str]:
+def _validate_curve_compatibility_with_output(curve: str, client: str, server_lang: str) -> list[str]:
     from provide.foundation import perr, pout
 
     errors = []

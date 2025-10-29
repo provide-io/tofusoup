@@ -84,9 +84,7 @@ class SearchEngine:
             try:
                 valid_versions.append(semver.Version.parse(v.version))
             except ValueError:
-                logger.warning(
-                    f"Skipping invalid semver version '{v.version}' for {resource_id}"
-                )
+                logger.warning(f"Skipping invalid semver version '{v.version}' for {resource_id}")
         if valid_versions:
             return str(max(valid_versions))
         return None
@@ -112,9 +110,7 @@ class SearchEngine:
         logger.debug(f"{registry_id}.list_modules returned {len(modules)} modules.")
 
         for mod in modules:
-            versions = await registry.list_module_versions(
-                f"{mod.namespace}/{mod.name}/{mod.provider_name}"
-            )
+            versions = await registry.list_module_versions(f"{mod.namespace}/{mod.name}/{mod.provider_name}")
             if versions is None:
                 versions = []
 
@@ -285,5 +281,6 @@ async def async_search_runner(search_term: str, registry_choice: str) -> list[Se
         logger.debug("SearchEngine closed.")
 
     return results
+
 
 # 🍲🔍🔚

@@ -58,7 +58,7 @@ class KV(kv_pb2_grpc.KVServicer):
         """
         try:
             # Try to parse as JSON
-            value_str = value_bytes.decode('utf-8')
+            value_str = value_bytes.decode("utf-8")
             json_data = json.loads(value_str)
 
             # Only enrich if it's a dict (not array or primitive)
@@ -89,7 +89,7 @@ class KV(kv_pb2_grpc.KVServicer):
             server_cert = os.getenv("PLUGIN_SERVER_CERT")
             if server_cert:
                 try:
-                    with open(server_cert, 'rb') as f:
+                    with open(server_cert, "rb") as f:
                         cert_bytes = f.read()
                         cert_fingerprint = hashlib.sha256(cert_bytes).hexdigest()
                         server_handshake["cert_fingerprint"] = cert_fingerprint
@@ -102,7 +102,7 @@ class KV(kv_pb2_grpc.KVServicer):
             # Return enriched JSON as bytes
             enriched_json = json.dumps(json_data, indent=2)
             logger.debug("Enriched JSON value with server handshake", key_count=len(json_data))
-            return enriched_json.encode('utf-8')
+            return enriched_json.encode("utf-8")
 
         except (json.JSONDecodeError, UnicodeDecodeError, AttributeError):
             # Not JSON or not decodable - return original bytes
@@ -339,7 +339,6 @@ def start_kv_server(
 
     # Output go-plugin handshake if requested
     if output_handshake:
-
         # Format: core_version|protocol_version|network|address|protocol|cert
         core_version = "1"
         protocol_version = "1"

@@ -108,4 +108,5 @@ def dump_python_to_msgpack_file(data: Any, filepath: str) -> None:
             f"Unexpected error dumping Msgpack to file {filepath}: {type(e).__name__} - {e}"
         ) from e
 
+
 # 🍲🔍🔚

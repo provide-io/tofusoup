@@ -119,4 +119,5 @@ async def live_updater(live_display: Live, stop_event: asyncio.Event) -> None:
         live_display.update(generate_status_table())
         await asyncio.sleep(1 / 0.77)  # ~1.3 seconds to match 0.77 Hz refresh rate
 
+
 # 🍲🔍🔚

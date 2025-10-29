@@ -140,9 +140,7 @@ class KVClient:
             if self.cert_file and self.key_file:
                 args.extend(["--cert-file", self.cert_file])
                 args.extend(["--key-file", self.key_file])
-                logger.info(
-                    f"KVClient: Manual TLS enabled with cert: {self.cert_file}, key: {self.key_file}"
-                )
+                logger.info(f"KVClient: Manual TLS enabled with cert: {self.cert_file}, key: {self.key_file}")
             else:
                 # Fallback: try to get paths from environment variables
                 server_cert_path = os.getenv("PLUGIN_SERVER_CERT")
@@ -500,5 +498,6 @@ class KVClient:
                 exc_info=True,
             )
             raise
+
 
 # 🍲🔍🔚

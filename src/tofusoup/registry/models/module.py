@@ -66,4 +66,5 @@ class Module:
     latest_version: ModuleVersion | None = field(default=None)
     registry_source: str | None = field(default=None)
 
+
 # 🍲🔍🔚

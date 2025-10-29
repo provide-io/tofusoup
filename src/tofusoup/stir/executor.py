@@ -235,4 +235,5 @@ async def execute_tests(test_dirs: list[Path], runtime: StirRuntime) -> list[Tes
     tasks = [run_test_lifecycle(d, semaphore, runtime) for d in test_dirs]
     return await asyncio.gather(*tasks, return_exceptions=True)
 
+
 # 🍲🔍🔚

@@ -176,4 +176,5 @@ def parse_cty_type_string(type_str: str) -> CtyType:
     # No parser matched
     raise CtyTypeParseError(f"Unsupported or malformed CTY type string: '{type_str}'")
 
+
 # 🍲🔍🔚

@@ -278,4 +278,5 @@ def stir_cli(
         console.print_exception()
         sys.exit(1)
 
+
 # 🍲🔍🔚

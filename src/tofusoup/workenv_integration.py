@@ -20,6 +20,7 @@ from typing import Any
 # Optional wrknv import - graceful degradation if not available
 try:
     from wrknv import WorkenvConfig
+
     WORKENV_AVAILABLE = True
 except ImportError:
     WORKENV_AVAILABLE = False
@@ -106,5 +107,6 @@ def get_matrix_config_from_soup(project_root: Path | None = None) -> dict[str, A
     """
     soup_config = load_soup_config(project_root)
     return soup_config.get("workenv", {}).get("matrix", {})
+
 
 # 🍲🔍🔚

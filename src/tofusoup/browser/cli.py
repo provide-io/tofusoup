@@ -46,4 +46,5 @@ def tui_command(ctx: click.Context, registry_name: str | None) -> None:
         hub.initialize_foundation()  # Re-initialize to default stderr logging
         logger.info("TUI browser exited.")
 
+
 # 🍲🔍🔚

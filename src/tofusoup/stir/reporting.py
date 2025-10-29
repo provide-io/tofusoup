@@ -80,4 +80,5 @@ def print_summary_panel(total_tests: int, failed_tests: int, skipped_tests: int,
         )
     )
 
+
 # 🍲🔍🔚
