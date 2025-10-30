@@ -120,8 +120,21 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
         assert retrieved_manifest["client_type"] == "python"
         assert retrieved_manifest["server_type"] == "go"
 
-        # Verify server added its handshake
+        # Verify server added its handshake with combo identification
         assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
+        server_handshake = retrieved_manifest["server_handshake"]
+
+        # Verify combo identification fields
+        assert "server_language" in server_handshake, "Server should identify its language"
+        assert server_handshake["server_language"] == "go", "Expected Go server"
+        assert "client_language" in server_handshake, "Server should identify client language"
+        # Note: client_language may be "unknown" if not explicitly set in environment
+        assert "combo_id" in server_handshake, "Server should include combo_id"
+
+        # Verify crypto_config is present and structured correctly
+        if "crypto_config" in server_handshake:
+            crypto_config = server_handshake["crypto_config"]
+            assert "key_type" in crypto_config, "crypto_config should include key_type"
 
         # Add client handshake information
         client_handshake = {
@@ -214,8 +227,20 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
         assert retrieved_manifest["client_type"] == "python"
         assert retrieved_manifest["server_type"] == "go"
 
-        # Verify server added its handshake
+        # Verify server added its handshake with combo identification
         assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
+        server_handshake = retrieved_manifest["server_handshake"]
+
+        # Verify combo identification fields
+        assert "server_language" in server_handshake, "Server should identify its language"
+        assert server_handshake["server_language"] == "go", "Expected Go server"
+        assert "client_language" in server_handshake, "Server should identify client language"
+        assert "combo_id" in server_handshake, "Server should include combo_id"
+
+        # Verify crypto_config is present with RSA details
+        assert "crypto_config" in server_handshake, "crypto_config should be present for mTLS"
+        crypto_config = server_handshake["crypto_config"]
+        assert crypto_config["key_type"] == "rsa", "Expected RSA key type"
 
         # Add client handshake information
         client_handshake = {
