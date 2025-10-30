@@ -3,15 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Property-Based Resource Exhaustion Testing
+"""Property-Based Resource Exhaustion Testing
 
 Tests system behavior under resource pressure:
 - Maximum payload sizes
 - Memory pressure
 - File descriptor limits
-- Disk space constraints
-"""
+- Disk space constraints"""
 
 from pathlib import Path
 
@@ -287,7 +285,4 @@ async def test_binary_data_integrity(binary_pattern: bytes) -> None:
     finally:
         await client.close()
 
-
-# 🍲🥄💾🧪
-
-# 🍲🔍🔚
+# 🥣🔬🔚

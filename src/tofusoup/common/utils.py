@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -72,7 +72,4 @@ class DecimalAwareJSONEncoder(json.JSONEncoder):
             pass  # Or log a warning that CtyValue type check in encoder is disabled.
         return super().default(o)
 
-
-# 🍲🥄🛠️🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

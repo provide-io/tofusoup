@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Utilities for enhancing CLI output using the Rich library.
-"""
+"""Utilities for enhancing CLI output using the Rich library."""
 
 import json
 from typing import Any
@@ -85,7 +83,4 @@ def print_json(data: Any, indent: int = 2) -> None:
     json_str = json.dumps(data, indent=indent, ensure_ascii=False)
     rich_print(f"```json\n{json_str}\n```")
 
-
-# 🍲🥄🛠️🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

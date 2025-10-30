@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -46,5 +46,4 @@ class LazyGroup(click.Group):
                 raise click.UsageError(f"Error loading command '{cmd_name}': {e}") from e
         return super().get_command(ctx, cmd_name)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

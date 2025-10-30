@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -112,7 +112,4 @@ async def test_search_view_clear_results(pilot: Pilot, search_results: list[Sear
     await pilot.pause()
     assert table.row_count == 0
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

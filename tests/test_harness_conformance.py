@@ -3,12 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Cross-language conformance tests for TofuSoup harnesses.
+"""Cross-language conformance tests for TofuSoup harnesses.
 
 Tests the Go and Python implementations to ensure they work correctly
-and can be used interchangeably for testing provider functionality.
-"""
+and can be used interchangeably for testing provider functionality."""
 
 import pathlib
 import subprocess
@@ -279,8 +277,6 @@ def test_capability_matrix() -> None:
     print("  Feature         | Go Harness | Python Module")
     print("  ----------------|------------|---------------")
     for feature in ["CTY Validation", "HCL Parsing", "Wire Protocol", "RPC Server"]:
-        go_status = "✅ Ready" if capabilities["Go Harness"][feature] else "❌ Missing"
-        py_status = "✅ Ready" if capabilities["Python Module"][feature] else "⚠️  Optional"
         print(f"  {feature:<15} | {go_status:<10} | {py_status}")
 
     # At least one implementation should be available for each feature
@@ -294,4 +290,4 @@ if __name__ == "__main__":
     # Run tests with pytest
     pytest.main([__file__, "-v", "--tb=short"])
 
-# 🍲🔍🔚
+# 🥣🔬🔚

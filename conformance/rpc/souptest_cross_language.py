@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -12,6 +12,4 @@ import pytest
 # The current recursive approach is fundamentally flawed.
 pytest.skip("Skipping cross-language tests pending marshaller rewrite", allow_module_level=True)
 
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

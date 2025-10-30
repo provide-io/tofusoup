@@ -295,4 +295,4 @@ def _print_validation_summary(errors: list[str], warnings: list[str]) -> None:
 rpc_cli.add_command(kv_cli)
 rpc_cli.add_command(validate_cli)
 
-# 🍲🔍🔚
+# 🥣🔬🔚

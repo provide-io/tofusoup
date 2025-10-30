@@ -1,16 +1,14 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Profile-based matrix testing for TofuSoup.
+"""Profile-based matrix testing for TofuSoup.
 
 Instead of generating combinations, uses pre-defined profiles from soup.toml
 to test against specific tool configurations.
 
-Note: Matrix testing requires the optional 'wrknv' dependency.
-"""
+Note: Matrix testing requires the optional 'wrknv' dependency."""
 
 import asyncio
 from dataclasses import dataclass, field
@@ -143,7 +141,6 @@ class ProfileMatrix:
                 progress.advance(task)
 
                 # Update progress description with latest result
-                status = "✅" if result.success else "❌"
                 progress.update(
                     task,
                     description=f"Testing profiles... {status} {result.profile_name}",
@@ -312,7 +309,6 @@ class ProfileMatrix:
 
         # Add rows
         for result in results:
-            status = "✅ Pass" if result.success else "❌ Fail"
             duration = f"{result.duration_seconds:.1f}s"
             error = result.error_message or ""
 
@@ -357,5 +353,4 @@ async def run_profile_matrix_tests(
     matrix = ProfileMatrix(config)
     return await matrix.run_profile_tests(stir_directory, profiles)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Aggressive Property-Based Stress Testing for RPC
+"""Aggressive Property-Based Stress Testing for RPC
 
 Uses hypothesis to generate extreme edge cases and stress test the RPC implementation:
 - Huge payloads
@@ -13,8 +12,7 @@ Uses hypothesis to generate extreme edge cases and stress test the RPC implement
 - Concurrent operations
 - Empty strings and zero-length data
 
-This is designed to "abuse" the integration and find breaking points.
-"""
+This is designed to "abuse" the integration and find breaking points."""
 
 from pathlib import Path
 
@@ -143,7 +141,4 @@ async def test_rpc_handles_rapid_operations(keys_and_values: list[tuple[str, byt
     finally:
         await client.close()
 
-
-# 🍲🥄🧪🔥
-
-# 🍲🔍🔚
+# 🥣🔬🔚

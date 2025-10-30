@@ -1,17 +1,15 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Certificate Management for RPC K/V Matrix Testing
+"""Certificate Management for RPC K/V Matrix Testing
 
 Leverages the existing pyvider-rpcplugin certificate system for generating
 certificates for all crypto configurations:
 - RSA 2048/4096 bit keys
 - EC secp256r1/secp384r1/secp521r1 curves
-- CA, server, and client certificates for mTLS
-"""
+- CA, server, and client certificates for mTLS"""
 
 from pathlib import Path
 
@@ -193,4 +191,4 @@ if __name__ == "__main__":
                 file_size = file_path.stat().st_size
                 print(f"    {cert_type}: {file_path.name} ({file_size} bytes)")
 
-# 🍲🔍🔚
+# 🥣🔬🔚

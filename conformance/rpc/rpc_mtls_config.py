@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-RPC Test Configuration Matrix for Cross-Language mTLS Testing
+"""RPC Test Configuration Matrix for Cross-Language mTLS Testing
 
 This module defines the comprehensive test matrix for validating RPC communication
-between Python and Go clients/servers with various mTLS configurations.
-"""
+between Python and Go clients/servers with various mTLS configurations."""
 
 from dataclasses import dataclass
 from typing import Any
@@ -187,6 +185,4 @@ STRESS_TEST_CONFIGS = [
     ),
 ]
 
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

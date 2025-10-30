@@ -5,6 +5,13 @@
 
 """TODO: Add module docstring."""
 
+#!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import asyncio
 
 import click
@@ -321,9 +328,7 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
                     if result.registry_source == "both"
                     else "🍲"
                     if result.registry_source == "opentofu"
-                    else "🏗️"
                 )
-                type_emoji = "📦" if result.type == "module" else "🔌"
                 name = (
                     f"{result.namespace}/{result.name}/{result.provider_name}"
                     if result.type == "module"
@@ -339,7 +344,6 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
                 else:
                     click.echo(f"| {registry_emoji} | {type_emoji} | {name:<{max_name_len}} | {desc}")
 
-            click.echo("\nKey: 🤝 Both | 🍲 OpenTofu | 🏗️ Terraform | 📦 Module | 🔌 Provider")
         else:
             click.echo(f"No results found for '{search_term}' on {registry_name} registry.")
 
@@ -442,5 +446,4 @@ def compare_command(resource: str) -> None:
 
     safe_async_run(compare_resources)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

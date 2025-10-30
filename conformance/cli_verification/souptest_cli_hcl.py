@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -64,7 +64,4 @@ def test_hcl_cli_parse(
         else:
             assert actual_output == expected_json_output
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -78,7 +78,4 @@ async def test_pyclient_goserver_put_get(go_kvstore_harness: Path, tmp_path: Pat
         if client:
             await client.close()  # This stops the Go server subprocess
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

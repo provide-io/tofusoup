@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Configuration loading and management for TofuSoup.
-"""
+"""Configuration loading and management for TofuSoup."""
 
 import pathlib
 import tomllib
@@ -105,7 +103,4 @@ def load_tofusoup_config(
     logger.info("No TofuSoup configuration file found. Using empty default configuration.")
     return {}
 
-
-# 🍲🥄⚙️🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

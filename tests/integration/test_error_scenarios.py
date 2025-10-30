@@ -3,14 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Test error scenarios and failure modes for cross-language RPC.
+"""Test error scenarios and failure modes for cross-language RPC.
 
 Validates that:
 - Python → Go fails gracefully (known bug)
 - Missing server binaries fail early with clear errors
-- Invalid curves are rejected
-"""
+- Invalid curves are rejected"""
 
 from pathlib import Path
 
@@ -48,7 +46,6 @@ async def test_python_to_go_succeeds() -> None:
         result = await client.get("test-key")
         assert result == b"test-value"
 
-        logger.info("✅ Python→Go connection works correctly!")
     finally:
         await client.close()
 
@@ -125,10 +122,4 @@ def test_document_limitations() -> None:
             workaround=limitation["workaround"]
         )
 
-    # Note: Previously documented "Python→Go doesn't work" - THIS IS NOW FIXED! ✅
-    # Note: Previously documented "P-521 unsupported" - THIS NOW WORKS! ✅
-
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,17 +1,15 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Cross-Language RPC Conformance Tests
+"""Cross-Language RPC Conformance Tests
 
 Tests all combinations of Go and Python clients/servers to verify
 that put/get operations work correctly across language boundaries.
 
 This consolidates and improves upon the original test_cross_language_proof.py
-by using proper pytest fixtures and removing hardcoded paths.
-"""
+by using proper pytest fixtures and removing hardcoded paths."""
 
 from __future__ import annotations
 
@@ -135,7 +133,6 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
                             test_artifacts_dir: Path) -> None:
     """Test Go client → Python server by explicitly starting server and client."""
     logger.info("="*80)
-    logger.info("🧪 TEST: Go Client → Python Server")
     logger.info("="*80)
 
     if soup_go_path is None:
@@ -143,8 +140,6 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     if soup_path is None:
         pytest.skip("soup executable not found in PATH")
 
-    logger.info(f"📁 Go client path: {soup_go_path}")
-    logger.info(f"🐍 Python server path: {soup_path}")
 
     # Create test-specific directory for all artifacts
     test_dir = test_artifacts_dir / "go_to_python"
@@ -182,7 +177,6 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
             # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
             if line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line:
                 handshake_line = line.strip()
-                logger.info(f"✅ Received handshake after {time.time() - start_time:.2f}s")
                 break
         else:
             # If no line, give the server a moment to produce output
@@ -209,7 +203,6 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     logger.info(f"  - Certificate: {parts[5][:50]}... (truncated)")
 
     port = parts[3].split(':')[-1]
-    logger.info(f"🔌 Server listening on port: {port}")
 
     # 2. Run the Go client to put a value
     # Pass the FULL handshake line (including certificate) to --address for mTLS support
@@ -241,7 +234,6 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
         logger.error(f"   Stdout: {put_result.stdout}")
         logger.error(f"   Stderr: {put_result.stderr}")
     else:
-        logger.info("✅ Go client PUT succeeded!")
         logger.info(f"   Output: {put_result.stdout.strip()}")
 
     assert put_result.returncode == 0, f"Go client Put failed: {put_result.stderr}"
@@ -273,7 +265,6 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
         logger.error(f"   Stdout: {get_result.stdout}")
         logger.error(f"   Stderr: {get_result.stderr}")
     else:
-        logger.info("✅ Go client GET succeeded!")
         logger.info(f"   Retrieved value: {get_result.stdout.strip()}")
 
     assert get_result.returncode == 0, f"Go client Get failed: {get_result.stderr}"
@@ -284,10 +275,8 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     server_process.terminate()
     server_process.wait(timeout=5)
     assert server_process.returncode is not None, "Python server process did not terminate"
-    logger.info("✅ Server terminated successfully")
 
     logger.info("="*80)
-    logger.info("✅ TEST PASSED: Go Client → Python Server")
     logger.info("="*80)
 
 
@@ -313,7 +302,6 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         pytest.skip("soup-go executable not found")
 
     logger.info("="*80)
-    logger.info("🧪 TEST: Go Client → Go Server (CLI-to-CLI)")
     logger.info("="*80)
 
     # Create test-specific directory
@@ -345,7 +333,6 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         line = server_process.stdout.readline()
         if line and (line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line):
             handshake_line = line.strip()
-            logger.info("✅ Server handshake received")
             break
         await asyncio.sleep(0.1)
 
@@ -375,7 +362,6 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         )
         assert put_result.returncode == 0, f"Go client PUT failed: {put_result.stderr}"
         assert f"Key {put_key} put successfully." in put_result.stdout
-        logger.info("✅ PUT successful")
 
         # 3. GET using Go client
         logger.info(f"📥 GET: {put_key}")
@@ -393,7 +379,6 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         )
         assert get_result.returncode == 0, f"Go client GET failed: {get_result.stderr}"
         assert put_value in get_result.stdout
-        logger.info(f"✅ GET successful: {get_result.stdout.strip()}")
 
     finally:
         server_process.terminate()
@@ -401,7 +386,6 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         logger.info("🛑 Go server stopped")
 
     logger.info("="*80)
-    logger.info("✅ Go Client → Go Server: SUCCESS")
     logger.info("="*80)
 
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -60,7 +60,4 @@ class BaseTfRegistry(ABC):
     async def list_module_versions(self, module_id: str) -> list[ModuleVersion]:
         pass
 
-
-# 🍲🥄🏛️🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -241,7 +241,6 @@ def stir_cli(
                     import json
 
                     Path(matrix_output).write_text(json.dumps(results, indent=2, default=str))
-                    console.print(f"✅ Matrix results saved to {matrix_output}")
 
                 if output_json:
                     import json
@@ -278,5 +277,4 @@ def stir_cli(
         console.print_exception()
         sys.exit(1)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

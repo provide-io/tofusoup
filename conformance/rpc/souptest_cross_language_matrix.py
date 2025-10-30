@@ -3,15 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Cross-language RPC compatibility test matrix.
+"""Cross-language RPC compatibility test matrix.
 
 Tests all working language pair combinations:
 - Python → Python (secp256r1, secp384r1)
 - Python → Go (various curves)
 
-Note: These tests use KVClient infrastructure to test cross-language compatibility.
-"""
+Note: These tests use KVClient infrastructure to test cross-language compatibility."""
 
 from pathlib import Path
 import shutil
@@ -172,7 +170,4 @@ def test_known_unsupported_combinations() -> None:
     for client, server, curve, reason in unsupported:
         logger.info("Unsupported combination", client=client, server=server, curve=curve, reason=reason)
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

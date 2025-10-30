@@ -1,16 +1,14 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Elliptic Curve Compatibility Tests
+"""Elliptic Curve Compatibility Tests
 
 Tests Python client → Go server with all supported elliptic curves
 to verify cross-language TLS compatibility.
 
-Consolidates test_ec_curves.py and test_all_curves.py from the project root.
-"""
+Consolidates test_ec_curves.py and test_all_curves.py from the project root."""
 
 from __future__ import annotations
 
@@ -112,4 +110,4 @@ async def test_auto_curve(soup_go_path: Path | None) -> None:
         except Exception:
             pass
 
-# 🍲🔍🔚
+# 🥣🔬🔚

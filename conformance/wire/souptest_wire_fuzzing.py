@@ -3,15 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Aggressive Property-Based Fuzzing for Wire Protocol
+"""Aggressive Property-Based Fuzzing for Wire Protocol
 
 Uses hypothesis to generate extreme CTY values and test wire protocol encoding/decoding:
 - All CTY types with random valid data
 - Deeply nested structures
 - Large numbers and high-precision decimals
-- Edge cases: empty collections, null values
-"""
+- Edge cases: empty collections, null values"""
 
 from decimal import Decimal
 
@@ -228,7 +226,4 @@ def test_wire_protocol_nested_roundtrip(nested: CtyValue) -> None:
     # Compare native representations to handle number precision issues
     assert cty_to_native(nested) == cty_to_native(roundtripped) or nested == roundtripped
 
-
-# 🍲🥄📦🧪
-
-# 🍲🔍🔚
+# 🥣🔬🔚

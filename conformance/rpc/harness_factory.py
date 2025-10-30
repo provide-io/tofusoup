@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Harness Factory for RPC K/V Matrix Testing
+"""Harness Factory for RPC K/V Matrix Testing
 
 Creates Go and Python RPC clients and servers dynamically based on
-matrix parameters. Handles certificate configuration and process management.
-"""
+matrix parameters. Handles certificate configuration and process management."""
 
 import asyncio
 from collections.abc import AsyncGenerator
@@ -411,4 +409,4 @@ def get_factory_info() -> dict[str, Any]:
         "supported_ec_curves": [256, 384, 521],
     }
 
-# 🍲🔍🔚
+# 🥣🔬🔚

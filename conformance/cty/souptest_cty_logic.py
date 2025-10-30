@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -39,7 +39,4 @@ def test_marshal_unmarshal_roundtrip() -> None:
     # 5. Assert that the original and round-tripped values are equal
     assert cty_val == roundtrip_val
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

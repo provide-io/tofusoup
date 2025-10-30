@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -40,7 +40,4 @@ def test_souptest_go_cty_validation(go_harness_executable: Path) -> None:
     assert result.returncode == 0, f"Go harness failed.\nStderr: {result.stderr}"
     assert "Validation Succeeded" in result.stdout
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

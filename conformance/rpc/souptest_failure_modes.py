@@ -3,15 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Property-Based Error Injection and Failure Mode Testing
+"""Property-Based Error Injection and Failure Mode Testing
 
 Tests how the system handles:
 - Malformed data
 - Extreme timeouts
 - Invalid configurations
-- Edge case errors
-"""
+- Edge case errors"""
 
 from pathlib import Path
 
@@ -157,7 +155,4 @@ async def test_empty_key_behavior(key_size: int) -> None:
     finally:
         await client.close()
 
-
-# 🍲🥄💥🧪
-
-# 🍲🔍🔚
+# 🥣🔬🔚

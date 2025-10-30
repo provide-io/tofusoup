@@ -3,10 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Stock service CLI commands for direct gRPC testing.
-Supports multiple language implementations without plugin handshake.
-"""
+"""Stock service CLI commands for direct gRPC testing.
+Supports multiple language implementations without plugin handshake."""
 
 from pathlib import Path
 import subprocess
@@ -233,5 +231,4 @@ def put_cmd(key: str, value: str, client: str, server: str) -> None:
     ctx = click.get_current_context()
     ctx.invoke(client_cmd, language=client, operation="put", args=(key, value), server=server)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

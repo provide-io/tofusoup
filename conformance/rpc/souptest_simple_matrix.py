@@ -1,10 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Simple RPC K/V Matrix Testing
+"""Simple RPC K/V Matrix Testing
 
 Tests the key known working combinations:
 - Go client → Go server (with and without mTLS)
@@ -12,8 +11,7 @@ Tests the key known working combinations:
 - Go client → Python server (with and without mTLS)
 - Python client → Python server (with and without mTLS)
 
-Uses the existing working KVClient infrastructure.
-"""
+Uses the existing working KVClient infrastructure."""
 
 from datetime import datetime
 import hashlib
@@ -53,13 +51,11 @@ def verify_kv_storage(storage_dir: Path, key: str) -> Path | None:
     # Try direct key name first
     storage_file = storage_dir / key
     if storage_file.exists():
-        logger.info(f"✅ KV storage file found: {storage_file}")
         return storage_file
 
     # Try with "kv-data-" prefix (used by some server implementations)
     storage_file_prefixed = storage_dir / f"kv-data-{key}"
     if storage_file_prefixed.exists():
-        logger.info(f"✅ KV storage file found: {storage_file_prefixed}")
         return storage_file_prefixed
 
     # File not found - log warning and list directory contents
@@ -125,7 +121,6 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
 
         # Verify server added its handshake
         assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
-        logger.info("✅ Server handshake detected in retrieved value")
 
         # Add client handshake information
         client_handshake = {
@@ -145,7 +140,6 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
         # Update status to success
         retrieved_manifest["status"] = "success"
 
-        logger.info("✅ Python client → Go server (no mTLS) - PASSED")
         logger.info(f"   Key: {test_key}")
         logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
         logger.info(f"   Client connection time: {connection_time:.3f}s")
@@ -221,7 +215,6 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
 
         # Verify server added its handshake
         assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
-        logger.info("✅ Server handshake detected in retrieved value")
 
         # Add client handshake information
         client_handshake = {
@@ -241,7 +234,6 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
         # Update status to success
         retrieved_manifest["status"] = "success"
 
-        logger.info("✅ Python client → Go server (auto mTLS RSA) - PASSED")
         logger.info(f"   Key: {test_key}")
         logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
         logger.info(f"   Client connection time: {connection_time:.3f}s")
@@ -318,7 +310,6 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path, test_artifa
 
         # Verify server added its handshake
         assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
-        logger.info("✅ Server handshake detected in retrieved value")
 
         # Add client handshake information
         client_handshake = {
@@ -338,7 +329,6 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path, test_artifa
         # Update status to success
         retrieved_manifest["status"] = "success"
 
-        logger.info("✅ Python client → Go server (auto mTLS ECDSA) - PASSED")
         logger.info(f"   Key: {test_key}")
         logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
         logger.info(f"   Client connection time: {connection_time:.3f}s")
@@ -412,7 +402,6 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path, test_artifacts_dir:
 
         # Verify server added its handshake
         assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
-        logger.info("✅ Server handshake detected in retrieved value")
 
         # Add client handshake information
         client_handshake = {
@@ -432,7 +421,6 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path, test_artifacts_dir:
         # Update status to success
         retrieved_manifest["status"] = "success"
 
-        logger.info("✅ Python client → Python server (no mTLS) - PASSED")
         logger.info(f"   Key: {test_key}")
         logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
         logger.info(f"   Client connection time: {connection_time:.3f}s")
@@ -510,7 +498,6 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
 
         # Verify server added its handshake
         assert "server_handshake" in retrieved_manifest, "Server should add handshake to JSON"
-        logger.info("✅ Server handshake detected in retrieved value")
 
         # Add client handshake information
         client_handshake = {
@@ -530,7 +517,6 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
         # Update status to success
         retrieved_manifest["status"] = "success"
 
-        logger.info("✅ Python client → Python server (auto mTLS) - PASSED")
         logger.info(f"   Key: {test_key}")
         logger.info(f"   Server handshake: {retrieved_manifest['server_handshake'].get('endpoint')}")
         logger.info(f"   Client connection time: {connection_time:.3f}s")
@@ -546,7 +532,4 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
     finally:
         await client.close()
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

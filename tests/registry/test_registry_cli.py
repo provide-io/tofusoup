@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -241,7 +241,4 @@ class TestCompareCommand:
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code
         assert "Resource must be 'namespace/name' for providers" in result.output
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

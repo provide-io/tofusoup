@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -115,7 +115,4 @@ def mock_module_versions(sample_module_versions):
     """Alias for sample_module_versions for backwards compatibility."""
     return sample_module_versions
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

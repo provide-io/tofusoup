@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Common exceptions for the TofuSoup application.
-"""
+"""Common exceptions for the TofuSoup application."""
 
 from provide.foundation.errors import FoundationError, ProcessError
 
@@ -58,7 +56,4 @@ class HarnessError(ProcessError):
             harness_details=details,  # Store in context
         )
 
-
-# 🍲🥄⚠️🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

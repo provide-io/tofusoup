@@ -1,12 +1,10 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Generates canonical MessagePack fixtures and a JSON manifest from pyvider.cty.
-This script is the "source of truth" for the reverse compatibility test.
-"""
+"""Generates canonical MessagePack fixtures and a JSON manifest from pyvider.cty.
+This script is the "source of truth" for the reverse compatibility test."""
 
 import argparse
 from decimal import Decimal
@@ -149,10 +147,9 @@ def main() -> None:
         }
 
     (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
-    print(f"✅ Successfully generated {len(test_cases)} fixtures and manifest.json in {output_dir}")
 
 
 if __name__ == "__main__":
     main()
 
-# 🍲🔍🔚
+# 🥣🔬🔚

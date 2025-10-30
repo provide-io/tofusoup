@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Cross-Language Interoperability Test for TofuSoup
+"""Cross-Language Interoperability Test for TofuSoup
 
 This test proves that the Go RPC server and Python RPC server can be used
 interchangeably with both Go and Python clients, demonstrating true
@@ -14,8 +13,7 @@ Test Matrix:
 1. Python Client ↔ Go Server
 2. Python Client ↔ Python Server
 3. Go Client ↔ Python Server (via subprocess)
-4. Go Client ↔ Go Server (via subprocess)
-"""
+4. Go Client ↔ Go Server (via subprocess)"""
 
 import asyncio
 import os
@@ -100,7 +98,6 @@ class TestCrossLanguageInterop:
     @pytest.mark.harness_python
     async def test_python_client_python_server(self, python_server_address: str) -> None:
         """Test: Python Client ↔ Python Server"""
-        logger.info("🐍↔🐍 Testing Python Client ↔ Python Server")
 
         # Create a simple direct gRPC client for testing
         from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
@@ -113,15 +110,12 @@ class TestCrossLanguageInterop:
 
         # Test Put
         await stub.Put(kv_pb2.PutRequest(key=test_key, value=test_value))
-        logger.info(f"✅ Put successful: {test_key}")
 
         # Test Get
         response = await stub.Get(kv_pb2.GetRequest(key=test_key))
         assert response.value == test_value
-        logger.info(f"✅ Get successful: {test_key} = {response.value}")
 
         await channel.close()
-        logger.info("🐍↔🐍 ✅ Python Client ↔ Python Server: SUCCESS")
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
@@ -131,7 +125,6 @@ class TestCrossLanguageInterop:
         if not go_server_path:
             pytest.skip("Go server binary not available")
 
-        logger.info("🐍↔🐹 Testing Python Client ↔ Go Server")
 
         # Use our KVClient to connect to Go server with auto TLS
         client = KVClient(server_path=go_server_path, tls_mode="auto", tls_key_type="ec", tls_curve="P-256")
@@ -144,22 +137,18 @@ class TestCrossLanguageInterop:
 
             # Test Put
             await client.put(test_key, test_value)
-            logger.info(f"✅ Put successful: {test_key}")
 
             # Test Get
             retrieved_value = await client.get(test_key)
             assert retrieved_value == test_value
-            logger.info(f"✅ Get successful: {test_key} = {retrieved_value}")
 
             # Test Get non-existent key
             non_existent = await client.get("non-existent-key")
             assert non_existent is None
-            logger.info("✅ Get non-existent key returned None as expected")
 
         finally:
             await client.close()
 
-        logger.info("🐍↔🐹 ✅ Python Client ↔ Go Server: SUCCESS")
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
@@ -173,7 +162,6 @@ class TestCrossLanguageInterop:
         if soup_path is None:
             pytest.skip("soup executable not found in PATH")
 
-        logger.info("🐹↔🐍 Testing Go Client ↔ Python Server")
 
         # Create test-specific directory for all artifacts
         test_dir = test_artifacts_dir / "go_client_python_server"
@@ -262,7 +250,6 @@ class TestCrossLanguageInterop:
         server_process.wait(timeout=5)
         assert server_process.returncode is not None, "Python server process did not terminate"
 
-        logger.info("🐹↔🐍 ✅ Go Client ↔ Python Server: SUCCESS")
 
     @pytest.mark.integration_rpc
     def test_proto_compatibility(self) -> None:
@@ -288,8 +275,6 @@ class TestCrossLanguageInterop:
         empty2 = kv_pb2.Empty()
         empty2.ParseFromString(empty_serialized)
 
-        logger.info("✅ Proto message serialization/deserialization works")
-        logger.info("🔄 ✅ Proto Message Compatibility: SUCCESS")
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_python
@@ -304,7 +289,6 @@ class TestCrossLanguageInterop:
         test_data = {
             "python-server-key": b"Data stored via Python server",
             "go-server-key": b"Data stored via Go server",
-            "unicode-test": "Hello 世界! 🌍".encode(),
             "binary-data": bytes(range(256)),  # Full byte range
             "empty-value": b"",
             "large-value": b"x" * 10000,  # 10KB value
@@ -326,7 +310,6 @@ class TestCrossLanguageInterop:
             assert response.value == expected_value, f"Python server failed for key: {key}"
 
         await channel.close()
-        logger.info("✅ Python server comprehensive test passed")
 
         # Test Go server if available
         if go_server_path:
@@ -343,14 +326,12 @@ class TestCrossLanguageInterop:
                     retrieved = await client.get(f"go-{key}")
                     assert retrieved == expected_value, f"Go server failed for key: {key}"
 
-                logger.info("✅ Go server comprehensive test passed")
 
             finally:
                 await client.close()
         else:
             logger.info("⏭️  Skipping Go server comprehensive test (binary not available)")
 
-        logger.info("🌐 ✅ Comprehensive Interoperability Scenario: SUCCESS")
 
 
 if __name__ == "__main__":
@@ -358,10 +339,7 @@ if __name__ == "__main__":
     async def manual_test() -> None:
         test_instance = TestCrossLanguageInterop()
         test_instance.test_proto_compatibility()
-        print("✅ Manual proto compatibility test passed")
 
     asyncio.run(manual_test())
 
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

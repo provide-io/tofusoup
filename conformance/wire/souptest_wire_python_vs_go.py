@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -76,7 +76,4 @@ def test_python_and_go_encoders_are_identical(
         f"Go produced b64:     {go_b64_msgpack_bytes.decode()}"
     )
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

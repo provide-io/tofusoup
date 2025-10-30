@@ -3,12 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-CLI Verification Tests for RPC Commands
+"""CLI Verification Tests for RPC Commands
 
 Tests that all soup-go rpc commands have correct CLI flags and work as expected.
-This catches issues like missing flags, incorrect flag names, etc.
-"""
+This catches issues like missing flags, incorrect flag names, etc."""
 
 from pathlib import Path
 import subprocess
@@ -141,7 +139,4 @@ def test_rpc_command_structure(soup_go_path: Path):
     assert "kv" in result.stdout, "RPC should have 'kv' subcommand"
     assert "validate" in result.stdout, "RPC should have 'validate' subcommand"
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

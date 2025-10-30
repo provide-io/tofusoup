@@ -1,15 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Centralized defaults and constants for TofuSoup.
+"""Centralized defaults and constants for TofuSoup.
 
-All hardcoded defaults should be defined here instead of inline in the code.
-"""
+All hardcoded defaults should be defined here instead of inline in the code."""
 
-# Network and connection defaults
 DEFAULT_GRPC_PORT = 50051
 DEFAULT_GRPC_ADDRESS = "localhost:50051"
 CONNECTION_TIMEOUT = 30.0
@@ -63,4 +60,4 @@ TUI_LOG_LEVEL = "DEBUG"
 CONFIG_FILENAME = "soup.toml"
 DEFAULT_CONFIG_SUBDIR = "soup"
 
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -66,5 +66,4 @@ class Module:
     latest_version: ModuleVersion | None = field(default=None)
     registry_source: str | None = field(default=None)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

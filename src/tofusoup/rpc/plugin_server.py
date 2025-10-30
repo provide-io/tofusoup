@@ -3,13 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-TofuSoup Python KV Plugin Server
+"""TofuSoup Python KV Plugin Server
 
 A go-plugin compatible Python server that implements the KV interface
 using pyvider-rpcplugin framework. This server is compatible with
-hashicorp/go-plugin protocol and can be used for cross-language testing.
-"""
+hashicorp/go-plugin protocol and can be used for cross-language testing."""
 
 import asyncio
 import os
@@ -85,4 +83,4 @@ async def main() -> None:
 if __name__ == "__main__":
     asyncio.run(main())
 
-# 🍲🔍🔚
+# 🥣🔬🔚

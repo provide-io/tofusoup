@@ -3,15 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Property-Based Concurrent Connection Testing
+"""Property-Based Concurrent Connection Testing
 
 Tests multiple simultaneous clients to detect:
 - Race conditions across connections
 - Connection pool exhaustion
 - Concurrent read/write consistency
-- Resource leaks under load
-"""
+- Resource leaks under load"""
 
 import asyncio
 from pathlib import Path
@@ -243,7 +241,4 @@ async def test_concurrent_readers(num_readers: int, key: str, value: bytes) -> N
         await writer.close()
         await asyncio.gather(*[reader.close() for reader in readers], return_exceptions=True)
 
-
-# 🍲🥄🔀🧪
-
-# 🍲🔍🔚
+# 🥣🔬🔚

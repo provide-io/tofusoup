@@ -1,17 +1,15 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Integration between TofuSoup and wrknv.
+"""Integration between TofuSoup and wrknv.
 
 This module provides functionality to inject TofuSoup's workenv configuration
 from soup.toml into wrknv, making wrkenv.toml optional for TofuSoup users.
 
 Note: wrknv is an optional dependency. If not installed, matrix testing features
-will be unavailable but other TofuSoup features will work normally.
-"""
+will be unavailable but other TofuSoup features will work normally."""
 
 from pathlib import Path
 import tomllib
@@ -108,5 +106,4 @@ def get_matrix_config_from_soup(project_root: Path | None = None) -> dict[str, A
     soup_config = load_soup_config(project_root)
     return soup_config.get("workenv", {}).get("matrix", {})
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

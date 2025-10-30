@@ -1,17 +1,15 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Python-to-Python RPC Conformance Tests
+"""Python-to-Python RPC Conformance Tests
 
 Tests Python client → Python server with various TLS configurations
 to verify that the pyvider-rpcplugin implementation works correctly.
 
 Consolidates test_python_to_python_pyvider.py, test_py_to_py.py,
-and test_py_py_all_curves.py from the project root.
-"""
+and test_py_py_all_curves.py from the project root."""
 
 from __future__ import annotations
 
@@ -141,4 +139,4 @@ async def test_python_to_python_p384(soup_path: Path | None) -> None:
         except Exception:
             pass
 
-# 🍲🔍🔚
+# 🥣🔬🔚

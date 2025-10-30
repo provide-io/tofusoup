@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -124,7 +124,4 @@ async def test_list_provider_versions(httpx_mock) -> None:
         assert len(versions) == 3
         assert versions[0].version == "6.8.0"
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

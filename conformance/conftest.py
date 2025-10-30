@@ -1,12 +1,10 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Common conftest for tests under 'tofusoup/conformance'.
-Provides shared fixtures and test collection modifications.
-"""
+"""Common conftest for tests under 'tofusoup/conformance'.
+Provides shared fixtures and test collection modifications."""
 
 import os
 from pathlib import Path
@@ -132,7 +130,4 @@ try:
 except ImportError:
     pass  # Hypothesis not installed
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

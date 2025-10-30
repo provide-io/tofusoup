@@ -83,4 +83,4 @@ for suite_name_key in TEST_SUITE_CONFIG:
             logger.error(f"Unexpected error in test suite '{snk}': {e}", exc_info=verbose)
             sys.exit(1)
 
-# 🍲🔍🔚
+# 🥣🔬🔚

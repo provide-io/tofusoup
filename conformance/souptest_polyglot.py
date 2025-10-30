@@ -3,12 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Property-Based Testing for Cross-Language Compatibility
+"""Property-Based Testing for Cross-Language Compatibility
 
 Ensures that Python and Go implementations produce identical results for the same inputs.
-This is critical for polyglot systems where different languages must interoperate.
-"""
+This is critical for polyglot systems where different languages must interoperate."""
 
 from pathlib import Path
 
@@ -172,7 +170,4 @@ async def test_batch_operations_consistency(data: list[tuple[str, bytes]]) -> No
     finally:
         await client.close()
 
-
-# 🍲🥄🌍🧪
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -161,7 +161,4 @@ async def test_search_engine_empty_query() -> None:
     registry.list_providers.assert_called_once_with(query=None)
     registry.list_modules.assert_called_once_with(query=None)
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

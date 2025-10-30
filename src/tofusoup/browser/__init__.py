@@ -5,4 +5,4 @@
 
 """Browser module for tofusoup TUI."""
 
-# 🍲🔍🔚
+# 🥣🔬🔚

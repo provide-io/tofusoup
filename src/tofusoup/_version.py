@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -18,4 +18,4 @@ __version__ = get_version("tofusoup", caller_file=__file__)
 
 __all__ = ["__version__"]
 
-# 🍲🔍🔚
+# 🥣🔬🔚

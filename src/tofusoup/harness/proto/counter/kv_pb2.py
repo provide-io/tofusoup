@@ -1,6 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/harness/proto/counter/kv_pb2.py
-#
+
 """Generated protocol buffer code."""
 
 from google.protobuf import (
@@ -45,5 +47,4 @@ if not _descriptor._USE_C_DESCRIPTORS:
     _globals["_ADDHELPER"]._serialized_end = 363
 # @@protoc_insertion_point(module_scope)
 
-
-# 🍲🥄📄🪄
+# 🥣🔬🔚

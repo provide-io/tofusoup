@@ -156,7 +156,6 @@ def validate_value_command(value: str, type_spec: str) -> None:
         cty_value = cty_type.validate(json_value)
 
         # If we get here without exception, validation succeeded
-        click.echo("✅ Value validates successfully against the type")
 
         # Show some details about the validated value
         details = {
@@ -172,5 +171,4 @@ def validate_value_command(value: str, type_spec: str) -> None:
         click.echo(f"❌ Validation failed: {e}", err=True)
         sys.exit(1)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

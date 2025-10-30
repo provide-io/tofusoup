@@ -1,6 +1,8 @@
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
-# tofusoup/harness/proto/counter/kv_pb2_grpc.py
-#
+
 """Client and server classes corresponding to protobuf-defined services."""
 
 from typing import Never
@@ -226,5 +228,4 @@ class AddHelper:
             _registered_method=True,
         )
 
-
-# 🍲🥄📄🪄
+# 🥣🔬🔚

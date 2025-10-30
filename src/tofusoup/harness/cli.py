@@ -114,5 +114,4 @@ def build_harness_command(ctx, harness_names: tuple[str, ...], force_rebuild: bo
             logger.error(f"Failed to build Go harness '{name}': {e}")
             sys.exit(1)
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

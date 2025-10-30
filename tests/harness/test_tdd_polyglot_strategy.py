@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-TDD Tests for the Polyglot CLI Strategy.
-"""
+"""TDD Tests for the Polyglot CLI Strategy."""
 
 from click.testing import CliRunner
 from provide.testkit.mocking import MagicMock, patch
@@ -100,7 +98,4 @@ class TestPolyglotStrategyContract:
         with pytest.raises(ValueError):
             get_harness_command("go-cty", "validate-value", [])
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

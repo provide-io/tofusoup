@@ -1,12 +1,10 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Configuration for CTY test suite.
-Sets up environment variables from soup.toml configuration.
-"""
+"""Configuration for CTY test suite.
+Sets up environment variables from soup.toml configuration."""
 
 import os
 from pathlib import Path
@@ -44,4 +42,4 @@ def setup_cty_test_environment():
     # for key in cty_env_vars:
     #     os.environ.pop(key, None)
 
-# 🍲🔍🔚
+# 🥣🔬🔚

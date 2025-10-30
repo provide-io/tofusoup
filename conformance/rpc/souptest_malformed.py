@@ -3,15 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Property-Based Malformed Data and Protocol Testing
+"""Property-Based Malformed Data and Protocol Testing
 
 Tests system resilience against:
 - Invalid configurations
 - Malformed requests
 - Protocol violations
-- Edge case error handling
-"""
+- Edge case error handling"""
 
 from pathlib import Path
 
@@ -315,7 +313,4 @@ async def test_rapid_connect_disconnect() -> None:
         await client.put(f"rapid-{i}", b"test")
         await client.close()
 
-
-# 🍲🥄❌🧪
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -26,7 +26,4 @@ def test_check_env_vars_cty_suite() -> None:
     assert os.getenv("TOFUSOUP_TEST_DEFAULT_ENV") == "cty_override_default_env_from_toml"
     assert os.getenv("TOFUSOUP_CTY_SUITE_ENV") == "cty_specific_env_value_from_toml"
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

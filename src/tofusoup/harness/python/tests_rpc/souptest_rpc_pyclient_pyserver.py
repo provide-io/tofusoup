@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -177,7 +177,4 @@ async def test_pyclient_pyserver_put_get(tmp_path) -> None:
 # test of the Python client and server using the pyvider-rpcplugin mechanisms.
 # Simpler unit tests for KVHandler logic (if isolated from gRPC) would also be valuable.
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

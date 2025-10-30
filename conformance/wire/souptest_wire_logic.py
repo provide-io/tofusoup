@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -41,7 +41,4 @@ def test_convert_msgpack_to_json(tmp_path: Path, sample_data: dict) -> None:
     assert json_file.exists()
     assert json.loads(json_file.read_text()) == sample_data
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

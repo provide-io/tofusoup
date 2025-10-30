@@ -1,16 +1,14 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-RPC K/V Matrix Testing Configuration
+"""RPC K/V Matrix Testing Configuration
 
 Defines the parameter matrix for testing all combinations of:
 - Client languages: go, pyvider
 - Server languages: go, pyvider
-- Crypto configurations: auto_mtls with RSA 2048/4096, EC 256/384/521
-"""
+- Crypto configurations: auto_mtls with RSA 2048/4096, EC 256/384/521"""
 
 from dataclasses import dataclass
 from typing import Any
@@ -90,4 +88,4 @@ if __name__ == "__main__":
         client, server, crypto = param.values
         print(f"{i:2d}. {param.id}")
 
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -3,14 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-RPC connection validation utilities.
+"""RPC connection validation utilities.
 
 Provides validation for:
 - Elliptic curve support by runtime
 - Language pair compatibility
-- TLS mode compatibility
-"""
+- TLS mode compatibility"""
 
 from pathlib import Path
 
@@ -175,7 +173,4 @@ def get_compatibility_matrix() -> dict[str, dict[str, bool]]:
         },
     }
 
-
-# 🍲🥄📋🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

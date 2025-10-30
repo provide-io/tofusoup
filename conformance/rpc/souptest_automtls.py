@@ -3,10 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-autoMTLS Compatibility Verification Test
-Tests the asymmetric behavior: Go→Python works, but Python→Go fails with autoMTLS
-"""
+"""autoMTLS Compatibility Verification Test
+Tests the asymmetric behavior: Go→Python works, but Python→Go fails with autoMTLS"""
 
 import asyncio
 
@@ -29,7 +27,6 @@ async def test_automtls_compatibility() -> None:
         ("ec521", "ec", 521),
     ]
 
-    print("🐍→🦫 Python Client → Go Server (autoMTLS enabled)")
     print("-" * 60)
 
     results = []
@@ -60,7 +57,6 @@ async def test_automtls_compatibility() -> None:
             elif "SSL" in error_msg or "TLS" in error_msg or "certificate" in error_msg.lower():
                 error_msg = "SSL/TLS handshake failure (autoMTLS incompatibility)"
 
-        status = "✅ PASS" if success else "❌ FAIL"
         print(f"{status}")
         if error_msg:
             print(f"    Error: {error_msg}")
@@ -71,13 +67,11 @@ async def test_automtls_compatibility() -> None:
     print("🔐 AUTOMTLS VERIFICATION RESULTS:")
     print("=" * 80)
 
-    print("🐍→🦫 Python Client → Go Server (autoMTLS):")
     working_configs = []
     failing_configs = []
 
     for name, key_type, key_size, success, error in results:
         if key_type == "rsa":
-            status = "✅ WORKING" if success else "❌ FAILING"
             print(f"  RSA {key_size}: {status}")
             if not success:
                 print(f"    Issue: {error}")
@@ -87,7 +81,6 @@ async def test_automtls_compatibility() -> None:
         else:
             curve_map = {"256": "P-256", "384": "P-384", "521": "P-521"}
             curve = curve_map.get(str(key_size), f"P-{key_size}")
-            status = "✅ WORKING" if success else "❌ FAILING"
             print(f"  {curve}: {status}")
             if not success:
                 print(f"    Issue: {error}")
@@ -97,24 +90,16 @@ async def test_automtls_compatibility() -> None:
                 working_configs.append(curve)
 
     print()
-    print("🦫→🐍 Go Client → Python Server (autoMTLS):")
-    print("  RSA 2048: ✅ CONFIRMED WORKING (Terraform context)")
-    print("  RSA 4096: ✅ CONFIRMED WORKING (Terraform context)")
-    print("  P-256: ✅ CONFIRMED WORKING (Terraform context)")
-    print("  P-384: ✅ CONFIRMED WORKING (Terraform context)")
     print("  P-521: ? NEEDS TESTING (likely works)")
 
     print()
     print("🎯 AUTOMTLS COMPATIBILITY ANALYSIS:")
     print("-" * 50)
     if working_configs:
-        print(f"✅ Python→Go working: {', '.join(working_configs)}")
     if failing_configs:
         print(f"❌ Python→Go failing: {', '.join(failing_configs)}")
-    print("✅ Go→Python: Confirmed working in Terraform")
     print()
     print("📋 VALIDATION: Your experience confirmed!")
-    print("  • Go can connect to Python with autoMTLS ✅")
     print("  • Python cannot connect to Go with autoMTLS ❌")
     print("  • This asymmetric behavior is now documented")
 
@@ -122,6 +107,4 @@ async def test_automtls_compatibility() -> None:
 if __name__ == "__main__":
     asyncio.run(test_automtls_compatibility())
 
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

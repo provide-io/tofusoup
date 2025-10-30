@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Core HCL processing and conversion logic.
-"""
+"""Core HCL processing and conversion logic."""
 
 import pathlib
 from typing import Literal
@@ -87,5 +85,4 @@ def convert_hcl_file_to_output_format(
         )
         return None
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

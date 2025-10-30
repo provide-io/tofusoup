@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -52,7 +52,4 @@ async def test_detail_view_update_content(pilot: Pilot) -> None:
     assert "test/test-module/aws" in detail_view.raw_content
     assert "Type**: module" in detail_view.raw_content
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -3,14 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Test elliptic curve support across different server implementations.
+"""Test elliptic curve support across different server implementations.
 
 Validates:
 - Python servers support secp256r1 and secp384r1
 - Python servers reject secp521r1 (grpcio limitation)
-- Go servers support all curves (when using TLSProvider)
-"""
+- Go servers support all curves (when using TLSProvider)"""
 
 from pathlib import Path
 
@@ -81,7 +79,6 @@ async def test_python_server_rejects_secp521r1() -> None:
         await client.start()
         await client.close()
         # Success - graceful degradation is working
-        logger.info("✅ secp521r1 handled gracefully (logs warning, continues execution)")
     except Exception as e:
         pytest.fail(f"Expected graceful handling of secp521r1, but got exception: {e}")
 
@@ -154,7 +151,4 @@ def test_document_curve_support() -> None:
             status = "supported" if supported else "not supported"
             logger.info("Curve support", runtime=runtime, curve=curve, status=status)
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

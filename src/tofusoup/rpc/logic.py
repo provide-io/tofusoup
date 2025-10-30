@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Core logic for RPC operations, including test orchestration.
-"""
+"""Core logic for RPC operations, including test orchestration."""
 
 import asyncio
 import pathlib
@@ -160,5 +158,4 @@ def run_rpc_compatibility_tests(project_root: pathlib.Path, loaded_config: dict)
 
     return overall_success
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -36,7 +36,4 @@ def test_load_hcl_file_as_cty_simple(tmp_path: Path) -> None:
     assert cty_value.value["instance_count"].vtype == CtyNumber()
     assert cty_value.value["instance_count"].value == Decimal("3")
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

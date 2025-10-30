@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Script to verify the Command Line Interface (CLI) of TofuSoup's Go harnesses.
+"""Script to verify the Command Line Interface (CLI) of TofuSoup's Go harnesses.
 
 It runs a predefined set of commands for each harness and captures their
 stdout and stderr into log files. This helps ensure that the harnesses
@@ -12,8 +11,7 @@ can be invoked correctly and that their basic CLI operations (like --help)
 are functional.
 
 Output logs are stored in: tofusoup/soup/logs/harness/
-Dummy data files are created in: tofusoup/soup/data/
-"""
+Dummy data files are created in: tofusoup/soup/data/"""
 
 import base64
 import json
@@ -203,4 +201,4 @@ def run_verification() -> None:
 if __name__ == "__main__":
     run_verification()
 
-# 🍲🔍🔚
+# 🥣🔬🔚

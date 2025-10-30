@@ -1,14 +1,19 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-TofuSoup State Commands
+"""TODO: Add module docstring."""
+
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TofuSoup State Commands
 
 Provides commands for inspecting and manipulating Terraform state,
-including decrypting private state data for debugging.
-"""
+including decrypting private state data for debugging."""
 
 import base64
 import json
@@ -95,7 +100,6 @@ def display_resource_overview(resources: list[dict[str, Any]]) -> None:
     table.add_column("Private Data", style="yellow")
 
     for resource in resources:
-        private_status = "✅ Encrypted" if resource["private"] else "❌ None"
         table.add_row(
             resource["type"],
             resource["name"],
@@ -306,7 +310,6 @@ def validate_private_state(state_file: str) -> None:
     resources_with_private = find_resources_with_private_state(state)
 
     if not resources_with_private:
-        console.print("[green]✅ No resources with private state found[/green]")
         return
 
     console.print(f"[bold]Validating private state for {len(resources_with_private)} resources...[/bold]\n")
@@ -327,7 +330,6 @@ def validate_private_state(state_file: str) -> None:
             valid_count += 1
             table.add_row(
                 resource_name,
-                "[green]✅ Valid[/green]",
                 f"Decrypted {len(decrypted)} fields",
             )
         else:
@@ -342,10 +344,9 @@ def validate_private_state(state_file: str) -> None:
         console.print("[dim]Check that PYVIDER_PRIVATE_STATE_SHARED_SECRET is correct[/dim]")
         raise click.Abort()
     else:
-        console.print("\n[green]✅ All private state data is valid[/green]")
 
 
 if __name__ == "__main__":
     state_cli()
 
-# 🍲🔍🔚
+# 🥣🔬🔚

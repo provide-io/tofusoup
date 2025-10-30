@@ -3,14 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Property-Based Testing for TLS Certificate Generation and Handling
+"""Property-Based Testing for TLS Certificate Generation and Handling
 
 Tests that certificate generation works correctly across:
 - All supported curves
 - Different key types
-- Rapid generation/destruction cycles
-"""
+- Rapid generation/destruction cycles"""
 
 from pathlib import Path
 
@@ -142,7 +140,4 @@ async def test_python_server_tls_compatibility(curve: str, key_type: str) -> Non
     finally:
         await client.close()
 
-
-# 🍲🥄🔐🧪
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -40,7 +40,6 @@ from tofusoup.harness.proto.kv import KVProtocol, kv_pb2, kv_pb2_grpc
 
 logging.basicConfig(
     level=logging.WARNING,
-    format="%(asctime)s.%(msecs)03d [%(levelname)-7s] %(name)s: 🐍 C> %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
@@ -499,5 +498,4 @@ class KVClient:
             )
             raise
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

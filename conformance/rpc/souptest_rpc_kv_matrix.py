@@ -1,10 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-RPC K/V Matrix Testing
+"""RPC K/V Matrix Testing
 
 Tests all combinations of:
 - Client languages: go, pyvider
@@ -12,8 +11,7 @@ Tests all combinations of:
 - Crypto configurations: auto_mtls with RSA 2048/4096, EC 256/384/521
 
 Each test verifies that every client can successfully set/get keys
-with every server across all crypto configurations.
-"""
+with every server across all crypto configurations."""
 
 from pathlib import Path
 from typing import Any
@@ -92,7 +90,6 @@ class TestRPCKVMatrix:
                 )
                 logger.debug(f"GET {non_existent_key} = None (expected)")
 
-        logger.info(f"✅ {client_lang} → {server_lang} ({crypto_config.name}) test passed")
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
@@ -144,7 +141,6 @@ class TestRPCKVMatrix:
                 )
                 logger.debug(f"GET {key} = {retrieved_value.decode()} ✓")
 
-        logger.info(f"✅ Multiple keys test passed: {client_lang} → {server_lang} ({crypto_config.name})")
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
@@ -197,7 +193,6 @@ class TestRPCKVMatrix:
             assert retrieved == new_value, f"Overwrite failed: expected {new_value!r}, got {retrieved!r}"
             assert retrieved != original_value, "Old value still present after overwrite"
 
-        logger.info(f"✅ Key overwrite test passed: {client_lang} → {server_lang} ({crypto_config.name})")
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_python
@@ -239,7 +234,6 @@ class TestRPCKVMatrix:
 
             assert retrieved == test_value, f"Crypto config {crypto_config.name} broke basic functionality"
 
-        logger.info(f"✅ Crypto validation passed for {crypto_config.name}")
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
@@ -310,7 +304,6 @@ class TestRPCKVMatrix:
             assert retrieved == special_value, "Special characters not handled correctly"
             logger.debug("✓ Special characters test passed")
 
-        logger.info(f"✅ Edge cases test passed: {client_lang} → {server_lang} ({crypto_config.name})")
 
 
 # Test utilities
@@ -354,6 +347,4 @@ if __name__ == "__main__":
         f"Grand total test executions: {sum(v for k, v in summary.items() if k.startswith('total_') and k != 'total_combinations')}"
     )
 
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

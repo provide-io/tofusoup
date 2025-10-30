@@ -3,11 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-RPC K/V Matrix Test Runner
+"""RPC K/V Matrix Test Runner
 
-Convenience script for running the RPC K/V matrix tests with various configurations.
-"""
+Convenience script for running the RPC K/V matrix tests with various configurations."""
 
 from pathlib import Path
 import subprocess
@@ -25,7 +23,6 @@ def run_command(cmd, description):
     result = subprocess.run(cmd, capture_output=False)
 
     if result.returncode == 0:
-        print(f"\n✅ {description} completed successfully!")
     else:
         print(f"\n❌ {description} failed with exit code {result.returncode}")
 
@@ -107,6 +104,4 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

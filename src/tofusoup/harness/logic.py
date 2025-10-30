@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -159,5 +159,4 @@ def start_go_plugin_server_process(
     except Exception as e:
         raise TofuSoupError(f"Failed to start Go plugin server '{harness_name}': {e}") from e
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚

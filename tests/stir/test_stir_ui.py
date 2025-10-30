@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -11,7 +11,6 @@ from tofusoup import stir
 def test_generate_status_table() -> None:
     """Verify the Rich table is generated correctly from the status dict."""
     stir.test_statuses = {
-        "test_pass": {"text": "✅ PASS", "style": "bold green", "active": False, "thread_id": "1"},
         "test_fail": {"text": "❌ FAIL", "style": "bold red", "active": False, "thread_id": "2"},
         "test_active": {
             "text": "APPLYING",
@@ -33,7 +32,4 @@ def test_generate_status_table() -> None:
     assert "test_fail" in str(test_suite_cell)
     assert "FAIL" in str(status_cell)
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -208,7 +208,4 @@ def test_go_verifies_python_fixtures(
         )
         assert exit_code == 0, f"soup-go cty validate-value failed for {case_name}: {stderr}"
 
-
-# 🍲🥄🧪🪄
-
-# 🍲🔍🔚
+# 🥣🔬🔚

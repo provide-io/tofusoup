@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Generic serialization and deserialization utilities for JSON and Msgpack.
-"""
+"""Generic serialization and deserialization utilities for JSON and Msgpack."""
 
 import decimal  # For loading JSON with Decimal
 import json
@@ -108,5 +106,4 @@ def dump_python_to_msgpack_file(data: Any, filepath: str) -> None:
             f"Unexpected error dumping Msgpack to file {filepath}: {type(e).__name__} - {e}"
         ) from e
 
-
-# 🍲🔍🔚
+# 🥣🔬🔚
