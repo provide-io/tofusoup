@@ -51,7 +51,9 @@
       "Bash(uv run ruff:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(mypy:*)"
+      "Bash(mypy:*)",
+      "Bash(soup --help:*)",
+      "Bash(soup harness list:*)"
     ],
     "deny": [],
     "ask": [],
