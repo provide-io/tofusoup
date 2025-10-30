@@ -125,13 +125,13 @@ class CertificateManager:
             # Write certificate
             cert_file = cert_files[f"{cert_type}_cert"]
             with cert_file.open("w") as f:
-                f.write(cert_obj.cert)
+                f.write(cert_obj.cert_pem)
             cert_file.chmod(0o644)
 
             # Write private key
             key_file = cert_files[f"{cert_type}_key"]
             with key_file.open("w") as f:
-                f.write(cert_obj.key)
+                f.write(cert_obj.key_pem)
             key_file.chmod(0o600)
 
         logger.info(f"Generated certificates for {config_name} in {self.cert_dir}")

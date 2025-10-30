@@ -57,17 +57,13 @@ class GoKVServer(ReferenceKVServer):
         cert_manager = CertificateManager(self.work_dir)
         cert_files = cert_manager.generate_crypto_material(self.crypto_config)
 
-        # Generate certificates if needed
-        cert_manager = CertificateManager(self.work_dir)
-        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
-
         # Build soup-go harness if needed
         project_root = Path(__file__).parent.parent.parent
         config = load_tofusoup_config(project_root)
         soup_go_path = ensure_go_harness_build("soup-go", project_root, config)
 
         # Prepare soup-go command arguments
-        args = [str(soup_go_path), "rpc", "kv", "server-start"]
+        args = [str(soup_go_path), "rpc", "kv", "server"]
         args.extend(self.crypto_config.to_go_cli_args())
         print(f"DEBUG: soup-go args: {args}")
 
