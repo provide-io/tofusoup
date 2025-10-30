@@ -28,7 +28,7 @@ def test_ensure_go_harness_build_success(tmp_path: Path) -> None:
     cache_dir.mkdir()
 
     with patch("tofusoup.harness.logic.get_cache_dir", return_value=cache_dir):
-        with patch("provide.foundation.process.run") as mock_run:
+        with patch("tofusoup.harness.logic.run_command") as mock_run:
             # Mock 'go build' to succeed
             mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
 
@@ -58,7 +58,7 @@ def test_ensure_go_harness_build_failure(tmp_path: Path) -> None:
     cache_dir.mkdir()
 
     with patch("tofusoup.harness.logic.get_cache_dir", return_value=cache_dir):
-        with patch("provide.foundation.process.run") as mock_run:
+        with patch("tofusoup.harness.logic.run_command") as mock_run:
             # Mock 'go build' to fail
             mock_run.side_effect = subprocess.CalledProcessError(
                 returncode=1, cmd=["go", "build"], stderr="go build failed"
