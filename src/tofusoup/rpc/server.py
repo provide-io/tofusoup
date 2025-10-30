@@ -389,6 +389,12 @@ def start_kv_server(
 
 
 if __name__ == "__main__":
-    main()
+    # Check if being run in go-plugin mode (KVClient spawns with these env vars)
+    if os.getenv("PLUGIN_MAGIC_COOKIE_KEY") or os.getenv("PLUGIN_PROTOCOL_VERSIONS"):
+        # Plugin mode - output go-plugin handshake
+        start_kv_server(tls_mode="disabled", output_handshake=True)
+    else:
+        # Standalone mode - simple server without handshake
+        main()
 
 # 🥣🔬🔚
