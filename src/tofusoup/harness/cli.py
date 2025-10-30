@@ -98,7 +98,9 @@ def list_harnesses_command(ctx: click.Context) -> None:
 )
 @click.option("--log-level", default="info", help="Set the logging level for the harness build.")
 @click.pass_context
-def build_harness_command(ctx: click.Context, harness_names: tuple[str, ...], force_rebuild: bool, log_level: str) -> None:
+def build_harness_command(
+    ctx: click.Context, harness_names: tuple[str, ...], force_rebuild: bool, log_level: str
+) -> None:
     """Builds specified test harnesses."""
     project_root = ctx.obj["PROJECT_ROOT"]
     loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})

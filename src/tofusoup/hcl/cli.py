@@ -78,7 +78,9 @@ def view_command(ctx: click.Context, filepath: str) -> None:
     help='Format for the output. Inferred if not provided. Default can be set in soup.toml via command_options."hcl.convert".default_output_format.',
 )
 @click.pass_context
-def convert_command(ctx: click.Context, input_file: str, output_file: str, output_format_opt: str | None) -> None:
+def convert_command(
+    ctx: click.Context, input_file: str, output_file: str, output_format_opt: str | None
+) -> None:
     """
     Converts an HCL file to JSON or Msgpack (via CTY representation).
 
