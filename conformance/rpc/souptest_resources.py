@@ -209,7 +209,7 @@ async def test_connection_limit_handling() -> None:
 
     clients = []
     try:
-        for i in range(max_connections):
+        for _i in range(max_connections):
             client = KVClient(
                 server_path=str(go_server),
                 tls_mode="disabled",

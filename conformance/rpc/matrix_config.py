@@ -60,7 +60,7 @@ RPC_KV_MATRIX_PARAMS = [
     for crypto_config in RPC_KV_CRYPTO_CONFIGS
 ]
 
-# Total combinations: 2 client langs × 2 server langs × 5 crypto configs = 20 tests
+# Total combinations: 2 client langs x 2 server langs x 5 crypto configs = 20 tests
 
 
 def get_matrix_summary() -> dict[str, Any]:

@@ -6,6 +6,7 @@
 """TODO: Add module docstring."""
 
 import pytest
+from textual.app import ComposeResult
 from textual.pilot import Pilot
 from textual.screen import Screen
 
@@ -14,9 +15,6 @@ from tofusoup.registry.search.engine import SearchResult
 
 # Mark all tests in this module as browser tests
 pytestmark = pytest.mark.browser
-
-
-from textual.app import ComposeResult
 
 
 class DetailViewScreen(Screen):

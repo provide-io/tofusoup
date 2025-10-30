@@ -42,7 +42,7 @@ class TestRPCKVMatrix:
         2. GET the same key and retrieve the correct value
         3. Handle non-existent keys appropriately
 
-        Matrix coverage: 2 × 2 × 5 = 20 test combinations
+        Matrix coverage: 2 x 2 x 5 = 20 test combinations
         """
 
         logger.info(f"Testing {client_lang} client → {server_lang} server with {crypto_config.name}")

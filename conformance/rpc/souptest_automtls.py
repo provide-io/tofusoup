@@ -71,7 +71,7 @@ async def test_automtls_compatibility() -> None:
     working_configs = []
     failing_configs = []
 
-    for name, key_type, key_size, success, error in results:
+    for _name, key_type, key_size, success, error in results:
         status = "✅" if success else "❌"
         if key_type == "rsa":
             print(f"  RSA {key_size}: {status}")
