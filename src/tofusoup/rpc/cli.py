@@ -243,7 +243,7 @@ def _validate_curve_compatibility_with_output(curve: str, client: str, server_la
     errors = []
 
     if curve == "auto":
-        pout("ℹ  Auto curve mode - runtime will choose compatible curve", color="blue")
+        pout("i  Auto curve mode - runtime will choose compatible curve", color="blue")
         return errors
 
     try:

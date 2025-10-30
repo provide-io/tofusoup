@@ -9,6 +9,7 @@ import asyncio
 import logging
 import os
 import time
+from pathlib import Path
 
 import grpc
 from provide.foundation import logger
@@ -171,7 +172,7 @@ class KVClient:
             PermissionError: If server executable is not executable.
         """
         # Validate server path
-        if not os.path.exists(self.server_path):
+        if not Path(self.server_path).exists():
             raise FileNotFoundError(f"Server executable not found: {self.server_path}")
         if not os.access(self.server_path, os.X_OK):
             raise PermissionError(f"Server executable not executable: {self.server_path}")
@@ -179,7 +180,7 @@ class KVClient:
         server_command = [self.server_path]
 
         # Check if binary name suggests it needs subcommands
-        binary_name = os.path.basename(self.server_path)
+        binary_name = Path(self.server_path).name
         if binary_name in ["soup-go", "go-harness", "soup"]:
             # New harnesses (both Go and Python) expect rpc kv server subcommand
             server_command.extend(["rpc", "kv", "server"])
@@ -358,13 +359,12 @@ class KVClient:
                 ) from e
 
             # Check for curve compatibility issues
-            if "curve" in error_msg.lower() or "tls" in error_msg.lower() or "ssl" in error_msg.lower():
-                if self.tls_curve == "secp521r1" and server_lang == "python":
-                    raise ValueError(
-                        f"Curve 'secp521r1' is not supported by Python's grpcio library.\n"
-                        "Supported curves for Python: secp256r1, secp384r1\n\n"
-                        f"Original error: {type(e).__name__}: {e}"
-                    ) from e
+            if ("curve" in error_msg.lower() or "tls" in error_msg.lower() or "ssl" in error_msg.lower()) and self.tls_curve == "secp521r1" and server_lang == "python":
+                raise ValueError(
+                    f"Curve 'secp521r1' is not supported by Python's grpcio library.\n"
+                    "Supported curves for Python: secp256r1, secp384r1\n\n"
+                    f"Original error: {type(e).__name__}: {e}"
+                ) from e
 
             raise
 

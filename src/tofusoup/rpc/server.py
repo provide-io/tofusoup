@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import time
+from pathlib import Path
 
 import grpc
 from provide.foundation import logger
@@ -106,7 +107,7 @@ class KV(kv_pb2_grpc.KVServicer):
             server_cert = os.getenv("PLUGIN_SERVER_CERT")
             if server_cert:
                 try:
-                    with open(server_cert, "rb") as f:
+                    with Path(server_cert).open("rb") as f:
                         cert_bytes = f.read()
                         cert_fingerprint = hashlib.sha256(cert_bytes).hexdigest()
                         server_handshake["cert_fingerprint"] = cert_fingerprint
@@ -143,7 +144,7 @@ class KV(kv_pb2_grpc.KVServicer):
         logger.debug("Retrieving value from file", key=request.key, file=file_path)
 
         try:
-            with open(file_path, "rb") as f:
+            with Path(file_path).open("rb") as f:
                 raw_value = f.read()
 
             # Enrich JSON values with server handshake information on Get
@@ -187,7 +188,7 @@ class KV(kv_pb2_grpc.KVServicer):
 
         try:
             # Store raw value without enrichment (enrichment happens on Get)
-            with open(file_path, "wb") as f:
+            with Path(file_path).open("wb") as f:
                 f.write(request.value)
             logger.info(
                 "Successfully stored value",
@@ -333,9 +334,9 @@ def start_kv_server(
             logger.info("Manual TLS enabled", cert_file=cert_file, key_file=key_file)
 
             # Load certificate and private key
-            with open(cert_file, "rb") as f:
+            with Path(cert_file).open("rb") as f:
                 cert_data = f.read()
-            with open(key_file, "rb") as f:
+            with Path(key_file).open("rb") as f:
                 key_data = f.read()
 
             # Create SSL credentials
