@@ -17,18 +17,21 @@ import time
 import grpc
 from provide.foundation import logger
 
+from tofusoup.common.utils import get_cache_dir
 from tofusoup.config.defaults import DEFAULT_GRPC_PORT
 from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 
 class KV(kv_pb2_grpc.KVServicer):
-    def __init__(self, storage_dir: str = "/tmp") -> None:
+    def __init__(self, storage_dir: str | None = None) -> None:
         """
         Initialize KV servicer with configurable storage directory.
 
         Args:
-            storage_dir: Directory to store KV data files. Defaults to /tmp.
+            storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
         """
+        if storage_dir is None:
+            storage_dir = str(get_cache_dir() / "kv-store")
         self.storage_dir = storage_dir
         self.key_pattern = re.compile(r"^[a-zA-Z0-9._-]+$")
         self.start_time = time.time()
@@ -189,13 +192,13 @@ class KV(kv_pb2_grpc.KVServicer):
             return kv_pb2.Empty()
 
 
-def serve(server: grpc.Server, storage_dir: str = "/tmp") -> KV:
+def serve(server: grpc.Server, storage_dir: str | None = None) -> KV:
     """
     Add KV servicer to gRPC server.
 
     Args:
         server: gRPC server instance
-        storage_dir: Directory to store KV data files. Defaults to /tmp.
+        storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
 
     Returns:
         The KV servicer instance
@@ -224,7 +227,7 @@ def start_kv_server(
     tls_curve: str = "secp384r1",
     cert_file: str | None = None,
     key_file: str | None = None,
-    storage_dir: str = "/tmp",
+    storage_dir: str | None = None,
     output_handshake: bool = True,
 ) -> None:
     """
@@ -237,9 +240,12 @@ def start_kv_server(
         tls_curve: Elliptic curve for EC key type (secp256r1, secp384r1, secp521r1)
         cert_file: Path to certificate file (required for manual TLS)
         key_file: Path to private key file (required for manual TLS)
-        storage_dir: Directory to store KV data files. Defaults to /tmp.
+        storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
         output_handshake: If True, output go-plugin handshake to stdout
     """
+    if storage_dir is None:
+        storage_dir = str(get_cache_dir() / "kv-store")
+
     logger.info(
         "Starting KV plugin server with Python implementation",
         tls_mode=tls_mode,

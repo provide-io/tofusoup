@@ -8,6 +8,7 @@
 from decimal import Decimal  # Added for DecimalAwareJSONEncoder
 import hashlib
 import json  # Added for DecimalAwareJSONEncoder
+import os
 import pathlib
 import sys
 
@@ -22,6 +23,19 @@ from typing import Any  # Import Any for type hinting
 def get_venv_bin_path() -> pathlib.Path:
     """Returns the bin path of the current virtual environment."""
     return pathlib.Path(sys.executable).parent
+
+
+def get_cache_dir() -> pathlib.Path:
+    """Get XDG-compliant cache directory for tofusoup.
+
+    Returns:
+        Path to cache directory (~/.cache/tofusoup by default)
+
+    Respects XDG_CACHE_HOME environment variable if set.
+    """
+    xdg_cache = os.getenv("XDG_CACHE_HOME")
+    cache_base = pathlib.Path(xdg_cache) if xdg_cache else pathlib.Path.home() / ".cache"
+    return cache_base / "tofusoup"
 
 
 def calculate_sha256(filepath: pathlib.Path) -> str:

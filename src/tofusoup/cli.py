@@ -17,6 +17,7 @@ from rich.tree import Tree
 from tofusoup.common.config import TofuSoupConfigError, load_tofusoup_config
 from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
+from tofusoup.common.utils import get_cache_dir
 from tofusoup.config.defaults import DEFAULT_LOG_LEVEL, ENV_TOFUSOUP_LOG_LEVEL, LOG_LEVELS
 
 # CRITICAL: Foundation logger uses stderr by default (good for go-plugin compatibility)
@@ -147,7 +148,8 @@ def entry_point() -> None:
 
         # Debug: Log key environment variables to diagnose go-plugin behavior
         # Debug logging - also write to file for visibility
-        debug_log_path = "/tmp/tofusoup_plugin_debug.log"
+        debug_log_path = get_cache_dir() / "logs" / "plugin_debug.log"
+        debug_log_path.parent.mkdir(parents=True, exist_ok=True)
         with open(debug_log_path, "a") as f:
             import datetime
 
@@ -172,7 +174,7 @@ def entry_point() -> None:
         from tofusoup.harness.proto.kv import KVProtocol
         from tofusoup.rpc.server import KV
 
-        storage_dir = os.getenv("KV_STORAGE_DIR", "/tmp")
+        storage_dir = os.getenv("KV_STORAGE_DIR") or str(get_cache_dir() / "kv-store")
 
         # Create KV handler
         handler = KV(storage_dir=storage_dir)

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import shutil
 
+from tofusoup.common.utils import get_cache_dir
 from tofusoup.config.defaults import (
     ENV_PYVIDER_PRIVATE_STATE_SHARED_SECRET,
     ENV_TF_DATA_DIR,
@@ -18,7 +19,7 @@ from tofusoup.config.defaults import (
 # Configuration constants
 TF_COMMAND = shutil.which("tofu") or shutil.which("terraform") or "tofu"
 MAX_CONCURRENT_TESTS = os.cpu_count() or 4
-LOGS_DIR = Path("output/")
+LOGS_DIR = get_cache_dir() / "logs" / "stir"
 
 # Runtime configuration
 DEFAULT_PLUGIN_CACHE_DIR = Path.home() / ".terraform.d" / "plugin-cache"

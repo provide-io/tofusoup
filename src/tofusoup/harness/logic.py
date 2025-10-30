@@ -14,6 +14,7 @@ from provide.foundation import logger
 from provide.foundation.process import run as run_command
 
 from tofusoup.common.exceptions import TofuSoupError
+from tofusoup.common.utils import get_cache_dir
 
 GO_HARNESS_CONFIG = {
     "soup-go": {
@@ -67,7 +68,7 @@ def ensure_go_harness_build(
         raise TofuSoupError(f"Configuration for Go harness '{harness_name}' not found.")
 
     harness_source_path = project_root / config["source_dir"]
-    output_bin_dir = project_root / "bin"
+    output_bin_dir = get_cache_dir() / "harnesses"
     output_bin_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_bin_dir / config["output_name"]
 
