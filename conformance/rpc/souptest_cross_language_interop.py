@@ -259,7 +259,7 @@ class TestCrossLanguageInterop:
         """Test: Verify proto message compatibility"""
         logger.info("🔄 Testing Proto Message Compatibility")
 
-        from tofusoup.harnesses.proto.kv import kv_pb2
+        from tofusoup.harness.proto.kv import kv_pb2
 
         # Test that we can create and serialize/deserialize messages
         put_request = kv_pb2.PutRequest(key="test-key", value=b"test-value")

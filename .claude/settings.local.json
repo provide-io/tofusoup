@@ -50,7 +50,8 @@
       "Bash(ruff format:*)",
       "Bash(uv run ruff:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(mypy:*)"
     ],
     "deny": [],
     "ask": [],
