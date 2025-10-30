@@ -24,6 +24,8 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+
+	proto "github.com/provide-io/tofusoup/proto/kv"
 )
 
 // getCurve returns the elliptic curve for the given curve name
