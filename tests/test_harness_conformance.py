@@ -11,6 +11,7 @@ and can be used interchangeably for testing provider functionality."""
 import pathlib
 import subprocess
 import time
+from typing import Any
 
 import pytest
 
@@ -137,7 +138,7 @@ class TestHarnessConformance:
 
     @pytest.mark.benchmark
     def test_performance_comparison(
-        self, go_harness_path: pathlib.Path, benchmark: "pytest_benchmark.fixture.BenchmarkFixture"
+        self, go_harness_path: pathlib.Path, benchmark: Any
     ) -> None:
         """Benchmark Go harness vs Python module performance."""
 

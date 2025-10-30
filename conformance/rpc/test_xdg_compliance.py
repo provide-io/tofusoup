@@ -128,9 +128,7 @@ class TestXDGCompliance:
 
         for pattern in legacy_patterns:
             # Use glob to check
-            import glob
-
-            matches = glob.glob(pattern)
+            matches = [str(p) for p in Path("/").glob(pattern.lstrip("/"))]
             # Filter out system temp dir usage (which is OK as last resort)
             # We want to catch hardcoded /tmp/tofusoup paths
             hardcoded_matches = [

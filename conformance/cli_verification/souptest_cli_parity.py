@@ -12,6 +12,7 @@ across the polyglot CLI implementations."""
 from pathlib import Path
 import re
 import subprocess
+from typing import ClassVar
 
 import pytest
 
@@ -93,7 +94,7 @@ class TestCLIParityMatrix:
     """Test matrix for CLI parity between soup and soup-go."""
 
     # Define the expected command structure matrix
-    COMMAND_MATRIX = {
+    COMMAND_MATRIX: ClassVar[dict[str, dict]] = {
         # Root commands
         "": {
             "common_args": {"help", "version", "loglevel"},  # Normalized versions

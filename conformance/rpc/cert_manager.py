@@ -11,6 +11,7 @@ certificates for all crypto configurations:
 - EC secp256r1/secp384r1/secp521r1 curves
 - CA, server, and client certificates for mTLS"""
 
+import contextlib
 from pathlib import Path
 
 from provide.foundation import logger
@@ -151,10 +152,8 @@ class CertificateManager:
                 cert_file.unlink()
 
             # Remove cert directory if empty
-            try:
+            with contextlib.suppress(OSError):
                 self.cert_dir.rmdir()
-            except OSError:
-                pass  # Directory not empty
 
 
 def generate_all_test_certificates(work_dir: Path) -> dict[str, dict[str, Path]]:

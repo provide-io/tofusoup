@@ -23,7 +23,7 @@ from provide.foundation import logger
 import pytest
 
 from .harness_factory import create_kv_client, create_kv_server
-from .matrix_config import RPC_KV_MATRIX_PARAMS
+from .matrix_config import RPC_KV_MATRIX_PARAMS, CryptoConfig
 
 
 @pytest.mark.integration_rpc
@@ -32,7 +32,7 @@ from .matrix_config import RPC_KV_MATRIX_PARAMS
 async def test_rpc_matrix_comprehensive(
     client_lang: str,
     server_lang: str,
-    crypto_config: "CryptoConfig",
+    crypto_config: CryptoConfig,
     project_root: Path,
     test_artifacts_dir: Path,
 ) -> None:
