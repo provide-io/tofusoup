@@ -45,7 +45,8 @@
       "Bash(git show:*)",
       "Bash(git mv:*)",
       "Bash(for f in conformance/cty/python_fixture_generator.py conformance/rpc/cert_manager.py conformance/rpc/harness_factory.py conformance/rpc/matrix_config.py conformance/rpc/run_matrix_tests.py conformance/utils/go_interaction.py)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(ruff check:*)"
     ],
     "deny": [],
     "ask": [],
