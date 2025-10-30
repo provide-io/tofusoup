@@ -28,14 +28,24 @@ def get_venv_bin_path() -> pathlib.Path:
 def get_cache_dir() -> pathlib.Path:
     """Get XDG-compliant cache directory for tofusoup.
 
-    Returns:
-        Path to cache directory (~/.cache/tofusoup by default)
+    Priority (highest to lowest):
+    1. TOFUSOUP_CACHE_DIR environment variable (explicit override)
+    2. XDG_CACHE_HOME environment variable (XDG standard)
+    3. Platform-specific defaults (~/.cache/tofusoup on Linux/macOS)
 
-    Respects XDG_CACHE_HOME environment variable if set.
+    Returns:
+        Path to cache directory
     """
-    xdg_cache = os.getenv("XDG_CACHE_HOME")
-    cache_base = pathlib.Path(xdg_cache) if xdg_cache else pathlib.Path.home() / ".cache"
-    return cache_base / "tofusoup"
+    # Check explicit override first
+    if tofusoup_cache := os.getenv("TOFUSOUP_CACHE_DIR"):
+        return pathlib.Path(tofusoup_cache)
+
+    # Check XDG_CACHE_HOME
+    if xdg_cache := os.getenv("XDG_CACHE_HOME"):
+        return pathlib.Path(xdg_cache) / "tofusoup"
+
+    # Default to ~/.cache/tofusoup (XDG default)
+    return pathlib.Path.home() / ".cache" / "tofusoup"
 
 
 def calculate_sha256(filepath: pathlib.Path) -> str:
