@@ -68,7 +68,7 @@ class KV(kv_pb2_grpc.KVServicer):
             if not isinstance(json_data, dict):
                 return value_bytes
 
-            # Build server handshake information
+            # Build server handshake information with combo identification
             peer = context.peer()  # e.g., "ipv4:127.0.0.1:54321"
 
             server_handshake = {
@@ -77,16 +77,30 @@ class KV(kv_pb2_grpc.KVServicer):
                 "tls_mode": os.getenv("TLS_MODE", "unknown"),
                 "timestamp": datetime.now().isoformat(),
                 "received_at": round(time.time() - self.start_time, 3),
+                # Combo identification
+                "server_language": os.getenv("SERVER_LANGUAGE", "python"),
+                "client_language": os.getenv("CLIENT_LANGUAGE", "unknown"),
+                "combo_id": os.getenv("COMBO_ID", "unknown"),
             }
 
-            # Add TLS config if available
-            tls_curve = os.getenv("TLS_CURVE")
+            # Add enhanced crypto configuration
             tls_key_type = os.getenv("TLS_KEY_TYPE")
-            if tls_curve or tls_key_type:
-                server_handshake["tls_config"] = {
-                    "key_type": tls_key_type,
-                    "curve": tls_curve,
-                }
+            tls_key_size = os.getenv("TLS_KEY_SIZE")
+            tls_curve = os.getenv("TLS_CURVE")
+
+            if tls_key_type:
+                crypto_config = {"key_type": tls_key_type}
+
+                if tls_key_type == "rsa" and tls_key_size:
+                    crypto_config["key_size"] = int(tls_key_size)
+                elif tls_key_type == "ec" and tls_curve:
+                    crypto_config["curve"] = tls_curve
+                    # Map curve to key size for reference
+                    curve_sizes = {"secp256r1": 256, "secp384r1": 384, "secp521r1": 521}
+                    if tls_curve in curve_sizes:
+                        crypto_config["key_size"] = curve_sizes[tls_curve]
+
+                server_handshake["crypto_config"] = crypto_config
 
             # Add certificate fingerprint if mTLS is enabled
             server_cert = os.getenv("PLUGIN_SERVER_CERT")
@@ -130,14 +144,19 @@ class KV(kv_pb2_grpc.KVServicer):
 
         try:
             with open(file_path, "rb") as f:
-                value = f.read()
+                raw_value = f.read()
+
+            # Enrich JSON values with server handshake information on Get
+            enriched_value = self._enrich_json_with_handshake(raw_value, context)
+
             logger.info(
                 "Successfully retrieved value",
                 key=request.key,
                 file=file_path,
-                bytes=len(value),
+                raw_bytes=len(raw_value),
+                enriched_bytes=len(enriched_value),
             )
-            return kv_pb2.GetResponse(value=value)
+            return kv_pb2.GetResponse(value=enriched_value)
         except FileNotFoundError:
             logger.warning("Key not found during Get operation", key=request.key, file=file_path)
             context.set_code(grpc.StatusCode.NOT_FOUND)
@@ -167,17 +186,14 @@ class KV(kv_pb2_grpc.KVServicer):
         logger.debug("Storing value to file", key=request.key, file=file_path)
 
         try:
-            # Enrich JSON values with server handshake information
-            enriched_value = self._enrich_json_with_handshake(request.value, context)
-
+            # Store raw value without enrichment (enrichment happens on Get)
             with open(file_path, "wb") as f:
-                f.write(enriched_value)
+                f.write(request.value)
             logger.info(
                 "Successfully stored value",
                 key=request.key,
                 file=file_path,
-                bytes=len(enriched_value),
-                original_bytes=len(request.value),
+                bytes=len(request.value),
             )
             return kv_pb2.Empty()
         except Exception as e:

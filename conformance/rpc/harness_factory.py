@@ -19,7 +19,6 @@ from typing import Any, Never
 from provide.foundation import logger
 
 from tofusoup.common.config import load_tofusoup_config
-from tofusoup.common.utils import get_cache_dir
 from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
 
@@ -30,10 +29,21 @@ from .matrix_config import CryptoConfig
 class ReferenceKVServer:
     """Base class for KV server implementations."""
 
-    def __init__(self, crypto_config: CryptoConfig, work_dir: Path) -> None:
+    def __init__(
+        self,
+        crypto_config: CryptoConfig,
+        work_dir: Path,
+        combo_id: str | None = None,
+        server_language: str | None = None,
+    ) -> None:
         self.crypto_config = crypto_config
         self.work_dir = work_dir
+        self.combo_id = combo_id or "default"
+        self.server_language = server_language or "unknown"
         self.address: str | None = None
+        # Create combo-specific storage directory
+        self.storage_dir = work_dir / f"kv-{self.combo_id}"
+        self.storage_dir.mkdir(parents=True, exist_ok=True)
 
     async def __aenter__(self):
         await self.start()
@@ -46,10 +56,17 @@ class ReferenceKVServer:
 class GoKVServer(ReferenceKVServer):
     """Go KV server implementation using subprocess."""
 
-    def __init__(self, crypto_config: CryptoConfig, work_dir: Path) -> None:
-        super().__init__(crypto_config, work_dir)
+    def __init__(
+        self,
+        crypto_config: CryptoConfig,
+        work_dir: Path,
+        combo_id: str | None = None,
+        client_language: str | None = None,
+    ) -> None:
+        super().__init__(crypto_config, work_dir, combo_id, server_language="go")
         self.process: subprocess.Popen | None = None
         self.server_port: int | None = None
+        self.client_language = client_language or "unknown"
 
     async def start(self) -> None:
         """Start Go KV server process."""
@@ -67,13 +84,19 @@ class GoKVServer(ReferenceKVServer):
         # For auto_mtls mode, the Go server generates certificates automatically
         # No additional certificate flags needed
 
-        # Set up environment
+        # Set up environment with combo identification
         env = os.environ.copy()
         env.update(
             {
                 "LOG_LEVEL": "TRACE",
                 "PYTHONUNBUFFERED": "1",
-                "KV_STORAGE_DIR": str(get_cache_dir() / "kv-store"),
+                "KV_STORAGE_DIR": str(self.storage_dir),
+                "SERVER_LANGUAGE": self.server_language,
+                "CLIENT_LANGUAGE": self.client_language,
+                "COMBO_ID": self.combo_id,
+                "TLS_MODE": self.crypto_config.auth_mode,
+                "TLS_KEY_TYPE": self.crypto_config.key_type,
+                "TLS_KEY_SIZE": str(self.crypto_config.key_size),
             }
         )
 
@@ -122,9 +145,16 @@ class GoKVServer(ReferenceKVServer):
 class PythonKVServer(ReferenceKVServer):
     """Python KV server implementation - use existing TofuSoup KV server."""
 
-    def __init__(self, crypto_config: CryptoConfig, work_dir: Path) -> None:
-        super().__init__(crypto_config, work_dir)
+    def __init__(
+        self,
+        crypto_config: CryptoConfig,
+        work_dir: Path,
+        combo_id: str | None = None,
+        client_language: str | None = None,
+    ) -> None:
+        super().__init__(crypto_config, work_dir, combo_id, server_language="python")
         self.process: subprocess.Popen | None = None
+        self.client_language = client_language or "unknown"
 
     async def start(self) -> None:
         """Start Python KV server using TofuSoup's server."""
@@ -141,9 +171,19 @@ class PythonKVServer(ReferenceKVServer):
         # Build command to run Python KV server
         cmd = ["python", str(server_script)]
 
-        # Set up environment for mTLS if needed
+        # Set up environment with combo identification
         env = os.environ.copy()
-        env["KV_STORAGE_DIR"] = str(get_cache_dir() / "kv-store")
+        env.update(
+            {
+                "KV_STORAGE_DIR": str(self.storage_dir),
+                "SERVER_LANGUAGE": self.server_language,
+                "CLIENT_LANGUAGE": self.client_language,
+                "COMBO_ID": self.combo_id,
+                "TLS_MODE": self.crypto_config.auth_mode,
+                "TLS_KEY_TYPE": self.crypto_config.key_type,
+                "TLS_KEY_SIZE": str(self.crypto_config.key_size),
+            }
+        )
         if self.crypto_config.auth_mode == "auto_mtls":
             env.update(
                 {
@@ -354,14 +394,18 @@ sys.exit(0)
 
 @asynccontextmanager
 async def create_kv_server(
-    language: str, crypto_config: CryptoConfig, work_dir: Path
+    language: str,
+    crypto_config: CryptoConfig,
+    work_dir: Path,
+    combo_id: str | None = None,
+    client_language: str | None = None,
 ) -> AsyncGenerator[ReferenceKVServer, None]:
     """Factory function for creating KV servers."""
 
     if language == "go":
-        server = GoKVServer(crypto_config, work_dir)
+        server = GoKVServer(crypto_config, work_dir, combo_id, client_language)
     elif language == "pyvider":
-        server = PythonKVServer(crypto_config, work_dir)
+        server = PythonKVServer(crypto_config, work_dir, combo_id, client_language)
     else:
         raise ValueError(f"Unsupported server language: {language}")
 

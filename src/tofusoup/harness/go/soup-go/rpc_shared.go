@@ -28,6 +28,14 @@ var Handshake = plugin.HandshakeConfig{
 	MagicCookieValue: "hello",
 }
 
+// getEnvOrDefault retrieves environment variable or returns default value
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
 // KV is the interface that we're exposing as a plugin.
 type KV interface {
 	Put(key string, value []byte) error
@@ -163,33 +171,48 @@ func (m *GRPCServer) enrichJSONWithHandshake(ctx context.Context, value []byte) 
 		endpoint = peerInfo.Addr.String()
 	}
 
-	// Build server handshake information
+	// Build server handshake information with combo identification
 	serverHandshake := map[string]interface{}{
 		"endpoint":          endpoint,
-		"protocol_version":  os.Getenv("PLUGIN_PROTOCOL_VERSIONS"),
-		"tls_mode":          os.Getenv("TLS_MODE"),
+		"protocol_version":  getEnvOrDefault("PLUGIN_PROTOCOL_VERSIONS", "1"),
+		"tls_mode":          getEnvOrDefault("TLS_MODE", "unknown"),
 		"timestamp":         time.Now().UTC().Format(time.RFC3339),
 		"received_at":       time.Since(m.startTime).Seconds(),
+		// Combo identification
+		"server_language": getEnvOrDefault("SERVER_LANGUAGE", "go"),
+		"client_language": getEnvOrDefault("CLIENT_LANGUAGE", "unknown"),
+		"combo_id":        getEnvOrDefault("COMBO_ID", "unknown"),
 	}
 
-	// Set default protocol version if not set
-	if serverHandshake["protocol_version"] == "" {
-		serverHandshake["protocol_version"] = "1"
-	}
-
-	// Set default tls_mode if not set
-	if serverHandshake["tls_mode"] == "" {
-		serverHandshake["tls_mode"] = "unknown"
-	}
-
-	// Add TLS config if available
-	tlsCurve := os.Getenv("TLS_CURVE")
+	// Add enhanced crypto configuration
 	tlsKeyType := os.Getenv("TLS_KEY_TYPE")
-	if tlsCurve != "" || tlsKeyType != "" {
-		serverHandshake["tls_config"] = map[string]interface{}{
+	tlsKeySize := os.Getenv("TLS_KEY_SIZE")
+	tlsCurve := os.Getenv("TLS_CURVE")
+
+	if tlsKeyType != "" {
+		cryptoConfig := map[string]interface{}{
 			"key_type": tlsKeyType,
-			"curve":    tlsCurve,
 		}
+
+		if tlsKeyType == "rsa" && tlsKeySize != "" {
+			// Parse key size as integer
+			var keySize int
+			fmt.Sscanf(tlsKeySize, "%d", &keySize)
+			cryptoConfig["key_size"] = keySize
+		} else if tlsKeyType == "ec" && tlsCurve != "" {
+			cryptoConfig["curve"] = tlsCurve
+			// Map curve to key size for reference
+			curveSizes := map[string]int{
+				"secp256r1": 256,
+				"secp384r1": 384,
+				"secp521r1": 521,
+			}
+			if size, ok := curveSizes[tlsCurve]; ok {
+				cryptoConfig["key_size"] = size
+			}
+		}
+
+		serverHandshake["crypto_config"] = cryptoConfig
 	}
 
 	// Add certificate fingerprint if mTLS is enabled
@@ -227,16 +250,8 @@ func (m *GRPCServer) Put(ctx context.Context, req *proto.PutRequest) (*proto.Emp
 		"key", req.Key,
 		"value_size", len(req.Value))
 
-	// Enrich JSON values with server handshake information
-	enrichedValue, err := m.enrichJSONWithHandshake(ctx, req.Value)
-	if err != nil {
-		m.logger.Error("📡❌ Failed to enrich value",
-			"key", req.Key,
-			"error", err)
-		return nil, err
-	}
-
-	if err := m.Impl.Put(req.Key, enrichedValue); err != nil {
+	// Store raw value without enrichment (enrichment happens on Get)
+	if err := m.Impl.Put(req.Key, req.Value); err != nil {
 		m.logger.Error("📡❌ Put operation failed",
 			"key", req.Key,
 			"error", err)
@@ -245,8 +260,7 @@ func (m *GRPCServer) Put(ctx context.Context, req *proto.PutRequest) (*proto.Emp
 
 	m.logger.Debug("📡✅ Put operation completed successfully",
 		"key", req.Key,
-		"original_size", len(req.Value),
-		"stored_size", len(enrichedValue))
+		"stored_size", len(req.Value))
 	return &proto.Empty{}, nil
 }
 
@@ -254,7 +268,7 @@ func (m *GRPCServer) Get(ctx context.Context, req *proto.GetRequest) (*proto.Get
 	m.logger.Debug("📡📥 handling Get request",
 		"key", req.Key)
 
-	v, err := m.Impl.Get(req.Key)
+	rawValue, err := m.Impl.Get(req.Key)
 	if err != nil {
 		// Check if this is a file not found error (key doesn't exist)
 		if os.IsNotExist(err) {
@@ -268,10 +282,20 @@ func (m *GRPCServer) Get(ctx context.Context, req *proto.GetRequest) (*proto.Get
 		return nil, err
 	}
 
+	// Enrich JSON values with server handshake information on Get
+	enrichedValue, err := m.enrichJSONWithHandshake(ctx, rawValue)
+	if err != nil {
+		m.logger.Error("📡❌ Failed to enrich value",
+			"key", req.Key,
+			"error", err)
+		return nil, err
+	}
+
 	m.logger.Debug("📡✅ Get operation completed successfully",
 		"key", req.Key,
-		"value_size", len(v))
-	return &proto.GetResponse{Value: v}, nil
+		"raw_size", len(rawValue),
+		"enriched_size", len(enrichedValue))
+	return &proto.GetResponse{Value: enrichedValue}, nil
 }
 
 // KVImpl provides a simple file-based KV implementation
