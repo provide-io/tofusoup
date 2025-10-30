@@ -49,7 +49,9 @@ class ReferenceKVServer:
         await self.start()
         return self
 
-    async def __aexit__(self, exc_type: BaseException | None, exc_val: BaseException | None, exc_tb: object) -> None:
+    async def __aexit__(
+        self, exc_type: BaseException | None, exc_val: BaseException | None, exc_tb: object
+    ) -> None:
         await self.stop()
 
 
@@ -235,7 +237,9 @@ class ReferenceKVClient:
         await self.start()
         return self
 
-    async def __aexit__(self, exc_type: BaseException | None, exc_val: BaseException | None, exc_tb: object) -> None:
+    async def __aexit__(
+        self, exc_type: BaseException | None, exc_val: BaseException | None, exc_tb: object
+    ) -> None:
         await self.stop()
 
     async def put(self, key: str, value: bytes) -> Never:

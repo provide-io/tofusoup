@@ -37,7 +37,9 @@ def loaded_tofusoup_config(project_root: Path) -> dict:
 
 
 @pytest.fixture(scope="session")
-def go_harness_executable(request: pytest.FixtureRequest, project_root: Path, loaded_tofusoup_config: dict) -> Path:
+def go_harness_executable(
+    request: pytest.FixtureRequest, project_root: Path, loaded_tofusoup_config: dict
+) -> Path:
     """
     A generic, parameterized fixture to build and provide any Go harness.
     Usage: @pytest.mark.parametrize("go_harness_executable", ["go-cty"], indirect=True)
