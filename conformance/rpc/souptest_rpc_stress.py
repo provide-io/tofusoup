@@ -42,7 +42,7 @@ extreme_values = st.one_of(
     st.just(b"\x00" * 1000),  # Lots of null bytes
     st.binary(min_size=1000, max_size=10000),  # Medium-large data
     # Generate random UTF-8 that might have edge cases
-    st.text(min_size=0, max_size=10000).map(lambda s: s.encode('utf-8')),
+    st.text(min_size=0, max_size=10000).map(lambda s: s.encode("utf-8")),
 )
 
 curves = st.sampled_from(["P-256", "P-384", "P-521"])
@@ -99,14 +99,15 @@ async def test_rpc_handles_extreme_data(key: str, value: bytes, curve: str) -> N
 
 @pytest.mark.integration_rpc
 @pytest.mark.harness_go
-@given(keys_and_values=st.lists(
-    st.tuples(
-        st.text(min_size=1, max_size=100, alphabet=SAFE_KEY_ALPHABET),
-        st.binary(min_size=0, max_size=1000)
-    ),
-    min_size=5,
-    max_size=20
-))
+@given(
+    keys_and_values=st.lists(
+        st.tuples(
+            st.text(min_size=1, max_size=100, alphabet=SAFE_KEY_ALPHABET), st.binary(min_size=0, max_size=1000)
+        ),
+        min_size=5,
+        max_size=20,
+    )
+)
 @settings(max_examples=20, deadline=60000, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @pytest.mark.asyncio
 async def test_rpc_handles_rapid_operations(keys_and_values: list[tuple[str, bytes]]) -> None:
@@ -140,5 +141,6 @@ async def test_rpc_handles_rapid_operations(keys_and_values: list[tuple[str, byt
 
     finally:
         await client.close()
+
 
 # 🥣🔬🔚

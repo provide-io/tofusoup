@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -90,7 +90,6 @@ class TestRPCKVMatrix:
                 )
                 logger.debug(f"GET {non_existent_key} = None (expected)")
 
-
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
     @pytest.mark.harness_python
@@ -119,14 +118,15 @@ class TestRPCKVMatrix:
             value = f"multi-value-{i}-{client_lang}-{server_lang}-{crypto_config.name}".encode()
             test_data[key] = value
 
-        async with create_kv_server(
-            language=server_lang, crypto_config=crypto_config, work_dir=test_dir
-        ) as server, create_kv_client(
-            language=client_lang,
-            crypto_config=crypto_config,
-            server_address=server.address,
-            work_dir=test_dir,
-        ) as client:
+        async with (
+            create_kv_server(language=server_lang, crypto_config=crypto_config, work_dir=test_dir) as server,
+            create_kv_client(
+                language=client_lang,
+                crypto_config=crypto_config,
+                server_address=server.address,
+                work_dir=test_dir,
+            ) as client,
+        ):
             # PUT all key-value pairs
             for key, value in test_data.items():
                 await client.put(key, value)
@@ -140,7 +140,6 @@ class TestRPCKVMatrix:
                     f"Key '{key}': expected {expected_value!r}, got {retrieved_value!r}"
                 )
                 logger.debug(f"GET {key} = {retrieved_value.decode()} ✓")
-
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
@@ -167,14 +166,15 @@ class TestRPCKVMatrix:
         original_value = f"original-{client_lang}-{server_lang}-{crypto_config.name}".encode()
         new_value = f"updated-{client_lang}-{server_lang}-{crypto_config.name}".encode()
 
-        async with create_kv_server(
-            language=server_lang, crypto_config=crypto_config, work_dir=test_dir
-        ) as server, create_kv_client(
-            language=client_lang,
-            crypto_config=crypto_config,
-            server_address=server.address,
-            work_dir=test_dir,
-        ) as client:
+        async with (
+            create_kv_server(language=server_lang, crypto_config=crypto_config, work_dir=test_dir) as server,
+            create_kv_client(
+                language=client_lang,
+                crypto_config=crypto_config,
+                server_address=server.address,
+                work_dir=test_dir,
+            ) as client,
+        ):
             # PUT original value
             await client.put(test_key, original_value)
             logger.debug(f"PUT {test_key} = {original_value.decode()}")
@@ -192,7 +192,6 @@ class TestRPCKVMatrix:
             assert retrieved is not None, "Key disappeared after overwrite"
             assert retrieved == new_value, f"Overwrite failed: expected {new_value!r}, got {retrieved!r}"
             assert retrieved != original_value, "Old value still present after overwrite"
-
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_python
@@ -217,14 +216,15 @@ class TestRPCKVMatrix:
         test_dir.mkdir()
 
         # Use pyvider client/server for crypto validation
-        async with create_kv_server(
-            language="pyvider", crypto_config=crypto_config, work_dir=test_dir
-        ) as server, create_kv_client(
-            language="pyvider",
-            crypto_config=crypto_config,
-            server_address=server.address,
-            work_dir=test_dir,
-        ) as client:
+        async with (
+            create_kv_server(language="pyvider", crypto_config=crypto_config, work_dir=test_dir) as server,
+            create_kv_client(
+                language="pyvider",
+                crypto_config=crypto_config,
+                server_address=server.address,
+                work_dir=test_dir,
+            ) as client,
+        ):
             # Test basic operation to ensure crypto doesn't break functionality
             test_key = f"crypto-test-{crypto_config.name}"
             test_value = f"crypto-validation-{crypto_config.key_type}-{crypto_config.key_size}".encode()
@@ -233,7 +233,6 @@ class TestRPCKVMatrix:
             retrieved = await client.get(test_key)
 
             assert retrieved == test_value, f"Crypto config {crypto_config.name} broke basic functionality"
-
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
@@ -265,14 +264,15 @@ class TestRPCKVMatrix:
         test_dir = tmp_path / f"edge_{client_lang}_{server_lang}_{crypto_config.name}"
         test_dir.mkdir()
 
-        async with create_kv_server(
-            language=server_lang, crypto_config=crypto_config, work_dir=test_dir
-        ) as server, create_kv_client(
-            language=client_lang,
-            crypto_config=crypto_config,
-            server_address=server.address,
-            work_dir=test_dir,
-        ) as client:
+        async with (
+            create_kv_server(language=server_lang, crypto_config=crypto_config, work_dir=test_dir) as server,
+            create_kv_client(
+                language=client_lang,
+                crypto_config=crypto_config,
+                server_address=server.address,
+                work_dir=test_dir,
+            ) as client,
+        ):
             # Test 1: Empty value (valid case)
             empty_key = f"empty-value-{uuid.uuid4()}"
             await client.put(empty_key, b"")
@@ -303,7 +303,6 @@ class TestRPCKVMatrix:
             retrieved = await client.get(special_key)
             assert retrieved == special_value, "Special characters not handled correctly"
             logger.debug("✓ Special characters test passed")
-
 
 
 # Test utilities

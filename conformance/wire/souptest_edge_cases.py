@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -70,5 +70,6 @@ def test_decode_tuple_length_mismatch() -> None:
     # FIX: Expect the more specific CtyTupleValidationError.
     with pytest.raises(CtyTupleValidationError, match="Expected 2 elements, got 3"):
         schema.validate(data)
+
 
 # 🥣🔬🔚

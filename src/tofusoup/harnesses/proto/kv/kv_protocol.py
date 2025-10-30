@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -6,8 +6,6 @@
 """TODO: Add module docstring."""
 
 from typing import Any
-
-from provide.foundation import logger
 
 from pyvider.rpcplugin.protocol import RPCPluginProtocol
 
@@ -23,7 +21,6 @@ class KVProtocol(RPCPluginProtocol):
         return kv_pb2_grpc, "KV"
 
     async def add_to_server(self, server, handler) -> None:
-
         if not hasattr(handler, "Get") or not callable(handler.Get):
             raise ValueError("Invalid KV handler: missing 'Get' method")
 
@@ -32,5 +29,6 @@ class KVProtocol(RPCPluginProtocol):
 
         # Register the KV service implementation
         kv_pb2_grpc.add_KVServicer_to_server(handler, server)
+
 
 # 🥣🔬🔚

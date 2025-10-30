@@ -33,6 +33,7 @@ from tofusoup.rpc.server import serve
 def soup_path() -> Path | None:
     """Find the soup executable (Python)."""
     import shutil
+
     soup = shutil.which("soup")
     if soup:
         return Path(soup)
@@ -125,7 +126,6 @@ class TestCrossLanguageInterop:
         if not go_server_path:
             pytest.skip("Go server binary not available")
 
-
         # Use our KVClient to connect to Go server with auto TLS
         client = KVClient(server_path=go_server_path, tls_mode="auto", tls_key_type="ec", tls_curve="P-256")
 
@@ -149,19 +149,18 @@ class TestCrossLanguageInterop:
         finally:
             await client.close()
 
-
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
     @pytest.mark.harness_python
     @pytest.mark.skipif(os.getenv("SKIP_GO_TESTS"), reason="Go tests skipped")
-    async def test_go_client_python_server(self, go_client_path: str, soup_path: Path | None,
-                                            test_artifacts_dir: Path) -> None:
+    async def test_go_client_python_server(
+        self, go_client_path: str, soup_path: Path | None, test_artifacts_dir: Path
+    ) -> None:
         """Test: Go Client ↔ Python Server by explicitly starting server and client."""
         if not go_client_path:
             pytest.skip("Go client binary not available")
         if soup_path is None:
             pytest.skip("soup executable not found in PATH")
-
 
         # Create test-specific directory for all artifacts
         test_dir = test_artifacts_dir / "go_client_python_server"
@@ -174,13 +173,18 @@ class TestCrossLanguageInterop:
         env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
         # 1. Start the Python server
-        server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+        server_command = [
+            str(soup_path),
+            "rpc",
+            "kv",
+            "server",
+            "--tls-mode",
+            "auto",
+            "--tls-curve",
+            "secp256r1",
+        ]
         server_process = subprocess.Popen(
-            server_command,
-            env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            server_command, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
 
         # Wait for the server to start and output its handshake
@@ -191,7 +195,12 @@ class TestCrossLanguageInterop:
             line = server_process.stdout.readline()
             if line:
                 # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
-                if line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line:
+                if (
+                    line.startswith("1|1|tcp|")
+                    or line.startswith("1|1|unix|")
+                    or "|tcp|" in line
+                    or "|unix|" in line
+                ):
                     handshake_line = line.strip()
                     break
             else:
@@ -205,43 +214,38 @@ class TestCrossLanguageInterop:
         assert handshake_line, "Python server did not output handshake line"
 
         # Extract port from handshake line
-        parts = handshake_line.split('|')
+        parts = handshake_line.split("|")
         assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
         address_part = parts[3]
-        port = address_part.split(':')[-1]
+        address_part.split(":")[-1]
 
         # 2. Run the Go client to put a value
         # IMPORTANT: Pass the FULL handshake line (including certificate) so Go client can auto-detect TLS curve
         put_key = "go-py-key-interop"
         put_value = "Hello from Go client to Python server (interop)!"
         put_command = [
-            go_client_path, "rpc", "kv", "put",
+            go_client_path,
+            "rpc",
+            "kv",
+            "put",
             f"--address={handshake_line}",  # Pass full handshake with certificate for TLS curve auto-detection
-            put_key, put_value
+            put_key,
+            put_value,
         ]
-        put_result = subprocess.run(
-            put_command,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
+        put_result = subprocess.run(put_command, env=env, capture_output=True, text=True, timeout=10)
         assert put_result.returncode == 0, f"Go client Put failed: {put_result.stderr}"
         assert f"Key {put_key} put successfully." in put_result.stdout
 
         # 3. Run the Go client to get the value
         get_command = [
-            go_client_path, "rpc", "kv", "get",
+            go_client_path,
+            "rpc",
+            "kv",
+            "get",
             f"--address={handshake_line}",  # Pass full handshake with certificate
-            put_key
+            put_key,
         ]
-        get_result = subprocess.run(
-            get_command,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
+        get_result = subprocess.run(get_command, env=env, capture_output=True, text=True, timeout=10)
         assert get_result.returncode == 0, f"Go client Get failed: {get_result.stderr}"
         assert put_value in get_result.stdout
 
@@ -249,7 +253,6 @@ class TestCrossLanguageInterop:
         server_process.terminate()
         server_process.wait(timeout=5)
         assert server_process.returncode is not None, "Python server process did not terminate"
-
 
     @pytest.mark.integration_rpc
     def test_proto_compatibility(self) -> None:
@@ -274,7 +277,6 @@ class TestCrossLanguageInterop:
         empty_serialized = empty.SerializeToString()
         empty2 = kv_pb2.Empty()
         empty2.ParseFromString(empty_serialized)
-
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_python
@@ -326,12 +328,10 @@ class TestCrossLanguageInterop:
                     retrieved = await client.get(f"go-{key}")
                     assert retrieved == expected_value, f"Go server failed for key: {key}"
 
-
             finally:
                 await client.close()
         else:
             logger.info("⏭️  Skipping Go server comprehensive test (binary not available)")
-
 
 
 if __name__ == "__main__":

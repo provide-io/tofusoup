@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -41,5 +41,6 @@ class Provider:
     versions: list[ProviderVersion] = field(factory=list)
     latest_version: ProviderVersion | None = field(default=None)
     registry_source: str | None = field(default=None)
+
 
 # 🥣🔬🔚

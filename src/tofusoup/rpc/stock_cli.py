@@ -231,4 +231,5 @@ def put_cmd(key: str, value: str, client: str, server: str) -> None:
     ctx = click.get_current_context()
     ctx.invoke(client_cmd, language=client, operation="put", args=(key, value), server=server)
 
+
 # 🥣🔬🔚

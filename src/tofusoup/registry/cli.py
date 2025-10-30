@@ -3,14 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
-
-#!/usr/bin/env python3
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-
-"""TODO: Add module docstring."""
+"""Commands for querying and managing Terraform/OpenTofu registries."""
 
 import asyncio
 
@@ -328,7 +321,9 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
                     if result.registry_source == "both"
                     else "🍲"
                     if result.registry_source == "opentofu"
+                    else "🏢"
                 )
+                type_emoji = "📦" if result.type == "module" else "🔌"
                 name = (
                     f"{result.namespace}/{result.name}/{result.provider_name}"
                     if result.type == "module"
@@ -445,5 +440,6 @@ def compare_command(resource: str) -> None:
                     click.echo(f"  ... and {len(all_versions) - 10} more versions")
 
     safe_async_run(compare_resources)
+
 
 # 🥣🔬🔚

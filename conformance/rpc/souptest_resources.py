@@ -11,6 +11,7 @@ Tests system behavior under resource pressure:
 - File descriptor limits
 - Disk space constraints"""
 
+import contextlib
 from pathlib import Path
 
 from hypothesis import HealthCheck, given, settings, strategies as st
@@ -70,8 +71,9 @@ async def test_large_payload_handling(payload_size: int) -> None:
 
         except (ValueError, MemoryError, Exception) as e:
             # Rejection is acceptable - just shouldn't crash
-            assert "memory" in str(e).lower() or "too large" in str(e).lower() or "limit" in str(e).lower(), \
+            assert "memory" in str(e).lower() or "too large" in str(e).lower() or "limit" in str(e).lower(), (
                 f"Unexpected error for large payload: {e}"
+            )
 
     finally:
         await client.close()
@@ -234,10 +236,8 @@ async def test_connection_limit_handling() -> None:
     finally:
         # Cleanup all connections
         for client in clients:
-            try:
+            with contextlib.suppress(Exception):
                 await client.close()
-            except Exception:
-                pass
 
 
 @pytest.mark.integration_rpc
@@ -279,10 +279,13 @@ async def test_binary_data_integrity(binary_pattern: bytes) -> None:
         result = await client.get(key)
 
         # Exact binary match required
-        assert result == binary_pattern, f"Binary corruption: {len(result)} bytes != {len(binary_pattern)} bytes"
+        assert result == binary_pattern, (
+            f"Binary corruption: {len(result)} bytes != {len(binary_pattern)} bytes"
+        )
         assert result == binary_pattern  # Verify content, not just length
 
     finally:
         await client.close()
+
 
 # 🥣🔬🔚

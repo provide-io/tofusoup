@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -408,5 +408,6 @@ def get_factory_info() -> dict[str, Any]:
         "supported_rsa_sizes": [2048, 4096],
         "supported_ec_curves": [256, 384, 521],
     }
+
 
 # 🥣🔬🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -175,5 +175,6 @@ def parse_cty_type_string(type_str: str) -> CtyType:
 
     # No parser matched
     raise CtyTypeParseError(f"Unsupported or malformed CTY type string: '{type_str}'")
+
 
 # 🥣🔬🔚

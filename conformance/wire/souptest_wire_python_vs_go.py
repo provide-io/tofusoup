@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -32,6 +32,7 @@ def encode_value_to_tfwire(payload: dict[str, Any]) -> str:
     cty_value = cty_type.validate(payload["value"])
     msgpack_bytes = cty_to_msgpack(cty_value, cty_type)
     return base64.b64encode(msgpack_bytes).decode("utf-8")
+
 
 BIT_FOR_BIT_VECTORS = [
     ("simple_string", {"type": "string", "value": "hello"}),
@@ -75,5 +76,6 @@ def test_python_and_go_encoders_are_identical(
         f"Python produced b64: {py_b64_msgpack_str}\n"
         f"Go produced b64:     {go_b64_msgpack_bytes.decode()}"
     )
+
 
 # 🥣🔬🔚

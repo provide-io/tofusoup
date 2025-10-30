@@ -173,4 +173,5 @@ def get_compatibility_matrix() -> dict[str, dict[str, bool]]:
         },
     }
 
+
 # 🥣🔬🔚

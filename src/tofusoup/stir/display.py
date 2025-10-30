@@ -1,16 +1,9 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
-
-# 
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-
-"""TODO: Add module docstring."""
+"""Display utilities for test execution and status tracking."""
 
 import asyncio
 from time import monotonic
@@ -54,6 +47,7 @@ def _get_status_emoji(status_info: dict) -> str:
     elif status_info.get("skipped"):
         return "[dim]⏭️[/dim]"
     elif status_info.get("success"):
+        return "[green]✅[/green]"
     else:
         return "[red]❌[/red]"
 
@@ -124,5 +118,6 @@ async def live_updater(live_display: Live, stop_event: asyncio.Event) -> None:
     while not stop_event.is_set():
         live_display.update(generate_status_table())
         await asyncio.sleep(1 / 0.77)  # ~1.3 seconds to match 0.77 Hz refresh rate
+
 
 # 🥣🔬🔚

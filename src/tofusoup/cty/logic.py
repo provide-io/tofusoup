@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -132,5 +132,6 @@ def dump_cty_value_to_msgpack_bytes(value: CtyValue) -> bytes:
         raise ImportError("CTY support requires 'pip install tofusoup[cty]'")
     native_value = cty_to_native(value)
     return dump_python_to_msgpack_bytes(native_value)
+
 
 # 🥣🔬🔚

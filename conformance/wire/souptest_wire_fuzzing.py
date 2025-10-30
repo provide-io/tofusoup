@@ -85,7 +85,7 @@ def cty_map_value(draw):
     """Generate a CTY map with random bool values."""
     num_keys = draw(st.integers(min_value=0, max_value=10))
     data = {}
-    for i in range(num_keys):
+    for _i in range(num_keys):
         key = draw(st.text(min_size=1, max_size=20))
         value = draw(cty_bools)
         data[key] = value
@@ -99,17 +99,21 @@ def cty_object_value(draw):
     age = draw(cty_numbers)
     active = draw(cty_bools)
 
-    schema = CtyObject({
-        "name": CtyString(),
-        "age": CtyNumber(),
-        "active": CtyBool(),
-    })
+    schema = CtyObject(
+        {
+            "name": CtyString(),
+            "age": CtyNumber(),
+            "active": CtyBool(),
+        }
+    )
 
-    return schema.validate({
-        "name": name,
-        "age": age,
-        "active": active,
-    })
+    return schema.validate(
+        {
+            "name": name,
+            "age": age,
+            "active": active,
+        }
+    )
 
 
 # Nested structure strategy
@@ -120,25 +124,31 @@ def nested_cty_object(draw):
     inner_name = draw(cty_strings)
     inner_value = draw(cty_numbers)
 
-    inner_schema = CtyObject({
-        "inner_name": CtyString(),
-        "inner_value": CtyNumber(),
-    })
+    inner_schema = CtyObject(
+        {
+            "inner_name": CtyString(),
+            "inner_value": CtyNumber(),
+        }
+    )
 
-    outer_schema = CtyObject({
-        "outer_name": CtyString(),
-        "nested": inner_schema,
-        "items": CtyList(element_type=CtyString()),
-    })
+    outer_schema = CtyObject(
+        {
+            "outer_name": CtyString(),
+            "nested": inner_schema,
+            "items": CtyList(element_type=CtyString()),
+        }
+    )
 
-    return outer_schema.validate({
-        "outer_name": draw(cty_strings),
-        "nested": {
-            "inner_name": inner_name,
-            "inner_value": inner_value,
-        },
-        "items": draw(st.lists(cty_strings, min_size=0, max_size=5)),
-    })
+    return outer_schema.validate(
+        {
+            "outer_name": draw(cty_strings),
+            "nested": {
+                "inner_name": inner_name,
+                "inner_value": inner_value,
+            },
+            "items": draw(st.lists(cty_strings, min_size=0, max_size=5)),
+        }
+    )
 
 
 @pytest.mark.integration_cty
@@ -163,7 +173,9 @@ def test_wire_protocol_simple_values_roundtrip(value: CtyValue) -> None:
             assert abs(roundtrip_num) < 1e-10, f"Zero roundtrip failed: {roundtrip_num}"
         else:
             rel_error = abs((roundtrip_num - original_num) / original_num)
-            assert rel_error < 1e-9, f"Number precision lost: {original_num} -> {roundtrip_num}, error={rel_error}"
+            assert rel_error < 1e-9, (
+                f"Number precision lost: {original_num} -> {roundtrip_num}, error={rel_error}"
+            )
     else:
         assert value == roundtripped, f"Roundtrip failed for {value}"
 
@@ -225,5 +237,6 @@ def test_wire_protocol_nested_roundtrip(nested: CtyValue) -> None:
     roundtripped = nested.type.validate(native)
     # Compare native representations to handle number precision issues
     assert cty_to_native(nested) == cty_to_native(roundtripped) or nested == roundtripped
+
 
 # 🥣🔬🔚

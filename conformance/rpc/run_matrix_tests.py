@@ -23,6 +23,7 @@ def run_command(cmd, description):
     result = subprocess.run(cmd, capture_output=False)
 
     if result.returncode == 0:
+        print(f"\n✅ {description} succeeded")
     else:
         print(f"\n❌ {description} failed with exit code {result.returncode}")
 

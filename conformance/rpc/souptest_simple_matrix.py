@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -42,6 +42,7 @@ def _get_cert_fingerprint(cert_pem: str | bytes | None) -> str | None:
         return hashlib.sha256(cert_bytes).hexdigest()
     except Exception:
         return None
+
 
 def verify_kv_storage(storage_dir: Path, key: str) -> Path | None:
     """Verify that a KV storage file exists for the given key.
@@ -101,7 +102,7 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
         "user_data": {  # Optional user payload
             "description": "Testing Python client to Go server without mTLS",
             "test_iteration": 1,
-        }
+        },
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
@@ -124,14 +125,16 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
 
         # Add client handshake information
         client_handshake = {
-            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "target_endpoint": str(client._client.target_endpoint)
+            if hasattr(client._client, "target_endpoint")
+            else "unknown",
             "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
             "tls_mode": client.tls_mode,
             "tls_config": {
                 "key_type": client.tls_key_type,
                 "curve": client.tls_curve if client.tls_key_type == "ec" else None,
             },
-            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, "client_cert", None)),
             "timestamp": datetime.now().isoformat(),
             "connection_time": round(connection_time, 3),
         }
@@ -195,7 +198,7 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
         "user_data": {  # Optional user payload
             "description": "Testing Python client to Go server with auto mTLS (RSA)",
             "test_iteration": 1,
-        }
+        },
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
@@ -218,14 +221,16 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
 
         # Add client handshake information
         client_handshake = {
-            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "target_endpoint": str(client._client.target_endpoint)
+            if hasattr(client._client, "target_endpoint")
+            else "unknown",
             "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
             "tls_mode": client.tls_mode,
             "tls_config": {
                 "key_type": client.tls_key_type,
                 "curve": client.tls_curve if client.tls_key_type == "ec" else None,
             },
-            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, "client_cert", None)),
             "timestamp": datetime.now().isoformat(),
             "connection_time": round(connection_time, 3),
         }
@@ -290,7 +295,7 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path, test_artifa
         "user_data": {  # Optional user payload
             "description": "Testing Python client to Go server with auto mTLS (ECDSA P-256)",
             "test_iteration": 1,
-        }
+        },
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
@@ -313,14 +318,16 @@ async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path, test_artifa
 
         # Add client handshake information
         client_handshake = {
-            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "target_endpoint": str(client._client.target_endpoint)
+            if hasattr(client._client, "target_endpoint")
+            else "unknown",
             "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
             "tls_mode": client.tls_mode,
             "tls_config": {
                 "key_type": client.tls_key_type,
                 "curve": client.tls_curve if client.tls_key_type == "ec" else None,
             },
-            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, "client_cert", None)),
             "timestamp": datetime.now().isoformat(),
             "connection_time": round(connection_time, 3),
         }
@@ -352,6 +359,7 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path, test_artifacts_dir:
     """Test Python client -> Python server without mTLS"""
     # Use 'soup' command as Python server
     import shutil
+
     soup_path = shutil.which("soup")
 
     if not soup_path:
@@ -382,7 +390,7 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path, test_artifacts_dir:
         "user_data": {  # Optional user payload
             "description": "Testing Python client to Python server without mTLS",
             "test_iteration": 1,
-        }
+        },
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
@@ -405,14 +413,16 @@ async def test_pyclient_pyserver_no_mtls(project_root: Path, test_artifacts_dir:
 
         # Add client handshake information
         client_handshake = {
-            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "target_endpoint": str(client._client.target_endpoint)
+            if hasattr(client._client, "target_endpoint")
+            else "unknown",
             "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
             "tls_mode": client.tls_mode,
             "tls_config": {
                 "key_type": client.tls_key_type,
                 "curve": client.tls_curve if client.tls_key_type == "ec" else None,
             },
-            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, "client_cert", None)),
             "timestamp": datetime.now().isoformat(),
             "connection_time": round(connection_time, 3),
         }
@@ -444,6 +454,7 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
     """Test Python client -> Python server with auto mTLS"""
     # Use 'soup' command as Python server
     import shutil
+
     soup_path = shutil.which("soup")
 
     if not soup_path:
@@ -478,7 +489,7 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
         "user_data": {  # Optional user payload
             "description": "Testing Python client to Python server with auto mTLS (RSA)",
             "test_iteration": 1,
-        }
+        },
     }
     test_value = json.dumps(proof_manifest, indent=2).encode()
 
@@ -501,14 +512,16 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
 
         # Add client handshake information
         client_handshake = {
-            "target_endpoint": str(client._client.target_endpoint) if hasattr(client._client, 'target_endpoint') else "unknown",
+            "target_endpoint": str(client._client.target_endpoint)
+            if hasattr(client._client, "target_endpoint")
+            else "unknown",
             "protocol_version": client.subprocess_env.get("PLUGIN_PROTOCOL_VERSIONS", "1"),
             "tls_mode": client.tls_mode,
             "tls_config": {
                 "key_type": client.tls_key_type,
                 "curve": client.tls_curve if client.tls_key_type == "ec" else None,
             },
-            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, 'client_cert', None)),
+            "cert_fingerprint": _get_cert_fingerprint(getattr(client._client, "client_cert", None)),
             "timestamp": datetime.now().isoformat(),
             "connection_time": round(connection_time, 3),
         }
@@ -531,5 +544,6 @@ async def test_pyclient_pyserver_with_mtls(project_root: Path, test_artifacts_di
         logger.info(f"📝 Test proof written to {manifest_file}")
     finally:
         await client.close()
+
 
 # 🥣🔬🔚

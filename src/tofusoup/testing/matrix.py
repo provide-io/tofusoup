@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -205,6 +205,7 @@ class VersionMatrix:
                 progress.advance(task)
 
                 # Update progress description with latest result
+                status = "✅" if result.success else "❌"
                 progress.update(
                     task,
                     description=f"Testing combinations... {status} {result.combination}",
@@ -352,6 +353,7 @@ class VersionMatrix:
         for result in results:
             duration = f"{result.duration_seconds:.1f}s"
             error = result.error_message or ""
+            status = "[green]✅ PASS[/green]" if result.success else "[red]❌ FAIL[/red]"
 
             table.add_row(
                 str(result.combination),
@@ -408,5 +410,6 @@ async def run_matrix_stir_tests(
 
     matrix = VersionMatrix(tools, config)
     return await matrix.run_stir_tests(stir_directory)
+
 
 # 🥣🔬🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -41,5 +41,6 @@ async def pilot_with_message_capture() -> Callable[[list[Message]], Awaitable[Pi
         return app.run_test(message_hook=message_hook)
 
     return _pilot_factory
+
 
 # 🥣🔬🔚

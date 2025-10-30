@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -48,5 +48,6 @@ def tfwire_go_encode(
         raise HarnessError("go-wire harness 'encode' failed", stderr=stderr, stdout=stdout)
 
     return stdout.strip().encode("utf-8")
+
 
 # 🥣🔬🔚

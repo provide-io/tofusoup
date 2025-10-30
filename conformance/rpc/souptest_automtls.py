@@ -57,6 +57,7 @@ async def test_automtls_compatibility() -> None:
             elif "SSL" in error_msg or "TLS" in error_msg or "certificate" in error_msg.lower():
                 error_msg = "SSL/TLS handshake failure (autoMTLS incompatibility)"
 
+        status = "✅ PASS" if success else "❌ FAIL"
         print(f"{status}")
         if error_msg:
             print(f"    Error: {error_msg}")
@@ -71,6 +72,7 @@ async def test_automtls_compatibility() -> None:
     failing_configs = []
 
     for name, key_type, key_size, success, error in results:
+        status = "✅" if success else "❌"
         if key_type == "rsa":
             print(f"  RSA {key_size}: {status}")
             if not success:
@@ -96,6 +98,7 @@ async def test_automtls_compatibility() -> None:
     print("🎯 AUTOMTLS COMPATIBILITY ANALYSIS:")
     print("-" * 50)
     if working_configs:
+        print(f"✅ Python→Go working: {', '.join(working_configs)}")
     if failing_configs:
         print(f"❌ Python→Go failing: {', '.join(failing_configs)}")
     print()

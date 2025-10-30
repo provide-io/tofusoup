@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -12,6 +12,7 @@ Consolidates test_ec_curves.py and test_all_curves.py from the project root."""
 
 from __future__ import annotations
 
+import contextlib
 from pathlib import Path
 import shutil
 
@@ -38,11 +39,14 @@ def soup_go_path() -> Path | None:
     return None
 
 
-@pytest.mark.parametrize("curve", [
-    pytest.param("P-256", id="P-256 (secp256r1)"),
-    pytest.param("P-384", id="P-384 (secp384r1)"),
-    pytest.param("P-521", id="P-521 (secp521r1)"),
-])
+@pytest.mark.parametrize(
+    "curve",
+    [
+        pytest.param("P-256", id="P-256 (secp256r1)"),
+        pytest.param("P-384", id="P-384 (secp384r1)"),
+        pytest.param("P-521", id="P-521 (secp521r1)"),
+    ],
+)
 @pytest.mark.asyncio
 async def test_python_to_go_curve(soup_go_path: Path | None, curve: str) -> None:
     """Test Python client → Go server with specific elliptic curve."""
@@ -51,12 +55,7 @@ async def test_python_to_go_curve(soup_go_path: Path | None, curve: str) -> None
 
     from tofusoup.rpc.client import KVClient
 
-    client = KVClient(
-        server_path=str(soup_go_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve=curve
-    )
+    client = KVClient(server_path=str(soup_go_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
 
     try:
         await client.start()
@@ -71,10 +70,8 @@ async def test_python_to_go_curve(soup_go_path: Path | None, curve: str) -> None
         assert result == test_value, f"Value mismatch for {curve}"
 
     finally:
-        try:
+        with contextlib.suppress(Exception):
             await client.close()
-        except Exception:
-            pass
 
 
 @pytest.mark.asyncio
@@ -89,7 +86,7 @@ async def test_auto_curve(soup_go_path: Path | None) -> None:
         server_path=str(soup_go_path),
         tls_mode="auto",
         tls_key_type="ec",
-        tls_curve="auto"  # Use go-plugin AutoMTLS default
+        tls_curve="auto",  # Use go-plugin AutoMTLS default
     )
 
     try:
@@ -105,9 +102,8 @@ async def test_auto_curve(soup_go_path: Path | None) -> None:
         assert result == test_value
 
     finally:
-        try:
+        with contextlib.suppress(Exception):
             await client.close()
-        except Exception:
-            pass
+
 
 # 🥣🔬🔚

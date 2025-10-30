@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -56,5 +56,6 @@ def convert_msgpack_to_json(input_path: Path, output_path: Path | None) -> Path:
     unpacked_data = msgpack.unpackb(input_path.read_bytes())
     output_path.write_text(json.dumps(unpacked_data, indent=2), "utf-8")
     return output_path
+
 
 # 🥣🔬🔚

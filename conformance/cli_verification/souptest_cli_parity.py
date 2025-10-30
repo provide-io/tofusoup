@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -149,6 +149,7 @@ class TestCLIParityMatrix:
     def soup_executable(self) -> Path:
         """Get path to soup executable."""
         import shutil
+
         # Try to find soup in PATH first
         soup_path = shutil.which("soup")
         if soup_path:
@@ -171,7 +172,19 @@ class TestCLIParityMatrix:
         return project_root / "harnesses" / "bin" / "soup-go"
 
     @pytest.mark.parametrize(
-        "command_path", ["", "cty", "cty view", "cty convert", "hcl", "hcl view", "hcl convert", "rpc", "rpc kv", "rpc validate"]
+        "command_path",
+        [
+            "",
+            "cty",
+            "cty view",
+            "cty convert",
+            "hcl",
+            "hcl view",
+            "hcl convert",
+            "rpc",
+            "rpc kv",
+            "rpc validate",
+        ],
     )
     def test_command_structure_parity(
         self, soup_executable: Path, soup_go_executable: Path, command_path: str
@@ -227,7 +240,9 @@ class TestCLIParityMatrix:
             "hcl convert",
         ],
     )
-    def test_common_arguments_parity(self, soup_executable: Path, soup_go_executable: Path, command_path: str) -> None:
+    def test_common_arguments_parity(
+        self, soup_executable: Path, soup_go_executable: Path, command_path: str
+    ) -> None:
         """Test that both CLIs have similar arguments for the same commands."""
         if not soup_executable.exists():
             pytest.skip("soup executable not found")
@@ -302,7 +317,9 @@ class TestCLIParityMatrix:
         )
 
     @pytest.mark.parametrize("command", ["cty", "hcl"])
-    def test_command_exists_both_clis(self, soup_executable: Path, soup_go_executable: Path, command: str) -> None:
+    def test_command_exists_both_clis(
+        self, soup_executable: Path, soup_go_executable: Path, command: str
+    ) -> None:
         """Test that core commands exist in both CLIs."""
         if not soup_executable.exists():
             pytest.skip("soup executable not found")

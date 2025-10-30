@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -65,5 +65,6 @@ def test_cli_handles_logic_errors(monkeypatch) -> None:
         assert result.exit_code == 1
         # FIX: Assert against the actual, more specific error message.
         assert "Error: Error during conversion: Packing failed" in result.output
+
 
 # 🥣🔬🔚

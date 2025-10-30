@@ -1,16 +1,9 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
-
-# 
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-
-"""TODO: Add module docstring."""
+"""Test result reporting and display utilities."""
 
 import json
 
@@ -62,6 +55,7 @@ def print_summary_panel(total_tests: int, failed_tests: int, skipped_tests: int,
     success = failed_tests == 0
 
     title = (
+        "✨ [bold green]All Tests Passed[/bold green]"
         if success
         else "🔥 [bold red]Some Tests Failed[/bold red]"
     )
@@ -85,5 +79,6 @@ def print_summary_panel(total_tests: int, failed_tests: int, skipped_tests: int,
             padding=(1, 2),
         )
     )
+
 
 # 🥣🔬🔚

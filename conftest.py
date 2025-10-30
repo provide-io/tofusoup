@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -19,5 +19,6 @@ def suppress_noisy_loggers() -> None:
     # Suppress grpc/cygrpc logging (Loaded running loop, etc.)
     logging.getLogger("grpc").setLevel(logging.WARNING)
     logging.getLogger("grpc._cython.cygrpc").setLevel(logging.WARNING)
+
 
 # 🥣🔬🔚

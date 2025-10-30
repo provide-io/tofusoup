@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -48,5 +48,6 @@ class LogViewer(Widget):
     def clear(self) -> None:
         """Clear the log."""
         self._log_widget.clear()
+
 
 # 🥣🔬🔚

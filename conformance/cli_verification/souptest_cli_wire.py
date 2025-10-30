@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -17,7 +17,9 @@ HARNESS_NAME = "soup-go"
 
 
 @pytest.mark.parametrize("go_harness_executable", [HARNESS_NAME], indirect=True)
-def test_wire_cli_root_help(go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest) -> None:
+def test_wire_cli_root_help(
+    go_harness_executable: Path, project_root: Path, request: pytest.FixtureRequest
+) -> None:
     test_id = request.node.name
     exit_code, stdout, stderr = run_harness_cli(
         go_harness_executable,
@@ -89,5 +91,6 @@ def test_wire_cli_decode_simple_string(
     assert exit_code == 0, f"Decode failed. Stderr: {stderr}"
     decoded_json = json.loads(stdout)
     assert decoded_json == {"type": "string", "value": "test"}
+
 
 # 🥣🔬🔚

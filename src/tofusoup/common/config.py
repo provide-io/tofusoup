@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -102,5 +102,6 @@ def load_tofusoup_config(
 
     logger.info("No TofuSoup configuration file found. Using empty default configuration.")
     return {}
+
 
 # 🥣🔬🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -14,6 +14,7 @@ by using proper pytest fixtures and removing hardcoded paths."""
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import os
 from pathlib import Path
 import shutil
@@ -63,11 +64,7 @@ async def test_python_to_python(soup_path: Path | None) -> None:
 
     from tofusoup.rpc.client import KVClient
 
-    client = KVClient(
-        server_path=str(soup_path),
-        tls_mode="auto",
-        tls_key_type="rsa"
-    )
+    client = KVClient(server_path=str(soup_path), tls_mode="auto", tls_key_type="rsa")
 
     try:
         # Set a generous timeout as Python→Python may have handshake issues
@@ -85,10 +82,8 @@ async def test_python_to_python(soup_path: Path | None) -> None:
         assert retrieved == test_value, f"Value mismatch: expected {test_value!r}, got {retrieved!r}"
 
     finally:
-        try:
+        with contextlib.suppress(Exception):
             await client.close()
-        except Exception:
-            pass
 
 
 @pytest.mark.asyncio
@@ -100,12 +95,7 @@ async def test_python_to_go(soup_go_path: Path | None) -> None:
     from tofusoup.rpc.client import KVClient
 
     # Create client with EC P-256 (works well with Go)
-    client = KVClient(
-        server_path=str(soup_go_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve="P-256"
-    )
+    client = KVClient(server_path=str(soup_go_path), tls_mode="auto", tls_key_type="ec", tls_curve="P-256")
 
     try:
         await asyncio.wait_for(client.start(), timeout=15.0)
@@ -122,24 +112,22 @@ async def test_python_to_go(soup_go_path: Path | None) -> None:
         assert retrieved == test_value, f"Value mismatch: expected {test_value!r}, got {retrieved!r}"
 
     finally:
-        try:
+        with contextlib.suppress(Exception):
             await client.close()
-        except Exception:
-            pass
 
 
 @pytest.mark.asyncio
-async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
-                            test_artifacts_dir: Path) -> None:
+async def test_go_to_python(
+    soup_go_path: Path | None, soup_path: Path | None, test_artifacts_dir: Path
+) -> None:
     """Test Go client → Python server by explicitly starting server and client."""
-    logger.info("="*80)
-    logger.info("="*80)
+    logger.info("=" * 80)
+    logger.info("=" * 80)
 
     if soup_go_path is None:
         pytest.skip("soup-go executable not found")
     if soup_path is None:
         pytest.skip("soup executable not found in PATH")
-
 
     # Create test-specific directory for all artifacts
     test_dir = test_artifacts_dir / "go_to_python"
@@ -157,11 +145,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     logger.info(f"🚀 Starting Python server with command: {' '.join(server_command)}")
     logger.info("🔐 TLS Configuration: mode=auto, curve=secp256r1 (P-256)")
     server_process = subprocess.Popen(
-        server_command,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
+        server_command, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
 
     # Wait for the server to start and output its handshake
@@ -175,7 +159,12 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
         line = server_process.stdout.readline()
         if line:
             # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
-            if line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line:
+            if (
+                line.startswith("1|1|tcp|")
+                or line.startswith("1|1|unix|")
+                or "|tcp|" in line
+                or "|unix|" in line
+            ):
                 handshake_line = line.strip()
                 break
         else:
@@ -191,7 +180,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     assert handshake_line, "Python server did not output handshake line"
 
     # Verify handshake format
-    parts = handshake_line.split('|')
+    parts = handshake_line.split("|")
     assert len(parts) == 6, f"Invalid handshake line format: {handshake_line}"
 
     logger.info("🔍 Handshake parts:")
@@ -202,16 +191,20 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     logger.info(f"  - Protocol: {parts[4]}")
     logger.info(f"  - Certificate: {parts[5][:50]}... (truncated)")
 
-    port = parts[3].split(':')[-1]
+    parts[3].split(":")[-1]
 
     # 2. Run the Go client to put a value
     # Pass the FULL handshake line (including certificate) to --address for mTLS support
     put_key = "go-py-key"
     put_value = "Hello from Go client to Python server!"
     put_command = [
-        str(soup_go_path), "rpc", "kv", "put",
+        str(soup_go_path),
+        "rpc",
+        "kv",
+        "put",
         f"--address={handshake_line}",  # Pass full handshake with certificate
-        put_key, put_value
+        put_key,
+        put_value,
     ]
 
     logger.info("📤 Executing Go client PUT operation:")
@@ -220,13 +213,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     logger.info(f"   Value: {put_value}")
     logger.info("   TLS: Auto-detect curve from server cert (should detect P-256)")
 
-    put_result = subprocess.run(
-        put_command,
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=10
-    )
+    put_result = subprocess.run(put_command, env=env, capture_output=True, text=True, timeout=10)
 
     if put_result.returncode != 0:
         logger.error("❌ Go client PUT failed!")
@@ -241,9 +228,12 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
 
     # 3. Run the Go client to get the value
     get_command = [
-        str(soup_go_path), "rpc", "kv", "get",
+        str(soup_go_path),
+        "rpc",
+        "kv",
+        "get",
         f"--address={handshake_line}",  # Pass full handshake with certificate
-        put_key
+        put_key,
     ]
 
     logger.info("📥 Executing Go client GET operation:")
@@ -251,13 +241,7 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     logger.info(f"   Key: {put_key}")
     logger.info(f"   Expected value: {put_value}")
 
-    get_result = subprocess.run(
-        get_command,
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=10
-    )
+    get_result = subprocess.run(get_command, env=env, capture_output=True, text=True, timeout=10)
 
     if get_result.returncode != 0:
         logger.error("❌ Go client GET failed!")
@@ -276,8 +260,8 @@ async def test_go_to_python(soup_go_path: Path | None, soup_path: Path | None,
     server_process.wait(timeout=5)
     assert server_process.returncode is not None, "Python server process did not terminate"
 
-    logger.info("="*80)
-    logger.info("="*80)
+    logger.info("=" * 80)
+    logger.info("=" * 80)
 
 
 @pytest.mark.asyncio
@@ -301,8 +285,8 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
     if soup_go_path is None:
         pytest.skip("soup-go executable not found")
 
-    logger.info("="*80)
-    logger.info("="*80)
+    logger.info("=" * 80)
+    logger.info("=" * 80)
 
     # Create test-specific directory
     test_dir = test_artifacts_dir / "go_to_go"
@@ -318,11 +302,7 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
     server_command = [str(soup_go_path), "rpc", "kv", "server", "--tls-mode", "auto"]
     logger.info(f"🚀 Starting Go server: {' '.join(server_command)}")
     server_process = subprocess.Popen(
-        server_command,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
+        server_command, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
 
     # Wait for handshake
@@ -331,7 +311,9 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
     start_time = time.time()
     while time.time() - start_time < timeout_seconds:
         line = server_process.stdout.readline()
-        if line and (line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line):
+        if line and (
+            line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line
+        ):
             handshake_line = line.strip()
             break
         await asyncio.sleep(0.1)
@@ -349,34 +331,22 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         logger.info(f"📤 PUT: {put_key} = {put_value}")
 
         put_command = [
-            str(soup_go_path), "rpc", "kv", "put",
+            str(soup_go_path),
+            "rpc",
+            "kv",
+            "put",
             f"--address={handshake_line}",
-            put_key, put_value
+            put_key,
+            put_value,
         ]
-        put_result = subprocess.run(
-            put_command,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
+        put_result = subprocess.run(put_command, env=env, capture_output=True, text=True, timeout=10)
         assert put_result.returncode == 0, f"Go client PUT failed: {put_result.stderr}"
         assert f"Key {put_key} put successfully." in put_result.stdout
 
         # 3. GET using Go client
         logger.info(f"📥 GET: {put_key}")
-        get_command = [
-            str(soup_go_path), "rpc", "kv", "get",
-            f"--address={handshake_line}",
-            put_key
-        ]
-        get_result = subprocess.run(
-            get_command,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
+        get_command = [str(soup_go_path), "rpc", "kv", "get", f"--address={handshake_line}", put_key]
+        get_result = subprocess.run(get_command, env=env, capture_output=True, text=True, timeout=10)
         assert get_result.returncode == 0, f"Go client GET failed: {get_result.stderr}"
         assert put_value in get_result.stdout
 
@@ -385,7 +355,8 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
         server_process.wait(timeout=5)
         logger.info("🛑 Go server stopped")
 
-    logger.info("="*80)
-    logger.info("="*80)
+    logger.info("=" * 80)
+    logger.info("=" * 80)
+
 
 # 🥣🔬🔚

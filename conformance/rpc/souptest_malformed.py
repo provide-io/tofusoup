@@ -313,4 +313,5 @@ async def test_rapid_connect_disconnect() -> None:
         await client.put(f"rapid-{i}", b"test")
         await client.close()
 
+
 # 🥣🔬🔚

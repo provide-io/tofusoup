@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -101,5 +101,6 @@ def go_soup_harness_path() -> Path:
             f"Ensure it has been built (e.g., via 'soup harness build soup-go')."
         )
     return harness_executable
+
 
 # 🥣🔬🔚

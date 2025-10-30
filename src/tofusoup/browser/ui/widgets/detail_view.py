@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -64,5 +64,6 @@ class DetailView(VerticalScroll):
             no_item_content = "No item selected."
             self._raw_markdown_content = no_item_content
             self._markdown.update(no_item_content)
+
 
 # 🥣🔬🔚

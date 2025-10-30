@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -31,5 +31,6 @@ def test_generate_status_table() -> None:
 
     assert "test_fail" in str(test_suite_cell)
     assert "FAIL" in str(status_cell)
+
 
 # 🥣🔬🔚

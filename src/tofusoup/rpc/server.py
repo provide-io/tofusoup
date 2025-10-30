@@ -114,7 +114,6 @@ class KV(kv_pb2_grpc.KVServicer):
             return value_bytes
 
     def Get(self, request: kv_pb2.GetRequest, context: grpc.ServicerContext) -> kv_pb2.GetResponse:
-
         if not self._validate_key(request.key):
             logger.error("Invalid key for Get operation", key=request.key)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
@@ -153,7 +152,6 @@ class KV(kv_pb2_grpc.KVServicer):
             return kv_pb2.GetResponse()
 
     def Put(self, request: kv_pb2.PutRequest, context: grpc.ServicerContext) -> kv_pb2.Empty:
-
         if not self._validate_key(request.key):
             logger.error("Invalid key for Put operation", key=request.key)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)

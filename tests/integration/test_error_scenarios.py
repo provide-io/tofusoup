@@ -30,12 +30,7 @@ async def test_python_to_go_succeeds() -> None:
     if not go_server.exists():
         pytest.skip("Go server not found at bin/soup-go")
 
-    client = KVClient(
-        server_path=str(go_server),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve="P-384"
-    )
+    client = KVClient(server_path=str(go_server), tls_mode="auto", tls_key_type="ec", tls_curve="P-384")
     client.connection_timeout = 10
 
     try:
@@ -55,12 +50,7 @@ async def test_missing_server_binary_fails_early() -> None:
     """Test that missing server binary fails immediately with FileNotFoundError."""
     nonexistent = Path("/tmp/nonexistent-server-binary")
 
-    client = KVClient(
-        server_path=str(nonexistent),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve="secp384r1"
-    )
+    client = KVClient(server_path=str(nonexistent), tls_mode="auto", tls_key_type="ec", tls_curve="secp384r1")
 
     with pytest.raises(FileNotFoundError) as exc_info:
         await client.start()
@@ -74,17 +64,15 @@ async def test_timeout_on_invalid_server() -> None:
     """Test that connections to invalid servers timeout gracefully."""
     # Use a non-executable file as "server" to test timeout behavior
     import tempfile
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.sh', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".sh", delete=False) as f:
         f.write("#!/bin/bash\nsleep 100\n")  # Server that never responds
         invalid_server = Path(f.name)
 
     try:
         invalid_server.chmod(0o755)
 
-        client = KVClient(
-            server_path=str(invalid_server),
-            tls_mode="disabled"
-        )
+        client = KVClient(server_path=str(invalid_server), tls_mode="disabled")
         client.connection_timeout = 2  # Short timeout
 
         # Should timeout gracefully
@@ -119,7 +107,8 @@ def test_document_limitations() -> None:
             scenario=limitation["scenario"],
             error=limitation["error"],
             reason=limitation["reason"],
-            workaround=limitation["workaround"]
+            workaround=limitation["workaround"],
         )
+
 
 # 🥣🔬🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -88,7 +88,13 @@ class SearchView(Vertical):
         row_key = RowKey(result.id)
 
         registry_emoji = (
+            "🤝"
+            if result.registry_source == "both"
+            else "🍲"
+            if result.registry_source == "opentofu"
+            else "🏢"
         )
+        type_emoji = "📦" if result.type == "module" else "🔌"
         name = f"{result.namespace}/{result.name}"
         if result.type == "module":
             name += f"/{result.provider_name}"
@@ -125,5 +131,6 @@ class SearchView(Vertical):
     def show_loading(self, show: bool) -> None:
         self.query_one(LoadingIndicator).display = show
         self.query_one(DataTable).display = not show
+
 
 # 🥣🔬🔚

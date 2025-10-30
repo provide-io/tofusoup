@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -53,7 +53,9 @@ def search_results() -> list[SearchResult]:
     ]
 
 
-async def test_search_view_update_and_display_results(pilot: Pilot, search_results: list[SearchResult]) -> None:
+async def test_search_view_update_and_display_results(
+    pilot: Pilot, search_results: list[SearchResult]
+) -> None:
     """Verify search results are correctly displayed in the view."""
     await pilot.app.push_screen(SearchViewScreen())
     await pilot.pause()
@@ -111,5 +113,6 @@ async def test_search_view_clear_results(pilot: Pilot, search_results: list[Sear
     search_view.clear_table()
     await pilot.pause()
     assert table.row_count == 0
+
 
 # 🥣🔬🔚

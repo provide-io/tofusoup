@@ -277,6 +277,8 @@ def test_capability_matrix() -> None:
     print("  Feature         | Go Harness | Python Module")
     print("  ----------------|------------|---------------")
     for feature in ["CTY Validation", "HCL Parsing", "Wire Protocol", "RPC Server"]:
+        go_status = "✅" if capabilities["Go Harness"][feature] else "❌"
+        py_status = "✅" if capabilities["Python Module"][feature] else "❌"
         print(f"  {feature:<15} | {go_status:<10} | {py_status}")
 
     # At least one implementation should be available for each feature

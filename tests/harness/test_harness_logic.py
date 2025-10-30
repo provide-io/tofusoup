@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -56,5 +56,6 @@ def test_ensure_go_harness_build_failure(tmp_path: Path) -> None:
 
         with pytest.raises(HarnessBuildError, match="Failed to build Go harness 'soup-go'"):
             ensure_go_harness_build(harness_name, project_root, loaded_config={})
+
 
 # 🥣🔬🔚

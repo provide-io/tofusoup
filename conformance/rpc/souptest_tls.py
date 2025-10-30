@@ -121,6 +121,7 @@ async def test_python_server_tls_compatibility(curve: str, key_type: str) -> Non
     Property test: Python server should handle all supported TLS configurations.
     """
     import shutil
+
     soup_path = shutil.which("soup")
     if not soup_path:
         pytest.skip("soup not found in PATH")
@@ -139,5 +140,6 @@ async def test_python_server_tls_compatibility(curve: str, key_type: str) -> Non
         assert result == b"python-tls-works"
     finally:
         await client.close()
+
 
 # 🥣🔬🔚

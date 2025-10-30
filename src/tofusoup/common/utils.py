@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -71,5 +71,6 @@ class DecimalAwareJSONEncoder(json.JSONEncoder):
             # This might happen if common.utils is imported before pyvider.cty is fully available or in a minimal context.
             pass  # Or log a warning that CtyValue type check in encoder is disabled.
         return super().default(o)
+
 
 # 🥣🔬🔚

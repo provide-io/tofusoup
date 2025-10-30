@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -37,5 +37,6 @@ def test_roundtrip_is_isomorphic(schema_data) -> None:
 
     # FIX: Use standard equality operator.
     assert initial_value == roundtripped_value
+
 
 # 🥣🔬🔚

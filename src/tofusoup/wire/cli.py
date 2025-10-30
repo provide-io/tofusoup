@@ -36,7 +36,7 @@ def wire() -> None:
 def to_msgpack(input_path: Path, output_path: Path | None) -> None:
     """Converts a JSON file to the MessagePack wire format."""
     try:
-        result_path = convert_json_to_msgpack(input_path, output_path)
+        convert_json_to_msgpack(input_path, output_path)
     except (json.JSONDecodeError, msgpack.exceptions.PackException) as e:
         raise click.ClickException(f"Error during conversion: {e}")
     except Exception as e:
@@ -72,5 +72,6 @@ def to_json(input_path: Path, output_path: Path | None, pretty: bool) -> None:
         raise click.ClickException(f"Error unpacking MessagePack file: {e}")
     except Exception as e:
         raise click.ClickException(f"An unexpected error occurred: {e}")
+
 
 # 🥣🔬🔚

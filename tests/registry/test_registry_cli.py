@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -180,9 +180,7 @@ class TestModuleCommands:
         assert "Module: terraform-aws-modules/vpc/aws" in result.output
 
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
-    def test_module_versions_command(
-        self, mock_tf_reg, mock_module_details, mock_module_versions
-    ) -> None:
+    def test_module_versions_command(self, mock_tf_reg, mock_module_details, mock_module_versions) -> None:
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(return_value=mock_module_details)
         mock_tf_instance.list_module_versions = AsyncMock(return_value=mock_module_versions)
@@ -240,5 +238,6 @@ class TestCompareCommand:
             result = runner.invoke(registry_cli.registry_cli, ["compare", "invalid"])
         assert result.exit_code == 0  # Our CLI prints error but doesn't exit with error code
         assert "Resource must be 'namespace/name' for providers" in result.output
+
 
 # 🥣🔬🔚

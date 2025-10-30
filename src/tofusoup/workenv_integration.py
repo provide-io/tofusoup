@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -105,5 +105,6 @@ def get_matrix_config_from_soup(project_root: Path | None = None) -> dict[str, A
     """
     soup_config = load_soup_config(project_root)
     return soup_config.get("workenv", {}).get("matrix", {})
+
 
 # 🥣🔬🔚

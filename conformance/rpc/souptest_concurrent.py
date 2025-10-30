@@ -53,7 +53,7 @@ async def test_concurrent_clients_same_key(num_clients: int, key: str, value: by
     clients = []
     try:
         # Create multiple concurrent clients
-        for i in range(num_clients):
+        for _i in range(num_clients):
             client = KVClient(
                 server_path=str(go_server),
                 tls_mode="auto",
@@ -67,13 +67,12 @@ async def test_concurrent_clients_same_key(num_clients: int, key: str, value: by
         await asyncio.gather(*[client.start() for client in clients])
 
         # Each client writes the same key with a unique value
-        unique_values = [f"{value}{i}".encode() if value else f"client-{i}".encode() for i in range(num_clients)]
+        unique_values = [
+            f"{value}{i}".encode() if value else f"client-{i}".encode() for i in range(num_clients)
+        ]
 
         # Concurrent writes
-        await asyncio.gather(*[
-            clients[i].put(key, unique_values[i])
-            for i in range(num_clients)
-        ])
+        await asyncio.gather(*[clients[i].put(key, unique_values[i]) for i in range(num_clients)])
 
         # Final value should be one of the written values (we can't predict which due to race)
         final_value = await clients[0].get(key)
@@ -123,16 +122,10 @@ async def test_concurrent_operations_different_keys(num_concurrent_ops: int) -> 
         operations = [(f"key-{i}", f"value-{i}".encode()) for i in range(num_concurrent_ops)]
 
         # Concurrent writes to different keys
-        await asyncio.gather(*[
-            client.put(key, value)
-            for key, value in operations
-        ])
+        await asyncio.gather(*[client.put(key, value) for key, value in operations])
 
         # Concurrent reads - all should succeed
-        results = await asyncio.gather(*[
-            client.get(key)
-            for key, _ in operations
-        ])
+        results = await asyncio.gather(*[client.get(key) for key, _ in operations])
 
         # Verify all values are correct
         for i, result in enumerate(results):
@@ -228,10 +221,7 @@ async def test_concurrent_readers(num_readers: int, key: str, value: bytes) -> N
         await asyncio.gather(*[reader.start() for reader in readers])
 
         # Concurrent reads
-        results = await asyncio.gather(*[
-            reader.get(key)
-            for reader in readers
-        ])
+        results = await asyncio.gather(*[reader.get(key) for reader in readers])
 
         # All readers should see the same value
         for i, result in enumerate(results):
@@ -240,5 +230,6 @@ async def test_concurrent_readers(num_readers: int, key: str, value: bytes) -> N
     finally:
         await writer.close()
         await asyncio.gather(*[reader.close() for reader in readers], return_exceptions=True)
+
 
 # 🥣🔬🔚

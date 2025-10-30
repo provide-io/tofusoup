@@ -27,12 +27,7 @@ async def test_python_server_supported_curves(curve) -> None:
     if not server_path.exists():
         pytest.skip(f"Python server not found: {server_path}")
 
-    client = KVClient(
-        server_path=str(server_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve=curve
-    )
+    client = KVClient(server_path=str(server_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
     client.connection_timeout = 10
 
     try:
@@ -65,12 +60,7 @@ async def test_python_server_rejects_secp521r1() -> None:
     if not server_path.exists():
         pytest.skip(f"Python server not found: {server_path}")
 
-    client = KVClient(
-        server_path=str(server_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve="secp521r1"
-    )
+    client = KVClient(server_path=str(server_path), tls_mode="auto", tls_key_type="ec", tls_curve="secp521r1")
     client.connection_timeout = 10
 
     # The implementation now logs a warning instead of raising an exception
@@ -97,12 +87,7 @@ async def test_curve_consistency(curve) -> None:
         pytest.skip(f"Python server not found: {server_path}")
 
     # Write with curve
-    client1 = KVClient(
-        server_path=str(server_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve=curve
-    )
+    client1 = KVClient(server_path=str(server_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
     client1.connection_timeout = 10
 
     test_key = f"consistency-{curve}"
@@ -115,12 +100,7 @@ async def test_curve_consistency(curve) -> None:
         await client1.close()
 
     # Read back with same curve
-    client2 = KVClient(
-        server_path=str(server_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve=curve
-    )
+    client2 = KVClient(server_path=str(server_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
     client2.connection_timeout = 10
 
     try:
@@ -150,5 +130,6 @@ def test_document_curve_support() -> None:
         for curve, supported in curves.items():
             status = "supported" if supported else "not supported"
             logger.info("Curve support", runtime=runtime, curve=curve, status=status)
+
 
 # 🥣🔬🔚

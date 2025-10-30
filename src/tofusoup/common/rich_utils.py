@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -82,5 +82,6 @@ def print_json(data: Any, indent: int = 2) -> None:
     """Print JSON data with syntax highlighting using Rich."""
     json_str = json.dumps(data, indent=indent, ensure_ascii=False)
     rich_print(f"```json\n{json_str}\n```")
+
 
 # 🥣🔬🔚

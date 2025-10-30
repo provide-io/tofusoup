@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -141,6 +141,7 @@ class ProfileMatrix:
                 progress.advance(task)
 
                 # Update progress description with latest result
+                status = "✅" if result.success else "❌"
                 progress.update(
                     task,
                     description=f"Testing profiles... {status} {result.profile_name}",
@@ -311,6 +312,7 @@ class ProfileMatrix:
         for result in results:
             duration = f"{result.duration_seconds:.1f}s"
             error = result.error_message or ""
+            status = "[green]✅ PASS[/green]" if result.success else "[red]❌ FAIL[/red]"
 
             # Format tools display
             tools_str = ", ".join(f"{k}:{v}" for k, v in result.tools.items()) if result.tools else "N/A"
@@ -352,5 +354,6 @@ async def run_profile_matrix_tests(
     """
     matrix = ProfileMatrix(config)
     return await matrix.run_profile_tests(stir_directory, profiles)
+
 
 # 🥣🔬🔚

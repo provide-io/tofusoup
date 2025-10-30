@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -125,6 +125,7 @@ def tls_cert_paths_rsa4096(certs_base_dir: Path) -> dict[str, str]:
 # Register Hypothesis profiles for property testing
 try:
     from hypothesis import settings
+
     settings.register_profile("quick", max_examples=10, deadline=10000)
     settings.register_profile("thorough", max_examples=1000, deadline=None)
 except ImportError:

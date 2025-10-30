@@ -11,6 +11,7 @@ Tests all working language pair combinations:
 
 Note: These tests use KVClient infrastructure to test cross-language compatibility."""
 
+import contextlib
 from pathlib import Path
 import shutil
 
@@ -56,12 +57,7 @@ async def test_python_to_python_all_curves(soup_path: Path | None, curve: str) -
     if soup_path is None:
         pytest.skip("Python server (soup) not found in PATH")
 
-    client = KVClient(
-        server_path=str(soup_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve=curve
-    )
+    client = KVClient(server_path=str(soup_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
     client.connection_timeout = 10
 
     try:
@@ -87,12 +83,7 @@ async def test_python_to_go_all_curves(soup_go_path: Path | None) -> None:
         pytest.skip("Go server (soup-go) not found")
 
     for curve in ["secp256r1", "secp384r1"]:
-        client = KVClient(
-            server_path=str(soup_go_path),
-            tls_mode="auto",
-            tls_key_type="ec",
-            tls_curve=curve
-        )
+        client = KVClient(server_path=str(soup_go_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
         client.connection_timeout = 10
 
         try:
@@ -131,12 +122,7 @@ async def test_go_to_go_connection(soup_go_path: Path | None) -> None:
     from tofusoup.rpc.client import KVClient
 
     # Create KVClient with Go server
-    client = KVClient(
-        server_path=str(soup_go_path),
-        tls_mode="auto",
-        tls_key_type="ec",
-        tls_curve="P-256"
-    )
+    client = KVClient(server_path=str(soup_go_path), tls_mode="auto", tls_key_type="ec", tls_curve="P-256")
 
     try:
         await asyncio.wait_for(client.start(), timeout=15.0)
@@ -153,10 +139,8 @@ async def test_go_to_go_connection(soup_go_path: Path | None) -> None:
         assert retrieved == test_value, f"Value mismatch: expected {test_value!r}, got {retrieved!r}"
 
     finally:
-        try:
+        with contextlib.suppress(Exception):
             await client.close()
-        except Exception:
-            pass
 
 
 def test_known_unsupported_combinations() -> None:
@@ -169,5 +153,6 @@ def test_known_unsupported_combinations() -> None:
     # Just document these via logger
     for client, server, curve, reason in unsupported:
         logger.info("Unsupported combination", client=client, server=server, curve=curve, reason=reason)
+
 
 # 🥣🔬🔚

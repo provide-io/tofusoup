@@ -1,11 +1,4 @@
-# 
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
 #
-
-"""TODO: Add module docstring."""
-
-# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -100,6 +93,7 @@ def display_resource_overview(resources: list[dict[str, Any]]) -> None:
     table.add_column("Private Data", style="yellow")
 
     for resource in resources:
+        private_status = "🔐 encrypted" if resource.get("has_private_data") else "—"
         table.add_row(
             resource["type"],
             resource["name"],
@@ -344,6 +338,7 @@ def validate_private_state(state_file: str) -> None:
         console.print("[dim]Check that PYVIDER_PRIVATE_STATE_SHARED_SECRET is correct[/dim]")
         raise click.Abort()
     else:
+        console.print("[green]✅ All private state data decrypted successfully[/green]")
 
 
 if __name__ == "__main__":

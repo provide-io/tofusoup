@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -21,5 +21,6 @@ def test_sui_tui_command_exists() -> None:
         assert result.exit_code == 0
         assert "Graphical UI for browsing Terraform and OpenTofu registries" in result.output
         assert "tui" in result.output
+
 
 # 🥣🔬🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -41,5 +41,6 @@ async def test_pyclient_goserver_put_get_string(go_harness_executable: Path) -> 
     finally:
         if client:
             await client.close()
+
 
 # 🥣🔬🔚

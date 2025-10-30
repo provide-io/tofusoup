@@ -89,6 +89,7 @@ async def test_data_compatible_across_languages(key: str, value: bytes) -> None:
         pytest.skip("soup-go not found")
 
     import shutil
+
     soup_path = shutil.which("soup")
     if not soup_path:
         pytest.skip("soup not found")
@@ -169,5 +170,6 @@ async def test_batch_operations_consistency(data: list[tuple[str, bytes]]) -> No
 
     finally:
         await client.close()
+
 
 # 🥣🔬🔚

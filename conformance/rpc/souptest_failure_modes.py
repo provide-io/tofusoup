@@ -155,4 +155,5 @@ async def test_empty_key_behavior(key_size: int) -> None:
     finally:
         await client.close()
 
+
 # 🥣🔬🔚
