@@ -161,6 +161,11 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
+	// Set environment variables for JSON enrichment
+	os.Setenv("TLS_MODE", tlsMode)
+	os.Setenv("TLS_KEY_TYPE", tlsKeyType)
+	os.Setenv("TLS_CURVE", tlsCurve)
+
 	// Create KV implementation with XDG-compliant storage directory
 	storageDir := GetKVStorageDir()
 	logger.Info("📂 Using KV storage directory", "path", storageDir)
@@ -169,11 +174,48 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 	// Create gRPC server
 	var serverOpts []grpc.ServerOption
 
-	// Configure TLS if needed
-	if tlsMode != "disabled" {
-		// For now, we only support disabled mode for standalone server
-		// TLS support can be added later if needed
-		logger.Warn("⚠️  TLS modes other than 'disabled' not yet supported in standalone mode")
+	// Configure TLS based on mode
+	if tlsMode == "auto" {
+		logger.Info("🔐 Configuring TLS", "mode", "auto", "key_type", tlsKeyType, "curve", tlsCurve)
+
+		// Generate certificates with specified curve
+		var certPEM, keyPEM []byte
+		var err error
+
+		if tlsKeyType == "ec" && tlsCurve != "" && tlsCurve != "auto" {
+			logger.Info("🔐 Generating EC certificate", "curve", tlsCurve)
+			certPEM, keyPEM, err = generateCertWithCurve(logger, tlsCurve)
+			if err != nil {
+				return fmt.Errorf("failed to generate certificate: %w", err)
+			}
+		} else {
+			// Default to P-256 for auto
+			logger.Info("🔐 Generating default certificate", "curve", "P-256")
+			certPEM, keyPEM, err = generateCertWithCurve(logger, "P-256")
+			if err != nil {
+				return fmt.Errorf("failed to generate certificate: %w", err)
+			}
+		}
+
+		// Load certificate
+		cert, err := tls.X509KeyPair(certPEM, keyPEM)
+		if err != nil {
+			return fmt.Errorf("failed to load certificate: %w", err)
+		}
+
+		// Create TLS config
+		tlsConfig := &tls.Config{
+			Certificates: []tls.Certificate{cert},
+			MinVersion:   tls.VersionTLS12,
+			ClientAuth:   tls.NoClientCert, // Standalone doesn't require client certs
+		}
+
+		serverOpts = append(serverOpts, grpc.Creds(credentials.NewTLS(tlsConfig)))
+		logger.Info("🔐 TLS enabled", "client_auth", "none")
+	} else if tlsMode == "disabled" {
+		logger.Info("🔐 TLS disabled - no encryption")
+	} else {
+		logger.Warn("⚠️  Unknown TLS mode, running without TLS", "mode", tlsMode)
 	}
 
 	// Create the gRPC server
