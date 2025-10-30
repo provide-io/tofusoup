@@ -392,7 +392,9 @@ if __name__ == "__main__":
     # Check if being run in go-plugin mode (KVClient spawns with these env vars)
     if os.getenv("PLUGIN_MAGIC_COOKIE_KEY") or os.getenv("PLUGIN_PROTOCOL_VERSIONS"):
         # Plugin mode - output go-plugin handshake
-        start_kv_server(tls_mode="disabled", output_handshake=True)
+        # Read storage_dir from environment if set
+        storage_dir = os.getenv("KV_STORAGE_DIR")
+        start_kv_server(tls_mode="disabled", storage_dir=storage_dir, output_handshake=True)
     else:
         # Standalone mode - simple server without handshake
         main()
