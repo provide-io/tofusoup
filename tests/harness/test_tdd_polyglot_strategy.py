@@ -29,7 +29,9 @@ class TestPolyglotStrategyContract:
         assert "go-cty" not in GO_HARNESS_CONFIG
         assert "go-hcl" not in GO_HARNESS_CONFIG
 
-    def test_harness_list_shows_soup_go(self, runner: CliRunner, tmp_path) -> None:
+from pathlib import Path
+
+    def test_harness_list_shows_soup_go(self, runner: CliRunner, tmp_path: Path) -> None:
         """CONTRACT: `soup harness list` must show the unified `soup-go` harness."""
         # Create a mock pyproject.toml and soup directory
         (tmp_path / "pyproject.toml").write_text("[project]\nname = 'test'")
@@ -43,7 +45,7 @@ class TestPolyglotStrategyContract:
         assert "go-cty" not in result.output
 
     @patch("subprocess.run")
-    def test_harness_build_soup_go(self, mock_run, runner: CliRunner, tmp_path) -> None:
+    def test_harness_build_soup_go(self, mock_run: MagicMock, runner: CliRunner, tmp_path: Path) -> None:
         """CONTRACT: `soup harness build soup-go` must build the unified binary."""
         # Create a mock pyproject.toml and soup directory
         (tmp_path / "pyproject.toml").write_text("[project]\nname = 'test'")
@@ -66,7 +68,7 @@ class TestPolyglotStrategyContract:
         assert "Building harness: soup-go" in result.output
         mock_run.assert_called_once()
 
-    def test_harness_build_old_name_fails(self, runner: CliRunner, tmp_path) -> None:
+    def test_harness_build_old_name_fails(self, runner: CliRunner, tmp_path: Path) -> None:
         """CONTRACT: `soup harness build go-cty` must fail gracefully."""
         # Create a mock pyproject.toml and soup directory
         (tmp_path / "pyproject.toml").write_text("[project]\nname = 'test'")

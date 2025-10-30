@@ -26,12 +26,12 @@ class BaseTfRegistry(ABC):
         self._client: httpx.AsyncClient | None = None
         logger.debug(f"BaseTfRegistry initialized for {config.base_url}")
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "BaseTfRegistry":
         if self._client is None:
             self._client = httpx.AsyncClient(base_url=self.config.base_url)
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
         if self._client:
             await self._client.aclose()
             self._client = None

@@ -38,9 +38,9 @@ def to_msgpack(input_path: Path, output_path: Path | None) -> None:
     try:
         convert_json_to_msgpack(input_path, output_path)
     except (json.JSONDecodeError, msgpack.exceptions.PackException) as e:
-        raise click.ClickException(f"Error during conversion: {e}")
+        raise click.ClickException(f"Error during conversion: {e}") from e
     except Exception as e:
-        raise click.ClickException(f"An unexpected error occurred: {e}")
+        raise click.ClickException(f"An unexpected error occurred: {e}") from e
 
 
 @wire.command("to-json")
@@ -69,9 +69,9 @@ def to_json(input_path: Path, output_path: Path | None, pretty: bool) -> None:
             json_data = result_path.read_text("utf-8")
             print_json(json_data)
     except msgpack.exceptions.UnpackException as e:
-        raise click.ClickException(f"Error unpacking MessagePack file: {e}")
+        raise click.ClickException(f"Error unpacking MessagePack file: {e}") from e
     except Exception as e:
-        raise click.ClickException(f"An unexpected error occurred: {e}")
+        raise click.ClickException(f"An unexpected error occurred: {e}") from e
 
 
 # 🥣🔬🔚

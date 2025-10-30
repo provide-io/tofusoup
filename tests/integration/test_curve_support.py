@@ -20,7 +20,7 @@ from tofusoup.rpc.client import KVClient
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
-async def test_python_server_supported_curves(curve) -> None:
+async def test_python_server_supported_curves(curve: str) -> None:
     """Test that Python server accepts supported curves."""
     server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
@@ -75,7 +75,7 @@ async def test_python_server_rejects_secp521r1() -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
-async def test_curve_consistency(curve) -> None:
+async def test_curve_consistency(curve: str) -> None:
     """
     Test that data written with one curve can be read back.
 

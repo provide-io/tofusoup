@@ -20,10 +20,12 @@ from tofusoup.registry.search.engine import SearchResult
 pytestmark = pytest.mark.browser
 
 
+from textual.app import ComposeResult
+
 class SearchViewScreen(Screen):
     """A simple screen to host the SearchView widget for testing."""
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         yield SearchView()
 
 

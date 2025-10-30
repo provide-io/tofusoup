@@ -13,9 +13,12 @@ from provide.testkit import (
     reset_foundation_setup_for_testing,
 )
 import pytest
+from _pytest.config import Config
+from _pytest.nodes import Item
+from _pytest.monkeypatch import MonkeyPatch
 
 
-def pytest_configure(config) -> None:
+def pytest_configure(config: Config) -> None:
     """Register custom marks."""
     config.addinivalue_line("markers", "tdd: marks tests as TDD (test-driven development)")
     config.addinivalue_line("markers", "integration: marks tests as integration tests")
@@ -29,7 +32,7 @@ def pytest_configure(config) -> None:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def add_sibling_source_to_path(request) -> None:
+def add_sibling_source_to_path(request: pytest.FixtureRequest) -> None:
     """
     A session-scoped autouse fixture to dynamically add sibling 'pyvider'
     source directories to the Python path. This is crucial for ensuring
@@ -54,7 +57,7 @@ def add_sibling_source_to_path(request) -> None:
 
 
 @pytest.fixture(autouse=True)
-def skip_integration_if_missing(request) -> None:
+def skip_integration_if_missing(request: Item) -> None:
     """Skip tests if optional dependencies are missing."""
     marker_checks = {
         "integration_cty": ("pyvider.cty", "cty"),
@@ -63,16 +66,15 @@ def skip_integration_if_missing(request) -> None:
     }
 
     for marker_name, (module_name, package_name) in marker_checks.items():
-        if request.node.get_closest_marker(marker_name):
-            if importlib.util.find_spec(module_name) is None:
-                pytest.skip(
-                    f"Test requires '{package_name}' integration. "
-                    f"Install with: pip install tofusoup[{package_name}]"
-                )
+        if request.node.get_closest_marker(marker_name) and importlib.util.find_spec(module_name) is None:
+            pytest.skip(
+                f"Test requires '{package_name}' integration. "
+                f"Install with: pip install tofusoup[{package_name}]"
+            )
 
 
 @pytest.fixture(autouse=True)
-def disable_textual_ui_in_tests(monkeypatch) -> None:
+def disable_textual_ui_in_tests(monkeypatch: MonkeyPatch) -> None:
     """
     Disable Textual UI features during testing to avoid NoActiveAppError.
     This fixture runs automatically for all tests.
@@ -83,7 +85,7 @@ def disable_textual_ui_in_tests(monkeypatch) -> None:
 
 
 @pytest.fixture(autouse=True)
-def reset_foundation_for_tests():
+def reset_foundation_for_tests() -> None:
     """Reset Foundation state between tests for proper isolation."""
     yield
     reset_foundation_setup_for_testing()

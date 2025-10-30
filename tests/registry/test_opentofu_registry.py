@@ -10,8 +10,11 @@ import pytest
 from tofusoup.registry.opentofu import OpenTofuRegistry
 
 
+from pytest_httpx import HTTPXMock
+
+
 @pytest.mark.asyncio
-async def test_get_provider_details_success(httpx_mock) -> None:
+async def test_get_provider_details_success(httpx_mock: HTTPXMock) -> None:
     """Test successful provider details retrieval from OpenTofu Registry."""
     mock_response = {
         "id": "opentofu/aws",
@@ -31,7 +34,7 @@ async def test_get_provider_details_success(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_provider_details_not_found(httpx_mock) -> None:
+async def test_get_provider_details_not_found(httpx_mock: HTTPXMock) -> None:
     """Test provider not found scenario."""
     httpx_mock.add_response(
         url="https://registry.opentofu.org/v1/providers/nonexistent/provider",
@@ -46,7 +49,7 @@ async def test_get_provider_details_not_found(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_module_details_success(httpx_mock) -> None:
+async def test_get_module_details_success(httpx_mock: HTTPXMock) -> None:
     """Test successful module details retrieval."""
     mock_response = {
         "id": "aws-ia/vpc/aws",
@@ -68,7 +71,7 @@ async def test_get_module_details_success(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_list_modules_with_search(httpx_mock) -> None:
+async def test_list_modules_with_search(httpx_mock: HTTPXMock) -> None:
     """Test listing modules with search query."""
 
     # OpenTofu uses a different search API endpoint
@@ -95,7 +98,7 @@ async def test_list_modules_with_search(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_list_module_versions(httpx_mock) -> None:
+async def test_list_module_versions(httpx_mock: HTTPXMock) -> None:
     """Test listing module versions."""
     mock_response = {
         "modules": [{"versions": [{"version": "4.5.0"}, {"version": "4.4.0"}, {"version": "4.3.0"}]}]

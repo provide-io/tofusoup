@@ -14,21 +14,21 @@ from tofusoup.registry.search.engine import SearchEngine, SearchQuery
 
 
 class MockRegistry(AsyncMock):
-    def __init__(self, name="terraform") -> None:
+    def __init__(self, name: str = "terraform") -> None:
         super().__init__()
         self._name = name
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "MockRegistry":
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
         pass
 
     @property
-    def __class__(self):
+    def __class__(self) -> type:
         # Mock the class name for registry identification
         class FakeClass:
-            def __init__(self, name) -> None:
+            def __init__(self, name: str) -> None:
                 self.__name__ = f"{name}Registry"
 
         return FakeClass(self._name)

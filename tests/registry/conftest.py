@@ -12,8 +12,11 @@ from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import Provider, ProviderVersion
 
 
+from tofusoup.registry.terraform import IBMTerraformRegistry
+
+
 @pytest.fixture
-def mock_terraform_registry():
+def mock_terraform_registry() -> IBMTerraformRegistry:
     """Create a mock Terraform registry."""
     from tofusoup.registry.base import RegistryConfig
     from tofusoup.registry.terraform import IBMTerraformRegistry
@@ -24,7 +27,7 @@ def mock_terraform_registry():
 
 
 @pytest.fixture
-def mock_opentofu_registry():
+def mock_opentofu_registry() -> OpenTofuRegistry:
     """Create a mock OpenTofu registry."""
     from tofusoup.registry.opentofu import OpenTofuRegistry
 
@@ -33,7 +36,7 @@ def mock_opentofu_registry():
 
 
 @pytest.fixture
-def sample_provider():
+def sample_provider() -> Provider:
     """Create a sample provider for testing."""
     return Provider(
         id="hashicorp/aws",
@@ -46,7 +49,7 @@ def sample_provider():
 
 
 @pytest.fixture
-def sample_provider_versions():
+def sample_provider_versions() -> list[ProviderVersion]:
     """Create sample provider versions for testing."""
     return [
         ProviderVersion(version="6.8.0", protocols=["6"], platforms=[]),
@@ -56,7 +59,7 @@ def sample_provider_versions():
 
 
 @pytest.fixture
-def sample_module():
+def sample_module() -> Module:
     """Create a sample module for testing."""
     return Module(
         id="terraform-aws-modules/vpc/aws",
@@ -70,7 +73,7 @@ def sample_module():
 
 
 @pytest.fixture
-def sample_module_versions():
+def sample_module_versions() -> list[ModuleVersion]:
     """Create sample module versions for testing."""
     return [
         ModuleVersion(version="6.0.1", published_at="2024-01-15"),
@@ -80,7 +83,7 @@ def sample_module_versions():
 
 
 @pytest.fixture
-def mock_provider_details(sample_provider):
+def mock_provider_details(sample_provider: Provider) -> dict:
     """Create mock provider details dict for testing."""
     return {
         "namespace": sample_provider.namespace,
@@ -92,7 +95,7 @@ def mock_provider_details(sample_provider):
 
 
 @pytest.fixture
-def mock_module_details(sample_module):
+def mock_module_details(sample_module: Module) -> dict:
     """Create mock module details dict for testing."""
     return {
         "namespace": sample_module.namespace,
@@ -105,13 +108,13 @@ def mock_module_details(sample_module):
 
 
 @pytest.fixture
-def mock_provider_versions(sample_provider_versions):
+def mock_provider_versions(sample_provider_versions: list[ProviderVersion]) -> list[ProviderVersion]:
     """Alias for sample_provider_versions for backwards compatibility."""
     return sample_provider_versions
 
 
 @pytest.fixture
-def mock_module_versions(sample_module_versions):
+def mock_module_versions(sample_module_versions: list[ModuleVersion]) -> list[ModuleVersion]:
     """Alias for sample_module_versions for backwards compatibility."""
     return sample_module_versions
 

@@ -16,10 +16,12 @@ from tofusoup.registry.search.engine import SearchResult
 pytestmark = pytest.mark.browser
 
 
+from textual.app import ComposeResult
+
 class DetailViewScreen(Screen):
     """A simple screen to host the DetailView widget for testing."""
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         yield DetailView()
 
 

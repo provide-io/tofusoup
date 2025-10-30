@@ -117,6 +117,47 @@ def server_cmd(
         sys.exit(1)
 
 
+def _get_client_cmd(language: str, operation: str, args: tuple, server: str, tls: bool, ca_file: str | None) -> list[str]:
+    binary_path = get_stock_binary_path(language, "client")
+
+    if not binary_path.exists():
+        console.print(f"[red]Error: {language} client not found at {binary_path}[/red]")
+        console.print(f"[yellow]Run 'soup harness build stock-{language}' first[/yellow]")
+        sys.exit(1)
+
+    cmd = [str(binary_path), operation, "--server", server]
+
+    if tls:
+        cmd.append("--tls")
+        if ca_file:
+            cmd.extend(["--ca-file", ca_file])
+
+    cmd.extend(args)
+
+    if language == "python":
+        return ["python3", *cmd]
+    if language == "ruby":
+        return ["ruby", *cmd]
+    if language == "nodejs":
+        return ["node", *cmd]
+    if language == "java":
+        return ["java", "-jar", *cmd]
+
+    return cmd
+
+def _run_client_cmd(cmd: list[str], language: str, operation: str, server: str) -> None:
+    logger.info("Running Stock client", language=language, operation=operation, server=server)
+    try:
+        result = run_command(cmd, capture_output=True, text=True, check=False)
+        if result.stdout:
+            console.print(result.stdout.strip())
+        if result.stderr and result.returncode != 0:
+            console.print(f"[red]{result.stderr.strip()}[/red]", file=sys.stderr)
+            sys.exit(result.returncode)
+    except Exception as e:
+        console.print(f"[red]Error running client: {e}[/red]")
+        sys.exit(1)
+
 @stock_cli.command("client")
 @click.argument("language", type=click.Choice(SUPPORTED_LANGUAGES))
 @click.argument("operation", type=click.Choice(["get", "put", "monitor", "inventory"]))
@@ -133,45 +174,8 @@ def client_cmd(
     ca_file: str | None,
 ) -> None:
     """Run a Stock client operation in the specified language."""
-    binary_path = get_stock_binary_path(language, "client")
-
-    if not binary_path.exists():
-        console.print(f"[red]Error: {language} client not found at {binary_path}[/red]")
-        console.print(f"[yellow]Run 'soup harness build stock-{language}' first[/yellow]")
-        sys.exit(1)
-
-    cmd = [str(binary_path), operation, "--server", server]
-
-    if tls:
-        cmd.append("--tls")
-        if ca_file:
-            cmd.extend(["--ca-file", ca_file])
-
-    # Add operation-specific arguments
-    cmd.extend(args)
-
-    logger.info("Running Stock client", language=language, operation=operation, server=server)
-
-    try:
-        # For interpreted languages, prepend interpreter
-        if language == "python":
-            cmd = ["python3", *cmd]
-        elif language == "ruby":
-            cmd = ["ruby", *cmd]
-        elif language == "nodejs":
-            cmd = ["node", *cmd]
-        elif language == "java":
-            cmd = ["java", "-jar", *cmd]
-
-        result = run_command(cmd, capture_output=True, text=True, check=False)
-        if result.stdout:
-            console.print(result.stdout.strip())
-        if result.stderr and result.returncode != 0:
-            console.print(f"[red]{result.stderr.strip()}[/red]", file=sys.stderr)
-            sys.exit(result.returncode)
-    except Exception as e:
-        console.print(f"[red]Error running client: {e}[/red]")
-        sys.exit(1)
+    cmd = _get_client_cmd(language, operation, args, server, tls, ca_file)
+    _run_client_cmd(cmd, language, operation, server)
 
 
 @stock_cli.command("matrix")

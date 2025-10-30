@@ -112,7 +112,7 @@ async def _run_pytest_suite(
 
     def _process_test_report() -> TestSuiteResult:
         try:
-            with open(report_path) as f:
+            with report_path.open() as f:
                 report_content = f.read()
                 if not report_content:
                     raise ValidationError("Empty test report file")

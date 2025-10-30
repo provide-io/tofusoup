@@ -10,10 +10,10 @@ from datetime import datetime
 import hashlib
 import json
 import os
+from pathlib import Path
 import re
 import sys
 import time
-from pathlib import Path
 
 import grpc
 from provide.foundation import logger
@@ -238,6 +238,96 @@ def main() -> None:
         server.stop(0)
 
 
+def _configure_tls_disabled(server: grpc.Server) -> tuple[int, None]:
+    logger.info("TLS disabled - running in insecure mode")
+    port = server.add_insecure_port("[::]:0")
+    logger.info(f"Server listening on insecure port {port}")
+    return port, None
+
+
+def _configure_tls_auto(server: grpc.Server, tls_key_type: str, tls_curve: str) -> tuple[int, str | None]:
+    logger.info("Auto TLS enabled - generating server certificate", key_type=tls_key_type, curve=tls_curve)
+    from provide.foundation.crypto import Certificate
+
+    try:
+        cert_obj = Certificate.create_self_signed_server_cert(
+            common_name="tofusoup.rpc.server",
+            organization_name="TofuSoup",
+            validity_days=365,
+            alt_names=["localhost", "127.0.0.1"],
+            key_type="ecdsa" if tls_key_type == "ec" else tls_key_type,
+            ecdsa_curve=tls_curve,
+        )
+        server_cert_pem = cert_obj.cert_pem
+        server_key_pem = cert_obj.key_pem
+
+        server_credentials = grpc.ssl_server_credentials(
+            [(server_key_pem.encode("utf-8"), server_cert_pem.encode("utf-8"))],
+            root_certificates=None,
+            require_client_auth=False,
+        )
+        port = server.add_secure_port("[::]:0", server_credentials)
+        logger.info(f"Server listening on secure port {port} with auto-generated certificate")
+        return port, server_cert_pem
+    except Exception as e:
+        logger.error(f"Failed to generate auto TLS certificate: {e}")
+        logger.warning("Falling back to insecure mode")
+        port = server.add_insecure_port("[::]:0")
+        return port, None
+
+
+def _configure_tls_manual(server: grpc.Server, cert_file: str, key_file: str) -> tuple[int, str | None]:
+    if not cert_file or not key_file:
+        logger.error("Manual TLS mode requires both cert_file and key_file")
+        sys.exit(1)
+
+    try:
+        logger.info("Manual TLS enabled", cert_file=cert_file, key_file=key_file)
+        with Path(cert_file).open("rb") as f:
+            cert_data = f.read()
+        with Path(key_file).open("rb") as f:
+            key_data = f.read()
+
+        server_credentials = grpc.ssl_server_credentials([(key_data, cert_data)])
+        port = server.add_secure_port("[::]:0", server_credentials)
+        logger.info(f"Server listening on secure port {port}")
+        with Path(cert_file).open("r") as f:
+            return port, f.read()
+    except Exception as e:
+        logger.error("Failed to configure manual TLS", error=str(e))
+        sys.exit(1)
+
+
+def _start_server_and_handshake(
+    server: grpc.Server, port: int, server_cert_pem: str | None, output_handshake: bool
+) -> None:
+    server.start()
+    logger.info("KV plugin server started successfully")
+
+    if output_handshake:
+        core_version = "1"
+        protocol_version = "1"
+        network = "tcp"
+        address = f"127.0.0.1:{port}"
+        protocol = "grpc"
+        cert_b64 = ""
+        if server_cert_pem:
+            cert_clean = server_cert_pem.replace("-----BEGIN CERTIFICATE-----", "")
+            cert_clean = cert_clean.replace("-----END CERTIFICATE-----", "")
+            cert_clean = cert_clean.replace("\n", "").replace("\r", "").strip()
+            cert_b64 = cert_clean
+        handshake_line = f"{core_version}|{protocol_version}|{network}|{address}|{protocol}|{cert_b64}"
+        print(handshake_line, flush=True)
+        logger.debug(f"Handshake output: {handshake_line[:100]}...")
+
+    try:
+        while True:
+            time.sleep(86400)
+    except KeyboardInterrupt:
+        logger.info("Shutting down KV plugin server")
+        server.stop(0)
+
+
 def start_kv_server(
     tls_mode: str = "disabled",
     tls_key_type: str = "ec",
@@ -274,119 +364,23 @@ def start_kv_server(
         output_handshake=output_handshake,
     )
 
-    # Create gRPC server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-
-    # Add the KV servicer with configurable storage directory
     serve(server, storage_dir=storage_dir)
 
-    # Variables for handshake
-    server_cert_pem = None
+    port: int
+    server_cert_pem: str | None = None
 
-    # Configure TLS based on mode
     if tls_mode == "disabled":
-        logger.info("TLS disabled - running in insecure mode")
-        port = server.add_insecure_port("[::]:0")  # Use 0 to let OS choose port
-        logger.info(f"Server listening on insecure port {port}")
-
+        port, server_cert_pem = _configure_tls_disabled(server)
     elif tls_mode == "auto":
-        logger.info("Auto TLS enabled - generating server certificate", key_type=tls_key_type, curve=tls_curve)
-
-        # Generate server certificate
-        from provide.foundation.crypto import Certificate
-
-        try:
-            cert_obj = Certificate.create_self_signed_server_cert(
-                common_name="tofusoup.rpc.server",
-                organization_name="TofuSoup",
-                validity_days=365,  # 1 year validity
-                alt_names=["localhost", "127.0.0.1"],
-                key_type="ecdsa" if tls_key_type == "ec" else tls_key_type,
-                ecdsa_curve=tls_curve,
-            )
-            server_cert_pem = cert_obj.cert_pem
-            server_key_pem = cert_obj.key_pem
-
-            # Create SSL credentials for TLS (not full mTLS validation)
-            # In go-plugin's AutoMTLS protocol, the server provides its cert to the client,
-            # but the server doesn't validate the client's cert at the gRPC level.
-            # The client validation happens via the go-plugin handshake mechanism instead.
-            server_credentials = grpc.ssl_server_credentials(
-                [(server_key_pem.encode("utf-8"), server_cert_pem.encode("utf-8"))],
-                root_certificates=None,
-                require_client_auth=False,  # Don't require client cert validation at gRPC level
-            )
-            port = server.add_secure_port("[::]:0", server_credentials)
-            logger.info(f"Server listening on secure port {port} with auto-generated certificate")
-
-        except Exception as e:
-            logger.error(f"Failed to generate auto TLS certificate: {e}")
-            logger.warning("Falling back to insecure mode")
-            port = server.add_insecure_port("[::]:0")
-            server_cert_pem = None
-
+        port, server_cert_pem = _configure_tls_auto(server, tls_key_type, tls_curve)
     elif tls_mode == "manual":
-        if not cert_file or not key_file:
-            logger.error("Manual TLS mode requires both cert_file and key_file")
-            sys.exit(1)
-
-        try:
-            logger.info("Manual TLS enabled", cert_file=cert_file, key_file=key_file)
-
-            # Load certificate and private key
-            with Path(cert_file).open("rb") as f:
-                cert_data = f.read()
-            with Path(key_file).open("rb") as f:
-                key_data = f.read()
-
-            # Create SSL credentials
-            server_credentials = grpc.ssl_server_credentials([(key_data, cert_data)])
-            port = server.add_secure_port("[::]:0", server_credentials)
-            logger.info(f"Server listening on secure port {port}")
-
-        except Exception as e:
-            logger.error("Failed to configure manual TLS", error=str(e))
-            sys.exit(1)
-
+        port, server_cert_pem = _configure_tls_manual(server, cert_file, key_file)
     else:
         logger.error("Invalid TLS mode", mode=tls_mode)
         sys.exit(1)
 
-    # Start the server
-    server.start()
-    logger.info("KV plugin server started successfully")
-
-    # Output go-plugin handshake if requested
-    if output_handshake:
-        # Format: core_version|protocol_version|network|address|protocol|cert
-        core_version = "1"
-        protocol_version = "1"
-        network = "tcp"
-        address = f"127.0.0.1:{port}"
-        protocol = "grpc"
-
-        # Encode certificate for handshake (strip PEM headers and encode base64)
-        cert_b64 = ""
-        if server_cert_pem:
-            # Remove PEM headers and whitespace
-            cert_clean = server_cert_pem.replace("-----BEGIN CERTIFICATE-----", "")
-            cert_clean = cert_clean.replace("-----END CERTIFICATE-----", "")
-            cert_clean = cert_clean.replace("\n", "").replace("\r", "").strip()
-            cert_b64 = cert_clean  # Already base64 encoded within PEM
-
-        handshake_line = f"{core_version}|{protocol_version}|{network}|{address}|{protocol}|{cert_b64}"
-
-        # Print to stdout (go-plugin reads this)
-        print(handshake_line, flush=True)
-        logger.debug(f"Handshake output: {handshake_line[:100]}...")
-
-    try:
-        # Keep the server running
-        while True:
-            time.sleep(86400)  # Sleep for a day
-    except KeyboardInterrupt:
-        logger.info("Shutting down KV plugin server")
-        server.stop(0)
+    _start_server_and_handshake(server, port, server_cert_pem, output_handshake)
 
 
 if __name__ == "__main__":

@@ -71,12 +71,12 @@ def convert_hcl_file_to_output_format(
         output_p = pathlib.Path(output_filepath_str)
         output_p.parent.mkdir(parents=True, exist_ok=True)
         if isinstance(output_content, str):
-            with open(output_p, "w", encoding="utf-8") as f:
+            with output_p.open("w", encoding="utf-8") as f:
                 f.write(output_content)
                 if not output_content.endswith("\n"):
                     f.write("\n")
         elif isinstance(output_content, bytes):
-            with open(output_p, "wb") as f:
+            with output_p.open("wb") as f:
                 f.write(output_content)
         else:
             raise TofuSoupError("No output content generated during HCL conversion.")

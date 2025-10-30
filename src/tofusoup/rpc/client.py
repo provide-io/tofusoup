@@ -8,8 +8,8 @@
 import asyncio
 import logging
 import os
-import time
 from pathlib import Path
+import time
 
 import grpc
 from provide.foundation import logger
@@ -359,7 +359,11 @@ class KVClient:
                 ) from e
 
             # Check for curve compatibility issues
-            if ("curve" in error_msg.lower() or "tls" in error_msg.lower() or "ssl" in error_msg.lower()) and self.tls_curve == "secp521r1" and server_lang == "python":
+            if (
+                ("curve" in error_msg.lower() or "tls" in error_msg.lower() or "ssl" in error_msg.lower())
+                and self.tls_curve == "secp521r1"
+                and server_lang == "python"
+            ):
                 raise ValueError(
                     f"Curve 'secp521r1' is not supported by Python's grpcio library.\n"
                     "Supported curves for Python: secp256r1, secp384r1\n\n"

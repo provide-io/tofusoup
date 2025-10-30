@@ -11,8 +11,11 @@ from tofusoup.registry.base import RegistryConfig
 from tofusoup.registry.terraform import IBMTerraformRegistry
 
 
+from pytest_httpx import HTTPXMock
+
+
 @pytest.mark.asyncio
-async def test_get_provider_details_success(httpx_mock) -> None:
+async def test_get_provider_details_success(httpx_mock: HTTPXMock) -> None:
     """Test successful provider details retrieval from Terraform Registry."""
     mock_response = {
         "id": "hashicorp/aws",
@@ -32,7 +35,7 @@ async def test_get_provider_details_success(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_provider_details_not_found(httpx_mock) -> None:
+async def test_get_provider_details_not_found(httpx_mock: HTTPXMock) -> None:
     """Test provider not found scenario."""
     httpx_mock.add_response(
         url="https://registry.terraform.io/v1/providers/nonexistent/provider",
@@ -47,7 +50,7 @@ async def test_get_provider_details_not_found(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_module_details_success(httpx_mock) -> None:
+async def test_get_module_details_success(httpx_mock: HTTPXMock) -> None:
     """Test successful module details retrieval."""
     mock_response = {
         "id": "terraform-aws-modules/vpc/aws",
@@ -69,7 +72,7 @@ async def test_get_module_details_success(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_module_details_not_found(httpx_mock) -> None:
+async def test_get_module_details_not_found(httpx_mock: HTTPXMock) -> None:
     """Test module not found scenario."""
     httpx_mock.add_response(
         url="https://registry.terraform.io/v1/modules/nonexistent/module/provider/latest",
@@ -84,7 +87,7 @@ async def test_get_module_details_not_found(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_list_providers_with_search(httpx_mock) -> None:
+async def test_list_providers_with_search(httpx_mock: HTTPXMock) -> None:
     """Test listing providers with search query."""
     mock_response = {
         "providers": [
@@ -104,7 +107,7 @@ async def test_list_providers_with_search(httpx_mock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_list_provider_versions(httpx_mock) -> None:
+async def test_list_provider_versions(httpx_mock: HTTPXMock) -> None:
     """Test listing provider versions."""
     mock_response = {
         "versions": [

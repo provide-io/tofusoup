@@ -366,7 +366,7 @@ class VersionMatrix:
 
     def save_results(self, results: dict[str, Any], output_path: pathlib.Path) -> None:
         """Save matrix test results to a file."""
-        with open(output_path, "w") as f:
+        with output_path.open("w") as f:
             json.dump(results, f, indent=2)
 
         console.print(f"[green]Matrix test results saved to: {output_path}[/green]")

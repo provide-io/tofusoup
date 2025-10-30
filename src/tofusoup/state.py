@@ -31,12 +31,12 @@ console = Console()
 def load_terraform_state(state_file: Path) -> dict[str, Any]:
     """Load and parse Terraform state file."""
     try:
-        with open(state_file) as f:
+        with state_file.open() as f:
             return json.load(f)
     except json.JSONDecodeError as e:
-        raise click.ClickException(f"Invalid JSON in state file: {e}")
-    except FileNotFoundError:
-        raise click.ClickException(f"State file not found: {state_file}")
+        raise click.ClickException(f"Invalid JSON in state file: {e}") from e
+    except FileNotFoundError as e:
+        raise click.ClickException(f"State file not found: {state_file}") from e
 
 
 def find_resources_with_private_state(state: dict[str, Any]) -> list[dict[str, Any]]:
@@ -160,6 +160,44 @@ def state_cli() -> None:
     pass
 
 
+def _get_target_resources(state: dict[str, Any], private_only: bool) -> list[dict[str, Any]]:
+    resources_with_private = find_resources_with_private_state(state)
+    if private_only:
+        return resources_with_private
+
+    target_resources = []
+    for res in state.get("resources", []):
+        for instance in res.get("instances", []):
+            target_resources.append(
+                {
+                    "type": res.get("type"),
+                    "name": res.get("name"),
+                    "provider": res.get("provider"),
+                    "mode": res.get("mode"),
+                    "private": instance.get("private"),
+                    "attributes": instance.get("attributes", {}),
+                }
+            )
+    return target_resources
+
+def _display_state_overview(target_resources: list, resources_with_private: list, private_only: bool) -> None:
+    if private_only:
+        console.print(f"[bold]Found {len(resources_with_private)} resources with private state:[/bold]\n")
+    else:
+        console.print(
+            f"[bold]Found {len(target_resources)} total resources ({len(resources_with_private)} with private state):[/bold]\n"
+        )
+
+    display_resource_overview(target_resources if not private_only else resources_with_private)
+
+    if resources_with_private:
+        console.print(
+            "\n[dim]💡 Use [bold]--resource <type.name>[/bold] to see decrypted private state details[/dim]"
+        )
+        console.print(
+            "[dim]💡 Use [bold]--private-only[/bold] to show only resources with private state[/dim]"
+        )
+
 @state_cli.command("show")
 @click.argument(
     "state_file",
@@ -190,66 +228,25 @@ def show_state(state_file: str, resource: str | None, show_encrypted: bool, priv
     except click.ClickException:
         raise
 
-    resources_with_private = find_resources_with_private_state(state)
+    target_resources = _get_target_resources(state, private_only)
 
-    if private_only:
-        target_resources = resources_with_private
-    else:
-        # Get all resources
-        target_resources = []
-        for res in state.get("resources", []):
-            for instance in res.get("instances", []):
-                target_resources.append(
-                    {
-                        "type": res.get("type"),
-                        "name": res.get("name"),
-                        "provider": res.get("provider"),
-                        "mode": res.get("mode"),
-                        "private": instance.get("private"),
-                        "attributes": instance.get("attributes", {}),
-                    }
-                )
-
-    # Header
     console.print("[bold blue]🗂️  Terraform State Analysis[/bold blue]")
     console.print(f"[dim]State file: {state_path}[/dim]")
     console.print(f"[dim]Terraform version: {state.get('terraform_version', 'unknown')}[/dim]")
     console.print(f"[dim]Serial: {state.get('serial', 'unknown')}[/dim]\n")
 
     if resource:
-        # Show specific resource
         resource_type, resource_name = resource.split(".", 1) if "." in resource else (resource, "")
-        found_resource = None
-
-        for res in target_resources:
-            if res["type"] == resource_type and (not resource_name or res["name"] == resource_name):
-                found_resource = res
-                break
+        found_resource = next((res for res in target_resources if res["type"] == resource_type and (not resource_name or res["name"] == resource_name)), None)
 
         if found_resource:
             display_resource_details(found_resource, show_encrypted)
         else:
             console.print(f"[red]Resource '{resource}' not found in state[/red]")
             return
-
     else:
-        # Show overview
-        if private_only:
-            console.print(f"[bold]Found {len(resources_with_private)} resources with private state:[/bold]\n")
-        else:
-            console.print(
-                f"[bold]Found {len(target_resources)} total resources ({len(resources_with_private)} with private state):[/bold]\n"
-            )
-
-        display_resource_overview(target_resources if not private_only else resources_with_private)
-
-        if resources_with_private:
-            console.print(
-                "\n[dim]💡 Use [bold]--resource <type.name>[/bold] to see decrypted private state details[/dim]"
-            )
-            console.print(
-                "[dim]💡 Use [bold]--private-only[/bold] to show only resources with private state[/dim]"
-            )
+        resources_with_private = find_resources_with_private_state(state)
+        _display_state_overview(target_resources, resources_with_private, private_only)
 
 
 @state_cli.command("decrypt")

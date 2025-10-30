@@ -331,7 +331,7 @@ class ProfileMatrix:
         """Save profile test results to a file."""
         import json
 
-        with open(output_path, "w") as f:
+        with output_path.open("w") as f:
             json.dump(results, f, indent=2)
 
         console.print(f"[green]Profile test results saved to: {output_path}[/green]")

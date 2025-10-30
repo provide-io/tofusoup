@@ -41,7 +41,7 @@ def load_soup_config(project_root: Path | None = None) -> dict[str, Any]:
     soup_toml_path = project_root / "soup.toml"
 
     if soup_toml_path.exists():
-        with open(soup_toml_path, "rb") as f:
+        with soup_toml_path.open("rb") as f:
             return tomllib.load(f)
 
     return {}
