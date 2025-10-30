@@ -35,14 +35,14 @@ from pyvider.cty.exceptions import CtyAttributeValidationError, CtyTupleValidati
 
 TUPLE_TEST_CASES = [
     # (description, element_types, value)
-    ("empty", [], []),
-    ("single_string", [CtyString()], ["hello"]),
-    ("single_number", [CtyNumber()], [Decimal(42)]),
-    ("single_bool", [CtyBool()], [True]),
-    ("mixed_string_number", [CtyString(), CtyNumber()], ["hello", Decimal(42)]),
-    ("mixed_all_primitives", [CtyString(), CtyNumber(), CtyBool()], ["hello", Decimal(42), True]),
-    ("multiple_same_type", [CtyString(), CtyString(), CtyString()], ["a", "b", "c"]),
-    ("complex_mixed", [CtyBool(), CtyString(), CtyNumber(), CtyString()], [False, "test", Decimal(100), "end"]),
+    ("empty", (), []),
+    ("single_string", (CtyString(),), ["hello"]),
+    ("single_number", (CtyNumber(),), [Decimal(42)]),
+    ("single_bool", (CtyBool(),), [True]),
+    ("mixed_string_number", (CtyString(), CtyNumber()), ["hello", Decimal(42)]),
+    ("mixed_all_primitives", (CtyString(), CtyNumber(), CtyBool()), ["hello", Decimal(42), True]),
+    ("multiple_same_type", (CtyString(), CtyString(), CtyString()), ["a", "b", "c"]),
+    ("complex_mixed", (CtyBool(), CtyString(), CtyNumber(), CtyString()), [False, "test", Decimal(100), "end"]),
 ]
 
 
@@ -120,7 +120,7 @@ def test_ctytuple_normal_values(case_name: str, element_types: list, value: list
 @pytest.mark.cty_structural
 def test_ctytuple_null() -> None:
     """Test CtyTuple null value."""
-    cty_type = CtyTuple(element_types=[CtyString(), CtyNumber()])
+    cty_type = CtyTuple(element_types=(CtyString(), CtyNumber()))
     cty_value = CtyValue.null(cty_type)
 
     assert cty_value.is_null
@@ -131,7 +131,7 @@ def test_ctytuple_null() -> None:
 @pytest.mark.cty_structural
 def test_ctytuple_unknown() -> None:
     """Test CtyTuple unknown value."""
-    cty_type = CtyTuple(element_types=[CtyString(), CtyNumber()])
+    cty_type = CtyTuple(element_types=(CtyString(), CtyNumber()))
     cty_value = CtyValue.unknown(cty_type)
 
     assert not cty_value.is_null
@@ -141,8 +141,8 @@ def test_ctytuple_unknown() -> None:
 @pytest.mark.cty_structural
 def test_ctytuple_nested_tuple() -> None:
     """Test Tuple containing another Tuple."""
-    inner_tuple = CtyTuple(element_types=[CtyString(), CtyNumber()])
-    outer_tuple = CtyTuple(element_types=[inner_tuple, CtyBool()])
+    inner_tuple = CtyTuple(element_types=(CtyString(), CtyNumber()))
+    outer_tuple = CtyTuple(element_types=(inner_tuple, CtyBool()))
 
     value = [["hello", Decimal(42)], True]
     cty_value = outer_tuple.validate(value)
@@ -155,10 +155,10 @@ def test_ctytuple_nested_tuple() -> None:
 @pytest.mark.cty_structural
 def test_ctytuple_with_list() -> None:
     """Test Tuple containing a List."""
-    tuple_type = CtyTuple(element_types=[
+    tuple_type = CtyTuple(element_types=(
         CtyString(),
         CtyList(element_type=CtyNumber()),
-    ])
+    ))
 
     value = ["name", [Decimal(1), Decimal(2), Decimal(3)]]
     cty_value = tuple_type.validate(value)
@@ -170,10 +170,10 @@ def test_ctytuple_with_list() -> None:
 @pytest.mark.cty_structural
 def test_ctytuple_with_map() -> None:
     """Test Tuple containing a Map."""
-    tuple_type = CtyTuple(element_types=[
+    tuple_type = CtyTuple(element_types=(
         CtyNumber(),
         CtyMap(element_type=CtyString()),
-    ])
+    ))
 
     value = [Decimal(42), {"key": "value"}]
     cty_value = tuple_type.validate(value)
@@ -190,7 +190,7 @@ def test_ctytuple_with_map() -> None:
 @pytest.mark.cty_errors
 def test_ctytuple_wrong_length_too_short() -> None:
     """Test CtyTuple validation error when value is too short."""
-    cty_type = CtyTuple(element_types=[CtyString(), CtyNumber(), CtyBool()])
+    cty_type = CtyTuple(element_types=(CtyString(), CtyNumber(), CtyBool()))
 
     with pytest.raises(CtyTupleValidationError):
         cty_type.validate(["hello", Decimal(42)])  # Missing third element
@@ -200,7 +200,7 @@ def test_ctytuple_wrong_length_too_short() -> None:
 @pytest.mark.cty_errors
 def test_ctytuple_wrong_length_too_long() -> None:
     """Test CtyTuple validation error when value is too long."""
-    cty_type = CtyTuple(element_types=[CtyString(), CtyNumber()])
+    cty_type = CtyTuple(element_types=(CtyString(), CtyNumber()))
 
     with pytest.raises(CtyTupleValidationError):
         cty_type.validate(["hello", Decimal(42), True])  # Extra element
@@ -210,7 +210,7 @@ def test_ctytuple_wrong_length_too_long() -> None:
 @pytest.mark.cty_errors
 def test_ctytuple_wrong_type_at_position() -> None:
     """Test CtyTuple validation error when element has wrong type."""
-    cty_type = CtyTuple(element_types=[CtyString(), CtyNumber()])
+    cty_type = CtyTuple(element_types=(CtyString(), CtyNumber()))
 
     with pytest.raises(Exception):  # Will raise some validation error
         cty_type.validate([42, "hello"])  # Types reversed
@@ -348,7 +348,7 @@ def test_ctyobject_with_tuple_attribute() -> None:
     """Test CtyObject with a Tuple attribute."""
     cty_type = CtyObject({
         "name": CtyString(),
-        "coordinates": CtyTuple(element_types=[CtyNumber(), CtyNumber()]),
+        "coordinates": CtyTuple(element_types=(CtyNumber(), CtyNumber())),
     })
 
     value = {
@@ -370,7 +370,7 @@ def test_ctyobject_all_types_mixed() -> None:
         "bool_val": CtyBool(),
         "list_val": CtyList(element_type=CtyString()),
         "map_val": CtyMap(element_type=CtyNumber()),
-        "tuple_val": CtyTuple(element_types=[CtyString(), CtyNumber()]),
+        "tuple_val": CtyTuple(element_types=(CtyString(), CtyNumber())),
         "object_val": CtyObject({"nested": CtyString()}),
     })
 
@@ -508,7 +508,7 @@ def test_nested_structural_msgpack_roundtrip() -> None:
     # Object containing Tuple
     cty_type = CtyObject({
         "name": CtyString(),
-        "coordinates": CtyTuple(element_types=[CtyNumber(), CtyNumber()]),
+        "coordinates": CtyTuple(element_types=(CtyNumber(), CtyNumber())),
     })
 
     value = {
