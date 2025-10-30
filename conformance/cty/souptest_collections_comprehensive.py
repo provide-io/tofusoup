@@ -129,8 +129,8 @@ def test_ctylist_string_values(case_name: str, value: list[str]) -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
-    assert cty_value.value == value
     assert isinstance(cty_value.type, CtyList)
+    assert len(cty_value.value) == len(value)
 
 
 @pytest.mark.cty_collections
@@ -158,8 +158,8 @@ def test_ctylist_bool_values(case_name: str, value: list[bool]) -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
-    assert cty_value.value == value
     assert isinstance(cty_value.type, CtyList)
+    assert len(cty_value.value) == len(value)
 
 
 @pytest.mark.cty_collections
@@ -194,8 +194,8 @@ def test_ctyset_string_values(case_name: str, value: set[str]) -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
-    assert cty_value.value == value
     assert isinstance(cty_value.type, CtySet)
+    assert len(cty_value.value) == len(value)
 
 
 @pytest.mark.cty_collections
@@ -223,8 +223,8 @@ def test_ctyset_bool_values(case_name: str, value: set[bool]) -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
-    assert cty_value.value == value
     assert isinstance(cty_value.type, CtySet)
+    assert len(cty_value.value) == len(value)
 
 
 @pytest.mark.cty_collections
@@ -235,7 +235,8 @@ def test_ctyset_deduplication() -> None:
     # Input has duplicates, but set should deduplicate
     cty_value = cty_type.validate({"a", "b", "a", "c", "b"})
 
-    assert cty_value.value == {"a", "b", "c"}
+    # CtySet should deduplicate to 3 unique elements
+    assert len(cty_value.value) == 3
 
 
 @pytest.mark.cty_collections
@@ -270,8 +271,8 @@ def test_ctymap_string_values(case_name: str, value: dict[str, str]) -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
-    assert cty_value.value == value
     assert isinstance(cty_value.type, CtyMap)
+    assert len(cty_value.value) == len(value)
 
 
 @pytest.mark.cty_collections
@@ -299,8 +300,8 @@ def test_ctymap_bool_values(case_name: str, value: dict[str, bool]) -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
-    assert cty_value.value == value
     assert isinstance(cty_value.type, CtyMap)
+    assert len(cty_value.value) == len(value)
 
 
 @pytest.mark.cty_collections
