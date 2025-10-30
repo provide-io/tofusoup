@@ -23,6 +23,8 @@ import uuid
 from provide.foundation import logger
 import pytest
 
+from tofusoup.common.config import load_tofusoup_config
+from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
 
 
@@ -72,10 +74,8 @@ def verify_kv_storage(storage_dir: Path, key: str) -> Path | None:
 @pytest.mark.asyncio
 async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir: Path) -> None:
     """Test Python client -> Go server without mTLS (known working case)"""
-    go_server_path = project_root / "bin" / "soup-go"
-
-    if not go_server_path.exists():
-        pytest.skip(f"Go RPC server not found at {go_server_path}")
+    config = load_tofusoup_config(project_root)
+    go_server_path = ensure_go_harness_build("soup-go", project_root, config)
 
     # Create test-specific directory for all artifacts
     test_dir = test_artifacts_dir / "pyclient_goserver_no_mtls"
@@ -164,10 +164,8 @@ async def test_pyclient_goserver_no_mtls(project_root: Path, test_artifacts_dir:
 @pytest.mark.asyncio
 async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifacts_dir: Path) -> None:
     """Test Python client -> Go server with auto mTLS"""
-    go_server_path = project_root / "bin" / "soup-go"
-
-    if not go_server_path.exists():
-        pytest.skip(f"Go RPC server not found at {go_server_path}")
+    config = load_tofusoup_config(project_root)
+    go_server_path = ensure_go_harness_build("soup-go", project_root, config)
 
     # Create test-specific directory for all artifacts
     test_dir = test_artifacts_dir / "pyclient_goserver_mtls_rsa"
@@ -260,10 +258,8 @@ async def test_pyclient_goserver_with_mtls_auto(project_root: Path, test_artifac
 @pytest.mark.asyncio
 async def test_pyclient_goserver_with_mtls_ecdsa(project_root: Path, test_artifacts_dir: Path) -> None:
     """Test Python client -> Go server with auto mTLS using ECDSA (P-256 curve)"""
-    go_server_path = project_root / "bin" / "soup-go"
-
-    if not go_server_path.exists():
-        pytest.skip(f"Go RPC server not found at {go_server_path}")
+    config = load_tofusoup_config(project_root)
+    go_server_path = ensure_go_harness_build("soup-go", project_root, config)
 
     # Create test-specific directory for all artifacts
     test_dir = test_artifacts_dir / "pyclient_goserver_mtls_ecdsa"

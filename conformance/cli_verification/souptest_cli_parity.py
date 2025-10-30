@@ -15,6 +15,9 @@ import subprocess
 
 import pytest
 
+from tofusoup.common.config import load_tofusoup_config
+from tofusoup.harness.logic import ensure_go_harness_build
+
 
 def extract_arguments_from_help(help_text: str) -> set[str]:
     """
@@ -163,13 +166,8 @@ class TestCLIParityMatrix:
     def soup_go_executable(self) -> Path:
         """Get path to soup-go executable."""
         project_root = Path(__file__).parent.parent.parent
-        # Check bin/ first (standard location after build)
-        bin_path = project_root / "bin" / "soup-go"
-        if bin_path.exists():
-            return bin_path
-
-        # Fallback to harnesses/bin
-        return project_root / "harnesses" / "bin" / "soup-go"
+        config = load_tofusoup_config(project_root)
+        return ensure_go_harness_build("soup-go", project_root, config)
 
     @pytest.mark.parametrize(
         "command_path",
