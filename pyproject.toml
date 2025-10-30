@@ -150,6 +150,18 @@ markers = [
     # Harness markers
     "harness_go: requires Go harness",
     "harness_python: requires Python harness",
+    # CTY comprehensive testing markers
+    "cty_primitives: tests for CTY primitive types (String, Number, Bool, Dynamic)",
+    "cty_collections: tests for CTY collection types (List, Set, Map)",
+    "cty_structural: tests for CTY structural types (Object, Tuple)",
+    "cty_roundtrip: tests for serialization/deserialization roundtrip",
+    "cty_interop: tests for cross-language interoperability",
+    "cty_types: tests for CTY type specifications",
+    "cty_unknowns: tests for refined unknown values",
+    "cty_marks: tests for value marks (sensitive, etc.)",
+    "cty_errors: tests for validation errors",
+    "cty_edge: tests for edge cases and stress testing",
+    "cty_cli: tests for CTY CLI commands",
     # Environment/dependency markers
     "requires_textual: marks tests that require Textual app context",
     "requires_docker: skip if docker not available",
