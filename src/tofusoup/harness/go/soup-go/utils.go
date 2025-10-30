@@ -3,37 +3,58 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 // GetCacheDir returns the XDG-compliant cache directory for tofusoup.
-// Respects XDG_CACHE_HOME environment variable if set, otherwise defaults
-// to ~/.cache/tofusoup
+// Priority (highest to lowest):
+// 1. TOFUSOUP_CACHE_DIR environment variable (explicit override)
+// 2. XDG_CACHE_HOME environment variable (XDG standard)
+// 3. Platform-specific defaults (macOS, Linux, Windows)
+// 4. System temp directory (last resort)
 func GetCacheDir() string {
-	// First check if XDG_CACHE_HOME is set
-	if xdgCache := os.Getenv("XDG_CACHE_HOME"); xdgCache != "" {
-		return filepath.Join(xdgCache, "tofusoup")
+	// Check explicit override first
+	if cacheDir := os.Getenv(EnvTofuSoupCacheDir); cacheDir != "" {
+		return cacheDir
 	}
 
-	// Fall back to ~/.cache/tofusoup
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		// If we can't determine home directory, fall back to /tmp
-		// This should rarely happen, but provides a safe fallback
-		return "/tmp/tofusoup-cache"
+	// Platform-specific logic
+	switch runtime.GOOS {
+	case "darwin":
+		// macOS: ~/Library/Caches/tofusoup
+		if home := os.Getenv(EnvHome); home != "" {
+			return filepath.Join(home, MacOSCacheParent, MacOSCacheSubdir, AppName)
+		}
+	case "linux":
+		// Linux: Check XDG_CACHE_HOME first
+		if xdgCache := os.Getenv(EnvXDGCacheHome); xdgCache != "" {
+			return filepath.Join(xdgCache, AppName)
+		}
+		// Fall back to ~/.cache/tofusoup (XDG default)
+		if home := os.Getenv(EnvHome); home != "" {
+			return filepath.Join(home, XDGCacheSubdir, AppName)
+		}
+	case "windows":
+		// Windows: %LOCALAPPDATA%\tofusoup\cache
+		if localAppData := os.Getenv(EnvLocalAppData); localAppData != "" {
+			return filepath.Join(localAppData, AppName, CacheDirName)
+		}
 	}
 
-	return filepath.Join(homeDir, ".cache", "tofusoup")
+	// Last resort: use system temp directory
+	return filepath.Join(os.TempDir(), AppName, CacheDirName)
 }
 
 // GetKVStorageDir returns the directory for KV storage.
-// Checks KV_STORAGE_DIR environment variable first, then falls back
-// to XDG cache directory.
+// Priority (highest to lowest):
+// 1. KV_STORAGE_DIR environment variable (explicit override, for backward compatibility)
+// 2. Subdirectory within cache directory
 func GetKVStorageDir() string {
-	// First check if KV_STORAGE_DIR is explicitly set (for backward compatibility)
-	if storageDir := os.Getenv("KV_STORAGE_DIR"); storageDir != "" {
+	// Check explicit override first (backward compatibility)
+	if storageDir := os.Getenv(EnvKVStorageDir); storageDir != "" {
 		return storageDir
 	}
 
-	// Fall back to XDG cache directory
-	return filepath.Join(GetCacheDir(), "kv-store")
+	// Use cache directory as base
+	return filepath.Join(GetCacheDir(), KVStoreDirName)
 }
