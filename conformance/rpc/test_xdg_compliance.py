@@ -112,7 +112,7 @@ class TestXDGCompliance:
         expected_parent = cache_dir / "harnesses"
 
         assert harness_path.parent == expected_parent, (
-            f"Harness should be built to {expected_parent}, " f"but was built to {harness_path.parent}"
+            f"Harness should be built to {expected_parent}, but was built to {harness_path.parent}"
         )
 
         assert harness_path.exists(), f"Harness binary not found at {harness_path}"
@@ -214,7 +214,9 @@ print("SUCCESS" if result.returncode == 0 else "FAILED")
 
         result = subprocess.run([sys.executable, str(test_script)], capture_output=True, text=True)
 
-        assert "SUCCESS" in result.stdout, f"Go harness failed to respect environment variables: {result.stderr}"
+        assert "SUCCESS" in result.stdout, (
+            f"Go harness failed to respect environment variables: {result.stderr}"
+        )
 
 
 @pytest.fixture

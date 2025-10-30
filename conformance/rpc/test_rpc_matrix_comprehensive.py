@@ -132,9 +132,7 @@ async def test_rpc_matrix_comprehensive(
             # 5. Verify storage isolation - check file exists in combo-specific directory
             storage_dir = test_dir / f"kv-{combo_id}"
             storage_file = storage_dir / f"kv-data-{test_key}"
-            assert storage_file.exists(), (
-                f"Storage file should exist at {storage_file}"
-            )
+            assert storage_file.exists(), f"Storage file should exist at {storage_file}"
 
             # Read the stored file and verify it's RAW (not enriched)
             with storage_file.open("rb") as f:
