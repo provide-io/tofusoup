@@ -146,7 +146,7 @@ func createTLSProvider(logger hclog.Logger, curveName string) func() (*tls.Confi
 }
 
 func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve, certFile, keyFile string) error {
-	logger.Info("🗄️✨ starting RPC plugin server",
+	logger.Info("🗄️✨ starting standalone RPC server",
 		"port", port,
 		"tls_mode", tlsMode,
 		"tls_key_type", tlsKeyType,
@@ -161,69 +161,53 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 
 	// Create KV implementation with XDG-compliant storage directory
 	storageDir := GetKVStorageDir()
+	logger.Info("📂 Using KV storage directory", "path", storageDir)
 	kv := NewKVImpl(logger.Named("kv"), storageDir)
 
-	// Configure TLS based on mode and curve
-	config := &plugin.ServeConfig{
-		HandshakeConfig: Handshake,
-		VersionedPlugins: map[int]plugin.PluginSet{
-			1: {
-				"kv_grpc": &KVGRPCPlugin{
-					Impl: kv,
-				},
-			},
-		},
-		Logger: logger,
-		// GRPCServer creates the gRPC server - go-plugin will apply TLS if TLSProvider is set
-		GRPCServer: func(opts []grpc.ServerOption) *grpc.Server {
-			logger.Debug("🔐 Creating gRPC server with options", "num_opts", len(opts))
-			return grpc.NewServer(opts...)
-		},
+	// Create gRPC server
+	var serverOpts []grpc.ServerOption
+
+	// Configure TLS if needed
+	if tlsMode != "disabled" {
+		// For now, we only support disabled mode for standalone server
+		// TLS support can be added later if needed
+		logger.Warn("⚠️  TLS modes other than 'disabled' not yet supported in standalone mode")
 	}
 
-	// Determine TLS configuration strategy based on tlsMode and tlsCurve:
-	// - If tlsMode is "disabled": no TLS
-	// - If tlsMode is "auto":
-	//   - If curve is "auto" or empty: use go-plugin's built-in AutoMTLS (P-521)
-	//   - If curve is specified: use TLSProvider with that curve
-	// - If tlsMode is "manual": use TLSProvider with cert files (not implemented yet)
+	// Create the gRPC server
+	grpcServer := grpc.NewServer(serverOpts...)
 
-	if tlsMode == "disabled" {
-		logger.Info("🔐 TLS disabled - no encryption")
-		// Don't set TLSProvider - go-plugin may still use AutoMTLS internally but that's OK
-	} else if tlsMode == "auto" {
-		useAutoMTLS := tlsCurve == "" || strings.ToLower(tlsCurve) == "auto"
+	// Register our KV service
+	proto.RegisterKVServer(grpcServer, &GRPCServer{
+		Impl:      kv,
+		logger:    logger,
+		startTime: time.Now(),
+	})
 
-		if useAutoMTLS {
-			logger.Info("🔐 Using AutoMTLS (go-plugin default, P-521 curve)")
-			// Don't set TLSProvider - let go-plugin handle it automatically
-			// This will use go-plugin's built-in AutoMTLS with P-521 curve
-		} else if tlsKeyType == "ec" {
-			logger.Info("🔐 Using TLSProvider with specific elliptic curve", "curve", tlsCurve)
-			config.TLSProvider = createTLSProvider(logger, tlsCurve)
-		} else {
-			// For now, we only support EC curves with TLSProvider
-			// RSA support could be added later
-			logger.Warn("⚠️  Only EC key type is supported with TLSProvider, falling back to AutoMTLS")
-			// Note: AutoMTLS will use go-plugin's default P-521 curve
-		}
-	} else if tlsMode == "manual" {
-		logger.Warn("⚠️  Manual TLS mode not implemented yet, falling back to AutoMTLS")
-	} else {
-		logger.Warn("⚠️  Unknown TLS mode, falling back to AutoMTLS", "mode", tlsMode)
+	// Start listening
+	addr := fmt.Sprintf(":%d", port)
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return fmt.Errorf("failed to listen on %s: %w", addr, err)
 	}
+
+	logger.Info("🗄️🎧 Server listening", "address", listener.Addr().String())
+	fmt.Printf("Server listening on %s\n", listener.Addr().String())
 
 	// Handle shutdown signal
 	go func() {
 		sig := <-shutdown
-		logger.Info("🗄️🛑 shutting down plugin server", "signal", sig)
-		os.Exit(0)
+		logger.Info("🗄️🛑 shutting down server", "signal", sig)
+		grpcServer.GracefulStop()
 	}()
 
-	// Start serving - this blocks until termination
-	logger.Info("🗄️✨ starting plugin server")
-	plugin.Serve(config)
-	logger.Info("🗄️✅ plugin server exited")
+	// Start serving - this blocks until shutdown
+	logger.Info("🗄️✨ starting server")
+	if err := grpcServer.Serve(listener); err != nil {
+		return fmt.Errorf("server failed: %w", err)
+	}
+
+	logger.Info("🗄️✅ server exited")
 	return nil
 }
 
