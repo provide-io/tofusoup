@@ -5,7 +5,7 @@
 
 """TODO: Add module docstring."""
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual.app import ComposeResult
 from textual.containers import Vertical
@@ -54,7 +54,7 @@ class SearchView(Vertical):
 
     SORT_KEYS: ClassVar[list[str]] = ["versions", "name"]
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._results_map: dict[RowKey, SearchResult] = {}
 

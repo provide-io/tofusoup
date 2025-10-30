@@ -150,7 +150,7 @@ def entry_point() -> None:
         # Debug logging - also write to file for visibility
         debug_log_path = get_cache_dir() / "logs" / "plugin_debug.log"
         debug_log_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(debug_log_path, "a") as f:
+        with debug_log_path.open("a") as f:
             import datetime
 
             f.write(f"\n\n=== Plugin start: {datetime.datetime.now()} ===\n")
@@ -203,7 +203,7 @@ def entry_point() -> None:
 
         # Start the server - this will block until shutdown
         try:
-            with open(debug_log_path, "a") as f:
+            with debug_log_path.open("a") as f:
                 f.write("About to start server.serve()\n")
 
             # RPCPluginServer may have created a loop during initialization
@@ -213,21 +213,21 @@ def entry_point() -> None:
                 if loop.is_closed():
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
-                    with open(debug_log_path, "a") as f:
+                    with debug_log_path.open("a") as f:
                         f.write("Previous loop was closed, created new one\n")
                 else:
-                    with open(debug_log_path, "a") as f:
+                    with debug_log_path.open("a") as f:
                         f.write("Using existing event loop\n")
             except RuntimeError:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-                with open(debug_log_path, "a") as f:
+                with debug_log_path.open("a") as f:
                     f.write("Created new event loop\n")
 
             # Run the server
             try:
                 loop.run_until_complete(server.serve())
-                with open(debug_log_path, "a") as f:
+                with debug_log_path.open("a") as f:
                     f.write("Server.serve() completed normally\n")
             finally:
                 loop.close()
@@ -235,12 +235,12 @@ def entry_point() -> None:
             sys.exit(0)
         except KeyboardInterrupt:
             logger.info("Plugin server interrupted by user")
-            with open(debug_log_path, "a") as f:
+            with debug_log_path.open("a") as f:
                 f.write("KeyboardInterrupt\n")
             sys.exit(0)
         except Exception as e:
             logger.error(f"Plugin server failed to start: {e}", exc_info=True)
-            with open(debug_log_path, "a") as f:
+            with debug_log_path.open("a") as f:
                 import traceback as tb
 
                 f.write(f"Exception: {e!s}\n")

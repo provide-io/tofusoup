@@ -10,6 +10,7 @@ import pytest
 
 from tofusoup.registry.models.module import Module, ModuleVersion
 from tofusoup.registry.models.provider import Provider, ProviderVersion
+from tofusoup.registry.opentofu import OpenTofuRegistry
 from tofusoup.registry.terraform import IBMTerraformRegistry
 
 

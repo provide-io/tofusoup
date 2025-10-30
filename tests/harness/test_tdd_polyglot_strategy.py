@@ -5,6 +5,8 @@
 
 """TDD Tests for the Polyglot CLI Strategy."""
 
+from pathlib import Path
+
 from click.testing import CliRunner
 from provide.testkit.mocking import MagicMock, patch
 import pytest
@@ -28,8 +30,6 @@ class TestPolyglotStrategyContract:
         assert len(GO_HARNESS_CONFIG) == 2
         assert "go-cty" not in GO_HARNESS_CONFIG
         assert "go-hcl" not in GO_HARNESS_CONFIG
-
-from pathlib import Path
 
     def test_harness_list_shows_soup_go(self, runner: CliRunner, tmp_path: Path) -> None:
         """CONTRACT: `soup harness list` must show the unified `soup-go` harness."""

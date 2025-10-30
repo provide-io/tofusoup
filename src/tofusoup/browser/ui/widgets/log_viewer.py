@@ -6,8 +6,10 @@
 """TODO: Add module docstring."""
 
 import threading
+from typing import Any
 
 from rich.text import Text
+from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import RichLog
 
@@ -22,12 +24,12 @@ class LogViewer(Widget):
     }
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._log_widget = RichLog(wrap=True, highlight=True, markup=True)
         self.border_title = "🪵 Logs"
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         yield self._log_widget
 
     def write(self, text: str) -> None:

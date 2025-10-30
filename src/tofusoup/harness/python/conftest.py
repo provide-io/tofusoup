@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 
+from _pytest.fixtures import SubRequest
 import pytest
 
 
@@ -34,7 +35,7 @@ def build_harness(harness_name: str, source_path: Path) -> Path:
 
 
 @pytest.fixture(scope="session")
-def go_cty_harness(request) -> Path:
+def go_cty_harness(request: SubRequest) -> Path:
     # Use request.config.rootpath to find the harness relative to the test root
     root_path = request.config.rootpath
     # Adjusted path to new Go harness location
@@ -55,7 +56,7 @@ def go_cty_harness(request) -> Path:
 
 
 @pytest.fixture(scope="session")
-def go_tfwire_harness(request) -> Path:
+def go_tfwire_harness(request: SubRequest) -> Path:
     root_path = request.config.rootpath
     # Adjusted path to new Go harness location
     source_file = root_path / "harnesses/go/tfwire/harness.go"
@@ -65,7 +66,7 @@ def go_tfwire_harness(request) -> Path:
 
 
 @pytest.fixture(scope="session")
-def go_kvstore_harness(request) -> Path:
+def go_kvstore_harness(request: SubRequest) -> Path:
     root_path = request.config.rootpath
     # Path should align with where `generate-harness kvstore-go` places it or its source.
     # Assuming `harnesses/go/rpc-kvstore/server/main.go` is the source for the server part.

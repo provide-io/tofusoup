@@ -120,7 +120,7 @@ def clean_go_harness_artifacts(harness_name: str, project_root: pathlib.Path) ->
 
     if output_path.exists():
         try:
-            os.remove(output_path)
+            output_path.unlink()
             logger.info(f"Cleaned Go harness '{harness_name}' at {output_path}")
         except OSError as e:
             logger.error(f"Failed to remove Go harness '{harness_name}': {e}")

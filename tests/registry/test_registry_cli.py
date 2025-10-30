@@ -6,7 +6,7 @@
 """TODO: Add module docstring."""
 
 from provide.testkit import isolated_cli_runner
-from provide.testkit.mocking import AsyncMock, patch
+from provide.testkit.mocking import AsyncMock, MagicMock, patch
 
 from tofusoup.registry import cli as registry_cli
 from tofusoup.registry.search.engine import SearchResult

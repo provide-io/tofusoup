@@ -6,6 +6,7 @@
 """TODO: Add module docstring."""
 
 import json
+from typing import TextIO
 
 import click
 
@@ -17,7 +18,7 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
-def encode(input_file) -> None:
+def encode(input_file: TextIO) -> None:
     """Encode data to JSON format."""
     data = json.load(input_file)
     print(json.dumps(data, indent=2))

@@ -7,7 +7,7 @@
 
 import asyncio
 from collections.abc import Awaitable, Callable
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import click
 from provide.foundation import logger
@@ -390,7 +390,14 @@ async def _fetch_tofu_data(
 
 
 def _display_comparison(
-    tf_data, tf_latest, tf_count, tofu_data, tofu_latest, tofu_count, tf_versions, tofu_versions
+    tf_data: Any,
+    tf_latest: str,
+    tf_count: int,
+    tofu_data: Any,
+    tofu_latest: str,
+    tofu_count: int,
+    tf_versions: list[Any],
+    tofu_versions: list[Any],
 ) -> None:
     click.echo(f"\n{'Registry':<20} | {'Status':<12} | {'Latest':<10} | {'Versions':<8}")
     click.echo("-" * 60)

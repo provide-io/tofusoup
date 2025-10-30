@@ -5,6 +5,8 @@
 
 """TODO: Add module docstring."""
 
+from typing import Any, ClassVar
+
 from provide.foundation import LoggingConfig, TelemetryConfig, get_hub, logger
 from textual.app import App, ComposeResult
 from textual.message import Message
@@ -97,9 +99,9 @@ class DetailScreen(Screen):
     """A screen to display detailed information about an item."""
 
     # FIX: Add key binding to allow 'escape' to pop the screen.
-    BINDINGS = [("escape", "app.pop_screen", "Back")]
+    BINDINGS: ClassVar[list[tuple[str, str, str]]] = [("escape", "app.pop_screen", "Back")]
 
-    def __init__(self, item_details: SearchResult, **kwargs) -> None:
+    def __init__(self, item_details: SearchResult, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.item_details = item_details
 

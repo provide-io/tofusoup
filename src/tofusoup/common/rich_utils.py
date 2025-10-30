@@ -12,7 +12,7 @@ from rich import print as rich_print
 from rich.tree import Tree
 
 
-def build_rich_tree_from_cty_json_comparable(
+def build_rich_tree_from_cty_json_comparable(  # noqa: C901
     tree_node: Tree, data: dict[str, Any], name: str = "value"
 ) -> None:
     """

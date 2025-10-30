@@ -5,6 +5,7 @@
 
 """TODO: Add module docstring."""
 
+from collections.abc import AsyncGenerator
 from pathlib import Path
 
 import pytest
@@ -19,7 +20,7 @@ from tofusoup.rpc.client import KVClient
 # Placeholder for server process management.
 # A proper fixture in conftest.py would be better.
 @pytest.fixture(scope="module")
-async def python_kv_server_process():
+async def python_kv_server_process() -> AsyncGenerator[None, None]:
     """Starts the Python KV server as a subprocess for testing."""
     # Assuming tofusoup is installed and in path, or use sys.executable
     # We need to ensure the server runs in the background and we can get its port/endpoint.
@@ -112,7 +113,7 @@ async def python_kv_server_process():
 
 
 @pytest.mark.asyncio
-async def test_pyclient_pyserver_put_get(tmp_path) -> None:
+async def test_pyclient_pyserver_put_get(tmp_path: Path) -> None:
     """
     Tests Put and Get operations between Python KVClient and Python KVServer.
     This test assumes `tofusoup/src/tofusoup/rpc/server.py` can act as a server executable.

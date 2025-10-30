@@ -10,6 +10,8 @@ import sys
 
 sys.path.append("/app/pyvider-cty/src")
 
+from typing import TextIO
+
 import click
 
 
@@ -20,7 +22,7 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
-def from_hcl_json(input_file) -> None:
+def from_hcl_json(input_file: TextIO) -> None:
     """
     Convert a CTY-JSON file (from go-hcl) to a JSONComparableValue.
 
@@ -33,7 +35,7 @@ def from_hcl_json(input_file) -> None:
 
 @cli.command()
 @click.argument("input_file", type=click.File("r"))
-def to_hcl_json(input_file) -> None:
+def to_hcl_json(input_file: TextIO) -> None:
     """
     Convert a JSONComparableValue file back to a CTY-JSON file.
 

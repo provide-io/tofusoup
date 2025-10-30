@@ -29,7 +29,7 @@ class TofuSoupConfig(RuntimeConfig):
     """Configuration for TofuSoup operations."""
 
     # File paths and directories
-    project_root: pathlib.Path | None = field(default=None, description="Project root directory")
+    project_root: pathlib.Path | None = field(default=None, description="Project root directory")  # noqa: RUF009
     config_file: str | None = field(default=None, description="Explicit configuration file path")
 
     # Test configuration
@@ -64,7 +64,7 @@ def _load_config_from_file(file_path: pathlib.Path) -> dict[str, Any] | None:
 
     try:
         logger.info(f"🗣️ Parsing TofuSoup TOML configuration file: {file_path}")
-        with open(file_path, "rb") as f:
+        with file_path.open("rb") as f:
             config = tomllib.load(f)
         logger.info(f"🗣️ Successfully loaded and parsed TOML configuration from {file_path}")
         return config

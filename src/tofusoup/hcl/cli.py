@@ -33,7 +33,7 @@ def hcl_cli() -> None:
 @hcl_cli.command("view")
 @click.argument("filepath", type=click.Path(exists=True, dir_okay=False, readable=True))
 @click.pass_context
-def view_command(ctx, filepath: str) -> None:
+def view_command(ctx: click.Context, filepath: str) -> None:
     """Parses an HCL file and displays its structure as a CTY representation."""
     verbose = ctx.obj.get("VERBOSE", False)
     input_file_path = pathlib.Path(filepath)
@@ -78,7 +78,7 @@ def view_command(ctx, filepath: str) -> None:
     help='Format for the output. Inferred if not provided. Default can be set in soup.toml via command_options."hcl.convert".default_output_format.',
 )
 @click.pass_context
-def convert_command(ctx, input_file: str, output_file: str, output_format_opt: str | None) -> None:
+def convert_command(ctx: click.Context, input_file: str, output_file: str, output_format_opt: str | None) -> None:
     """
     Converts an HCL file to JSON or Msgpack (via CTY representation).
 

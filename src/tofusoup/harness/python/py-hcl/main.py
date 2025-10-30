@@ -11,6 +11,8 @@ import sys
 sys.path.append("/app/pyvider-hcl/src")
 sys.path.append("/app/pyvider-cty/src")
 
+from typing import TextIO
+
 import click
 
 from pyvider import hcl
@@ -23,7 +25,7 @@ def cli() -> None:
 
 @click.command()
 @click.argument("input_file", type=click.File("r"))
-def parse(input_file) -> None:
+def parse(input_file: TextIO) -> None:
     """Parse an HCL file and print its structure as JSON."""
     hcl_dict = hcl.load(input_file)
     print(json.dumps(hcl_dict, indent=2))

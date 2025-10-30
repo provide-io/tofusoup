@@ -20,7 +20,7 @@ class KVProtocol(RPCPluginProtocol):
         """Get the gRPC service descriptors."""
         return kv_pb2_grpc, "KV"
 
-    async def add_to_server(self, server, handler) -> None:
+    async def add_to_server(self, server: Any, handler: Any) -> None:
         if not hasattr(handler, "Get") or not callable(handler.Get):
             raise ValueError("Invalid KV handler: missing 'Get' method")
 

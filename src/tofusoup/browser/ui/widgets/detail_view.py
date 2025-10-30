@@ -5,6 +5,9 @@
 
 """TODO: Add module docstring."""
 
+from typing import Any
+
+from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Markdown
 
@@ -20,7 +23,7 @@ class DetailView(VerticalScroll):
     }
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._markdown = Markdown()
         self._raw_markdown_content = ""
@@ -36,7 +39,7 @@ class DetailView(VerticalScroll):
         self._raw_markdown_content = initial_content
         self._markdown.update(initial_content)
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         yield self._markdown
 
     def update_content(self, result: SearchResult | None) -> None:

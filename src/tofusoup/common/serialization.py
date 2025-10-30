@@ -19,7 +19,8 @@ from .exceptions import ConversionError
 def load_json_to_python(filepath: str) -> Any:
     """Loads a JSON file and parses it into a Python object (dict, list, etc.)."""
     try:
-        with open(filepath, encoding="utf-8") as f:
+        from pathlib import Path
+        with Path(filepath).open(encoding="utf-8") as f:
             data = json.load(f, parse_float=decimal.Decimal, parse_int=decimal.Decimal)
         return data
     except OSError as e:
@@ -35,7 +36,8 @@ def load_json_to_python(filepath: str) -> Any:
 def load_msgpack_to_python(filepath: str) -> Any:
     """Loads a Msgpack file and deserializes it into a Python object."""
     try:
-        with open(filepath, "rb") as f:
+        from pathlib import Path
+        with Path(filepath).open("rb") as f:
             data = msgpack.unpack(f, raw=False, use_list=True)
         return data
     except OSError as e:
@@ -81,8 +83,9 @@ def dump_python_to_msgpack_bytes(data: Any) -> bytes:
 
 def dump_python_to_json_file(data: Any, filepath: str, pretty: bool = True) -> None:
     try:
+        from pathlib import Path
         json_string = dump_python_to_json_string(data, pretty=pretty)
-        with open(filepath, "w", encoding="utf-8") as f:
+        with Path(filepath).open("w", encoding="utf-8") as f:
             f.write(json_string)
             if not json_string.endswith("\n"):
                 f.write("\n")
@@ -96,8 +99,9 @@ def dump_python_to_json_file(data: Any, filepath: str, pretty: bool = True) -> N
 
 def dump_python_to_msgpack_file(data: Any, filepath: str) -> None:
     try:
+        from pathlib import Path
         msgpack_bytes = dump_python_to_msgpack_bytes(data)
-        with open(filepath, "wb") as f:
+        with Path(filepath).open("wb") as f:
             f.write(msgpack_bytes)
     except OSError as e:
         raise ConversionError(f"Error writing Msgpack to file {filepath}: {e}") from e

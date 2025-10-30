@@ -34,7 +34,7 @@ def harness_cli() -> None:
 @click.argument("harness_names", nargs=-1)
 @click.option("--all", "clean_all", is_flag=True, help="Clean all harnesses.")
 @click.pass_context
-def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool) -> None:
+def clean_harness_command(ctx: click.Context, harness_names: tuple[str, ...], clean_all: bool) -> None:
     """Cleans (removes) specified test harnesses."""
     project_root = ctx.obj["PROJECT_ROOT"]
     harness_bin_dir = get_cache_dir() / "harnesses"
@@ -55,7 +55,7 @@ def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool) 
             harness_path = harness_bin_dir / output_name
             if harness_path.exists():
                 try:
-                    os.remove(harness_path)
+                    harness_path.unlink()
                     rich_print(
                         f"[green]Removed harness '{name}': {harness_path.relative_to(project_root)}[/green]"
                     )
@@ -72,7 +72,7 @@ def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool) 
 
 @harness_cli.command("list")
 @click.pass_context
-def list_harnesses_command(ctx) -> None:
+def list_harnesses_command(ctx: click.Context) -> None:
     """Lists all available harnesses and their status."""
     project_root = ctx.obj["PROJECT_ROOT"]
     table = Table(title="Go Harnesses")
@@ -98,7 +98,7 @@ def list_harnesses_command(ctx) -> None:
 )
 @click.option("--log-level", default="info", help="Set the logging level for the harness build.")
 @click.pass_context
-def build_harness_command(ctx, harness_names: tuple[str, ...], force_rebuild: bool, log_level: str) -> None:
+def build_harness_command(ctx: click.Context, harness_names: tuple[str, ...], force_rebuild: bool, log_level: str) -> None:
     """Builds specified test harnesses."""
     project_root = ctx.obj["PROJECT_ROOT"]
     loaded_config = ctx.obj.get("TOFUSOUP_CONFIG", {})
