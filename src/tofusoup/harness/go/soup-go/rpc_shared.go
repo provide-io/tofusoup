@@ -76,11 +76,8 @@ func (p *KVGRPCPlugin) GRPCServer(broker *plugin.GRPCBroker, s *grpc.Server) err
 
 	if p.Impl == nil {
 		logger.Warn("📡⚠️ no implementation provided, using default implementation")
-		// Use environment variable or default to /tmp
-		storageDir := os.Getenv("KV_STORAGE_DIR")
-		if storageDir == "" {
-			storageDir = "/tmp"
-		}
+		// Use XDG-compliant cache directory
+		storageDir := GetKVStorageDir()
 		p.Impl = NewKVImpl(logger.Named("kv"), storageDir)
 	}
 
@@ -287,7 +284,7 @@ type KVImpl struct {
 // NewKVImpl creates a new KVImpl with a configurable storage directory
 func NewKVImpl(logger hclog.Logger, storageDir string) *KVImpl {
 	if storageDir == "" {
-		storageDir = "/tmp"
+		storageDir = GetKVStorageDir()
 	}
 	logger.Debug("Initializing KVImpl", "storage_dir", storageDir)
 	return &KVImpl{

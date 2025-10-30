@@ -159,11 +159,8 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
-	// Create KV implementation with storage directory from environment or default
-	storageDir := os.Getenv("KV_STORAGE_DIR")
-	if storageDir == "" {
-		storageDir = "/tmp"
-	}
+	// Create KV implementation with XDG-compliant storage directory
+	storageDir := GetKVStorageDir()
 	kv := NewKVImpl(logger.Named("kv"), storageDir)
 
 	// Configure TLS based on mode and curve
@@ -394,8 +391,8 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 
 	cmd := exec.Command(serverPath, "rpc", "server-start")
 	cmd.Env = append(os.Environ(),
-		"PLUGIN_AUTO_MTLS=true",  // Explicitly enable AutoMTLS for Python server
-		"KV_STORAGE_DIR=/tmp",    // Set storage directory
+		"PLUGIN_AUTO_MTLS=true",                            // Explicitly enable AutoMTLS for Python server
+		fmt.Sprintf("KV_STORAGE_DIR=%s", GetKVStorageDir()), // Set XDG-compliant storage directory
 	)
 
 	// Create client
