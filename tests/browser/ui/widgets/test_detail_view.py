@@ -18,6 +18,7 @@ pytestmark = pytest.mark.browser
 
 from textual.app import ComposeResult
 
+
 class DetailViewScreen(Screen):
     """A simple screen to host the DetailView widget for testing."""
 

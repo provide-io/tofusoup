@@ -117,7 +117,9 @@ def server_cmd(
         sys.exit(1)
 
 
-def _get_client_cmd(language: str, operation: str, args: tuple, server: str, tls: bool, ca_file: str | None) -> list[str]:
+def _get_client_cmd(
+    language: str, operation: str, args: tuple, server: str, tls: bool, ca_file: str | None
+) -> list[str]:
     binary_path = get_stock_binary_path(language, "client")
 
     if not binary_path.exists():
@@ -145,6 +147,7 @@ def _get_client_cmd(language: str, operation: str, args: tuple, server: str, tls
 
     return cmd
 
+
 def _run_client_cmd(cmd: list[str], language: str, operation: str, server: str) -> None:
     logger.info("Running Stock client", language=language, operation=operation, server=server)
     try:
@@ -157,6 +160,7 @@ def _run_client_cmd(cmd: list[str], language: str, operation: str, server: str) 
     except Exception as e:
         console.print(f"[red]Error running client: {e}[/red]")
         sys.exit(1)
+
 
 @stock_cli.command("client")
 @click.argument("language", type=click.Choice(SUPPORTED_LANGUAGES))

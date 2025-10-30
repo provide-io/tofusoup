@@ -136,7 +136,9 @@ class TestHarnessConformance:
             pytest.skip("RPC module not available")
 
     @pytest.mark.benchmark
-    def test_performance_comparison(self, go_harness_path: pathlib.Path, benchmark: "pytest_benchmark.fixture.BenchmarkFixture") -> None:
+    def test_performance_comparison(
+        self, go_harness_path: pathlib.Path, benchmark: "pytest_benchmark.fixture.BenchmarkFixture"
+    ) -> None:
         """Benchmark Go harness vs Python module performance."""
 
         def run_go_cty_validation() -> None:

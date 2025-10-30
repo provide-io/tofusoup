@@ -21,7 +21,9 @@ class MockRegistry(AsyncMock):
     async def __aenter__(self) -> "MockRegistry":
         return self
 
-    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None) -> None:
+    async def __aexit__(
+        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: object | None
+    ) -> None:
         pass
 
     @property

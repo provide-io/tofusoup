@@ -14,7 +14,10 @@ from provide.testkit.mocking import MagicMock
 from tofusoup.wire.cli import to_json, to_msgpack
 
 
-def test_to_msgpack_command(monkeypatch) -> None:
+from _pytest.monkeypatch import MonkeyPatch
+
+
+def test_to_msgpack_command(monkeypatch: MonkeyPatch) -> None:
     """Verify the to-msgpack CLI command calls the logic layer correctly."""
     mock_convert = MagicMock()
     monkeypatch.setattr("tofusoup.wire.cli.convert_json_to_msgpack", mock_convert)
@@ -29,7 +32,7 @@ def test_to_msgpack_command(monkeypatch) -> None:
         mock_convert.assert_called_once()
 
 
-def test_to_json_command(monkeypatch) -> None:
+def test_to_json_command(monkeypatch: MonkeyPatch) -> None:
     """Verify the to-json CLI command calls the logic layer correctly."""
     mock_convert = MagicMock()
     monkeypatch.setattr("tofusoup.wire.cli.convert_msgpack_to_json", mock_convert)
@@ -51,7 +54,7 @@ def test_to_json_command(monkeypatch) -> None:
         mock_convert.assert_called_once()
 
 
-def test_cli_handles_logic_errors(monkeypatch) -> None:
+def test_cli_handles_logic_errors(monkeypatch: MonkeyPatch) -> None:
     """Verify the CLI reports errors from the logic layer gracefully."""
     mock_convert = MagicMock(side_effect=msgpack.exceptions.PackException("Packing failed"))
     monkeypatch.setattr("tofusoup.wire.cli.convert_json_to_msgpack", mock_convert)

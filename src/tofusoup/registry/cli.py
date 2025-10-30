@@ -352,7 +352,9 @@ def search_command(term: tuple[str, ...], registry_name: str, resource_type: str
         click.echo(f"A critical error occurred: {e}", err=True)
 
 
-async def _fetch_tf_data(resource_type: str, namespace: str, name: str, provider_name: str | None) -> tuple[dict | None, list, str, int]:
+async def _fetch_tf_data(
+    resource_type: str, namespace: str, name: str, provider_name: str | None
+) -> tuple[dict | None, list, str, int]:
     tf_registry = IBMTerraformRegistry(RegistryConfig(base_url="https://registry.terraform.io"))
     async with tf_registry:
         try:
@@ -368,7 +370,10 @@ async def _fetch_tf_data(resource_type: str, namespace: str, name: str, provider
         except Exception:
             return None, [], "Not found", 0
 
-async def _fetch_tofu_data(resource_type: str, namespace: str, name: str, provider_name: str | None) -> tuple[dict | None, list, str, int]:
+
+async def _fetch_tofu_data(
+    resource_type: str, namespace: str, name: str, provider_name: str | None
+) -> tuple[dict | None, list, str, int]:
     tofu_registry = OpenTofuRegistry()
     async with tofu_registry:
         try:
@@ -384,7 +389,10 @@ async def _fetch_tofu_data(resource_type: str, namespace: str, name: str, provid
         except Exception:
             return None, [], "Not found", 0
 
-def _display_comparison(tf_data, tf_latest, tf_count, tofu_data, tofu_latest, tofu_count, tf_versions, tofu_versions):
+
+def _display_comparison(
+    tf_data, tf_latest, tf_count, tofu_data, tofu_latest, tofu_count, tf_versions, tofu_versions
+):
     click.echo(f"\n{'Registry':<20} | {'Status':<12} | {'Latest':<10} | {'Versions':<8}")
     click.echo("-" * 60)
 
@@ -408,6 +416,7 @@ def _display_comparison(tf_data, tf_latest, tf_count, tofu_data, tofu_latest, to
 
         if len(all_versions) > 10:
             click.echo(f"  ... and {len(all_versions) - 10} more versions")
+
 
 # Compare command
 @registry_cli.command("compare")
@@ -434,10 +443,16 @@ def compare_command(resource: str) -> None:
         click.echo(f"\nComparing {resource_type}: {resource}")
         click.echo("=" * 60)
 
-        tf_data, tf_versions, tf_latest, tf_count = await _fetch_tf_data(resource_type, namespace, name, provider_name)
-        tofu_data, tofu_versions, tofu_latest, tofu_count = await _fetch_tofu_data(resource_type, namespace, name, provider_name)
+        tf_data, tf_versions, tf_latest, tf_count = await _fetch_tf_data(
+            resource_type, namespace, name, provider_name
+        )
+        tofu_data, tofu_versions, tofu_latest, tofu_count = await _fetch_tofu_data(
+            resource_type, namespace, name, provider_name
+        )
 
-        _display_comparison(tf_data, tf_latest, tf_count, tofu_data, tofu_latest, tofu_count, tf_versions, tofu_versions)
+        _display_comparison(
+            tf_data, tf_latest, tf_count, tofu_data, tofu_latest, tofu_count, tf_versions, tofu_versions
+        )
 
     safe_async_run(compare_resources)
 

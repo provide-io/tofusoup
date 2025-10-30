@@ -22,6 +22,7 @@ pytestmark = pytest.mark.browser
 
 from textual.app import ComposeResult
 
+
 class SearchViewScreen(Screen):
     """A simple screen to host the SearchView widget for testing."""
 

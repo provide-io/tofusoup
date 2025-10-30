@@ -180,6 +180,7 @@ def _get_target_resources(state: dict[str, Any], private_only: bool) -> list[dic
             )
     return target_resources
 
+
 def _display_state_overview(target_resources: list, resources_with_private: list, private_only: bool) -> None:
     if private_only:
         console.print(f"[bold]Found {len(resources_with_private)} resources with private state:[/bold]\n")
@@ -197,6 +198,7 @@ def _display_state_overview(target_resources: list, resources_with_private: list
         console.print(
             "[dim]💡 Use [bold]--private-only[/bold] to show only resources with private state[/dim]"
         )
+
 
 @state_cli.command("show")
 @click.argument(
@@ -237,7 +239,14 @@ def show_state(state_file: str, resource: str | None, show_encrypted: bool, priv
 
     if resource:
         resource_type, resource_name = resource.split(".", 1) if "." in resource else (resource, "")
-        found_resource = next((res for res in target_resources if res["type"] == resource_type and (not resource_name or res["name"] == resource_name)), None)
+        found_resource = next(
+            (
+                res
+                for res in target_resources
+                if res["type"] == resource_type and (not resource_name or res["name"] == resource_name)
+            ),
+            None,
+        )
 
         if found_resource:
             display_resource_details(found_resource, show_encrypted)
