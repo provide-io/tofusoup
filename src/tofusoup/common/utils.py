@@ -26,26 +26,48 @@ def get_venv_bin_path() -> pathlib.Path:
 
 
 def get_cache_dir() -> pathlib.Path:
-    """Get XDG-compliant cache directory for tofusoup.
+    """Get cache directory for tofusoup.
 
     Priority (highest to lowest):
     1. TOFUSOUP_CACHE_DIR environment variable (explicit override)
-    2. XDG_CACHE_HOME environment variable (XDG standard)
-    3. Platform-specific defaults (~/.cache/tofusoup on Linux/macOS)
+    2. XDG_CACHE_HOME environment variable (XDG standard, Linux)
+    3. Platform-specific defaults:
+       - macOS: ~/Library/Caches/tofusoup
+       - Linux: ~/.cache/tofusoup
+       - Windows: %LOCALAPPDATA%/tofusoup/cache
 
     Returns:
         Path to cache directory
     """
+    import platform
+
     # Check explicit override first
     if tofusoup_cache := os.getenv("TOFUSOUP_CACHE_DIR"):
         return pathlib.Path(tofusoup_cache)
 
-    # Check XDG_CACHE_HOME
-    if xdg_cache := os.getenv("XDG_CACHE_HOME"):
-        return pathlib.Path(xdg_cache) / "tofusoup"
+    # Platform-specific logic
+    system = platform.system()
 
-    # Default to ~/.cache/tofusoup (XDG default)
-    return pathlib.Path.home() / ".cache" / "tofusoup"
+    if system == "Darwin":  # macOS
+        # macOS uses ~/Library/Caches
+        return pathlib.Path.home() / "Library" / "Caches" / "tofusoup"
+    elif system == "Linux":
+        # Check XDG_CACHE_HOME first (Linux standard)
+        if xdg_cache := os.getenv("XDG_CACHE_HOME"):
+            return pathlib.Path(xdg_cache) / "tofusoup"
+        # Fall back to ~/.cache/tofusoup
+        return pathlib.Path.home() / ".cache" / "tofusoup"
+    elif system == "Windows":
+        # Windows uses %LOCALAPPDATA%
+        if local_app_data := os.getenv("LOCALAPPDATA"):
+            return pathlib.Path(local_app_data) / "tofusoup" / "cache"
+        # Fallback if LOCALAPPDATA not set
+        return pathlib.Path.home() / "AppData" / "Local" / "tofusoup" / "cache"
+    else:
+        # Unknown platform - use XDG standard
+        if xdg_cache := os.getenv("XDG_CACHE_HOME"):
+            return pathlib.Path(xdg_cache) / "tofusoup"
+        return pathlib.Path.home() / ".cache" / "tofusoup"
 
 
 def calculate_sha256(filepath: pathlib.Path) -> str:
