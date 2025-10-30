@@ -67,16 +67,8 @@ class GoKVServer(ReferenceKVServer):
         args.extend(self.crypto_config.to_go_cli_args())
         print(f"DEBUG: soup-go args: {args}")
 
-        # Add certificate paths
-        if self.crypto_config.auth_mode == "auto_mtls":
-            args.extend(
-                [
-                    f"--ca-cert={cert_files['ca_cert']}",
-                    f"--server-cert={cert_files['server_cert']}",
-                    f"--server-key={cert_files['server_key']}",
-                    f"--client-ca={cert_files['ca_cert']}",  # For client verification
-                ]
-            )
+        # For auto_mtls mode, the Go server generates certificates automatically
+        # No additional certificate flags needed
 
         # Set up environment
         env = os.environ.copy()
