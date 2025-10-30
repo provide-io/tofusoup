@@ -9,13 +9,13 @@ import importlib.util
 from pathlib import Path
 import sys
 
+from _pytest.config import Config
+from _pytest.monkeypatch import MonkeyPatch
+from _pytest.nodes import Item
 from provide.testkit import (
     reset_foundation_setup_for_testing,
 )
 import pytest
-from _pytest.config import Config
-from _pytest.nodes import Item
-from _pytest.monkeypatch import MonkeyPatch
 
 
 def pytest_configure(config: Config) -> None:

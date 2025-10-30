@@ -6,11 +6,9 @@
 """TODO: Add module docstring."""
 
 import pytest
+from pytest_httpx import HTTPXMock
 
 from tofusoup.registry.opentofu import OpenTofuRegistry
-
-
-from pytest_httpx import HTTPXMock
 
 
 @pytest.mark.asyncio

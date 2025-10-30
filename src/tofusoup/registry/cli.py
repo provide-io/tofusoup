@@ -6,6 +6,8 @@
 """Commands for querying and managing Terraform/OpenTofu registries."""
 
 import asyncio
+from collections.abc import Awaitable, Callable
+from typing import TypeVar
 
 import click
 from provide.foundation import logger
@@ -17,9 +19,6 @@ from tofusoup.registry.search.engine import (
     async_search_runner,
 )
 from tofusoup.registry.terraform import IBMTerraformRegistry
-
-
-from typing import Awaitable, Callable, TypeVar
 
 T = TypeVar("T")
 
@@ -392,7 +391,7 @@ async def _fetch_tofu_data(
 
 def _display_comparison(
     tf_data, tf_latest, tf_count, tofu_data, tofu_latest, tofu_count, tf_versions, tofu_versions
-):
+) -> None:
     click.echo(f"\n{'Registry':<20} | {'Status':<12} | {'Latest':<10} | {'Versions':<8}")
     click.echo("-" * 60)
 

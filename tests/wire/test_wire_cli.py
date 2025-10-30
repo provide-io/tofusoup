@@ -7,14 +7,12 @@
 
 from pathlib import Path
 
+from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 import msgpack
 from provide.testkit.mocking import MagicMock
 
 from tofusoup.wire.cli import to_json, to_msgpack
-
-
-from _pytest.monkeypatch import MonkeyPatch
 
 
 def test_to_msgpack_command(monkeypatch: MonkeyPatch) -> None:

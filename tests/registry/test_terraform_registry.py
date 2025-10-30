@@ -6,12 +6,10 @@
 """TODO: Add module docstring."""
 
 import pytest
+from pytest_httpx import HTTPXMock
 
 from tofusoup.registry.base import RegistryConfig
 from tofusoup.registry.terraform import IBMTerraformRegistry
-
-
-from pytest_httpx import HTTPXMock
 
 
 @pytest.mark.asyncio
