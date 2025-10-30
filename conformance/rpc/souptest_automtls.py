@@ -13,6 +13,68 @@ import pytest
 from tofusoup.rpc.client import KVClient
 
 
+async def _test_single_config(name: str, key_type: str, key_size: int) -> tuple[str, str, int, bool, str]:
+    """Test a single configuration and return results."""
+    print(f"  Testing {name}...", end=" ", flush=True)
+
+    client = KVClient(
+        "/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/bin/soup-go",
+        tls_mode="auto",
+        tls_key_type=key_type,
+    )
+
+    success = False
+    error_msg = ""
+
+    try:
+        await asyncio.wait_for(client.start(), timeout=10.0)
+        await client.put(f"test{name}", f"{name} autoMTLS test".encode())
+        result = await client.get(f"test{name}")
+        if result == f"{name} autoMTLS test".encode():
+            success = True
+        await client.close()
+    except Exception as e:
+        error_msg = str(e)[:100]
+        if "secp521r1" in error_msg or (key_size == 521):
+            error_msg = "EXPECTED: Python client cannot connect to secp521r1"
+        elif "SSL" in error_msg or "TLS" in error_msg or "certificate" in error_msg.lower():
+            error_msg = "SSL/TLS handshake failure (autoMTLS incompatibility)"
+
+    status = "✅ PASS" if success else "❌ FAIL"
+    print(f"{status}")
+    if error_msg:
+        print(f"    Error: {error_msg}")
+
+    return (name, key_type, key_size, success, error_msg)
+
+
+def _get_config_display_name(key_type: str, key_size: int) -> str:
+    """Get display name for a crypto config."""
+    if key_type == "rsa":
+        return f"RSA {key_size}"
+    curve_map = {"256": "P-256", "384": "P-384", "521": "P-521"}
+    return curve_map.get(str(key_size), f"P-{key_size}")
+
+
+def _process_results(results: list[tuple[str, str, int, bool, str]]) -> tuple[list[str], list[str]]:
+    """Process test results and return working/failing configs."""
+    working_configs = []
+    failing_configs = []
+
+    for _name, key_type, key_size, success, error in results:
+        display_name = _get_config_display_name(key_type, key_size)
+        status = "✅" if success else "❌"
+        print(f"  {display_name}: {status}")
+        if error:
+            print(f"    Issue: {error}")
+        if not success and key_size != 521:
+            failing_configs.append(display_name)
+        elif success:
+            working_configs.append(display_name)
+
+    return working_configs, failing_configs
+
+
 @pytest.mark.integration_rpc
 @pytest.mark.harness_go
 async def test_automtls_compatibility() -> None:
@@ -30,66 +92,15 @@ async def test_automtls_compatibility() -> None:
     print("-" * 60)
 
     results = []
-
     for name, key_type, key_size in configs:
-        print(f"  Testing {name}...", end=" ", flush=True)
-
-        client = KVClient(
-            "/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/bin/soup-go",
-            tls_mode="auto",
-            tls_key_type=key_type,
-        )
-
-        success = False
-        error_msg = ""
-
-        try:
-            await asyncio.wait_for(client.start(), timeout=10.0)
-            await client.put(f"test{name}", f"{name} autoMTLS test".encode())
-            result = await client.get(f"test{name}")
-            if result == f"{name} autoMTLS test".encode():
-                success = True
-            await client.close()
-        except Exception as e:
-            error_msg = str(e)[:100]
-            if "secp521r1" in error_msg or (key_size == 521):
-                error_msg = "EXPECTED: Python client cannot connect to secp521r1"
-            elif "SSL" in error_msg or "TLS" in error_msg or "certificate" in error_msg.lower():
-                error_msg = "SSL/TLS handshake failure (autoMTLS incompatibility)"
-
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status}")
-        if error_msg:
-            print(f"    Error: {error_msg}")
-
-        results.append((name, key_type, key_size, success, error_msg))
+        result = await _test_single_config(name, key_type, key_size)
+        results.append(result)
 
     print()
     print("🔐 AUTOMTLS VERIFICATION RESULTS:")
     print("=" * 80)
 
-    working_configs = []
-    failing_configs = []
-
-    for _name, key_type, key_size, success, error in results:
-        status = "✅" if success else "❌"
-        if key_type == "rsa":
-            print(f"  RSA {key_size}: {status}")
-            if not success:
-                print(f"    Issue: {error}")
-                failing_configs.append(f"RSA {key_size}")
-            else:
-                working_configs.append(f"RSA {key_size}")
-        else:
-            curve_map = {"256": "P-256", "384": "P-384", "521": "P-521"}
-            curve = curve_map.get(str(key_size), f"P-{key_size}")
-            print(f"  {curve}: {status}")
-            if not success:
-                print(f"    Issue: {error}")
-                if key_size != 521:  # P-521 is expected to fail
-                    failing_configs.append(curve)
-            else:
-                working_configs.append(curve)
+    working_configs, failing_configs = _process_results(results)
 
     print()
     print("  P-521: ? NEEDS TESTING (likely works)")

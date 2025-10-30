@@ -157,7 +157,7 @@ def should_test_combination(client_server: ClientServerPair, mtls_config: MTLSCo
 
 
 # Generate pytest parameters for the full test matrix
-def generate_test_parameters():
+def generate_test_parameters() -> list[Any]:
     """Generate pytest.mark.parametrize parameters for the full test matrix"""
     parameters = []
 

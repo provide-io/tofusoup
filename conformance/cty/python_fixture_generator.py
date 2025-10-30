@@ -79,33 +79,27 @@ def get_test_cases() -> dict[str, CtyValue]:
     }
 
 
-def cty_to_manifest_native(value: CtyValue) -> Any:
-    """Converts a CtyValue to a native Python type suitable for the JSON manifest."""
-    if value.is_unknown:
-        if isinstance(value.value, RefinedUnknownValue):
-            refinements = {k: v for k, v in attrs.asdict(value.value).items() if v is not None}
-            if not refinements:
-                return _UNKNOWN_SENTINEL
-
-            formatted_refinements = {}
-            for k, v in refinements.items():
-                if isinstance(v, tuple) and isinstance(v[0], Decimal):
-                    formatted_refinements[k] = (str(v[0]), v[1])
-                else:
-                    formatted_refinements[k] = v
-
-            return {
-                "$pyvider-cty-special-value": "unknown",
-                "refinements": formatted_refinements,
-            }
+def _format_refined_unknown(refined_value: RefinedUnknownValue) -> Any:
+    """Format refined unknown value with proper Decimal handling."""
+    refinements = {k: v for k, v in attrs.asdict(refined_value).items() if v is not None}
+    if not refinements:
         return _UNKNOWN_SENTINEL
-    if value.is_null:
-        return None
 
-    if isinstance(value.type, CtyDynamic):
-        return cty_to_manifest_native(value.value)
+    formatted_refinements = {}
+    for k, v in refinements.items():
+        if isinstance(v, tuple) and isinstance(v[0], Decimal):
+            formatted_refinements[k] = (str(v[0]), v[1])
+        else:
+            formatted_refinements[k] = v
 
-    val = value.value
+    return {
+        "$pyvider-cty-special-value": "unknown",
+        "refinements": formatted_refinements,
+    }
+
+
+def _convert_value_type(val: Any) -> Any:
+    """Convert a value based on its type."""
     if isinstance(val, Decimal):
         return str(val)
     if isinstance(val, tuple):
@@ -115,8 +109,21 @@ def cty_to_manifest_native(value: CtyValue) -> Any:
         return [cty_to_manifest_native(item) for item in sorted_cty_items]
     if isinstance(val, dict):
         return {k: cty_to_manifest_native(v) for k, v in sorted(val.items())}
-
     return val
+
+
+def cty_to_manifest_native(value: CtyValue) -> Any:
+    """Converts a CtyValue to a native Python type suitable for the JSON manifest."""
+    if value.is_unknown:
+        if isinstance(value.value, RefinedUnknownValue):
+            return _format_refined_unknown(value.value)
+        return _UNKNOWN_SENTINEL
+    if value.is_null:
+        return None
+    if isinstance(value.type, CtyDynamic):
+        return cty_to_manifest_native(value.value)
+
+    return _convert_value_type(value.value)
 
 
 def main() -> None:

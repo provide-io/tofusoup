@@ -45,11 +45,11 @@ class ReferenceKVServer:
         self.storage_dir = work_dir / f"kv-{self.combo_id}"
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "ReferenceKVServer":
         await self.start()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: BaseException | None, exc_val: BaseException | None, exc_tb: object) -> None:
         await self.stop()
 
 
@@ -231,11 +231,11 @@ class ReferenceKVClient:
         self.server_address = server_address
         self.work_dir = work_dir
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "ReferenceKVClient":
         await self.start()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: BaseException | None, exc_val: BaseException | None, exc_tb: object) -> None:
         await self.stop()
 
     async def put(self, key: str, value: bytes) -> Never:

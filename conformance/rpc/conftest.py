@@ -13,7 +13,7 @@ from tofusoup.harness.logic import ensure_go_harness_build
 
 
 @pytest.fixture(scope="session")
-def project_root(request) -> pathlib.Path:
+def project_root(request: pytest.FixtureRequest) -> pathlib.Path:
     """Provides the project root directory."""
     return request.config.rootpath
 
@@ -43,7 +43,7 @@ def go_harness_executable(project_root: pathlib.Path, loaded_tofusoup_config: di
 
 
 @pytest.fixture(scope="session")
-def test_artifacts_dir(tmp_path_factory) -> pathlib.Path:
+def test_artifacts_dir(tmp_path_factory: pytest.TempPathFactory) -> pathlib.Path:
     """
     Creates a session-wide directory for all RPC test artifacts.
 

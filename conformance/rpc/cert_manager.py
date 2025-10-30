@@ -91,7 +91,7 @@ class CertificateManager:
             {"ca": ca_cert, "server": server_cert, "client": client_cert}, crypto_config.name
         )
 
-    def _convert_crypto_config(self, crypto_config: CryptoConfig):
+    def _convert_crypto_config(self, crypto_config: CryptoConfig) -> tuple[str, int | str]:
         """Convert CryptoConfig to pyvider-rpcplugin certificate parameters."""
 
         if crypto_config.key_type == "rsa":

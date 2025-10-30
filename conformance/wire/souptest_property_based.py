@@ -5,6 +5,8 @@
 
 """TODO: Add module docstring."""
 
+from typing import Any
+
 from hypothesis import given, strategies as st
 import pytest
 
@@ -24,7 +26,7 @@ simple_schema_and_data = st.builds(
 
 @pytest.mark.integration_cty
 @given(schema_data=simple_schema_and_data)
-def test_roundtrip_is_isomorphic(schema_data) -> None:
+def test_roundtrip_is_isomorphic(schema_data: Any) -> None:
     """
     Property-based test to ensure that for any valid schema and data,
     encoding and then decoding the data results in an equivalent CtyValue.

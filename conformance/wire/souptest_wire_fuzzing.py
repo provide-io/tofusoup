@@ -12,6 +12,7 @@ Uses hypothesis to generate extreme CTY values and test wire protocol encoding/d
 - Edge cases: empty collections, null values"""
 
 from decimal import Decimal
+from typing import Any
 
 from hypothesis import given, settings, strategies as st
 import pytest
@@ -50,7 +51,7 @@ cty_bools = st.booleans()
 
 # Simple value strategy (no recursion)
 @st.composite
-def simple_cty_value(draw):
+def simple_cty_value(draw: Any) -> CtyValue:
     """Generate a simple (non-nested) CTY value."""
     value_type = draw(st.sampled_from(["string", "number", "bool", "null_string"]))
 
@@ -66,14 +67,14 @@ def simple_cty_value(draw):
 
 # Collection strategies
 @st.composite
-def cty_list_value(draw):
+def cty_list_value(draw: Any) -> CtyValue:
     """Generate a CTY list with random string elements."""
     elements = draw(st.lists(cty_strings, min_size=0, max_size=20))
     return CtyList(element_type=CtyString()).validate(elements)
 
 
 @st.composite
-def cty_set_value(draw):
+def cty_set_value(draw: Any) -> CtyValue:
     """Generate a CTY set with random number elements."""
     # Sets need unique elements
     elements = draw(st.sets(st.integers(min_value=-1000, max_value=1000), min_size=0, max_size=20))
@@ -81,7 +82,7 @@ def cty_set_value(draw):
 
 
 @st.composite
-def cty_map_value(draw):
+def cty_map_value(draw: Any) -> CtyValue:
     """Generate a CTY map with random bool values."""
     num_keys = draw(st.integers(min_value=0, max_value=10))
     data = {}
@@ -93,7 +94,7 @@ def cty_map_value(draw):
 
 
 @st.composite
-def cty_object_value(draw):
+def cty_object_value(draw: Any) -> CtyValue:
     """Generate a CTY object with random attributes."""
     name = draw(cty_strings)
     age = draw(cty_numbers)
@@ -118,7 +119,7 @@ def cty_object_value(draw):
 
 # Nested structure strategy
 @st.composite
-def nested_cty_object(draw):
+def nested_cty_object(draw: Any) -> CtyValue:
     """Generate deeply nested CTY objects."""
     # Nest objects inside objects
     inner_name = draw(cty_strings)

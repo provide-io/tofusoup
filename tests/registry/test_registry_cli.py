@@ -9,6 +9,8 @@ from provide.testkit import isolated_cli_runner
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
 
 from tofusoup.registry import cli as registry_cli
+from tofusoup.registry.models.module import Module
+from tofusoup.registry.models.provider import Provider
 from tofusoup.registry.search.engine import SearchResult
 
 
@@ -83,7 +85,7 @@ class TestProviderCommands:
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
     @patch("tofusoup.registry.cli.OpenTofuRegistry")
     def test_provider_info_command(
-        self, mock_tofu_reg: MagicMock, mock_tf_reg: MagicMock, sample_provider
+        self, mock_tofu_reg: MagicMock, mock_tf_reg: MagicMock, sample_provider: Provider
     ) -> None:
         # Setup mocks
         mock_tf_instance = AsyncMock()
@@ -158,7 +160,7 @@ class TestProviderCommands:
 
 class TestModuleCommands:
     @patch("tofusoup.registry.cli.IBMTerraformRegistry")
-    def test_module_info_command(self, mock_tf_reg: MagicMock, sample_module) -> None:
+    def test_module_info_command(self, mock_tf_reg: MagicMock, sample_module: Module) -> None:
         mock_tf_instance = AsyncMock()
         mock_tf_instance.get_module_details = AsyncMock(
             return_value={

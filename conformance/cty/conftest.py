@@ -6,6 +6,7 @@
 """Configuration for CTY test suite.
 Sets up environment variables from soup.toml configuration."""
 
+from collections.abc import Generator
 import os
 from pathlib import Path
 
@@ -15,7 +16,7 @@ from tofusoup.common.config import load_tofusoup_config
 
 
 @pytest.fixture(scope="session", autouse=True)
-def setup_cty_test_environment():
+def setup_cty_test_environment() -> Generator[None, None, None]:
     """
     Automatically set environment variables for the CTY test suite
     based on soup.toml configuration.

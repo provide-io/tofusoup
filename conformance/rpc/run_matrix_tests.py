@@ -12,7 +12,7 @@ import subprocess
 import sys
 
 
-def run_command(cmd, description):
+def run_command(cmd: list[str], description: str) -> bool:
     """Run a command and display results."""
     print(f"\n{'=' * 60}")
     print(f"🏃 {description}")
