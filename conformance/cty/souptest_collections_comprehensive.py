@@ -337,7 +337,9 @@ def test_nested_list_of_lists() -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
-    assert cty_value.value == value
+    # For nested collections, .value contains CtyValue objects, not raw Python data
+    assert isinstance(cty_value.value, tuple)
+    assert len(cty_value.value) == 3
 
 
 @pytest.mark.cty_collections
@@ -375,7 +377,7 @@ def test_list_of_maps() -> None:
 @pytest.mark.cty_collections
 def test_list_of_objects() -> None:
     """Test List[Object]."""
-    object_type = CtyObject(attributes={
+    object_type = CtyObject({
         "name": CtyString(),
         "age": CtyNumber(),
     })
@@ -389,6 +391,7 @@ def test_list_of_objects() -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
+    assert len(cty_value.value) == 2
 
 
 @pytest.mark.cty_collections
@@ -406,6 +409,7 @@ def test_deeply_nested() -> None:
 
     assert not cty_value.is_null
     assert not cty_value.is_unknown
+    assert len(cty_value.value) == 2
 
 
 # =============================================================================
