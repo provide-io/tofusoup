@@ -208,7 +208,7 @@ async def run_test_lifecycle(
 
 def initialize_tests(test_dirs: list[Path]) -> None:
     """Initialize test directories and status tracking."""
-    LOGS_DIR.mkdir(exist_ok=True)
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
     for d in test_dirs:
         test_statuses[d.name] = {
             "text": "PENDING",
