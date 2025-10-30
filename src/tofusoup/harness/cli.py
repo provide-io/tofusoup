@@ -108,9 +108,12 @@ def build_harness_command(ctx, harness_names: tuple[str, ...], force_rebuild: bo
     for name in names_to_build:
         try:
             executable_path = ensure_go_harness_build(name, project_root, loaded_config, force_rebuild)
-            rich_print(
-                f"[green]Go harness '{name}' is available at:[/green] {executable_path.relative_to(project_root)}"
-            )
+            # Try to show path relative to project root, but fall back to absolute path if outside project
+            try:
+                display_path = executable_path.relative_to(project_root)
+            except ValueError:
+                display_path = executable_path
+            rich_print(f"[green]Go harness '{name}' is available at:[/green] {display_path}")
         except (GoVersionError, HarnessBuildError, TofuSoupError) as e:
             logger.error(f"Failed to build Go harness '{name}': {e}")
             sys.exit(1)

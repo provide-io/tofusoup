@@ -22,11 +22,6 @@ GO_HARNESS_CONFIG = {
         "main_file": "main.go",
         "output_name": "soup-go",
     },
-    "pspf-packager": {
-        "source_dir": "pspf/src/go/pspf-packager",
-        "main_file": "main.go",
-        "output_name": "pspf-packager",
-    },
 }
 
 
