@@ -14,6 +14,7 @@ from rich import print as rich_print
 from rich.table import Table
 
 from tofusoup.common.exceptions import TofuSoupError
+from tofusoup.common.utils import get_cache_dir
 
 from .logic import (
     GO_HARNESS_CONFIG,
@@ -36,7 +37,7 @@ def harness_cli() -> None:
 def clean_harness_command(ctx, harness_names: tuple[str, ...], clean_all: bool) -> None:
     """Cleans (removes) specified test harnesses."""
     project_root = ctx.obj["PROJECT_ROOT"]
-    harness_bin_dir = project_root / "src" / "tofusoup" / "harness" / "go" / "bin"
+    harness_bin_dir = get_cache_dir() / "harnesses"
 
     names_to_clean = []
     if clean_all:
@@ -78,7 +79,7 @@ def list_harnesses_command(ctx) -> None:
     table.add_column("Name", style="magenta")
     table.add_column("Output Path", style="yellow")
     table.add_column("Status", style="cyan")
-    harness_bin_dir = project_root / "harnesses" / "bin"
+    harness_bin_dir = get_cache_dir() / "harnesses"
     for name, config in GO_HARNESS_CONFIG.items():
         output_path = harness_bin_dir / config["output_name"]
         status = "[red]Not Built[/red]"

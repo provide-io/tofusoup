@@ -19,6 +19,7 @@ from typing import Any, Never
 from provide.foundation import logger
 
 from tofusoup.common.config import load_tofusoup_config
+from tofusoup.common.utils import get_cache_dir
 from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
 
@@ -53,10 +54,6 @@ class GoKVServer(ReferenceKVServer):
     async def start(self) -> None:
         """Start Go KV server process."""
 
-        # Generate certificates if needed
-        cert_manager = CertificateManager(self.work_dir)
-        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
-
         # Build soup-go harness if needed
         project_root = Path(__file__).parent.parent.parent
         config = load_tofusoup_config(project_root)
@@ -76,6 +73,7 @@ class GoKVServer(ReferenceKVServer):
             {
                 "LOG_LEVEL": "TRACE",
                 "PYTHONUNBUFFERED": "1",
+                "KV_STORAGE_DIR": str(get_cache_dir() / "kv-store"),
             }
         )
 
@@ -145,6 +143,7 @@ class PythonKVServer(ReferenceKVServer):
 
         # Set up environment for mTLS if needed
         env = os.environ.copy()
+        env["KV_STORAGE_DIR"] = str(get_cache_dir() / "kv-store")
         if self.crypto_config.auth_mode == "auto_mtls":
             env.update(
                 {

@@ -120,7 +120,7 @@ def clean_go_harness_artifacts(harness_name: str, project_root: pathlib.Path) ->
     if not config:
         raise TofuSoupError(f"Configuration for Go harness '{harness_name}' not found.")
 
-    output_bin_dir = project_root / "bin"
+    output_bin_dir = get_cache_dir() / "harnesses"
     output_path = output_bin_dir / config["output_name"]
 
     if output_path.exists():
