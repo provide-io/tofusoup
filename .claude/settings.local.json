@@ -53,7 +53,8 @@
       "Bash(git commit:*)",
       "Bash(mypy:*)",
       "Bash(soup --help:*)",
-      "Bash(soup harness list:*)"
+      "Bash(soup harness list:*)",
+      "Bash(soup config show:*)"
     ],
     "deny": [],
     "ask": [],
