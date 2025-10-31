@@ -111,12 +111,24 @@ def _cty_value_to_json_compatible_value(cty_value: CtyValue) -> Any:
     # Recursively handle lists and dicts to ensure all nested Decimals/bytes are converted
     if isinstance(serializable_data, dict):
         return {
-            k: _cty_value_to_json_compatible_value(v) if isinstance(v, CtyValue) else v
+            k: (
+                _cty_value_to_json_compatible_value(v)
+                if isinstance(v, CtyValue)
+                else str(v)
+                if isinstance(v, Decimal)
+                else v
+            )
             for k, v in serializable_data.items()
         }
     if isinstance(serializable_data, list):
         return [
-            _cty_value_to_json_compatible_value(item) if isinstance(item, CtyValue) else item
+            (
+                _cty_value_to_json_compatible_value(item)
+                if isinstance(item, CtyValue)
+                else str(item)
+                if isinstance(item, Decimal)
+                else item
+            )
             for item in serializable_data
         ]
 
