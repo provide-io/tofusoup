@@ -3,9 +3,25 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
+"""KV Plugin Server using pyvider-rpcplugin.
 
-from concurrent import futures
+This module provides a simple Key-Value store plugin server that uses
+pyvider-rpcplugin for proper go-plugin protocol support. It handles:
+- go-plugin handshake protocol (via pyvider-rpcplugin)
+- Auto-mTLS certificate generation (via pyvider-rpcplugin)
+- gRPC service hosting (via pyvider-rpcplugin)
+
+Usage:
+    As a plugin (spawned by client):
+        PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello \\
+        TLS_MODE=auto TLS_KEY_TYPE=ec TLS_CURVE=secp256r1 \\
+        python server.py
+
+    Standalone mode (for testing):
+        python server.py --standalone --port 50051
+"""
+
+import asyncio
 from datetime import datetime
 import hashlib
 import json
@@ -14,9 +30,12 @@ from pathlib import Path
 import re
 import sys
 import time
+from typing import Any
 
 import grpc
 from provide.foundation import logger
+from pyvider.rpcplugin.protocol.base import RPCPluginProtocol
+from pyvider.rpcplugin.server import RPCPluginServer
 
 from tofusoup.common.utils import get_cache_dir
 from tofusoup.config.defaults import DEFAULT_GRPC_PORT
@@ -24,9 +43,10 @@ from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 
 class KV(kv_pb2_grpc.KVServicer):
+    """Key-Value store implementation."""
+
     def __init__(self, storage_dir: str | None = None) -> None:
-        """
-        Initialize KV servicer with configurable storage directory.
+        """Initialize KV servicer with configurable storage directory.
 
         Args:
             storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
@@ -47,8 +67,7 @@ class KV(kv_pb2_grpc.KVServicer):
         return f"{self.storage_dir}/kv-data-{key}"
 
     def _enrich_json_with_handshake(self, value_bytes: bytes, context: grpc.ServicerContext) -> bytes:
-        """
-        Enrich JSON value with server handshake information.
+        """Enrich JSON value with server handshake information.
 
         If the value is valid JSON, adds a 'server_handshake' field with connection metadata.
         If not JSON, returns the original bytes unchanged.
@@ -90,7 +109,7 @@ class KV(kv_pb2_grpc.KVServicer):
             tls_curve = os.getenv("TLS_CURVE")
 
             if tls_key_type:
-                crypto_config = {"key_type": tls_key_type}
+                crypto_config: dict[str, Any] = {"key_type": tls_key_type}
 
                 if tls_key_type == "rsa" and tls_key_size:
                     crypto_config["key_size"] = int(tls_key_size)
@@ -209,205 +228,126 @@ class KV(kv_pb2_grpc.KVServicer):
             return kv_pb2.Empty()
 
 
-def serve(server: grpc.Server, storage_dir: str | None = None) -> KV:
-    """
-    Add KV servicer to gRPC server.
+class KVProtocol(RPCPluginProtocol[grpc.aio.Server, KV]):
+    """Protocol implementation for KV service."""
+
+    service_name = "tofusoup.kv.KVService"
+
+    def __init__(self, storage_dir: str | None = None) -> None:
+        """Initialize protocol with storage directory."""
+        self.storage_dir = storage_dir
+
+    async def get_grpc_descriptors(self) -> tuple[None, str]:
+        """Return service descriptors (not needed for simple case)."""
+        return None, self.service_name
+
+    async def add_to_server(self, server: grpc.aio.Server, handler: KV) -> None:
+        """Add the KV service to the gRPC server."""
+        kv_pb2_grpc.add_KVServicer_to_server(handler, server)
+        logger.info("Added KV servicer to gRPC server")
+
+
+async def serve_plugin(storage_dir: str | None = None) -> None:
+    """Start the KV plugin server using pyvider-rpcplugin.
+
+    This handles the complete plugin protocol including:
+    - Handshake negotiation
+    - Certificate generation (if mTLS enabled)
+    - Transport setup (Unix socket or TCP)
+    - Signal handling
 
     Args:
-        server: gRPC server instance
         storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
-
-    Returns:
-        The KV servicer instance
-    """
-    servicer = KV(storage_dir=storage_dir)
-    kv_pb2_grpc.add_KVServicer_to_server(servicer, server)
-    return servicer
-
-
-def main() -> None:
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    serve(server)
-    port = server.add_insecure_port(f"[::]:{DEFAULT_GRPC_PORT}")
-    logger.info(f"Server started on port {port}")
-    server.start()
-    try:
-        while True:
-            time.sleep(86400)
-    except KeyboardInterrupt:
-        server.stop(0)
-
-
-def _configure_tls_disabled(server: grpc.Server) -> tuple[int, None]:
-    logger.info("TLS disabled - running in insecure mode")
-    port = server.add_insecure_port("[::]:0")
-    logger.info(f"Server listening on insecure port {port}")
-    return port, None
-
-
-def _configure_tls_auto(server: grpc.Server, tls_key_type: str, tls_curve: str) -> tuple[int, str | None]:
-    logger.info("Auto TLS enabled - generating server certificate", key_type=tls_key_type, curve=tls_curve)
-    from provide.foundation.crypto import Certificate
-
-    try:
-        cert_obj = Certificate.create_self_signed_server_cert(
-            common_name="tofusoup.rpc.server",
-            organization_name="TofuSoup",
-            validity_days=365,
-            alt_names=["localhost", "127.0.0.1"],
-            key_type="ecdsa" if tls_key_type == "ec" else tls_key_type,
-            ecdsa_curve=tls_curve,
-        )
-        server_cert_pem = cert_obj.cert_pem
-        server_key_pem = cert_obj.key_pem
-
-        server_credentials = grpc.ssl_server_credentials(
-            [(server_key_pem.encode("utf-8"), server_cert_pem.encode("utf-8"))],
-            root_certificates=None,
-            require_client_auth=False,
-        )
-        port = server.add_secure_port("[::]:0", server_credentials)
-        logger.info(f"Server listening on secure port {port} with auto-generated certificate")
-        return port, server_cert_pem
-    except Exception as e:
-        logger.error(f"Failed to generate auto TLS certificate: {e}")
-        logger.warning("Falling back to insecure mode")
-        port = server.add_insecure_port("[::]:0")
-        return port, None
-
-
-def _configure_tls_manual(server: grpc.Server, cert_file: str, key_file: str) -> tuple[int, str | None]:
-    if not cert_file or not key_file:
-        logger.error("Manual TLS mode requires both cert_file and key_file")
-        sys.exit(1)
-
-    try:
-        logger.info("Manual TLS enabled", cert_file=cert_file, key_file=key_file)
-        with Path(cert_file).open("rb") as f:
-            cert_data = f.read()
-        with Path(key_file).open("rb") as f:
-            key_data = f.read()
-
-        server_credentials = grpc.ssl_server_credentials([(key_data, cert_data)])
-        port = server.add_secure_port("[::]:0", server_credentials)
-        logger.info(f"Server listening on secure port {port}")
-        with Path(cert_file).open("r") as f:
-            return port, f.read()
-    except Exception as e:
-        logger.error("Failed to configure manual TLS", error=str(e))
-        sys.exit(1)
-
-
-def _start_server_and_handshake(
-    server: grpc.Server, port: int, server_cert_pem: str | None, output_handshake: bool
-) -> None:
-    server.start()
-    logger.info("KV plugin server started successfully")
-
-    if output_handshake:
-        core_version = "1"
-        protocol_version = "1"
-        network = "tcp"
-        address = f"127.0.0.1:{port}"
-        protocol = "grpc"
-        cert_b64 = ""
-        if server_cert_pem:
-            # Remove PEM headers and ALL whitespace for clean base64 encoding
-            # Use regex to catch all whitespace (spaces, tabs, newlines, etc)
-            cert_clean = server_cert_pem.replace("-----BEGIN CERTIFICATE-----", "")
-            cert_clean = cert_clean.replace("-----END CERTIFICATE-----", "")
-            # Remove ALL whitespace characters - more robust than individual replaces
-            cert_b64 = re.sub(r'\s+', '', cert_clean)
-        handshake_line = f"{core_version}|{protocol_version}|{network}|{address}|{protocol}|{cert_b64}"
-        # Print handshake to stdout (go-plugin reads this)
-        # Use print which adds newline, then flush to ensure it's sent immediately
-        print(handshake_line, flush=True)
-        sys.stdout.flush()  # Ensure handshake is fully written before any other output
-        # Wait a moment for stdout to flush
-        logger.debug(f"Handshake output (first 100 chars): {handshake_line[:100]}...")
-
-    try:
-        while True:
-            time.sleep(86400)
-    except KeyboardInterrupt:
-        logger.info("Shutting down KV plugin server")
-        server.stop(0)
-
-
-def start_kv_server(
-    tls_mode: str = "disabled",
-    tls_key_type: str = "ec",
-    tls_curve: str = "secp384r1",
-    cert_file: str | None = None,
-    key_file: str | None = None,
-    storage_dir: str | None = None,
-    output_handshake: bool = True,
-) -> None:
-    """
-    Start the KV plugin server with TLS configuration matching the Go implementation.
-    This function is designed to work within the go-plugin framework when called by a client.
-
-    Args:
-        tls_mode: TLS mode (disabled, auto, or manual)
-        tls_key_type: Key type for TLS (ec or rsa)
-        tls_curve: Elliptic curve for EC key type (secp256r1, secp384r1, secp521r1)
-        cert_file: Path to certificate file (required for manual TLS)
-        key_file: Path to private key file (required for manual TLS)
-        storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
-        output_handshake: If True, output go-plugin handshake to stdout
     """
     if storage_dir is None:
         storage_dir = str(get_cache_dir() / "kv-store")
 
+    # Ensure storage directory exists
+    Path(storage_dir).mkdir(parents=True, exist_ok=True)
+
+    # Read configuration from environment
+    # These are set by the spawning client or command-line flags
+    tls_mode = os.getenv("TLS_MODE", "disabled")
+    tls_key_type = os.getenv("TLS_KEY_TYPE", "ec")
+    tls_curve = os.getenv("TLS_CURVE", "secp384r1")
+
     logger.info(
-        "Starting KV plugin server with Python implementation",
+        "Starting KV plugin server with pyvider-rpcplugin",
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
         tls_curve=tls_curve,
-        cert_file=cert_file,
-        key_file=key_file,
         storage_dir=storage_dir,
-        output_handshake=output_handshake,
     )
 
+    # Create protocol and handler
+    protocol = KVProtocol(storage_dir=storage_dir)
+    handler = KV(storage_dir=storage_dir)
+
+    # Build configuration for RPCPluginServer
+    # pyvider-rpcplugin reads these from environment, but we can override
+    config = {
+        "PLUGIN_MAGIC_COOKIE_KEY": os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN"),
+        "PLUGIN_MAGIC_COOKIE_VALUE": os.getenv("BASIC_PLUGIN", "hello"),
+    }
+
+    # Configure TLS/mTLS if enabled
+    if tls_mode != "disabled":
+        config["PLUGIN_AUTO_MTLS"] = True  # Enable automatic mTLS
+        config["PLUGIN_TLS_KEY_TYPE"] = tls_key_type  # ec or rsa
+        if tls_key_type == "ec":
+            config["PLUGIN_TLS_CURVE"] = tls_curve  # secp256r1, secp384r1, secp521r1
+
+    # Create and start the plugin server
+    # RPCPluginServer handles:
+    # - Handshake protocol (outputs to stdout)
+    # - Certificate generation (if mTLS enabled)
+    # - gRPC server setup
+    # - Signal handling (SIGTERM, SIGINT)
+    server = RPCPluginServer(
+        protocol=protocol,
+        handler=handler,
+        config=config,
+    )
+
+    logger.info("RPCPluginServer created, starting serve()")
+    await server.serve()
+
+
+def main() -> None:
+    """Entry point for standalone server (testing only)."""
+    # For standalone testing without plugin protocol
+    # NOT used in production - pyvider-rpcplugin mode is the default
+    logger.warning("Standalone mode is deprecated - use plugin mode instead")
+    logger.info(f"Starting standalone server on port {DEFAULT_GRPC_PORT}")
+
+    # Simple standalone server for testing
+    import grpc
+    from concurrent import futures
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    serve(server, storage_dir=storage_dir)
+    kv = KV()
+    kv_pb2_grpc.add_KVServicer_to_server(kv, server)
+    server.add_insecure_port(f"[::]:{DEFAULT_GRPC_PORT}")
+    server.start()
 
-    port: int
-    server_cert_pem: str | None = None
-
-    if tls_mode == "disabled":
-        port, server_cert_pem = _configure_tls_disabled(server)
-    elif tls_mode == "auto":
-        port, server_cert_pem = _configure_tls_auto(server, tls_key_type, tls_curve)
-    elif tls_mode == "manual":
-        port, server_cert_pem = _configure_tls_manual(server, cert_file, key_file)
-    else:
-        logger.error("Invalid TLS mode", mode=tls_mode)
-        sys.exit(1)
-
-    _start_server_and_handshake(server, port, server_cert_pem, output_handshake)
+    logger.info(f"Standalone server started on port {DEFAULT_GRPC_PORT}")
+    try:
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        logger.info("Shutting down standalone server")
+        server.stop(0)
 
 
 if __name__ == "__main__":
-    # Check if being run in go-plugin mode (KVClient spawns with these env vars)
+    # Check if being run in plugin mode (default)
+    # Plugin mode is triggered by go-plugin magic cookies in environment
     if os.getenv("PLUGIN_MAGIC_COOKIE_KEY") or os.getenv("PLUGIN_PROTOCOL_VERSIONS"):
-        # Plugin mode - output go-plugin handshake
-        # Read TLS configuration from environment (set by spawning client)
-        storage_dir = os.getenv("KV_STORAGE_DIR")
-        tls_mode = os.getenv("TLS_MODE", "disabled")
-        tls_key_type = os.getenv("TLS_KEY_TYPE", "ec")
-        tls_curve = os.getenv("TLS_CURVE", "secp384r1")
-
-        start_kv_server(
-            tls_mode=tls_mode,
-            tls_key_type=tls_key_type,
-            tls_curve=tls_curve,
-            storage_dir=storage_dir,
-            output_handshake=True,
-        )
+        # Plugin mode - use pyvider-rpcplugin for proper go-plugin protocol
+        logger.info("Running in plugin mode (go-plugin protocol)")
+        asyncio.run(serve_plugin())
     else:
-        # Standalone mode - simple server without handshake
+        # Standalone mode - for testing only
+        logger.warning("No plugin environment detected - running in standalone mode")
         main()
 
 # 🥣🔬🔚
