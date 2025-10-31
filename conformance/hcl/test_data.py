@@ -95,9 +95,9 @@ HCL_EXPECTED_SCHEMAS = {
         "enabled": CtyBool(),
         "rate": CtyNumber(),
     }),
-    "list_of_strings": CtyObject({"tags": CtyList(CtyString())}),
-    "list_of_numbers": CtyObject({"ports": CtyList(CtyNumber())}),
-    "list_of_bools": CtyObject({"flags": CtyList(CtyBool())}),
+    "list_of_strings": CtyObject({"tags": CtyList(element_type=CtyString())}),
+    "list_of_numbers": CtyObject({"ports": CtyList(element_type=CtyNumber())}),
+    "list_of_bools": CtyObject({"flags": CtyList(element_type=CtyBool())}),
     "nested_object": CtyObject({
         "config": CtyObject({
             "name": CtyString(),
@@ -117,7 +117,7 @@ HCL_EXPECTED_SCHEMAS = {
         })
     }),
     "list_of_objects": CtyObject({
-        "servers": CtyList(CtyObject({
+        "servers": CtyList(element_type=CtyObject({
             "name": CtyString(),
             "ip": CtyString(),
         }))
@@ -126,7 +126,7 @@ HCL_EXPECTED_SCHEMAS = {
         "name": CtyString(),
         "count": CtyNumber(),
         "enabled": CtyBool(),
-        "tags": CtyList(CtyString()),
+        "tags": CtyList(element_type=CtyString()),
         "config": CtyObject({
             "timeout": CtyNumber(),
         })
