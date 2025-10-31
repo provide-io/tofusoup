@@ -54,7 +54,8 @@
       "Bash(mypy:*)",
       "Bash(soup --help:*)",
       "Bash(soup harness list:*)",
-      "Bash(soup config show:*)"
+      "Bash(soup config show:*)",
+      "Bash(uv run python3:*)"
     ],
     "deny": [],
     "ask": [],
