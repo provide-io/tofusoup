@@ -3,7 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
+"""Python Client → Go Server RPC Conformance Tests.
+
+Tests basic KV operations (PUT/GET) between Python KVClient and
+the unified Go KVServer (soup-go).
+"""
 
 from pathlib import Path
 

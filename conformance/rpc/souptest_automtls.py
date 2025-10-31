@@ -7,10 +7,18 @@
 Tests the asymmetric behavior: Go→Python works, but Python→Go fails with autoMTLS"""
 
 import asyncio
+from pathlib import Path
 
 import pytest
 
+from tofusoup.common.config import load_tofusoup_config
+from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
+
+# Get project root and soup-go path
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+_CONFIG = load_tofusoup_config(_PROJECT_ROOT)
+_SOUP_GO_PATH = ensure_go_harness_build("soup-go", _PROJECT_ROOT, _CONFIG)
 
 
 async def _test_single_config(name: str, key_type: str, key_size: int) -> tuple[str, str, int, bool, str]:
@@ -18,7 +26,7 @@ async def _test_single_config(name: str, key_type: str, key_size: int) -> tuple[
     print(f"  Testing {name}...", end=" ", flush=True)
 
     client = KVClient(
-        "/Users/tim/code/pyv/mono/tofusoup/src/tofusoup/harness/go/bin/soup-go",
+        str(_SOUP_GO_PATH),
         tls_mode="auto",
         tls_key_type=key_type,
     )

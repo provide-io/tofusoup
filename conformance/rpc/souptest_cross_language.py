@@ -3,7 +3,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
+"""Cross-Language RPC Conformance Tests (Currently Disabled).
+
+These tests validate cross-language compatibility between Python and Go
+RPC implementations. Currently skipped pending marshaller rewrite to
+match Go implementation.
+"""
 
 import pytest
 

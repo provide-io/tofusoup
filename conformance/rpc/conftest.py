@@ -3,7 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
+"""Pytest fixtures for RPC conformance tests.
+
+Provides session-scoped fixtures for:
+- Go harness building and path resolution
+- Test artifact directory management
+- Project root and configuration loading
+"""
 
 import pathlib
 
