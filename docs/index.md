@@ -13,6 +13,18 @@ TofuSoup provides CLI tools and testing frameworks for working with Terraform-re
 - **Registry Access**: Query and search Terraform/OpenTofu registries
 - **Matrix Testing**: Test providers across multiple Terraform/OpenTofu versions
 
+---
+
+## Part of the provide.io Ecosystem
+
+This project is part of a larger ecosystem of tools for Python and Terraform development.
+
+**[View Ecosystem Overview →](https://docs.provide.io/provide-foundation/ecosystem/)**
+
+Understand how provide-foundation, pyvider, flavorpack, and other projects work together.
+
+---
+
 ## Installation
 
 Install from PyPI:
