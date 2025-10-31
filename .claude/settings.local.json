@@ -57,7 +57,8 @@
       "Bash(soup config show:*)",
       "Bash(uv run python3:*)",
       "WebSearch",
-      "Bash(uv run:*)"
+      "Bash(uv run:*)",
+      "Bash(python -c:*)"
     ],
     "deny": [],
     "ask": [],
