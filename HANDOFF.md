@@ -1629,3 +1629,202 @@ uv run pytest conformance/rpc/souptest_rpc_kv_matrix.py -k "crypto_config2" -v  
 **End of Go Client RPC Matrix Tests**
 
 ---
+
+## Go→Python TLS Debugging Session
+
+**Date**: 2025-10-31
+**Scope**: Debug and fix Go client → Python server TLS handshake failures
+**Status**: ⚠️ **In Progress** - Root causes identified, partial fixes applied, one remaining issue
+
+### Executive Summary
+
+Investigated Go client → Python server TLS failures. Identified multiple root causes and applied fixes:
+1. ✅ Fixed soup-go to pass TLS configuration via CLI flags
+2. ✅ Fixed Python server.py to read TLS config from environment in plugin mode
+3. ✅ Fixed matrix_config.py to use "auto" instead of "auto_mtls"
+4. ✅ Added go-plugin magic cookies to soup-go environment
+5. ⚠️ **Remaining**: Base64 cert parsing error ("illegal base64 data at input byte 1123")
+
+**Important Context**: Terraform successfully uses go-plugin to connect to pyvider providers with TLS, proving this is not a fundamental Go↔Python limitation.
+
+### Root Causes Identified
+
+#### 1. TLS Configuration Not Passed to Python Server ✅ FIXED
+
+**Problem**: soup-go spawned Python server without passing TLS flags
+
+**Location**: `src/tofusoup/harness/go/soup-go/rpc_client.go` line 25
+
+**Original code**:
+```go
+cmd := exec.Command(serverPath, "rpc", "kv", "server")
+```
+
+**Fix applied**:
+```go
+// Build command with TLS flags for Python server compatibility
+cmdArgs := []string{"rpc", "kv", "server"}
+tlsMode := os.Getenv("TLS_MODE")
+if tlsMode != "" && tlsMode != "disabled" {
+    cmdArgs = append(cmdArgs, "--tls-mode", tlsMode)
+    tlsKeyType := os.Getenv("TLS_KEY_TYPE")
+    if tlsKeyType != "" {
+        cmdArgs = append(cmdArgs, "--tls-key-type", tlsKeyType)
+    }
+    if tlsKeyType == "ec" {
+        tlsCurve := os.Getenv("TLS_CURVE")
+        if tlsCurve != "" {
+            cmdArgs = append(cmdArgs, "--tls-curve", tlsCurve)
+        }
+    }
+}
+cmd := exec.Command(serverPath, cmdArgs...)
+```
+
+#### 2. Python server.py Ignored TLS Environment Variables ✅ FIXED
+
+**Problem**: When run in plugin mode, server.py hardcoded `tls_mode="disabled"`
+
+**Location**: `src/tofusoup/rpc/server.py` line 392
+
+**Original code**:
+```python
+if os.getenv("PLUGIN_MAGIC_COOKIE_KEY") or os.getenv("PLUGIN_PROTOCOL_VERSIONS"):
+    storage_dir = os.getenv("KV_STORAGE_DIR")
+    start_kv_server(tls_mode="disabled", storage_dir=storage_dir, output_handshake=True)
+```
+
+**Fix applied**:
+```python
+if os.getenv("PLUGIN_MAGIC_COOKIE_KEY") or os.getenv("PLUGIN_PROTOCOL_VERSIONS"):
+    storage_dir = os.getenv("KV_STORAGE_DIR")
+    tls_mode = os.getenv("TLS_MODE", "disabled")
+    tls_key_type = os.getenv("TLS_KEY_TYPE", "ec")
+    tls_curve = os.getenv("TLS_CURVE", "secp384r1")
+
+    start_kv_server(
+        tls_mode=tls_mode,
+        tls_key_type=tls_key_type,
+        tls_curve=tls_curve,
+        storage_dir=storage_dir,
+        output_handshake=True,
+    )
+```
+
+#### 3. Wrong TLS Mode Value ✅ FIXED
+
+**Problem**: Tests used `TLS_MODE=auto_mtls` but Python CLI expects `auto`
+
+**Location**: `conformance/rpc/matrix_config.py` line 26
+
+**Original code**:
+```python
+auth_mode: str = "auto_mtls"
+```
+
+**Fix applied**:
+```python
+auth_mode: str = "auto"  # Python CLI uses "auto" not "auto_mtls"
+```
+
+**Rationale**: Python is the source of truth for CLI semantics.
+
+#### 4. Missing go-plugin Magic Cookies ✅ FIXED
+
+**Problem**: soup-go didn't set magic cookie environment variables for Python server detection
+
+**Location**: `src/tofusoup/harness/go/soup-go/rpc_client.go` line 54
+
+**Fix applied**:
+```go
+cmd.Env = append(os.Environ(),
+    "PLUGIN_AUTO_MTLS=true",
+    fmt.Sprintf("KV_STORAGE_DIR=%s", GetKVStorageDir()),
+    // Add go-plugin magic cookies for Python server detection
+    "PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN",
+    "BASIC_PLUGIN=hello",
+)
+```
+
+### Current Status
+
+**Progress made**:
+- Server now starts in plugin mode ✅
+- Server reads TLS configuration correctly ✅
+- Server emits handshake with certificate ✅
+- soup-go receives handshake ✅
+
+**Remaining issue**:
+```
+Error: failed to create RPC client: error parsing server cert: illegal base64 data at input byte 1123
+```
+
+**Analysis**: The Python server emits a valid go-plugin handshake with base64-encoded certificate, but soup-go's parsing fails at byte 1123. Manual testing shows the handshake format is correct and the certificate is valid base64.
+
+**Evidence that this is solvable**: Terraform's go-plugin framework successfully connects to pyvider providers with TLS, proving Go↔Python TLS compatibility exists.
+
+### Files Modified
+
+**Go Files** (2 modified):
+1. `src/tofusoup/harness/go/soup-go/rpc_client.go`
+   - Added TLS flag building from environment
+   - Added magic cookie environment variables
+   - Lines modified: 25-60
+
+**Python Files** (2 modified):
+1. `src/tofusoup/rpc/server.py`
+   - Added TLS config reading in plugin mode
+   - Lines modified: 386-403
+
+2. `conformance/rpc/matrix_config.py`
+   - Changed auth_mode from "auto_mtls" to "auto"
+   - Lines modified: 26, 77
+
+**Test Files** (1 modified):
+1. `conformance/rpc/souptest_rpc_kv_matrix.py`
+   - Temporarily commented out xfail markers for debugging
+   - Lines modified: 227-235, 364-372
+
+### Next Steps
+
+1. **Debug base64 parsing error** (High Priority)
+   - Compare with Terraform's go-plugin implementation
+   - Check if Python's cert encoding differs from Go's expectations
+   - Verify handshake field parsing (field 6 contains cert)
+   - May need to check go-plugin library version compatibility
+
+2. **Verify fix with all crypto configs** (After debugging)
+   - Test RSA 2048/4096
+   - Test EC P-256/P-384/P-521
+   - Remove temporary xfail comment-outs
+
+3. **Update test documentation** (After fix verified)
+   - Remove xfail markers permanently
+   - Update HANDOFF.md with complete fix details
+
+### Testing Commands
+
+```bash
+# Manual test of server handshake output
+PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa \
+  KV_STORAGE_DIR=/tmp/test python3 src/tofusoup/rpc/server.py
+
+# Test Go→Python (currently failing)
+uv run pytest conformance/rpc/souptest_rpc_kv_matrix.py::TestRPCKVMatrixGoClient::test_go_client_basic_operations[crypto_config0-python] -v
+
+# Test Go→Go (working)
+uv run pytest conformance/rpc/souptest_rpc_kv_matrix.py::TestRPCKVMatrixGoClient::test_go_client_basic_operations[crypto_config0-go] -v
+```
+
+### Lessons Learned
+
+1. **Python is CLI source of truth**: Use Python's CLI semantics ("auto" not "auto_mtls")
+2. **go-plugin requires magic cookies**: Environment variables must match HandshakeConfig
+3. **Direct script invocation different from CLI**: server.py `__main__` block doesn't parse CLI args
+4. **TLS config must flow through multiple layers**: Environment → soup-go → CLI flags → Python server
+
+---
+
+**End of Go→Python TLS Debugging Session**
+
+---
