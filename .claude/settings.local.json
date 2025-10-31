@@ -95,7 +95,10 @@
       "Bash(PLUGIN_TLS_KEY_TYPE=ecdsa PLUGIN_TLS_CURVE=secp256r1 PLUGIN_AUTO_MTLS=true BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN /Users/tim/code/gh/provide-io/tofusoup/.venv/bin/soup rpc kv server:*)",
       "Bash(PLUGIN_TLS_KEY_TYPE=ecdsa PLUGIN_TLS_CURVE=secp256r1 PLUGIN_AUTO_MTLS=true BASIC_PLUGIN=hello PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN timeout:*)",
       "Bash(echo:*)",
-      "Bash(/tmp/network.py.working)"
+      "Bash(/tmp/network.py.working)",
+      "Bash(/tmp/runtime.py.working)",
+      "Bash(/tmp/defaults.py.working)",
+      "Bash(/tmp/process.py.working)"
     ],
     "deny": [],
     "ask": [],
