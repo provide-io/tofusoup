@@ -23,7 +23,7 @@ class CryptoConfig:
     name: str
     key_type: str  # "rsa" or "ec"
     key_size: int  # RSA: 2048/4096, EC: 256/384/521
-    auth_mode: str = "auto_mtls"
+    auth_mode: str = "auto"  # Python CLI uses "auto" not "auto_mtls"
 
     def to_go_cli_args(self) -> list[str]:
         """Convert to CLI arguments for Go harness."""
@@ -74,7 +74,7 @@ def get_matrix_summary() -> dict[str, Any]:
         "client_languages": CLIENT_LANGUAGES,
         "server_languages": SERVER_LANGUAGES,
         "crypto_configs": [config.name for config in RPC_KV_CRYPTO_CONFIGS],
-        "auth_modes": ["auto_mtls"],  # Only testing auto_mtls as specified
+        "auth_modes": ["auto"],  # Only testing auto (auto-mTLS) mode
     }
 
 
