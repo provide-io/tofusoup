@@ -135,11 +135,6 @@ def server_start(tls_mode: str, tls_key_type: str, tls_curve: str) -> None:
         )
         sys.exit(1)
 
-    # Set environment variables for serve_plugin to read
-    os.environ["TLS_MODE"] = tls_mode
-    os.environ["TLS_KEY_TYPE"] = tls_key_type
-    os.environ["TLS_CURVE"] = tls_curve
-
     logger.info(
         "Starting KV plugin server with pyvider-rpcplugin...",
         tls_mode=tls_mode,
@@ -147,8 +142,12 @@ def server_start(tls_mode: str, tls_key_type: str, tls_curve: str) -> None:
         tls_curve=tls_curve,
     )
 
-    # Run async server
-    asyncio.run(serve_plugin())
+    # Run async server with TLS configuration from CLI args
+    asyncio.run(serve_plugin(
+        tls_mode=tls_mode,
+        tls_key_type=tls_key_type,
+        tls_curve=tls_curve,
+    ))
 
 
 @click.group("validate")

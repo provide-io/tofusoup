@@ -247,7 +247,12 @@ class KVProtocol(RPCPluginProtocol[grpc.aio.Server, KV]):
         logger.info("Added KV servicer to gRPC server")
 
 
-async def serve_plugin(storage_dir: str | None = None) -> None:
+async def serve_plugin(
+    storage_dir: str | None = None,
+    tls_mode: str | None = None,
+    tls_key_type: str | None = None,
+    tls_curve: str | None = None,
+) -> None:
     """Start the KV plugin server using pyvider-rpcplugin.
 
     This handles the complete plugin protocol including:
@@ -258,6 +263,9 @@ async def serve_plugin(storage_dir: str | None = None) -> None:
 
     Args:
         storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
+        tls_mode: TLS mode ('disabled' or 'auto'). If None, reads from TLS_MODE environment variable.
+        tls_key_type: TLS key type ('ec' or 'rsa'). If None, reads from TLS_KEY_TYPE environment variable.
+        tls_curve: EC curve name. If None, reads from TLS_CURVE environment variable.
     """
     if storage_dir is None:
         storage_dir = str(get_cache_dir() / "kv-store")
@@ -265,11 +273,11 @@ async def serve_plugin(storage_dir: str | None = None) -> None:
     # Ensure storage directory exists
     Path(storage_dir).mkdir(parents=True, exist_ok=True)
 
-    # Read configuration from environment
-    # These are set by the spawning client or command-line flags
-    tls_mode = os.getenv("TLS_MODE", "disabled")
-    tls_key_type = os.getenv("TLS_KEY_TYPE", "ec")
-    tls_curve = os.getenv("TLS_CURVE", "secp384r1")
+    # Read configuration from parameters (priority) or environment (fallback)
+    # Parameters come from CLI args, environment comes from subprocess env
+    tls_mode = tls_mode or os.getenv("TLS_MODE", "disabled")
+    tls_key_type = tls_key_type or os.getenv("TLS_KEY_TYPE", "ec")
+    tls_curve = tls_curve or os.getenv("TLS_CURVE", "secp384r1")
 
     logger.info(
         "Starting KV plugin server with pyvider-rpcplugin",
