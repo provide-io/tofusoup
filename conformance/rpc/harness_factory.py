@@ -290,22 +290,20 @@ class GoKVClient(ReferenceKVClient):
         cert_files = cert_manager.generate_crypto_material(self.crypto_config)
 
         # Build handshake string with TLS config
-        # Format: 1|6|tcp|address|grpc|{"ServerCert":"base64","CACert":"base64"}
+        # Format: 1|6|tcp|address|grpc|base64_der_cert
         import base64
-        import json
+        from cryptography import x509
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives import serialization
 
-        # Read the server cert
-        server_cert_pem = cert_files["server_cert"].read_text()
-        ca_cert_pem = cert_files["ca_cert"].read_text()
-
-        # Create TLS config JSON
-        tls_config = {
-            "ServerCert": base64.b64encode(server_cert_pem.encode()).decode(),
-            "CACert": base64.b64encode(ca_cert_pem.encode()).decode(),
-        }
+        # Read and parse the server cert to get DER format
+        server_cert_pem = cert_files["server_cert"].read_bytes()
+        cert = x509.load_pem_x509_certificate(server_cert_pem, default_backend())
+        cert_der = cert.public_bytes(encoding=serialization.Encoding.DER)
+        cert_base64 = base64.b64encode(cert_der).decode()
 
         # Construct full handshake string
-        handshake = f"1|6|tcp|{self.server_address}|grpc|{json.dumps(tls_config)}"
+        handshake = f"1|6|tcp|{self.server_address}|grpc|{cert_base64}"
 
         # soup-go command structure: soup-go rpc kv <operation> <key> [value]
         args = [self.go_client_path, "rpc", "kv", operation, key]
