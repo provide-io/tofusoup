@@ -27,8 +27,16 @@ class CryptoConfig:
 
     def to_go_cli_args(self) -> list[str]:
         """Convert to CLI arguments for Go harness."""
-        # Use disabled TLS for matrix tests to simplify - simple tests already cover TLS
-        args = ["--tls-mode", "disabled"]
+        args = ["--tls-mode", "auto"]
+
+        if self.key_type == "rsa":
+            args.extend(["--tls-key-type", "rsa"])
+        elif self.key_type == "ec":
+            args.extend(["--tls-key-type", "ec"])
+            # Map key sizes to curve names
+            curve_map = {256: "secp256r1", 384: "secp384r1", 521: "secp521r1"}
+            curve = curve_map.get(self.key_size, "auto")
+            args.extend(["--tls-curve", curve])
 
         return args
 

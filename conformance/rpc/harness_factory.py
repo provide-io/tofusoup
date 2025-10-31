@@ -275,10 +275,24 @@ class GoKVClient(ReferenceKVClient):
         if value is not None:
             args.append(value.decode("utf-8"))
 
-        # Pass just the address (TLS is disabled for matrix tests)
+        # Pass the address
         args.extend(["--address", client_address])
 
+        # Add TLS curve configuration
+        if self.crypto_config.key_type == "ec":
+            # Map key sizes to curve names
+            curve_map = {256: "secp256r1", 384: "secp384r1", 521: "secp521r1"}
+            curve = curve_map.get(self.crypto_config.key_size, "auto")
+            args.extend(["--tls-curve", curve])
+        else:
+            # For RSA, use auto curve detection
+            args.extend(["--tls-curve", "auto"])
+
         env = os.environ.copy()
+        # Enable AutoMTLS mode
+        env.update({
+            "PLUGIN_AUTO_MTLS": "1",  # Enable AutoMTLS
+        })
 
         logger.debug(f"Running Go client command: {' '.join(args)}")
         process = subprocess.run(args, env=env, cwd=self.work_dir, capture_output=True, text=True)
