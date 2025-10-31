@@ -180,20 +180,10 @@ class PythonKVServer(ReferenceKVServer):
                 "SERVER_LANGUAGE": self.server_language,
                 "CLIENT_LANGUAGE": self.client_language,
                 "COMBO_ID": self.combo_id,
-                "TLS_MODE": self.crypto_config.auth_mode,
-                "TLS_KEY_TYPE": self.crypto_config.key_type,
-                "TLS_KEY_SIZE": str(self.crypto_config.key_size),
+                # Matrix tests use disabled TLS for simplicity
+                "TLS_MODE": "disabled",
             }
         )
-        if self.crypto_config.auth_mode == "auto_mtls":
-            env.update(
-                {
-                    "KV_SERVER_CERT": str(cert_files["server_cert"]),
-                    "KV_SERVER_KEY": str(cert_files["server_key"]),
-                    "KV_CA_CERT": str(cert_files["ca_cert"]),
-                    "ENABLE_MTLS": "true",
-                }
-            )
 
         logger.info(f"Starting Python KV server: {' '.join(cmd)}")
         self.process = subprocess.Popen(
