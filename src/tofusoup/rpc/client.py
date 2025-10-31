@@ -247,28 +247,42 @@ class KVClient:
         client_config = {
             "plugins": {"kv": KVProtocol()},
             "env": env,  # Env for the server subprocess it launches
-            "enable_mtls": self.enable_mtls,
         }
 
-        if self.enable_mtls:
-            # Tests use GRPC_DEFAULT_* env vars for client's mTLS materials
+        # Important: When using auto-mTLS (tls_mode='auto'), do NOT pass enable_mtls to RPCPluginClient
+        # The server will include its certificate in the handshake, and RPCPluginClient will
+        # automatically detect and use it. Passing enable_mtls=True without cert paths causes
+        # RPCPluginClient to expect manual mTLS configuration which breaks the connection.
+        #
+        # Only pass enable_mtls when we have explicit certificate paths (manual mTLS mode).
+        if self.enable_mtls and self.tls_mode == "manual":
+            # Manual mTLS mode: use GRPC_DEFAULT_* env vars for client's mTLS materials
             client_cert_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH)
             client_key_path_env = os.getenv(ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH)
             server_ca_path_env = os.getenv(ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH)
 
             if client_cert_path_env and client_key_path_env and server_ca_path_env:
                 logger.info(
-                    "KVClient: Populating RPCPluginClient config for mTLS with paths from GRPC_DEFAULT_* env vars."
+                    "KVClient: Using manual mTLS with paths from GRPC_DEFAULT_* env vars."
                 )
+                client_config["enable_mtls"] = True
                 client_config["client_cert_path"] = client_cert_path_env
                 client_config["client_key_path"] = client_key_path_env
                 client_config["server_root_ca_path"] = server_ca_path_env
             else:
-                logger.warning(
-                    f"KVClient: mTLS enabled for KVClient, but not all {ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH}, "
-                    f"{ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH}, or {ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH} env vars are set. "
-                    "RPCPluginClient might not establish mTLS correctly if it relies on these config paths."
+                logger.error(
+                    f"KVClient: Manual mTLS mode requires {ENV_GRPC_DEFAULT_CLIENT_CERTIFICATE_PATH}, "
+                    f"{ENV_GRPC_DEFAULT_CLIENT_PRIVATE_KEY_PATH}, and {ENV_GRPC_DEFAULT_SSL_ROOTS_FILE_PATH} env vars."
                 )
+                raise ValueError("Manual mTLS mode requires certificate environment variables")
+        elif self.tls_mode == "auto":
+            # Auto-mTLS mode: Let RPCPluginClient auto-detect TLS from server handshake
+            # Do NOT pass enable_mtls - the handshake cert will be used automatically
+            logger.info(
+                "KVClient: Using auto-mTLS - RPCPluginClient will auto-detect TLS from server handshake"
+            )
+        else:
+            logger.info("KVClient: TLS disabled - using insecure connection")
 
         logger.debug(f"KVClient: Final client_constructor_config for RPCPluginClient: {client_config}")
         return client_config
