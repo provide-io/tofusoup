@@ -162,7 +162,7 @@ class PythonKVServer(ReferenceKVServer):
 
         # Generate certificates if needed
         cert_manager = CertificateManager(self.work_dir)
-        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
+        cert_manager.generate_crypto_material(self.crypto_config)
 
         # Use the existing TofuSoup KV server
         import tofusoup.rpc.server as kv_server_module

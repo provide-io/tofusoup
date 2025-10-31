@@ -102,7 +102,7 @@ def test_list_inference_works_correctly(
 
     # Find the list attribute in the result
     # All test cases have a single top-level list attribute
-    list_attr_name = list(result.value.keys())[0]
+    list_attr_name = next(iter(result.value.keys()))
     list_value = result.value[list_attr_name]
 
     # Verify it's actually a list type
@@ -179,7 +179,7 @@ def assert_dicts_equal_with_tolerance(
     """Compare dicts with tolerance for Decimal/float differences."""
     assert set(py_value.keys()) == set(go_value.keys()), f"Key mismatch at {path} for {case_name}"
 
-    for key in py_value.keys():
+    for key in py_value:
         py_val = py_value[key]
         go_val = go_value[key]
         current_path = f"{path}.{key}" if path else key
@@ -193,7 +193,7 @@ def assert_dicts_equal_with_tolerance(
             assert_dicts_equal_with_tolerance(py_val, go_val, case_name, current_path)
         elif isinstance(py_val, list) and isinstance(go_val, list):
             assert len(py_val) == len(go_val), f"List length mismatch at {current_path} for {case_name}"
-            for i, (py_item, go_item) in enumerate(zip(py_val, go_val)):
+            for i, (py_item, go_item) in enumerate(zip(py_val, go_val, strict=False)):
                 if isinstance(py_item, dict):
                     assert_dicts_equal_with_tolerance(py_item, go_item, case_name, f"{current_path}[{i}]")
                 elif isinstance(py_item, Decimal | int | float) and isinstance(go_item, Decimal | int | float):

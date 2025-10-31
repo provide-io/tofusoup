@@ -19,18 +19,19 @@ This is the CORRECT way to test RPC - using the proper abstractions
 instead of manually managing processes and handshakes.
 """
 
+import os
 from pathlib import Path
 import uuid
-import os
 
 from provide.foundation import logger
 import pytest
 
-from tofusoup.rpc.client import KVClient
 from tofusoup.common.config import load_tofusoup_config
 from tofusoup.harness.logic import ensure_go_harness_build
-from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
+from tofusoup.rpc.client import KVClient
 import tofusoup.rpc.server as py_server_module
+
+from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
 
 
 class TestRPCKVMatrix:
@@ -54,7 +55,7 @@ class TestRPCKVMatrix:
         4. GET the same key and retrieve the correct value
         5. Handle non-existent keys appropriately
 
-        Matrix coverage: 2 server langs × 5 crypto configs = 10 test combinations
+        Matrix coverage: 2 server langs x 5 crypto configs = 10 test combinations
         """
 
         logger.info(f"Testing KVClient → {server_lang} server with {crypto_config.name}")

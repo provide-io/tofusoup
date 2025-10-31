@@ -11,7 +11,7 @@ Tests cover primitives, collections, nested structures, and HCL-specific feature
 
 from decimal import Decimal
 
-from pyvider.cty import CtyBool, CtyList, CtyMap, CtyNumber, CtyObject, CtyString, CtyValue
+from pyvider.cty import CtyBool, CtyList, CtyNumber, CtyObject, CtyString
 
 # HCL content strings for testing
 HCL_TEST_CASES = {
