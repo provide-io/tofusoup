@@ -387,9 +387,19 @@ if __name__ == "__main__":
     # Check if being run in go-plugin mode (KVClient spawns with these env vars)
     if os.getenv("PLUGIN_MAGIC_COOKIE_KEY") or os.getenv("PLUGIN_PROTOCOL_VERSIONS"):
         # Plugin mode - output go-plugin handshake
-        # Read storage_dir from environment if set
+        # Read TLS configuration from environment (set by spawning client)
         storage_dir = os.getenv("KV_STORAGE_DIR")
-        start_kv_server(tls_mode="disabled", storage_dir=storage_dir, output_handshake=True)
+        tls_mode = os.getenv("TLS_MODE", "disabled")
+        tls_key_type = os.getenv("TLS_KEY_TYPE", "ec")
+        tls_curve = os.getenv("TLS_CURVE", "secp384r1")
+
+        start_kv_server(
+            tls_mode=tls_mode,
+            tls_key_type=tls_key_type,
+            tls_curve=tls_curve,
+            storage_dir=storage_dir,
+            output_handshake=True,
+        )
     else:
         # Standalone mode - simple server without handshake
         main()
