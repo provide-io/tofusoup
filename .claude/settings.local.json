@@ -75,7 +75,8 @@
       "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv put test-key '{\"\"\"\"msg\"\"\"\":\"\"\"\"works\"\"\"\"}')",
       "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv get:*)",
       "Bash(awk:*)",
-      "Bash(/tmp/rpc_header.txt)"
+      "Bash(/tmp/rpc_header.txt)",
+      "Bash(src/tofusoup/harness/go/soup-go/rpc.go)"
     ],
     "deny": [],
     "ask": [],
