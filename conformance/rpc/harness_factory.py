@@ -296,14 +296,18 @@ class GoKVClient(ReferenceKVClient):
         from cryptography.hazmat.backends import default_backend
         from cryptography.hazmat.primitives import serialization
 
-        # Read and parse the server cert to get DER format
-        server_cert_pem = cert_files["server_cert"].read_bytes()
-        cert = x509.load_pem_x509_certificate(server_cert_pem, default_backend())
+        # Read and parse the CA cert to get DER format (the handshake expects the root CA)
+        ca_cert_pem = cert_files["ca_cert"].read_bytes()
+        cert = x509.load_pem_x509_certificate(ca_cert_pem, default_backend())
         cert_der = cert.public_bytes(encoding=serialization.Encoding.DER)
         cert_base64 = base64.b64encode(cert_der).decode()
 
         # Construct full handshake string
-        handshake = f"1|6|tcp|{self.server_address}|grpc|{cert_base64}"
+        # Use 127.0.0.1 instead of the server's bind address (which might be [::])
+        # because the certificate is valid for 127.0.0.1, not for ::
+        port = self.server_address.split(":")[-1]
+        client_address = f"127.0.0.1:{port}"
+        handshake = f"1|6|tcp|{client_address}|grpc|{cert_base64}"
 
         # soup-go command structure: soup-go rpc kv <operation> <key> [value]
         args = [self.go_client_path, "rpc", "kv", operation, key]

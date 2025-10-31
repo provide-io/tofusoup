@@ -67,7 +67,7 @@ class CertificateManager:
             common_name="localhost",
             organization_name="TofuSoup Test Server",
             validity_days=30,
-            alt_names=["localhost", "127.0.0.1", "::1"],
+            alt_names=["localhost", "127.0.0.1", "::1", "::"],
             key_type=key_type,
             key_size=key_param if key_type == "rsa" else 2048,
             ecdsa_curve=key_param if key_type == "ecdsa" else "secp384r1",
