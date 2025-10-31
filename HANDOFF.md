@@ -2198,30 +2198,62 @@ result = await client.get('test-key')  # ✅ Returns b'test-value'
 
 ### Known Issue: TLS Configuration Problem
 
-**Status**: ⚠️ **Under Investigation**
+**Status**: ⚠️ **BLOCKED** - Requires pyvider-rpcplugin investigation
 
 **Symptom**: When `tls_mode='auto'`, gRPC channel fails to become ready
 ```
 Error: gRPC channel failed to become ready within 10.0s for endpoint unix:/var/folders/.../pyvider-xxx.sock
+Error: asyncio.exceptions.CancelledError in watch_connectivity_state
 ```
 
 **Evidence**:
-- ✅ Server outputs valid handshake with certificate
-- ✅ TLS-disabled mode works perfectly
-- ❌ TLS-enabled mode times out on channel connection
+- ✅ Server starts correctly and outputs valid go-plugin handshake with certificate
+- ✅ Handshake format is correct: `1|1|unix|/path/to/socket|grpc|BASE64_CERT`
+- ✅ TLS-disabled mode works perfectly (fully tested)
+- ❌ TLS-enabled mode: server starts, handshake emitted, but gRPC channel never becomes ready
+- ❌ Client times out waiting for channel.channel_ready()
+
+**Technical Details**:
+The failure occurs in `pyvider/rpcplugin/client/process.py:229` during `_create_grpc_channel_impl()`:
+```python
+await asyncio.wait_for(
+    self.grpc_channel.channel_ready(),
+    timeout=rpcplugin_config.plugin_channel_ready_timeout
+)
+```
+
+The gRPC channel is created but never transitions to READY state, eventually timing out with `CancelledError`.
 
 **Analysis**:
-This appears to be a separate issue from the import error. The server-side go-plugin protocol works correctly (emits valid handshake), but the client-side connection setup fails. This may indicate:
-1. Missing configuration in pyvider-rpcplugin client setup
-2. Version mismatch between dependencies
-3. Additional environment or config needed for auto-mTLS
+This is **not** a configuration issue in tofusoup - we've correctly aligned with the pyvider pattern:
+1. ✅ Do NOT pass `enable_mtls=True` to RPCPluginClient for auto-mTLS
+2. ✅ Server emits certificate in handshake (field 6)
+3. ✅ Client receives and parses handshake correctly
+4. ✅ TLS environment variables set correctly
+5. ❌ gRPC channel creation/connection fails silently
 
-**Context**: Pyvider providers successfully use go-plugin with TLS in production (e.g., Terraform providers), so the working pattern exists. Tofusoup's usage needs to align with pyvider's working implementation.
+**Root Cause Hypothesis**:
+The issue is likely in pyvider-rpcplugin's TLS channel setup code. Possible causes:
+1. gRPC channel credentials not being applied correctly from handshake cert
+2. Unix socket + TLS combination issue in grpcio-python
+3. Certificate validation or trust chain problem
+4. Missing gRPC channel option for auto-mTLS
 
-**Next Steps**:
-1. Compare with working pyvider provider implementation
-2. Check pyvider-rpcplugin version and configuration
-3. Investigate if additional client-side setup is needed for auto-mTLS
+**Context**:
+- Pyvider providers (Terraform) successfully use go-plugin with TLS in production
+- This proves the pattern works, but tofusoup's specific usage might trigger an edge case
+- The Python server works (emits valid handshake), so server-side is correct
+- The Go server also works with Go clients (verified in matrix tests documentation)
+
+**Next Steps** (requires pyvider-rpcplugin expertise):
+1. Debug `pyvider/rpcplugin/client/process.py` TLS channel creation
+2. Compare tofusoup's usage with working pyvider provider
+3. Check if specific grpcio version or gRPC channel options needed
+4. Investigate Unix socket + TLS compatibility in current grpcio version
+5. Consider if pyvider-rpcplugin needs updates for soup's usage pattern
+
+**Workaround**:
+Use `tls_mode='disabled'` for testing until TLS issue is resolved. All RPC functionality works correctly without TLS.
 
 ### Files Modified Summary
 
@@ -2269,6 +2301,29 @@ This appears to be a separate issue from the import error. The server-side go-pl
 - Only pass `enable_mtls` for manual mTLS with explicit cert paths
 
 **This is the correct pattern** as used by pyvider providers in production.
+
+---
+
+### Final Summary
+
+**Session Outcome**: ✅ **Import Error Fixed** | ⚠️ **TLS Issue Documented**
+
+**What Worked**:
+1. ✅ Identified and fixed critical import error (soup rpc kv server)
+2. ✅ Aligned CLI/server with provide-foundation pattern
+3. ✅ Verified TLS-disabled mode fully functional
+4. ✅ All CTY/Wire/HCL tests passing (399/399)
+5. ✅ Comprehensive documentation of fixes and issues
+
+**What's Blocked**:
+- ⚠️ TLS/mTLS mode requires pyvider-rpcplugin debugging
+- ⚠️ ~45 RPC tests blocked pending TLS fix
+
+**Production Status**:
+- ✅ TLS-disabled mode: **Production Ready**
+- ⚠️ TLS-enabled mode: **Blocked** (pyvider-rpcplugin investigation needed)
+
+**Key Insight**: The import error fix was essential and is now complete. The TLS issue is a separate, deeper problem in the gRPC channel setup that requires pyvider-rpcplugin expertise to resolve.
 
 ---
 
