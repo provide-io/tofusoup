@@ -417,7 +417,7 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 		return nil, fmt.Errorf("PLUGIN_SERVER_PATH environment variable not set")
 	}
 
-	cmd := exec.Command(serverPath, "rpc", "server")
+	cmd := exec.Command(serverPath, "rpc", "kv", "server")
 	cmd.Env = append(os.Environ(),
 		"PLUGIN_AUTO_MTLS=true",                            // Explicitly enable AutoMTLS for Python server
 		fmt.Sprintf("KV_STORAGE_DIR=%s", GetKVStorageDir()), // Set XDG-compliant storage directory
