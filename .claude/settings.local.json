@@ -61,7 +61,8 @@
       "Bash(python -c:*)",
       "Bash(lsof:*)",
       "Bash(python run_matrix_tests.py:*)",
-      "Bash(~/Library/Caches/tofusoup/harnesses/soup-go rpc kv:*)"
+      "Bash(~/Library/Caches/tofusoup/harnesses/soup-go rpc kv:*)",
+      "Bash(timeout 2 ~/Library/Caches/tofusoup/harnesses/soup-go rpc kv server:*)"
     ],
     "deny": [],
     "ask": [],
