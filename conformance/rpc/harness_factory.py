@@ -277,27 +277,28 @@ class GoKVClient(ReferenceKVClient):
     async def _run_go_command(self, operation: str, key: str, value: bytes | None = None) -> bytes:
         """Run Go client command and return output."""
 
-        cert_manager = CertificateManager(self.work_dir)
-        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
-
         # soup-go command structure: soup-go rpc kv <operation> <key> [value]
         args = [self.go_client_path, "rpc", "kv", operation, key]
         if value is not None:
             args.append(value.decode("utf-8"))
 
-        # Add crypto configuration
-        args.extend(self.crypto_config.to_go_cli_args())
-        args.extend(
-            [
-                f"--server-address={self.server_address}",
-                f"--ca-cert={cert_files['ca_cert']}",
-                f"--client-cert={cert_files['client_cert']}",
-                f"--client-key={cert_files['client_key']}",
-            ]
-        )
+        # Add server address (soup-go uses --address, not --server-address)
+        args.extend(["--address", self.server_address])
+
+        # Add TLS curve configuration if EC
+        if self.crypto_config.key_type == "ec":
+            # Map key sizes to curve names
+            curve_map = {256: "secp256r1", 384: "secp384r1", 521: "secp521r1"}
+            curve = curve_map.get(self.crypto_config.key_size, "auto")
+            args.extend(["--tls-curve", curve])
 
         env = os.environ.copy()
-        env.update({"PLUGIN_MAGIC_COOKIE_KEY": "BASIC_PLUGIN", "BASIC_PLUGIN": "hello"})
+        # Note: soup-go client uses auto-mTLS, certificates are auto-generated
+        env.update({
+            "TLS_MODE": self.crypto_config.auth_mode,
+            "TLS_KEY_TYPE": self.crypto_config.key_type,
+            "TLS_KEY_SIZE": str(self.crypto_config.key_size),
+        })
 
         logger.debug(f"Running Go client command: {' '.join(args)}")
         process = subprocess.run(args, env=env, cwd=self.work_dir, capture_output=True, text=True)
