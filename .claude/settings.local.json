@@ -66,7 +66,13 @@
       "Bash(timeout:*)",
       "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello timeout 2 ~/Library/Caches/tofusoup/harnesses/soup-go rpc kv server --tls-mode auto --tls-key-type rsa)",
       "Bash(uv --version:*)",
-      "Bash(go version:*)"
+      "Bash(go version:*)",
+      "Bash(export PLUGIN_SERVER_PATH=~/Library/Caches/tofusoup/harnesses/soup-go)",
+      "Bash(export KV_STORAGE_DIR=/tmp/go_go_plugin/kv-storage)",
+      "Bash(export BASIC_PLUGIN=hello)",
+      "Bash(export PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN)",
+      "Bash(export PLUGIN_SERVER_PATH=/Users/tim/Library/Caches/tofusoup/harnesses/soup-go)",
+      "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv put test-key '{\"\"\"\"msg\"\"\"\":\"\"\"\"works\"\"\"\"}')"
     ],
     "deny": [],
     "ask": [],
