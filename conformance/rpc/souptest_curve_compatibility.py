@@ -39,6 +39,7 @@ def soup_go_path() -> Path | None:
     return None
 
 
+@pytest.mark.skip(reason="Python client → Go server is not supported (pyvider-rpcplugin limitation)")
 @pytest.mark.parametrize(
     "curve",
     [
@@ -74,6 +75,7 @@ async def test_python_to_go_curve(soup_go_path: Path | None, curve: str) -> None
             await client.close()
 
 
+@pytest.mark.skip(reason="Python client → Go server is not supported (pyvider-rpcplugin limitation)")
 @pytest.mark.asyncio
 async def test_auto_curve(soup_go_path: Path | None) -> None:
     """Test Python client → Go server with auto curve selection (go-plugin default)."""

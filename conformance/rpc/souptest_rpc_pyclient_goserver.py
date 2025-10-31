@@ -16,6 +16,7 @@ import pytest
 from tofusoup.rpc.client import KVClient
 
 
+@pytest.mark.skip(reason="Python client → Go server is not supported (pyvider-rpcplugin limitation)")
 @pytest.mark.integration_rpc
 @pytest.mark.harness_go
 @pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)

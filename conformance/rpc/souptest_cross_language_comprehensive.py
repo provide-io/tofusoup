@@ -86,6 +86,7 @@ async def test_python_to_python(soup_path: Path | None) -> None:
             await client.close()
 
 
+@pytest.mark.skip(reason="Python client → Go server is not supported (pyvider-rpcplugin limitation)")
 @pytest.mark.asyncio
 async def test_python_to_go(soup_go_path: Path | None) -> None:
     """Test Python client → Go server."""

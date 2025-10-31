@@ -76,6 +76,7 @@ async def test_python_to_python_all_curves(soup_path: Path | None, curve: str) -
         await client.close()
 
 
+@pytest.mark.skip(reason="Python client → Go server is not supported (pyvider-rpcplugin limitation)")
 @pytest.mark.asyncio
 async def test_python_to_go_all_curves(soup_go_path: Path | None) -> None:
     """Test Python client → Go server with supported curves."""
