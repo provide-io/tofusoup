@@ -1,11 +1,13 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/hashicorp/go-hclog"
 	"google.golang.org/grpc"

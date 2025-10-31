@@ -3,8 +3,6 @@ package main
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/base64"
-	"encoding/pem"
 	"fmt"
 	"net"
 	"os"
@@ -13,6 +11,8 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
@@ -117,85 +117,6 @@ func parseHandshakeOrAddress(addressOrHandshake string, logger hclog.Logger) (*p
 		ProtocolVersion: 1,
 		Addr:            tcpAddr,
 	}, nil, nil, hostname, nil
-}
-
-// detectCurveFromCert detects the elliptic curve used by a certificate's public key
-func detectCurveFromCert(cert *x509.Certificate, logger hclog.Logger) (string, error) {
-	// Check if the public key is ECDSA
-	pubKey, ok := cert.PublicKey.(*ecdsa.PublicKey)
-	if !ok {
-		return "", fmt.Errorf("certificate does not use ECDSA key (got %T)", cert.PublicKey)
-	}
-
-	// Determine which curve is used
-	switch pubKey.Curve {
-	case elliptic.P256():
-		logger.Debug("Detected P-256 curve from server certificate")
-		return "secp256r1", nil
-	case elliptic.P384():
-		logger.Debug("Detected P-384 curve from server certificate")
-		return "secp384r1", nil
-	case elliptic.P521():
-		logger.Debug("Detected P-521 curve from server certificate")
-		return "secp521r1", nil
-	default:
-		return "", fmt.Errorf("unknown elliptic curve: %v", pubKey.Curve.Params().Name)
-	}
-}
-
-// parseCertificateFromHandshake decodes and parses the base64-encoded certificate from the handshake
-// Returns the TLS config and the parsed certificate for curve detection
-func parseCertificateFromHandshake(certBase64 string, hostname string, logger hclog.Logger) (*tls.Config, *x509.Certificate, error) {
-	// Decode base64 certificate (DER format, not PEM)
-	certDER, err := base64.StdEncoding.DecodeString(certBase64)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to decode base64 certificate: %w", err)
-	}
-
-	// Parse DER-encoded certificate directly
-	cert, err := x509.ParseCertificate(certDER)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to parse x509 certificate: %w", err)
-	}
-
-	logger.Debug("Parsed server certificate",
-		"subject", cert.Subject.CommonName,
-		"issuer", cert.Issuer.CommonName,
-		"not_before", cert.NotBefore,
-		"not_after", cert.NotAfter)
-
-	// Create certificate pool with server cert for trust verification
-	certPool := x509.NewCertPool()
-	certPool.AddCert(cert)
-
-	// Determine appropriate ServerName
-	// If connecting to an IP address, we need to use a DNS name from the cert SANs
-	// because the cert has "127.0.0.1" as a DNS SAN, not an IP SAN
-	serverName := hostname
-	if hostname == "127.0.0.1" && len(cert.DNSNames) > 0 {
-		// Use "localhost" if available in DNS SANs
-		for _, dnsName := range cert.DNSNames {
-			if dnsName == "localhost" {
-				serverName = "localhost"
-				break
-			}
-		}
-	}
-
-	// Create TLS config for client that trusts this server cert
-	tlsConfig := &tls.Config{
-		RootCAs:            certPool,
-		InsecureSkipVerify: false,  // We're properly verifying with the cert pool
-		MinVersion:         tls.VersionTLS12,
-		ServerName:         serverName,  // Set to a DNS name that matches the cert SANs
-	}
-
-	logger.Info("Created TLS config with server certificate for mTLS",
-		"cert_cn", cert.Subject.CommonName,
-		"dns_sans", cert.DNSNames,
-		"ip_sans", cert.IPAddresses,
-		"server_name", serverName)
-	return tlsConfig, cert, nil
 }
 
 // newReattachClient creates a go-plugin client that reattaches to an existing server
