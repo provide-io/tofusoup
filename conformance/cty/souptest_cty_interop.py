@@ -158,7 +158,7 @@ GO_TEST_CASES: dict[str, CtyValue] = {
 # Test Case Generation: Comprehensive Coverage
 # =============================================================================
 
-def build_comprehensive_interop_cases() -> dict[str, CtyValue]:
+def build_comprehensive_interop_cases() -> dict[str, CtyValue]:  # noqa: C901
     """Build comprehensive test cases for cross-language interoperability.
 
     Generates CtyValue test cases from shared test data for all CTY types:

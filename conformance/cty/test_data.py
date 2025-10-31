@@ -27,7 +27,6 @@ from pyvider.cty import (
     CtyTuple,
 )
 
-
 # =============================================================================
 # Primitive Type Test Data
 # =============================================================================
@@ -39,7 +38,7 @@ STRING_TEST_CASES = [
     ("single_char", "a"),
     # Unicode and special characters
     ("unicode_emoji", "Hello 🌍🚀"),
-    ("unicode_mixed", "Hello世界مرحبا"),
+    ("unicode_mixed", "Hello世界مرحبا"),  # noqa: RUF001 - Intentional unicode test data
     ("newlines", "line1\nline2\nline3"),
     ("tabs", "col1\tcol2\tcol3"),
     ("quotes", 'He said "Hello"'),

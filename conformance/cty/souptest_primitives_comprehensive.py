@@ -26,7 +26,6 @@ from pyvider.cty.codec import cty_from_msgpack, cty_to_msgpack
 
 from .test_data import BOOL_TEST_CASES, NUMBER_TEST_CASES, STRING_TEST_CASES
 
-
 # =============================================================================
 # Tests: CtyString Comprehensive
 # =============================================================================

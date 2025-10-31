@@ -34,7 +34,6 @@ from .test_data import (
     TUPLE_TEST_CASES,
 )
 
-
 # =============================================================================
 # Tests: CtyTuple Comprehensive
 # =============================================================================
@@ -147,7 +146,7 @@ def test_ctytuple_wrong_type_at_position() -> None:
     """Test CtyTuple validation error when element has wrong type."""
     cty_type = CtyTuple(element_types=(CtyString(), CtyNumber()))
 
-    with pytest.raises(Exception):  # Will raise some validation error
+    with pytest.raises(CtyTupleValidationError):
         cty_type.validate([42, "hello"])  # Types reversed
 
 
@@ -370,7 +369,7 @@ def test_ctyobject_wrong_attribute_type() -> None:
         "age": CtyNumber(),
     })
 
-    with pytest.raises(Exception):  # Will raise some validation error
+    with pytest.raises(CtyAttributeValidationError):
         cty_type.validate({"name": "Alice", "age": "not a number"})
 
 
@@ -383,7 +382,7 @@ def test_ctyobject_optional_attribute_wrong_type() -> None:
         optional_attributes={"email"},
     )
 
-    with pytest.raises(Exception):  # Will raise some validation error
+    with pytest.raises(CtyAttributeValidationError):
         cty_type.validate({"name": "Alice", "email": 12345})
 
 

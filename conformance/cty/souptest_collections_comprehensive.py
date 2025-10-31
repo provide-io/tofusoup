@@ -39,7 +39,6 @@ from .test_data import (
     SET_STRING_TEST_CASES,
 )
 
-
 # =============================================================================
 # Tests: CtyList Comprehensive
 # =============================================================================
@@ -157,7 +156,7 @@ def test_ctyset_deduplication() -> None:
     cty_type = CtySet(element_type=CtyString())
 
     # Input has duplicates, but set should deduplicate
-    cty_value = cty_type.validate({"a", "b", "a", "c", "b"})
+    cty_value = cty_type.validate({"a", "b", "c"})
 
     # CtySet should deduplicate to 3 unique elements
     assert len(cty_value.value) == 3
