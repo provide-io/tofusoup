@@ -245,12 +245,13 @@ func init() {
 	configShowCmd.Flags().Bool("json", false, "Output in JSON format")
 	
 	// RPC server flags
-	serverCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port")
-	serverCmd.Flags().StringVar(&rpcTLSMode, "tls-mode", "disabled", "TLS mode: disabled, auto, manual")
-	serverCmd.Flags().StringVar(&rpcTLSKeyType, "tls-key-type", "ec", "Key type for auto TLS: 'ec' or 'rsa'")
-	serverCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "auto", "Elliptic curve for EC key type: 'auto' (AutoMTLS P-521), 'secp256r1', 'secp384r1', 'secp521r1'")
-	serverCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS)")
-	serverCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS)")
+	serverCmd.Flags().BoolVar(&rpcStandalone, "standalone", false, "Run in standalone mode instead of plugin mode")
+	serverCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port (only used in standalone mode)")
+	serverCmd.Flags().StringVar(&rpcTLSMode, "tls-mode", "disabled", "TLS mode: disabled, auto, manual (only used in standalone mode)")
+	serverCmd.Flags().StringVar(&rpcTLSKeyType, "tls-key-type", "ec", "Key type for auto TLS: 'ec' or 'rsa' (only used in standalone mode)")
+	serverCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "auto", "Elliptic curve for EC key type: 'auto' (AutoMTLS P-521), 'secp256r1', 'secp384r1', 'secp521r1' (only used in standalone mode)")
+	serverCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS, only used in standalone mode)")
+	serverCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS, only used in standalone mode)")
 	
 	// Build command tree
 	rootCmd.AddCommand(ctyCmd)
