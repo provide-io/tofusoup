@@ -73,6 +73,10 @@ class GoKVServer(ReferenceKVServer):
     async def start(self) -> None:
         """Start Go KV server process."""
 
+        # Generate certificates first
+        cert_manager = CertificateManager(self.work_dir)
+        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
+
         # Build soup-go harness if needed
         project_root = Path(__file__).parent.parent.parent
         config = load_tofusoup_config(project_root)
@@ -81,10 +85,14 @@ class GoKVServer(ReferenceKVServer):
         # Prepare soup-go command arguments
         args = [str(soup_go_path), "rpc", "kv", "server"]
         args.extend(self.crypto_config.to_go_cli_args())
-        print(f"DEBUG: soup-go args: {args}")
 
-        # For auto_mtls mode, the Go server generates certificates automatically
-        # No additional certificate flags needed
+        # Add certificate file paths so server uses our pre-generated certs
+        args.extend([
+            "--cert-file", str(cert_files["server_cert"]),
+            "--key-file", str(cert_files["server_key"]),
+        ])
+
+        print(f"DEBUG: soup-go args: {args}")
 
         # Set up environment with combo identification
         env = os.environ.copy()
@@ -277,13 +285,35 @@ class GoKVClient(ReferenceKVClient):
     async def _run_go_command(self, operation: str, key: str, value: bytes | None = None) -> bytes:
         """Run Go client command and return output."""
 
+        # Generate certificate files for the client to use
+        cert_manager = CertificateManager(self.work_dir)
+        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
+
+        # Build handshake string with TLS config
+        # Format: 1|6|tcp|address|grpc|{"ServerCert":"base64","CACert":"base64"}
+        import base64
+        import json
+
+        # Read the server cert
+        server_cert_pem = cert_files["server_cert"].read_text()
+        ca_cert_pem = cert_files["ca_cert"].read_text()
+
+        # Create TLS config JSON
+        tls_config = {
+            "ServerCert": base64.b64encode(server_cert_pem.encode()).decode(),
+            "CACert": base64.b64encode(ca_cert_pem.encode()).decode(),
+        }
+
+        # Construct full handshake string
+        handshake = f"1|6|tcp|{self.server_address}|grpc|{json.dumps(tls_config)}"
+
         # soup-go command structure: soup-go rpc kv <operation> <key> [value]
         args = [self.go_client_path, "rpc", "kv", operation, key]
         if value is not None:
             args.append(value.decode("utf-8"))
 
-        # Add server address (soup-go uses --address, not --server-address)
-        args.extend(["--address", self.server_address])
+        # Pass the full handshake instead of just the address
+        args.extend(["--address", handshake])
 
         # Add TLS curve configuration if EC
         if self.crypto_config.key_type == "ec":
@@ -293,14 +323,8 @@ class GoKVClient(ReferenceKVClient):
             args.extend(["--tls-curve", curve])
 
         env = os.environ.copy()
-        # Note: soup-go client uses auto-mTLS, certificates are auto-generated
-        env.update({
-            "TLS_MODE": self.crypto_config.auth_mode,
-            "TLS_KEY_TYPE": self.crypto_config.key_type,
-            "TLS_KEY_SIZE": str(self.crypto_config.key_size),
-        })
 
-        logger.debug(f"Running Go client command: {' '.join(args)}")
+        logger.debug(f"Running Go client command with handshake (truncated): {' '.join(args[:5])}...")
         process = subprocess.run(args, env=env, cwd=self.work_dir, capture_output=True, text=True)
 
         if process.returncode != 0:
