@@ -228,6 +228,21 @@ class KV(kv_pb2_grpc.KVServicer):
             return kv_pb2.Empty()
 
 
+def serve(server: grpc.aio.Server, storage_dir: str | None = None) -> None:
+    """Set up KV handlers on a gRPC server.
+
+    This is a helper function for testing that adds the KV servicer
+    to an existing gRPC server without using the plugin protocol.
+
+    Args:
+        server: The gRPC async server to add handlers to.
+        storage_dir: Directory to store KV data files.
+    """
+    handler = KV(storage_dir=storage_dir)
+    kv_pb2_grpc.add_KVServicer_to_server(handler, server)
+    logger.info("Added KV servicer to gRPC server", storage_dir=storage_dir)
+
+
 class KVProtocol(RPCPluginProtocol[grpc.aio.Server, KV]):
     """Protocol implementation for KV service."""
 
