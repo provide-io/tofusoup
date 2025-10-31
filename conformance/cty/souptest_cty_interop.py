@@ -91,6 +91,11 @@ def _cty_value_to_json_compatible_value(cty_value: CtyValue) -> Any:
         # For CtyDynamic, its value is another CtyValue. Recursively convert it.
         return _cty_value_to_json_compatible_value(cty_value.value)
 
+    # For CtyNumber with Decimal values, convert to string FIRST to preserve precision
+    # (before _convert_value_to_serializable converts Decimal to float)
+    if isinstance(cty_value.type, CtyNumber) and isinstance(cty_value.value, Decimal):
+        return str(cty_value.value)
+
     # For other types, _convert_value_to_serializable should return a JSON-compatible type
     serializable_data = _convert_value_to_serializable(cty_value, cty_value.type)
 
@@ -341,7 +346,7 @@ def test_go_verifies_python_fixtures(
 
         exit_code, _, stderr = run_harness_cli(
             executable=go_harness_executable,
-            args=["cty", "validate-value", value_json, "--type", type_json_for_go],
+            args=["cty", "validate-value", "--type", type_json_for_go, "--", value_json],
             project_root=project_root,
             harness_artifact_name="soup-go",
             test_id=f"verify_fixture_{case_name}",
@@ -444,7 +449,7 @@ def test_go_verifies_python_fixtures_comprehensive(
 
         exit_code, _, stderr = run_harness_cli(
             executable=go_harness_executable,
-            args=["cty", "validate-value", value_json, "--type", type_json_for_go],
+            args=["cty", "validate-value", "--type", type_json_for_go, "--", value_json],
             project_root=project_root,
             harness_artifact_name="soup-go",
             test_id=f"verify_fixture_comprehensive_{case_name}",

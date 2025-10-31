@@ -310,9 +310,15 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 		}
 
 		if ty.IsListType() {
+			if len(vals) == 0 {
+				return cty.ListValEmpty(ty.ElementType()), nil
+			}
 			return cty.ListVal(vals), nil
 		}
 		if ty.IsSetType() {
+			if len(vals) == 0 {
+				return cty.SetValEmpty(ty.ElementType()), nil
+			}
 			return cty.SetVal(vals), nil
 		}
 		return cty.TupleVal(vals), nil
@@ -341,6 +347,9 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 		}
 
 		if ty.IsMapType() {
+			if len(vals) == 0 {
+				return cty.MapValEmpty(ty.ElementType()), nil
+			}
 			return cty.MapVal(vals), nil
 		}
 		return cty.ObjectVal(vals), nil
