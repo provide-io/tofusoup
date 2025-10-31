@@ -1,0 +1,230 @@
+================================================================================
+PYVIDER-RPCPLUGIN ARCHITECTURE INVESTIGATION - EXECUTIVE SUMMARY
+================================================================================
+
+QUESTION: Does pyvider-rpcplugin have SERVER-SIDE support, similar to how 
+go-plugin has `plugin.Serve()`?
+
+ANSWER: YES - COMPLETE SERVER-SIDE SUPPORT EXISTS
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+1. PYVIDER-RPCPLUGIN HAS FULL SERVER API
+   Location: pyvider/rpcplugin/server.py (630 lines)
+   
+   Main Components:
+   - RPCPluginServer class (lines 81-630)
+   - plugin_server() factory function (lines 128-157)
+   - Handshake negotiation
+   - Transport negotiation (TCP/Unix)
+   - Auto-mTLS certificate generation
+   - Signal handling & graceful shutdown
+   - Rate limiting
+   - Health checking
+
+2. TOFUSOUP HAS TWO DIFFERENT IMPLEMENTATIONS
+   
+   CORRECT (Uses abstractions):
+   - File: src/tofusoup/rpc/plugin_server.py
+   - Uses: pyvider.rpcplugin.factories.plugin_server()
+   - Uses: RPCPluginServer.serve() for all protocol handling
+   - Status: Exists but NOT the default spawned server
+   
+   PROBLEMATIC (Manual implementation):
+   - File: src/tofusoup/rpc/server.py  
+   - Manually constructs handshake (lines 301-327)
+   - Manual TLS configuration
+   - Hardcoded TCP transport
+   - Reimplements what RPCPluginServer already does
+   - Status: Currently spawned by KVClient for Python servers
+
+3. FUNDAMENTAL ARCHITECTURAL ASYMMETRY
+   
+   Client-Side (Correct):
+   - KVClient uses pyvider.rpcplugin.client.RPCPluginClient
+   - Abstracts handshake, certificates, protocol negotiation
+   - File: src/tofusoup/rpc/client.py
+   
+   Server-Side (Problematic):
+   - Manually implements what should be abstracted
+   - Reimplements go-plugin protocol
+   - Manual certificate handling
+   - File: src/tofusoup/rpc/server.py
+
+4. CURRENT SPAWNING BEHAVIOR
+   
+   When KVClient needs a Python server:
+   - Spawns: python /path/to/src/tofusoup/rpc/server.py
+   - That file manually constructs handshake string
+   - Outputs handshake to stdout for go-plugin client to read
+   
+   What SHOULD happen:
+   - Spawn: python /path/to/src/tofusoup/rpc/plugin_server.py
+   - That file calls RPCPluginServer.serve()
+   - RPCPluginServer handles ALL handshake/protocol details
+   - Properly integrates with pyvider-rpcplugin config system
+
+5. SERVER-SIDE API COMPARISON
+   
+   pyvider-rpcplugin.rpcplugin_config exports:
+   - "RPCPluginServer" (full server class)
+   - "plugin_server()" (server factory)
+   - "RPCPluginProtocol" (base class)
+   
+   This is identical in scope to client-side exports:
+   - "RPCPluginClient" (full client class)
+   - "plugin_client()" (client factory)
+
+6. HOW RPCPLUGINSERVER.SERVE() WORKS
+   
+   async def serve(self):
+       # 1. Register signal handlers
+       # 2. Negotiate handshake (magic cookie, protocol, transport)
+       # 3. Setup gRPC server with proper credentials
+       # 4. Watch for shutdown signals
+       # 5. Build handshake response (NOT MANUALLY)
+       response = await build_handshake_response(...)
+       # 6. Output to stdout (where go-plugin reads it)
+       sys.stdout.buffer.write(f"{response}\n".encode())
+       # 7. Wait for shutdown signal
+   
+   Key: Uses abstractions, NOT manual string construction
+
+================================================================================
+PROOF OF FULL SERVER-SIDE SUPPORT
+================================================================================
+
+1. Public API Exports
+   File: pyvider/rpcplugin/__init__.py
+   
+   Exports server components:
+   - from pyvider.rpcplugin.server import RPCPluginServer
+   - from pyvider.rpcplugin.factories import plugin_server
+   
+   In __all__:
+   - "RPCPluginServer"    ← FULL SERVER CLASS
+   - "plugin_server"      ← SERVER FACTORY FUNCTION
+   
+   Matches client exports:
+   - "RPCPluginClient"    ← FULL CLIENT CLASS
+   - "plugin_client"      ← CLIENT FACTORY FUNCTION
+
+2. TofuSoup's plugin_server.py Already Uses It Correctly
+   
+   ```python
+   from pyvider.rpcplugin.factories import plugin_server
+   from pyvider.rpcplugin.protocol.base import RPCPluginProtocol
+   
+   class KVProtocol(RPCPluginProtocol):
+       async def get_grpc_descriptors(self): ...
+       async def add_to_server(self, server, handler): ...
+   
+   async def start_kv_server():
+       handler = KV()
+       protocol = KVProtocol()
+       server = plugin_server(protocol=protocol, handler=handler)
+       
+       # This single call handles everything:
+       # - Magic cookie validation
+       # - Protocol/transport negotiation
+       # - TLS setup
+       # - Handshake generation
+       # - Server management
+       await server.serve()
+   ```
+
+3. Comparison: Manual vs. Abstracted
+   
+   MANUAL (server.py - 327 lines of code):
+   - _configure_tls_disabled() function
+   - _configure_tls_auto() function
+   - _configure_tls_manual() function
+   - _start_server_and_handshake() function
+   - Lines 307-320: Manual handshake string construction
+   
+   ABSTRACTED (plugin_server.py - 88 lines of code):
+   - KVProtocol class (implements interface)
+   - start_kv_server() function
+   - Calls plugin_server(protocol=..., handler=...)
+   - Calls server.serve()
+   - Everything else handled by pyvider-rpcplugin
+
+================================================================================
+ARCHITECTURAL IMPLICATIONS
+================================================================================
+
+Why This Matters:
+1. Code Duplication: TLS, handshake, certificates duplicated
+2. Maintenance Burden: Manual implementations harder to maintain
+3. Missing Features: No rate limiting, health checks, shutdown files
+4. Bug Surface: Manual string parsing prone to errors
+5. Inconsistent: Client uses abstractions, server doesn't
+
+Benefits of Using pyvider-rpcplugin Server API:
+1. Single Source of Truth (maintained by pyvider team)
+2. Feature-Rich (auto-mTLS, rate limiting, health checks)
+3. Config-Driven (respects rpcplugin_config)
+4. Tested (community battle-tested)
+5. Async-Native (full async/await)
+
+================================================================================
+WHAT SPAWNED SERVERS CURRENTLY DO
+================================================================================
+
+When KVClient.start() spawns Python server (from logic.py line 51):
+
+Current Flow (MANUAL):
+1. KVClient spawns: ["python", "src/tofusoup/rpc/server.py"]
+2. server.py __main__ checks env vars
+3. server.py manually calls start_kv_server()
+4. start_kv_server() manually creates grpc.Server
+5. Manually configures TLS (calls _configure_tls_*)
+6. _start_server_and_handshake() manually constructs:
+   "1|1|tcp|127.0.0.1:PORT|grpc|CERT_B64"
+7. Prints to stdout
+8. Go client reads handshake from stdout
+9. Go client connects to gRPC server
+
+Better Flow (ABSTRACTED):
+1. KVClient spawns: ["python", "src/tofusoup/rpc/plugin_server.py"]
+2. plugin_server.py __main__ calls asyncio.run(main())
+3. main() creates KV handler and KVProtocol
+4. Creates RPCPluginServer via plugin_server() factory
+5. Calls server.serve() which:
+   - Validates magic cookie
+   - Negotiates protocol/transport
+   - Sets up gRPC with proper credentials
+   - Calls build_handshake_response() (NOT manual string)
+   - Outputs to stdout
+   - Waits for shutdown
+6. Go client reads handshake from stdout
+7. Go client connects to gRPC server
+
+================================================================================
+CONCLUSION
+================================================================================
+
+YES - pyvider-rpcplugin has FULL, COMPLETE SERVER-SIDE SUPPORT
+
+Evidence:
+1. RPCPluginServer class exists and is publicly exported
+2. plugin_server() factory exists and is publicly exported
+3. TofuSoup's plugin_server.py correctly demonstrates usage
+4. API mirrors client-side (RPCPluginClient / plugin_client)
+5. All features (TLS, handshake, transport) are abstracted
+
+Current Issue:
+- TofuSoup spawns server.py (manual implementation)
+- Should spawn plugin_server.py (abstraction-based)
+- This creates code duplication and maintenance burden
+
+Next Steps:
+1. Update KVClient to spawn plugin_server.py instead of server.py
+2. Keep server.py for standalone/testing use if needed
+3. Leverage pyvider-rpcplugin's config system
+4. Remove manual handshake/TLS code
+5. Gain access to rate limiting, health checks, etc.
+
+================================================================================
