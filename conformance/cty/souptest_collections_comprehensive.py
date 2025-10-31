@@ -27,93 +27,17 @@ from pyvider.cty import (
 )
 from pyvider.cty.codec import cty_from_msgpack, cty_to_msgpack
 
-
-# =============================================================================
-# Test Data: CtyList Test Cases
-# =============================================================================
-
-LIST_STRING_TEST_CASES = [
-    ("empty", []),
-    ("single", ["hello"]),
-    ("multiple", ["a", "b", "c"]),
-    ("with_empty_strings", ["", "hello", ""]),
-    ("unicode", ["Hello", "世界", "🌍"]),
-    ("many_items", [f"item_{i}" for i in range(100)]),
-]
-
-LIST_NUMBER_TEST_CASES = [
-    ("empty", []),
-    ("single", [42]),
-    ("multiple", [1, 2, 3, 4, 5]),
-    ("with_zero", [0, 1, 0, 2]),
-    ("negative", [-1, -2, -3]),
-    ("large_numbers", [2**100, 2**200, 2**1000]),
-    ("decimals", [Decimal("3.14"), Decimal("2.71"), Decimal("1.41")]),
-]
-
-LIST_BOOL_TEST_CASES = [
-    ("empty", []),
-    ("single_true", [True]),
-    ("single_false", [False]),
-    ("multiple", [True, False, True, False]),
-    ("all_true", [True, True, True]),
-    ("all_false", [False, False, False]),
-]
-
-
-# =============================================================================
-# Test Data: CtySet Test Cases
-# =============================================================================
-
-SET_STRING_TEST_CASES = [
-    ("empty", set()),
-    ("single", {"hello"}),
-    ("multiple", {"a", "b", "c"}),
-    ("unicode", {"Hello", "世界", "🌍"}),
-]
-
-SET_NUMBER_TEST_CASES = [
-    ("empty", set()),
-    ("single", {42}),
-    ("multiple", {1, 2, 3, 4, 5}),
-    ("with_zero", {0, 1, 2}),
-    ("negative", {-1, -2, -3}),
-]
-
-SET_BOOL_TEST_CASES = [
-    ("empty", set()),
-    ("single_true", {True}),
-    ("single_false", {False}),
-    ("both", {True, False}),
-]
-
-
-# =============================================================================
-# Test Data: CtyMap Test Cases
-# =============================================================================
-
-MAP_STRING_TEST_CASES = [
-    ("empty", {}),
-    ("single", {"key1": "value1"}),
-    ("multiple", {"key1": "value1", "key2": "value2", "key3": "value3"}),
-    ("unicode_values", {"key": "世界", "hello": "🌍"}),
-    ("empty_values", {"key1": "", "key2": "value"}),
-]
-
-MAP_NUMBER_TEST_CASES = [
-    ("empty", {}),
-    ("single", {"num": 42}),
-    ("multiple", {"a": 1, "b": 2, "c": 3}),
-    ("with_zero", {"zero": 0, "one": 1}),
-    ("decimals", {"pi": Decimal("3.14"), "e": Decimal("2.71")}),
-]
-
-MAP_BOOL_TEST_CASES = [
-    ("empty", {}),
-    ("single_true", {"flag": True}),
-    ("single_false", {"flag": False}),
-    ("multiple", {"enabled": True, "disabled": False, "active": True}),
-]
+from .test_data import (
+    LIST_BOOL_TEST_CASES,
+    LIST_NUMBER_TEST_CASES,
+    LIST_STRING_TEST_CASES,
+    MAP_BOOL_TEST_CASES,
+    MAP_NUMBER_TEST_CASES,
+    MAP_STRING_TEST_CASES,
+    SET_BOOL_TEST_CASES,
+    SET_NUMBER_TEST_CASES,
+    SET_STRING_TEST_CASES,
+)
 
 
 # =============================================================================

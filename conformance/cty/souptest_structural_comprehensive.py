@@ -28,76 +28,11 @@ from pyvider.cty import (
 from pyvider.cty.codec import cty_from_msgpack, cty_to_msgpack
 from pyvider.cty.exceptions import CtyAttributeValidationError, CtyTupleValidationError
 
-
-# =============================================================================
-# Test Data: CtyTuple Test Cases
-# =============================================================================
-
-TUPLE_TEST_CASES = [
-    # (description, element_types, value)
-    ("empty", (), []),
-    ("single_string", (CtyString(),), ["hello"]),
-    ("single_number", (CtyNumber(),), [Decimal(42)]),
-    ("single_bool", (CtyBool(),), [True]),
-    ("mixed_string_number", (CtyString(), CtyNumber()), ["hello", Decimal(42)]),
-    ("mixed_all_primitives", (CtyString(), CtyNumber(), CtyBool()), ["hello", Decimal(42), True]),
-    ("multiple_same_type", (CtyString(), CtyString(), CtyString()), ["a", "b", "c"]),
-    ("complex_mixed", (CtyBool(), CtyString(), CtyNumber(), CtyString()), [False, "test", Decimal(100), "end"]),
-]
-
-
-# =============================================================================
-# Test Data: CtyObject Test Cases
-# =============================================================================
-
-OBJECT_REQUIRED_ONLY = [
-    # (description, attributes, optional_attributes, value)
-    (
-        "single_string",
-        {"name": CtyString()},
-        set(),
-        {"name": "Alice"},
-    ),
-    (
-        "single_number",
-        {"count": CtyNumber()},
-        set(),
-        {"count": Decimal(42)},
-    ),
-    (
-        "single_bool",
-        {"enabled": CtyBool()},
-        set(),
-        {"enabled": True},
-    ),
-    (
-        "multiple_attrs",
-        {"name": CtyString(), "age": CtyNumber(), "active": CtyBool()},
-        set(),
-        {"name": "Bob", "age": Decimal(30), "active": False},
-    ),
-]
-
-OBJECT_WITH_OPTIONAL = [
-    (
-        "all_optional_present",
-        {"name": CtyString()},
-        {"email"},
-        {"name": "Alice", "email": "alice@example.com"},
-    ),
-    (
-        "optional_missing",
-        {"name": CtyString()},
-        {"email"},
-        {"name": "Bob", "email": None},
-    ),
-    (
-        "multiple_optional_mixed",
-        {"id": CtyNumber()},
-        {"name", "email"},
-        {"id": Decimal(1), "name": "Charlie", "email": None},
-    ),
-]
+from .test_data import (
+    OBJECT_REQUIRED_ONLY,
+    OBJECT_WITH_OPTIONAL,
+    TUPLE_TEST_CASES,
+)
 
 
 # =============================================================================
