@@ -30,25 +30,7 @@ from pyvider.hcl import parse_hcl_to_cty
 from ..cli_verification.shared_cli_utils import run_harness_cli
 from .test_data import HCL_EXPECTED_SCHEMAS, HCL_EXPECTED_VALUES, HCL_TEST_CASES
 
-
-@pytest.fixture
-def go_harness_executable(request: pytest.FixtureRequest, project_root: Path) -> Path:
-    """Fixture to locate and build Go harness executable."""
-    harness_name = request.param if hasattr(request, "param") else "soup-go"
-
-    from tofusoup.harness.logic import _resolve_harness_bin_path_for_platform
-
-    harness_bin_path = _resolve_harness_bin_path_for_platform(harness_name)
-    if not harness_bin_path.exists():
-        pytest.skip(f"Go harness '{harness_name}' not built: {harness_bin_path}")
-
-    return harness_bin_path
-
-
-@pytest.fixture
-def project_root() -> Path:
-    """Return the project root directory."""
-    return Path(__file__).parent.parent.parent
+# Note: go_harness_executable and project_root fixtures are provided by conformance/conftest.py
 
 
 @pytest.mark.integration_hcl
@@ -95,10 +77,8 @@ def test_python_parses_hcl_with_correct_values(
     # Convert to native Python for easy comparison
     native_result = cty_to_native(result)
 
-    # Compare values
-    assert native_result == expected_values, (
-        f"Value mismatch for {case_name}:\n" f"Expected: {expected_values}\n" f"Got: {native_result}"
-    )
+    # Compare values (with tolerance for Decimal/float differences)
+    assert_dicts_equal_with_tolerance(native_result, expected_values, case_name)
 
 
 @pytest.mark.integration_hcl
@@ -176,9 +156,13 @@ def test_go_parses_hcl_consistently(
 
     # Parse the JSON output from Go
     try:
-        go_result = json.loads(stdout)
+        go_response = json.loads(stdout)
     except json.JSONDecodeError as e:
         pytest.fail(f"Failed to parse Go output as JSON for {case_name}: {e}\nOutput: {stdout}")
+
+    # Extract body from Go response wrapper
+    assert "body" in go_response, f"Go response missing 'body' key for {case_name}: {go_response.keys()}"
+    go_result = go_response["body"]
 
     # Parse with Python for comparison
     py_result = parse_hcl_to_cty(hcl_content)
@@ -200,8 +184,8 @@ def assert_dicts_equal_with_tolerance(
         go_val = go_value[key]
         current_path = f"{path}.{key}" if path else key
 
-        if isinstance(py_val, Decimal) and isinstance(go_val, int | float):
-            # Compare with tolerance for decimal/float
+        if isinstance(py_val, Decimal | int | float) and isinstance(go_val, Decimal | int | float):
+            # Compare with tolerance for decimal/float/int
             assert abs(float(py_val) - float(go_val)) < 1e-9, (
                 f"Number mismatch at {current_path} for {case_name}: {py_val} != {go_val}"
             )
@@ -212,7 +196,7 @@ def assert_dicts_equal_with_tolerance(
             for i, (py_item, go_item) in enumerate(zip(py_val, go_val)):
                 if isinstance(py_item, dict):
                     assert_dicts_equal_with_tolerance(py_item, go_item, case_name, f"{current_path}[{i}]")
-                elif isinstance(py_item, Decimal):
+                elif isinstance(py_item, Decimal | int | float) and isinstance(go_item, Decimal | int | float):
                     assert abs(float(py_item) - float(go_item)) < 1e-9
                 else:
                     assert py_item == go_item, f"Item mismatch at {current_path}[{i}] for {case_name}"
