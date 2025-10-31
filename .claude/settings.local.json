@@ -81,7 +81,8 @@
       "Bash(/tmp/soup-go-test:*)",
       "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go:*)",
       "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto_mtls TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test-storage python3:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=ec TLS_CURVE=secp256r1 KV_STORAGE_DIR=/tmp/test timeout 2 python3:*)"
     ],
     "deny": [],
     "ask": [],
