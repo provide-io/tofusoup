@@ -222,15 +222,14 @@ class KVClient:
             del effective_env["PLUGIN_MAGIC_COOKIE"]
 
         # Set TLS configuration environment variables for the server subprocess
-        # This follows the provide-foundation CLI pattern where env vars and CLI args both work
-        effective_env["TLS_MODE"] = self.tls_mode
+        # Use PLUGIN_ prefix to match pyvider-rpcplugin config system
         if self.tls_key_type:
-            effective_env["TLS_KEY_TYPE"] = self.tls_key_type
+            effective_env["PLUGIN_TLS_KEY_TYPE"] = self.tls_key_type
         if self.tls_curve:
-            effective_env["TLS_CURVE"] = self.tls_curve
+            effective_env["PLUGIN_TLS_CURVE"] = self.tls_curve
 
         logger.info(
-            f"Final effective_env for subprocess will include: PLUGIN_MAGIC_COOKIE_KEY={effective_env.get('PLUGIN_MAGIC_COOKIE_KEY')}, {go_server_expected_cookie_key_name}={effective_env.get(go_server_expected_cookie_key_name)}, TLS_MODE={effective_env.get('TLS_MODE')}"
+            f"Final effective_env for subprocess will include: PLUGIN_MAGIC_COOKIE_KEY={effective_env.get('PLUGIN_MAGIC_COOKIE_KEY')}, {go_server_expected_cookie_key_name}={effective_env.get(go_server_expected_cookie_key_name)}, PLUGIN_TLS_KEY_TYPE={effective_env.get('PLUGIN_TLS_KEY_TYPE')}"
         )
 
         return effective_env

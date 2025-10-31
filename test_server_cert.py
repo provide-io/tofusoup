@@ -8,19 +8,18 @@ import time
 import base64
 from pathlib import Path
 
-# Run the server with TLS_KEY_TYPE=rsa
+# Run the server with PLUGIN_TLS_KEY_TYPE=rsa
 env = os.environ.copy()
-env["TLS_KEY_TYPE"] = "rsa"
-env["TLS_MODE"] = "auto"
+env["PLUGIN_TLS_KEY_TYPE"] = "rsa"
 env["PLUGIN_AUTO_MTLS"] = "true"
 env["BASIC_PLUGIN"] = "hello"
 env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
 soup_path = Path(__file__).parent / ".venv" / "bin" / "soup"
 
-print("🚀 Starting server subprocess with TLS_KEY_TYPE=rsa...")
-print(f"   TLS_KEY_TYPE={env['TLS_KEY_TYPE']}")
-print(f"   TLS_MODE={env['TLS_MODE']}")
+print("🚀 Starting server subprocess with PLUGIN_TLS_KEY_TYPE=rsa...")
+print(f"   PLUGIN_TLS_KEY_TYPE={env['PLUGIN_TLS_KEY_TYPE']}")
+print(f"   PLUGIN_AUTO_MTLS={env['PLUGIN_AUTO_MTLS']}")
 print()
 
 proc = subprocess.Popen(
@@ -62,12 +61,12 @@ try:
 
         if isinstance(pub_key, rsa.RSAPublicKey):
             print(f"✅ Server generated RSA certificate (key size: {pub_key.key_size})")
-            print("   ✅ CORRECT - Server respected TLS_KEY_TYPE=rsa")
+            print("   ✅ CORRECT - Server respected PLUGIN_TLS_KEY_TYPE=rsa")
         elif isinstance(pub_key, ec.EllipticCurvePublicKey):
             curve_name = pub_key.curve.name
             print(f"❌ Server generated ECDSA certificate (curve: {curve_name})")
-            print("   ❌ BUG - Server ignored TLS_KEY_TYPE=rsa and used ECDSA instead!")
-            print(f"   ❌ This proves the server doesn't read TLS_KEY_TYPE environment variable")
+            print("   ❌ BUG - Server ignored PLUGIN_TLS_KEY_TYPE=rsa and used ECDSA instead!")
+            print(f"   ❌ This proves the server doesn't read PLUGIN_TLS_KEY_TYPE environment variable")
         else:
             print(f"❓ Unknown key type: {type(pub_key)}")
     else:
