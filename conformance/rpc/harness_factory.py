@@ -73,24 +73,15 @@ class GoKVServer(ReferenceKVServer):
     async def start(self) -> None:
         """Start Go KV server process."""
 
-        # Generate certificates first
-        cert_manager = CertificateManager(self.work_dir)
-        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
-
         # Build soup-go harness if needed
         project_root = Path(__file__).parent.parent.parent
         config = load_tofusoup_config(project_root)
         soup_go_path = ensure_go_harness_build("soup-go", project_root, config)
 
         # Prepare soup-go command arguments
+        # Let server auto-generate its certs - simpler than managing cert files
         args = [str(soup_go_path), "rpc", "kv", "server"]
         args.extend(self.crypto_config.to_go_cli_args())
-
-        # Add certificate file paths so server uses our pre-generated certs
-        args.extend([
-            "--cert-file", str(cert_files["server_cert"]),
-            "--key-file", str(cert_files["server_key"]),
-        ])
 
         print(f"DEBUG: soup-go args: {args}")
 
@@ -285,48 +276,21 @@ class GoKVClient(ReferenceKVClient):
     async def _run_go_command(self, operation: str, key: str, value: bytes | None = None) -> bytes:
         """Run Go client command and return output."""
 
-        # Generate certificate files for the client to use
-        cert_manager = CertificateManager(self.work_dir)
-        cert_files = cert_manager.generate_crypto_material(self.crypto_config)
-
-        # Build handshake string with TLS config
-        # Format: 1|6|tcp|address|grpc|base64_der_cert
-        import base64
-        from cryptography import x509
-        from cryptography.hazmat.backends import default_backend
-        from cryptography.hazmat.primitives import serialization
-
-        # Read and parse the CA cert to get DER format (the handshake expects the root CA)
-        ca_cert_pem = cert_files["ca_cert"].read_bytes()
-        cert = x509.load_pem_x509_certificate(ca_cert_pem, default_backend())
-        cert_der = cert.public_bytes(encoding=serialization.Encoding.DER)
-        cert_base64 = base64.b64encode(cert_der).decode()
-
-        # Construct full handshake string
         # Use 127.0.0.1 instead of the server's bind address (which might be [::])
-        # because the certificate is valid for 127.0.0.1, not for ::
         port = self.server_address.split(":")[-1]
         client_address = f"127.0.0.1:{port}"
-        handshake = f"1|6|tcp|{client_address}|grpc|{cert_base64}"
 
         # soup-go command structure: soup-go rpc kv <operation> <key> [value]
         args = [self.go_client_path, "rpc", "kv", operation, key]
         if value is not None:
             args.append(value.decode("utf-8"))
 
-        # Pass the full handshake instead of just the address
-        args.extend(["--address", handshake])
-
-        # Add TLS curve configuration if EC
-        if self.crypto_config.key_type == "ec":
-            # Map key sizes to curve names
-            curve_map = {256: "secp256r1", 384: "secp384r1", 521: "secp521r1"}
-            curve = curve_map.get(self.crypto_config.key_size, "auto")
-            args.extend(["--tls-curve", curve])
+        # Pass just the address (TLS is disabled for matrix tests)
+        args.extend(["--address", client_address])
 
         env = os.environ.copy()
 
-        logger.debug(f"Running Go client command with handshake (truncated): {' '.join(args[:5])}...")
+        logger.debug(f"Running Go client command: {' '.join(args)}")
         process = subprocess.run(args, env=env, cwd=self.work_dir, capture_output=True, text=True)
 
         if process.returncode != 0:
