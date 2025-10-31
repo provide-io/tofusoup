@@ -129,13 +129,18 @@ class KVClient:
         args: list[str] = ["--tls-mode", self.tls_mode]
 
         if self.tls_mode == "auto":
-            # CRITICAL: Don't pass --tls-curve to Go server!
-            # Passing it makes Go use TLSProvider which doesn't send cert in handshake
-            # Just use --tls-mode auto which enables AutoMTLS (sends cert in handshake)
-            # The curve setting is only used for Python CLIENT certificate generation
-            logger.info(
-                f"KVClient: Auto TLS enabled (server will use AutoMTLS, client cert curve: {self.tls_curve})"
-            )
+            # Pass TLS configuration to server for custom curve support
+            # Go server now properly uses TLSProvider which sends cert in handshake
+            if self.tls_key_type:
+                args.extend(["--tls-key-type", self.tls_key_type])
+                logger.info(f"KVClient: Auto TLS enabled with key type: {self.tls_key_type}")
+
+                # Add curve for EC keys
+                if self.tls_key_type == "ec" and self.tls_curve:
+                    args.extend(["--tls-curve", self.tls_curve])
+                    logger.info(f"KVClient: Using EC curve: {self.tls_curve}")
+            else:
+                logger.info("KVClient: Auto TLS enabled (server will use default configuration)")
         elif self.tls_mode == "manual":
             if self.cert_file and self.key_file:
                 args.extend(["--cert-file", self.cert_file])

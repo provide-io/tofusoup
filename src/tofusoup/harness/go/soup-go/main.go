@@ -120,13 +120,17 @@ a standalone gRPC server on a specific port for manual testing.`,
 			}
 		} else {
 			// Plugin mode (default) - run as go-plugin server
-			logger.Info("Starting RPC server in plugin mode (go-plugin protocol)")
+			logger.Info("Starting RPC server in plugin mode (go-plugin protocol)",
+				"tls_mode", rpcTLSMode,
+				"tls_key_type", rpcTLSKeyType,
+				"tls_curve", rpcTLSCurve)
 
 			// Create KV implementation with XDG-compliant storage directory
 			storageDir := GetKVStorageDir()
 			logger.Debug("Using KV storage directory", "path", storageDir)
 
-			plugin.Serve(&plugin.ServeConfig{
+			// Build plugin.ServeConfig
+			serveConfig := &plugin.ServeConfig{
 				HandshakeConfig: Handshake,
 				Plugins: map[string]plugin.Plugin{
 					"kv_grpc": &KVGRPCPlugin{
@@ -134,7 +138,17 @@ a standalone gRPC server on a specific port for manual testing.`,
 					},
 				},
 				GRPCServer: plugin.DefaultGRPCServer,
-			})
+			}
+
+			// If TLS is enabled, configure TLSProvider with custom curve
+			// This allows go-plugin to use curves other than the default P-521
+			if rpcTLSMode != "" && rpcTLSMode != "disabled" {
+				logger.Info("Configuring go-plugin TLSProvider for custom curve support")
+				provider := createTLSProvider(logger.Named("tls"), rpcTLSCurve)
+				serveConfig.TLSProvider = provider
+			}
+
+			plugin.Serve(serveConfig)
 		}
 	},
 }
