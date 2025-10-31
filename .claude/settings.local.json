@@ -56,7 +56,8 @@
       "Bash(soup harness list:*)",
       "Bash(soup config show:*)",
       "Bash(uv run python3:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(uv run:*)"
     ],
     "deny": [],
     "ask": [],
