@@ -22,9 +22,37 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 		return nil, fmt.Errorf("PLUGIN_SERVER_PATH environment variable not set")
 	}
 
-	cmd := exec.Command(serverPath, "rpc", "kv", "server")
+	// Build command with TLS flags for Python server compatibility
+	// Python CLI requires TLS config via command-line flags, not just env vars
+	cmdArgs := []string{"rpc", "kv", "server"}
+
+	// Read TLS configuration from environment (set by test or caller)
+	tlsMode := os.Getenv("TLS_MODE")
+	if tlsMode != "" && tlsMode != "disabled" {
+		cmdArgs = append(cmdArgs, "--tls-mode", tlsMode)
+
+		// Add key type if specified
+		tlsKeyType := os.Getenv("TLS_KEY_TYPE")
+		if tlsKeyType != "" {
+			cmdArgs = append(cmdArgs, "--tls-key-type", tlsKeyType)
+		}
+
+		// Add curve for EC keys
+		if tlsKeyType == "ec" {
+			tlsCurve := os.Getenv("TLS_CURVE")
+			if tlsCurve != "" {
+				cmdArgs = append(cmdArgs, "--tls-curve", tlsCurve)
+			}
+		}
+
+		logger.Info("Spawning server with TLS", "mode", tlsMode, "keyType", tlsKeyType)
+	} else {
+		logger.Info("Spawning server without TLS (disabled mode)")
+	}
+
+	cmd := exec.Command(serverPath, cmdArgs...)
 	cmd.Env = append(os.Environ(),
-		"PLUGIN_AUTO_MTLS=true",                            // Explicitly enable AutoMTLS for Python server
+		"PLUGIN_AUTO_MTLS=true",                            // Explicitly enable AutoMTLS for Go servers
 		fmt.Sprintf("KV_STORAGE_DIR=%s", GetKVStorageDir()), // Set XDG-compliant storage directory
 	)
 
