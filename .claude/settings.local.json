@@ -74,7 +74,8 @@
       "Bash(export PLUGIN_SERVER_PATH=/Users/tim/Library/Caches/tofusoup/harnesses/soup-go)",
       "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv put test-key '{\"\"\"\"msg\"\"\"\":\"\"\"\"works\"\"\"\"}')",
       "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv get:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(/tmp/rpc_header.txt)"
     ],
     "deny": [],
     "ask": [],
