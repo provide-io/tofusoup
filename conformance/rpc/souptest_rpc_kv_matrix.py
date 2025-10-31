@@ -219,18 +219,19 @@ class TestRPCKVMatrixGoClient:
 
         Matrix coverage: 2 server langs x 5 crypto configs = 10 test combinations
 
-        Known limitation: Go client → Python server has TLS compatibility issues.
+        Known issue: Go client → Python server has implementation bug causing TLS handshake failure.
         Works: Go → Go ✅
-        Fails: Go → Python ❌ (TLS handshake mismatch)
+        Fails: Go → Python ⚠️ (implementation bug, not fundamental limitation)
         """
 
-        # Mark Python server tests as expected failure (TLS incompatibility)
+        # Mark Python server tests as expected failure (implementation bug)
         if server_lang == "python":
             pytest.xfail(
-                "Go client → Python server has TLS compatibility issues. "
+                "Go client → Python server failing with TLS handshake error. "
                 "Error: 'tls: first record does not look like a TLS handshake'. "
-                "This is a known limitation of cross-language TLS handshake between "
-                "Go's native TLS and Python's grpcio TLS implementation."
+                "This is an implementation bug in soup-go or test configuration, NOT a fundamental "
+                "Go↔Python TLS limitation (Terraform successfully uses Go→pyvider with TLS). "
+                "Needs investigation - likely TLS mode detection or handshake parsing issue."
             )
 
         logger.info(f"Testing soup-go client → {server_lang} server with {crypto_config.name}")
@@ -355,18 +356,19 @@ class TestRPCKVMatrixGoClient:
         3. Keys with similar names are handled correctly
         4. soup-go can spawn server multiple times in sequence
 
-        Known limitation: Go client → Python server has TLS compatibility issues.
+        Known issue: Go client → Python server has implementation bug causing TLS handshake failure.
         Works: Go → Go ✅
-        Fails: Go → Python ❌ (TLS handshake mismatch)
+        Fails: Go → Python ⚠️ (implementation bug, not fundamental limitation)
         """
 
-        # Mark Python server tests as expected failure (TLS incompatibility)
+        # Mark Python server tests as expected failure (implementation bug)
         if server_lang == "python":
             pytest.xfail(
-                "Go client → Python server has TLS compatibility issues. "
+                "Go client → Python server failing with TLS handshake error. "
                 "Error: 'tls: first record does not look like a TLS handshake'. "
-                "This is a known limitation of cross-language TLS handshake between "
-                "Go's native TLS and Python's grpcio TLS implementation."
+                "This is an implementation bug in soup-go or test configuration, NOT a fundamental "
+                "Go↔Python TLS limitation (Terraform successfully uses Go→pyvider with TLS). "
+                "Needs investigation - likely TLS mode detection or handshake parsing issue."
             )
 
         logger.info(f"Testing multiple keys: soup-go → {server_lang} ({crypto_config.name})")
