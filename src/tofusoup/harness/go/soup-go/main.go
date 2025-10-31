@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/go-hclog"
+	"github.com/hashicorp/go-plugin"
 	"github.com/spf13/cobra"
 )
 
@@ -97,20 +98,43 @@ var (
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "Start a KV RPC server",
+	Short: "Start a KV RPC server (defaults to plugin mode)",
+	Long: `Start a KV RPC server. By default, runs in plugin mode using go-plugin protocol,
+which is suitable for spawning by plugin clients. Use --standalone flag to run as
+a standalone gRPC server on a specific port for manual testing.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger.Info("Starting RPC server",
-			"port", rpcPort,
-			"tls_mode", rpcTLSMode,
-			"tls_key_type", rpcTLSKeyType,
-			"tls_curve", rpcTLSCurve,
-			"cert_file", rpcCertFile,
-			"key_file", rpcKeyFile,
-			"log_level", logLevel)
+		if rpcStandalone {
+			// Standalone mode - run as standalone gRPC server
+			logger.Info("Starting RPC server in standalone mode",
+				"port", rpcPort,
+				"tls_mode", rpcTLSMode,
+				"tls_key_type", rpcTLSKeyType,
+				"tls_curve", rpcTLSCurve,
+				"cert_file", rpcCertFile,
+				"key_file", rpcKeyFile,
+				"log_level", logLevel)
 
-		if err := startRPCServer(logger, rpcPort, rpcTLSMode, rpcTLSKeyType, rpcTLSCurve, rpcCertFile, rpcKeyFile); err != nil {
-			logger.Error("RPC server failed", "error", err)
-			os.Exit(1)
+			if err := startRPCServer(logger, rpcPort, rpcTLSMode, rpcTLSKeyType, rpcTLSCurve, rpcCertFile, rpcKeyFile); err != nil {
+				logger.Error("RPC server failed", "error", err)
+				os.Exit(1)
+			}
+		} else {
+			// Plugin mode (default) - run as go-plugin server
+			logger.Info("Starting RPC server in plugin mode (go-plugin protocol)")
+
+			// Create KV implementation with XDG-compliant storage directory
+			storageDir := GetKVStorageDir()
+			logger.Debug("Using KV storage directory", "path", storageDir)
+
+			plugin.Serve(&plugin.ServeConfig{
+				HandshakeConfig: Handshake,
+				Plugins: map[string]plugin.Plugin{
+					"kv_grpc": &KVGRPCPlugin{
+						Impl: NewKVImpl(logger.Named("kv"), storageDir),
+					},
+				},
+				GRPCServer: plugin.DefaultGRPCServer,
+			})
 		}
 	},
 }
