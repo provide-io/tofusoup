@@ -92,6 +92,7 @@ var (
 	rpcTLSCurve   string
 	rpcCertFile   string
 	rpcKeyFile    string
+	rpcStandalone bool
 )
 
 var serverCmd = &cobra.Command{
