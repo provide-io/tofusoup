@@ -5,23 +5,27 @@
 
 """RPC K/V Matrix Testing
 
-Tests all combinations of:
-- Client languages: go, pyvider
-- Server languages: go, pyvider
+Tests combinations of:
+- Server languages: go (soup-go), python (tofusoup.rpc.server)
 - Crypto configurations: auto_mtls with RSA 2048/4096, EC 256/384/521
 
-Each test verifies that every client can successfully set/get keys
-with every server across all crypto configurations."""
+Uses KVClient (wraps pyvider-rpcplugin) which properly handles:
+- Server lifecycle management
+- go-plugin handshake protocol
+- Auto-mTLS certificate generation
+- gRPC channel management"""
 
 from pathlib import Path
-from typing import Any
 import uuid
 
 from provide.foundation import logger
 import pytest
 
-from .harness_factory import create_kv_client, create_kv_server
-from .matrix_config import RPC_KV_MATRIX_PARAMS, CryptoConfig
+from tofusoup.rpc.client import KVClient
+from tofusoup.common.config import load_tofusoup_config
+from tofusoup.harness.logic import ensure_go_harness_build
+from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
+import tofusoup.rpc.server as py_server_module
 
 
 class TestRPCKVMatrix:
@@ -30,65 +34,81 @@ class TestRPCKVMatrix:
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
     @pytest.mark.harness_python
-    @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
+    @pytest.mark.parametrize("server_lang", ["go", "python"])
+    @pytest.mark.parametrize("crypto_config", RPC_KV_CRYPTO_CONFIGS)
     async def test_rpc_kv_basic_operations(
-        self, client_lang: str, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path
+        self, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path, project_root: Path
     ) -> None:
         """
-        Test basic RPC K/V operations across all matrix combinations.
+        Test basic RPC K/V operations using KVClient (pyvider-rpcplugin).
 
-        This test verifies that every client-server-crypto combination can:
-        1. PUT a key-value pair
-        2. GET the same key and retrieve the correct value
-        3. Handle non-existent keys appropriately
+        This test verifies that KVClient can successfully:
+        1. Start a server subprocess (Go or Python)
+        2. Complete go-plugin handshake with auto-mTLS
+        3. PUT a key-value pair
+        4. GET the same key and retrieve the correct value
+        5. Handle non-existent keys appropriately
 
-        Matrix coverage: 2 x 2 x 5 = 20 test combinations
+        Matrix coverage: 2 server langs × 5 crypto configs = 10 test combinations
         """
 
-        logger.info(f"Testing {client_lang} client → {server_lang} server with {crypto_config.name}")
+        logger.info(f"Testing KVClient → {server_lang} server with {crypto_config.name}")
+
+        # Get server path based on language
+        if server_lang == "go":
+            config = load_tofusoup_config(project_root)
+            server_path = str(ensure_go_harness_build("soup-go", project_root, config))
+        else:  # python
+            server_path = str(Path(py_server_module.__file__))
 
         # Create isolated test directory
-        test_dir = tmp_path / f"{client_lang}_{server_lang}_{crypto_config.name}"
+        test_dir = tmp_path / f"kvclient_{server_lang}_{crypto_config.name}"
         test_dir.mkdir()
 
         # Generate unique test data
         test_key = f"matrix-test-{uuid.uuid4()}"
-        test_value = f"value-{client_lang}-to-{server_lang}-{crypto_config.name}".encode()
+        test_value = f"value-{server_lang}-{crypto_config.name}".encode()
 
-        # Start server with specified configuration
-        async with create_kv_server(
-            language=server_lang, crypto_config=crypto_config, work_dir=test_dir
-        ) as server:
-            logger.info(f"{server_lang} server started at {server.address}")
+        # Create KVClient - it handles server lifecycle and handshake
+        client = KVClient(
+            server_path=server_path,
+            tls_mode=crypto_config.auth_mode,
+            tls_key_type=crypto_config.key_type if crypto_config.key_type == "rsa" else "ec",
+            tls_key_size=crypto_config.key_size if crypto_config.key_type == "rsa" else None,
+            tls_curve=(
+                f"secp{crypto_config.key_size}r1" if crypto_config.key_type == "ec" else None
+            ),
+            storage_dir=test_dir / "kv-storage",
+        )
 
-            # Create client with matching configuration
-            async with create_kv_client(
-                language=client_lang,
-                crypto_config=crypto_config,
-                server_address=server.address,
-                work_dir=test_dir,
-            ) as client:
-                logger.info(f"{client_lang} client connected to {server.address}")
+        try:
+            # Start client (which starts server subprocess and handles handshake)
+            await client.start()
+            logger.info(f"KVClient connected to {server_lang} server")
 
-                # Test 1: PUT operation
-                await client.put(test_key, test_value)
-                logger.debug(f"PUT {test_key} = {test_value.decode()}")
+            # Test 1: PUT operation
+            await client.put(test_key, test_value)
+            logger.debug(f"PUT {test_key} = {test_value.decode()}")
 
-                # Test 2: GET operation - verify correct value
-                retrieved_value = await client.get(test_key)
-                assert retrieved_value is not None, f"GET returned None for key '{test_key}'"
-                assert retrieved_value == test_value, (
-                    f"Value mismatch: expected {test_value!r}, got {retrieved_value!r}"
-                )
-                logger.debug(f"GET {test_key} = {retrieved_value.decode()}")
+            # Test 2: GET operation - verify correct value
+            retrieved_value = await client.get(test_key)
+            assert retrieved_value is not None, f"GET returned None for key '{test_key}'"
+            assert retrieved_value == test_value, (
+                f"Value mismatch: expected {test_value!r}, got {retrieved_value!r}"
+            )
+            logger.debug(f"GET {test_key} = {retrieved_value.decode()}")
 
-                # Test 3: GET non-existent key
-                non_existent_key = f"does-not-exist-{uuid.uuid4()}"
-                non_existent_value = await client.get(non_existent_key)
-                assert non_existent_value is None, (
-                    f"Expected None for non-existent key, got {non_existent_value!r}"
-                )
-                logger.debug(f"GET {non_existent_key} = None (expected)")
+            # Test 3: GET non-existent key
+            non_existent_key = f"does-not-exist-{uuid.uuid4()}"
+            non_existent_value = await client.get(non_existent_key)
+            assert non_existent_value is None, (
+                f"Expected None for non-existent key, got {non_existent_value!r}"
+            )
+            logger.debug(f"GET {non_existent_key} = None (expected)")
+
+        finally:
+            # Clean up
+            await client.close()
 
     @pytest.mark.integration_rpc
     @pytest.mark.harness_go
