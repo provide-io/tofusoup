@@ -21,6 +21,7 @@ instead of manually managing processes and handshakes.
 
 import os
 from pathlib import Path
+import subprocess
 import uuid
 
 from provide.foundation import logger
