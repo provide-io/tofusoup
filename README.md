@@ -196,7 +196,7 @@ Runs Pytest-based conformance test suites located in `conformance/`. Test behavi
         -   `testing/`: Logic and CLI for running test suites.
     -   **`src/tofusoup/harness/go/`**: Source code for the unified `soup-go` test harness.
         -   `soup-go/`: Unified polyglot harness providing CTY, HCL, Wire, and RPC functionality.
-    -   **`harnesses/bin/`**: Built harness binaries (e.g., `soup-go`, `pspf-packager`).
+    -   **`harnesses/bin/`**: Built harness binaries (e.g., `soup-go`).
     -   **`conformance/`**: Pytest test suites for cross-language conformance.
         -   `cty/`, `hcl/`, `rpc/`, `wire/`: Component-specific conformance tests.
         -   `cli_verification/`: Tests for harness CLIs.

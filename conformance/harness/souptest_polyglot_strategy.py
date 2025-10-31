@@ -24,10 +24,9 @@ class TestPolyglotStrategyContract:
         return CliRunner()
 
     def test_harness_config_is_updated(self) -> None:
-        """CONTRACT: GO_HARNESS_CONFIG must contain `soup-go` and `pspf-packager`."""
+        """CONTRACT: GO_HARNESS_CONFIG must contain `soup-go`."""
         assert "soup-go" in GO_HARNESS_CONFIG
-        assert "pspf-packager" in GO_HARNESS_CONFIG
-        assert len(GO_HARNESS_CONFIG) == 2
+        assert len(GO_HARNESS_CONFIG) == 1
         assert "go-cty" not in GO_HARNESS_CONFIG
         assert "go-hcl" not in GO_HARNESS_CONFIG
 
