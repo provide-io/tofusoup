@@ -16,63 +16,53 @@ from typing import Any
 import pytest
 
 
+@pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 class TestHarnessConformance:
     """Test suite for harness conformance across languages."""
 
-    @pytest.fixture(scope="class")
-    def go_harness_path(self) -> pathlib.Path:
-        """Get the path to the Go harness binary."""
-        harness_path = pathlib.Path("./bin/soup-go")
-        if not harness_path.exists():
-            # Try to build it
-            result = subprocess.run(["soup", "harness", "build", "soup-go"], capture_output=True, text=True)
-            if result.returncode != 0:
-                pytest.skip(f"Go harness not available: {result.stderr}")
-        return harness_path
-
-    def test_go_harness_version(self, go_harness_path: pathlib.Path) -> None:
+    def test_go_harness_version(self, go_harness_executable: pathlib.Path) -> None:
         """Test that Go harness reports version correctly."""
-        result = subprocess.run([str(go_harness_path), "--version"], capture_output=True, text=True)
+        result = subprocess.run([str(go_harness_executable), "--version"], capture_output=True, text=True)
         assert result.returncode == 0
         assert "soup-go version" in result.stdout
         assert "0.1.0" in result.stdout
 
-    def test_go_harness_help(self, go_harness_path: pathlib.Path) -> None:
+    def test_go_harness_help(self, go_harness_executable: pathlib.Path) -> None:
         """Test that Go harness shows help text."""
-        result = subprocess.run([str(go_harness_path), "--help"], capture_output=True, text=True)
+        result = subprocess.run([str(go_harness_executable), "--help"], capture_output=True, text=True)
         assert result.returncode == 0
         assert "unified Go harness for TofuSoup" in result.stdout
         assert "Flags:" in result.stdout
 
     @pytest.mark.integration_cty
-    def test_cty_validation_go(self, go_harness_path: pathlib.Path) -> None:
+    def test_cty_validation_go(self, go_harness_executable: pathlib.Path) -> None:
         """Test CTY validation in Go harness."""
         result = subprocess.run(
-            [str(go_harness_path), "cty", "validate-value", '"test"', "--type", '"string"'],
+            [str(go_harness_executable), "cty", "validate-value", '"test"', "--type", '"string"'],
             capture_output=True,
             text=True,
         )
         assert result.returncode == 0
 
     @pytest.mark.integration_hcl
-    def test_hcl_parsing_go(self, go_harness_path: pathlib.Path, tmp_path: pathlib.Path) -> None:
+    def test_hcl_parsing_go(self, go_harness_executable: pathlib.Path, tmp_path: pathlib.Path) -> None:
         """Test HCL parsing in Go harness."""
         # Create a simple test HCL file
         hcl_file = tmp_path / "test.hcl"
         hcl_file.write_text('test_attr = "test_value"')
 
         result = subprocess.run(
-            [str(go_harness_path), "hcl", "view", str(hcl_file)], capture_output=True, text=True
+            [str(go_harness_executable), "hcl", "view", str(hcl_file)], capture_output=True, text=True
         )
         assert result.returncode == 0
         # Should return JSON with success and body containing parsed HCL
         assert '"success":true' in result.stdout
         assert '"test_attr":"test_value"' in result.stdout
 
-    def test_wire_encoding_go(self, go_harness_path: pathlib.Path) -> None:
+    def test_wire_encoding_go(self, go_harness_executable: pathlib.Path) -> None:
         """Test Wire protocol encoding in Go harness."""
         result = subprocess.run(
-            [str(go_harness_path), "wire", "encode", "-", "-"],
+            [str(go_harness_executable), "wire", "encode", "-", "-"],
             input=b'{"test": "value"}',  # Must be bytes when text=False
             capture_output=True,
             text=False,  # Binary mode since wire encode outputs MessagePack binary
@@ -80,11 +70,11 @@ class TestHarnessConformance:
         assert result.returncode == 0
         assert len(result.stdout) > 0  # Should produce some binary output
 
-    def test_wire_decoding_go(self, go_harness_path: pathlib.Path) -> None:
+    def test_wire_decoding_go(self, go_harness_executable: pathlib.Path) -> None:
         """Test Wire protocol decoding in Go harness."""
         # First encode some data to get valid MessagePack
         encode_result = subprocess.run(
-            [str(go_harness_path), "wire", "encode", "-", "-"],
+            [str(go_harness_executable), "wire", "encode", "-", "-"],
             input=b'{"test": "value"}',  # Pass as bytes
             capture_output=True,
             text=False,  # Binary mode for MessagePack
@@ -93,7 +83,7 @@ class TestHarnessConformance:
 
         # Then decode it (pass binary input, get text output)
         result = subprocess.run(
-            [str(go_harness_path), "wire", "decode", "-", "-"],
+            [str(go_harness_executable), "wire", "decode", "-", "-"],
             input=encode_result.stdout,  # This is bytes from previous command
             capture_output=True,
             text=False,  # Binary mode for input handling
@@ -137,12 +127,12 @@ class TestHarnessConformance:
             pytest.skip("RPC module not available")
 
     @pytest.mark.benchmark
-    def test_performance_comparison(self, go_harness_path: pathlib.Path, benchmark: Any) -> None:
+    def test_performance_comparison(self, go_harness_executable: pathlib.Path, benchmark: Any) -> None:
         """Benchmark Go harness vs Python module performance."""
 
         def run_go_cty_validation() -> None:
             subprocess.run(
-                [str(go_harness_path), "cty", "validate-value", '"test"', "--type", '"string"'],
+                [str(go_harness_executable), "cty", "validate-value", '"test"', "--type", '"string"'],
                 capture_output=True,
                 check=True,
             )
@@ -151,6 +141,7 @@ class TestHarnessConformance:
         benchmark(run_go_cty_validation)
 
 
+@pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
 class TestCrossLanguageCompatibility:
     """Test cross-language compatibility between Go and Python."""
 
@@ -160,33 +151,32 @@ class TestCrossLanguageCompatibility:
         assert result.returncode == 0
         assert "Commands to build, list, and clean test harnesses" in result.stdout
 
-    def test_harness_list(self) -> None:
+    def test_harness_list(self, go_harness_executable: pathlib.Path) -> None:
         """Test listing available harnesses."""
         result = subprocess.run(["soup", "harness", "list"], capture_output=True, text=True)
         assert result.returncode == 0
         # Should show soup-go if built
-        if pathlib.Path("./bin/soup-go").exists():
+        if go_harness_executable.exists():
             assert "soup-go" in result.stdout
 
-    def test_harness_build_go(self) -> None:
+    def test_harness_build_go(self, go_harness_executable: pathlib.Path) -> None:
         """Test building Go harness through CLI."""
         result = subprocess.run(["soup", "harness", "build", "soup-go"], capture_output=True, text=True)
         # Should succeed or indicate already built
         assert result.returncode == 0 or "already exists" in result.stderr
 
         # Verify binary exists
-        assert pathlib.Path("./bin/soup-go").exists()
+        assert go_harness_executable.exists()
 
     @pytest.mark.integration_rpc
-    def test_go_rpc_server_basic(self) -> None:
+    def test_go_rpc_server_basic(self, go_harness_executable: pathlib.Path) -> None:
         """Test that Go RPC server can be started (basic test)."""
-        go_binary = pathlib.Path("./bin/soup-go")
-        if not go_binary.exists():
+        if not go_harness_executable.exists():
             pytest.skip("Go harness not built")
 
         # Try to start the server with a timeout
         process = subprocess.Popen(
-            [str(go_binary), "rpc", "kv", "server", "--port", "50099"],
+            [str(go_harness_executable), "rpc", "kv", "server", "--port", "50099"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
@@ -210,7 +200,8 @@ class TestCrossLanguageCompatibility:
             process.wait(timeout=1)
 
 
-def test_capability_matrix() -> None:
+@pytest.mark.parametrize("go_harness_executable", ["soup-go"], indirect=True)
+def test_capability_matrix(go_harness_executable: pathlib.Path) -> None:
     """Generate and verify capability matrix for all implementations."""
     capabilities = {
         "Go Harness": {
@@ -228,8 +219,7 @@ def test_capability_matrix() -> None:
     }
 
     # Check Go harness
-    go_binary = pathlib.Path("./bin/soup-go")
-    if go_binary.exists():
+    if go_harness_executable.exists():
         # Test each capability by checking if help is available
         tests = [
             ("CTY Validation", ["cty", "validate-value", "--help"]),
@@ -238,7 +228,7 @@ def test_capability_matrix() -> None:
         ]
 
         for capability, args in tests:
-            result = subprocess.run([str(go_binary), *args], capture_output=True, text=True)
+            result = subprocess.run([str(go_harness_executable), *args], capture_output=True, text=True)
             capabilities["Go Harness"][capability] = result.returncode == 0
 
         # RPC server is available if binary exists
