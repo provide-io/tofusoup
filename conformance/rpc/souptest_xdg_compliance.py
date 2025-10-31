@@ -10,6 +10,7 @@ and does not create files in legacy hardcoded locations."""
 
 import os
 from pathlib import Path
+import platform
 import subprocess
 import sys
 import tempfile
@@ -25,7 +26,7 @@ class TestXDGCompliance:
     """Test suite for XDG Base Directory compliance."""
 
     def test_default_cache_location_python(self) -> None:
-        """Test Python get_cache_dir() uses XDG default without overrides."""
+        """Test Python get_cache_dir() uses platform-appropriate default without overrides."""
         # Clear any environment variable overrides
         env_vars_to_clear = ["TOFUSOUP_CACHE_DIR", "XDG_CACHE_HOME"]
         original_env = {var: os.environ.get(var) for var in env_vars_to_clear}
@@ -35,7 +36,19 @@ class TestXDGCompliance:
                 os.environ.pop(var, None)
 
             cache_dir = get_cache_dir()
-            expected = Path.home() / ".cache" / "tofusoup"
+
+            # Platform-specific expected locations
+            system = platform.system()
+            if system == "Darwin":  # macOS
+                expected = Path.home() / "Library" / "Caches" / "tofusoup"
+            elif system == "Windows":
+                local_app_data = os.getenv("LOCALAPPDATA")
+                if local_app_data:
+                    expected = Path(local_app_data) / "tofusoup" / "cache"
+                else:
+                    expected = Path.home() / "AppData" / "Local" / "tofusoup" / "cache"
+            else:  # Linux and others
+                expected = Path.home() / ".cache" / "tofusoup"
 
             assert cache_dir == expected, f"Expected {expected}, got {cache_dir}"
 
@@ -48,7 +61,16 @@ class TestXDGCompliance:
                     os.environ.pop(var, None)
 
     def test_xdg_cache_home_override_python(self, tmp_path: Path) -> None:
-        """Test XDG_CACHE_HOME environment variable is respected."""
+        """Test XDG_CACHE_HOME environment variable is respected on Linux.
+
+        Note: XDG_CACHE_HOME is only honored on Linux systems, not on macOS or Windows.
+        """
+        system = platform.system()
+        if system == "Darwin":
+            pytest.skip("XDG_CACHE_HOME not honored on macOS (uses ~/Library/Caches)")
+        elif system == "Windows":
+            pytest.skip("XDG_CACHE_HOME not honored on Windows")
+
         custom_cache = tmp_path / "custom-cache"
         custom_cache.mkdir()
 
