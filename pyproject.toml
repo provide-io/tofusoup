@@ -145,6 +145,7 @@ markers = [
     # Integration markers
     "integration: marks tests requiring optional dependencies",
     "integration_cty: requires CTY integration (pyvider-cty)",
+    "integration_cty_comprehensive: comprehensive cross-language CTY tests (slow)",
     "integration_hcl: requires HCL integration (pyvider-hcl + pyvider-cty)",
     "integration_rpc: requires RPC integration (pyvider-rpcplugin)",
     # Harness markers
