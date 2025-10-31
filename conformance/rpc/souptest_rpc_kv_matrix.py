@@ -21,6 +21,7 @@ instead of manually managing processes and handshakes.
 
 from pathlib import Path
 import uuid
+import os
 
 from provide.foundation import logger
 import pytest
@@ -73,6 +74,11 @@ class TestRPCKVMatrix:
         test_key = f"matrix-test-{uuid.uuid4()}"
         test_value = f"value-{server_lang}-{crypto_config.name}".encode()
 
+        # Set storage directory via environment variable
+        storage_dir = test_dir / "kv-storage"
+        storage_dir.mkdir(parents=True, exist_ok=True)
+        os.environ["KV_STORAGE_DIR"] = str(storage_dir)
+
         # Create KVClient - it handles server lifecycle and handshake
         client = KVClient(
             server_path=server_path,
@@ -81,7 +87,6 @@ class TestRPCKVMatrix:
             tls_curve=(
                 f"secp{crypto_config.key_size}r1" if crypto_config.key_type == "ec" else None
             ),
-            storage_dir=test_dir / "kv-storage",
         )
 
         try:
@@ -143,6 +148,11 @@ class TestRPCKVMatrix:
         test_dir = tmp_path / f"kvclient_{server_lang}_{crypto_config.name}_multi"
         test_dir.mkdir()
 
+        # Set storage directory via environment variable
+        storage_dir = test_dir / "kv-storage"
+        storage_dir.mkdir(parents=True, exist_ok=True)
+        os.environ["KV_STORAGE_DIR"] = str(storage_dir)
+
         # Create KVClient
         client = KVClient(
             server_path=server_path,
@@ -151,7 +161,6 @@ class TestRPCKVMatrix:
             tls_curve=(
                 f"secp{crypto_config.key_size}r1" if crypto_config.key_type == "ec" else None
             ),
-            storage_dir=test_dir / "kv-storage",
         )
 
         try:
