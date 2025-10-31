@@ -65,7 +65,8 @@
       "Bash(timeout 2 ~/Library/Caches/tofusoup/harnesses/soup-go rpc kv server:*)",
       "Bash(timeout:*)",
       "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello timeout 2 ~/Library/Caches/tofusoup/harnesses/soup-go rpc kv server --tls-mode auto --tls-key-type rsa)",
-      "Bash(uv --version:*)"
+      "Bash(uv --version:*)",
+      "Bash(go version:*)"
     ],
     "deny": [],
     "ask": [],
