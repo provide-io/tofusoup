@@ -319,8 +319,12 @@ def _start_server_and_handshake(
             # Remove ALL whitespace characters - more robust than individual replaces
             cert_b64 = re.sub(r'\s+', '', cert_clean)
         handshake_line = f"{core_version}|{protocol_version}|{network}|{address}|{protocol}|{cert_b64}"
+        # Print handshake to stdout (go-plugin reads this)
+        # Use print which adds newline, then flush to ensure it's sent immediately
         print(handshake_line, flush=True)
-        logger.debug(f"Handshake output: {handshake_line[:100]}...")
+        sys.stdout.flush()  # Ensure handshake is fully written before any other output
+        # Wait a moment for stdout to flush
+        logger.debug(f"Handshake output (first 100 chars): {handshake_line[:100]}...")
 
     try:
         while True:
