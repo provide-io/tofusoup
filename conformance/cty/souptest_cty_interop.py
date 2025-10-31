@@ -454,6 +454,10 @@ def test_go_verifies_python_fixtures_comprehensive(
 
     # Verify each fixture using Go harness
     for case_name, cty_value in COMPREHENSIVE_INTEROP_CASES.items():
+        # Skip unknown values (go-cty limitation with JSON input)
+        if cty_value.is_unknown:
+            continue
+
         fixture_file = py_fixture_dir / f"{case_name}.msgpack"
 
         type_json_for_go = json.dumps(encode_cty_type_to_wire_json(cty_value.type))
