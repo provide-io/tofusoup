@@ -264,10 +264,10 @@ class GoKVClient(ReferenceKVClient):
 
     async def start(self) -> None:
         """Initialize Go KV client."""
-        # Build Go client harness if needed
+        # Build soup-go harness (which includes client functionality)
         project_root = Path(__file__).parent.parent.parent
         config = load_tofusoup_config(project_root)
-        self.go_client_path = ensure_go_harness_build("go-rpc-client", project_root, config)
+        self.go_client_path = str(ensure_go_harness_build("soup-go", project_root, config))
         logger.info(f"Go KV client initialized with binary: {self.go_client_path}")
 
     async def stop(self) -> None:
@@ -280,7 +280,8 @@ class GoKVClient(ReferenceKVClient):
         cert_manager = CertificateManager(self.work_dir)
         cert_files = cert_manager.generate_crypto_material(self.crypto_config)
 
-        args = [self.go_client_path, operation, key]
+        # soup-go command structure: soup-go rpc kv <operation> <key> [value]
+        args = [self.go_client_path, "rpc", "kv", operation, key]
         if value is not None:
             args.append(value.decode("utf-8"))
 
