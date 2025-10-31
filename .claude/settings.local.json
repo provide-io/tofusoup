@@ -78,7 +78,8 @@
       "Bash(/tmp/rpc_header.txt)",
       "Bash(src/tofusoup/harness/go/soup-go/rpc.go)",
       "Bash(/tmp/rpc_commands_only.go)",
-      "Bash(/tmp/soup-go-test:*)"
+      "Bash(/tmp/soup-go-test:*)",
+      "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go:*)"
     ],
     "deny": [],
     "ask": [],
