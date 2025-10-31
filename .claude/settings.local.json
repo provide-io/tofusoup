@@ -72,7 +72,8 @@
       "Bash(export BASIC_PLUGIN=hello)",
       "Bash(export PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN)",
       "Bash(export PLUGIN_SERVER_PATH=/Users/tim/Library/Caches/tofusoup/harnesses/soup-go)",
-      "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv put test-key '{\"\"\"\"msg\"\"\"\":\"\"\"\"works\"\"\"\"}')"
+      "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv put test-key '{\"\"\"\"msg\"\"\"\":\"\"\"\"works\"\"\"\"}')",
+      "Bash(/Users/tim/Library/Caches/tofusoup/harnesses/soup-go rpc kv get:*)"
     ],
     "deny": [],
     "ask": [],
