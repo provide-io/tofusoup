@@ -87,7 +87,8 @@
       "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=ec TLS_CURVE=secp256r1 KV_STORAGE_DIR=/tmp/test timeout 3 python3:*)",
       "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test-storage timeout 2 python3:*)",
       "Bash(soup --version:*)",
-      "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test-storage timeout:*)"
+      "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test-storage timeout:*)",
+      "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test-soup timeout 2 soup rpc kv server --tls-mode auto --tls-key-type rsa)"
     ],
     "deny": [],
     "ask": [],

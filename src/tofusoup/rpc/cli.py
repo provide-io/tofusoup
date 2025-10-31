@@ -16,7 +16,7 @@ from tofusoup.config.defaults import DEFAULT_GRPC_ADDRESS
 
 # Use correct relative import for generated protobuf modules.
 from ..harness.proto.kv import kv_pb2, kv_pb2_grpc
-from .server import start_kv_server
+from .server import serve_plugin
 from .validation import (
     CurveNotSupportedError,
     LanguagePairNotSupportedError,
@@ -76,9 +76,9 @@ def kv_get(address: str, key: str) -> None:
 @kv_cli.command("server")
 @click.option(
     "--tls-mode",
-    type=click.Choice(["disabled", "auto", "manual"]),
+    type=click.Choice(["disabled", "auto"]),
     default="disabled",
-    help="TLS mode: 'disabled', 'auto', or 'manual'",
+    help="TLS mode: 'disabled' or 'auto' (auto-mTLS with certificate generation)",
 )
 @click.option(
     "--tls-key-type",
@@ -94,30 +94,29 @@ def kv_get(address: str, key: str) -> None:
     default="secp384r1",
     help="Elliptic curve for EC key type: 'secp256r1'/'P-256', 'secp384r1'/'P-384', or 'secp521r1'/'P-521'",
 )
-@click.option("--cert-file", help="Path to certificate file (required for manual TLS)")
-@click.option("--key-file", help="Path to private key file (required for manual TLS)")
-def server_start(
-    tls_mode: str, tls_key_type: str, tls_curve: str, cert_file: str | None, key_file: str | None
-) -> None:
-    """Starts the KV plugin server."""
+def server_start(tls_mode: str, tls_key_type: str, tls_curve: str) -> None:
+    """Starts the KV plugin server using pyvider-rpcplugin.
+
+    This server uses the go-plugin protocol and requires magic cookie environment variables:
+    - PLUGIN_MAGIC_COOKIE_KEY (default: BASIC_PLUGIN)
+    - BASIC_PLUGIN=hello (or value matching the key)
+
+    TLS certificates are automatically generated when --tls-mode is 'auto'.
+    """
+    import asyncio
     from provide.foundation import logger
 
     tls_curve = normalize_curve_name(tls_curve)
 
-    if tls_mode == "manual":
-        if not cert_file or not key_file:
-            click.echo(
-                "Error: --cert-file and --key-file are required when --tls-mode is 'manual'",
-                err=True,
-            )
-            sys.exit(1)
-    elif tls_mode == "auto" and tls_key_type not in ["ec", "rsa"]:
+    # Validate TLS configuration
+    if tls_mode == "auto" and tls_key_type not in ["ec", "rsa"]:
         click.echo(
             "Error: --tls-key-type must be 'ec' or 'rsa' when --tls-mode is 'auto'",
             err=True,
         )
         sys.exit(1)
 
+    # Check for required magic cookie environment variables
     magic_cookie_key = os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN")
     magic_cookie_value = os.getenv(magic_cookie_key)
 
@@ -136,22 +135,20 @@ def server_start(
         )
         sys.exit(1)
 
+    # Set environment variables for serve_plugin to read
+    os.environ["TLS_MODE"] = tls_mode
+    os.environ["TLS_KEY_TYPE"] = tls_key_type
+    os.environ["TLS_CURVE"] = tls_curve
+
     logger.info(
-        "Starting KV plugin server...",
+        "Starting KV plugin server with pyvider-rpcplugin...",
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
         tls_curve=tls_curve,
-        cert_file=cert_file,
-        key_file=key_file,
     )
 
-    start_kv_server(
-        tls_mode=tls_mode,
-        tls_key_type=tls_key_type,
-        tls_curve=tls_curve,
-        cert_file=cert_file,
-        key_file=key_file,
-    )
+    # Run async server
+    asyncio.run(serve_plugin())
 
 
 @click.group("validate")
