@@ -312,10 +312,12 @@ def _start_server_and_handshake(
         protocol = "grpc"
         cert_b64 = ""
         if server_cert_pem:
+            # Remove PEM headers and ALL whitespace for clean base64 encoding
+            # Use regex to catch all whitespace (spaces, tabs, newlines, etc)
             cert_clean = server_cert_pem.replace("-----BEGIN CERTIFICATE-----", "")
             cert_clean = cert_clean.replace("-----END CERTIFICATE-----", "")
-            cert_clean = cert_clean.replace("\n", "").replace("\r", "").strip()
-            cert_b64 = cert_clean
+            # Remove ALL whitespace characters - more robust than individual replaces
+            cert_b64 = re.sub(r'\s+', '', cert_clean)
         handshake_line = f"{core_version}|{protocol_version}|{network}|{address}|{protocol}|{cert_b64}"
         print(handshake_line, flush=True)
         logger.debug(f"Handshake output: {handshake_line[:100]}...")
