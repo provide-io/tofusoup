@@ -54,6 +54,9 @@ func newRPCClient(logger hclog.Logger) (*plugin.Client, error) {
 	cmd.Env = append(os.Environ(),
 		"PLUGIN_AUTO_MTLS=true",                            // Explicitly enable AutoMTLS for Go servers
 		fmt.Sprintf("KV_STORAGE_DIR=%s", GetKVStorageDir()), // Set XDG-compliant storage directory
+		// Add go-plugin magic cookies for Python server detection
+		"PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN",
+		"BASIC_PLUGIN=hello",
 	)
 
 	// Create client
