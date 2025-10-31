@@ -224,15 +224,15 @@ class TestRPCKVMatrixGoClient:
         Fails: Go → Python ⚠️ (implementation bug, not fundamental limitation)
         """
 
-        # Mark Python server tests as expected failure (implementation bug)
-        if server_lang == "python":
-            pytest.xfail(
-                "Go client → Python server failing with TLS handshake error. "
-                "Error: 'tls: first record does not look like a TLS handshake'. "
-                "This is an implementation bug in soup-go or test configuration, NOT a fundamental "
-                "Go↔Python TLS limitation (Terraform successfully uses Go→pyvider with TLS). "
-                "Needs investigation - likely TLS mode detection or handshake parsing issue."
-            )
+        # # Mark Python server tests as expected failure (implementation bug)
+        # if server_lang == "python":
+        #     pytest.xfail(
+        #         "Go client → Python server failing with TLS handshake error. "
+        #         "Error: 'tls: first record does not look like a TLS handshake'. "
+        #         "This is an implementation bug in soup-go or test configuration, NOT a fundamental "
+        #         "Go↔Python TLS limitation (Terraform successfully uses Go→pyvider with TLS). "
+        #         "Needs investigation - likely TLS mode detection or handshake parsing issue."
+        #     )
 
         logger.info(f"Testing soup-go client → {server_lang} server with {crypto_config.name}")
 
@@ -361,15 +361,15 @@ class TestRPCKVMatrixGoClient:
         Fails: Go → Python ⚠️ (implementation bug, not fundamental limitation)
         """
 
-        # Mark Python server tests as expected failure (implementation bug)
-        if server_lang == "python":
-            pytest.xfail(
-                "Go client → Python server failing with TLS handshake error. "
-                "Error: 'tls: first record does not look like a TLS handshake'. "
-                "This is an implementation bug in soup-go or test configuration, NOT a fundamental "
-                "Go↔Python TLS limitation (Terraform successfully uses Go→pyvider with TLS). "
-                "Needs investigation - likely TLS mode detection or handshake parsing issue."
-            )
+        # # Mark Python server tests as expected failure (implementation bug)
+        # if server_lang == "python":
+        #     pytest.xfail(
+        #         "Go client → Python server failing with TLS handshake error. "
+        #         "Error: 'tls: first record does not look like a TLS handshake'. "
+        #         "This is an implementation bug in soup-go or test configuration, NOT a fundamental "
+        #         "Go↔Python TLS limitation (Terraform successfully uses Go→pyvider with TLS). "
+        #         "Needs investigation - likely TLS mode detection or handshake parsing issue."
+        #     )
 
         logger.info(f"Testing multiple keys: soup-go → {server_lang} ({crypto_config.name})")
 
