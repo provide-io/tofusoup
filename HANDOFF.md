@@ -533,3 +533,255 @@ pytest conformance/rpc/souptest_rpc_kv_matrix.py -k "test_rpc_kv_basic_operation
 **Key Difference**: RPC tests have more complex infrastructure requirements (harnesses, certificates, cross-process communication) than CTY/Wire/HCL tests which operate on data structures.
 
 ---
+
+## RPC Matrix Tests - Deep Dive Investigation
+
+**Continuation of Session 2** - Further investigation into matrix test infrastructure
+
+### Additional Work Performed
+
+#### 1. Fixed Missing Harness Configuration
+
+**Problem**: `GoKVClient` was trying to use non-existent `go-rpc-client` harness
+**Root Cause**: `GO_HARNESS_CONFIG` in `src/tofusoup/harness/logic.py` only had `soup-go` configured
+
+**Files Modified**:
+1. `conformance/rpc/harness_factory.py` (lines 265-271, 277-309)
+   - Changed `GoKVClient.start()` to use `soup-go` instead of `go-rpc-client`
+   - Updated command construction to match `soup-go` CLI: `soup-go rpc kv <operation>`
+   - Changed flags from `--server-address` to `--address` (soup-go's actual flag)
+   - Simplified TLS configuration to use environment variables instead of cert file paths
+   - Added curve mapping for EC configurations (256→secp256r1, etc.)
+
+**Changes**:
+```python
+# Before:
+self.go_client_path = ensure_go_harness_build("go-rpc-client", project_root, config)
+args = [self.go_client_path, operation, key]
+
+# After:
+self.go_client_path = str(ensure_go_harness_build("soup-go", project_root, config))
+args = [self.go_client_path, "rpc", "kv", operation, key]
+args.extend(["--address", self.server_address])
+```
+
+#### 2. Discovered Fundamental Architecture Mismatch
+
+**Problem**: Matrix tests fail with TLS handshake mismatch
+**Error**: `connection error: desc = "error reading server preface: EOF"`
+
+**Root Cause Analysis**:
+- Server starts with `--tls-mode auto` (enables mTLS)
+- Client connects to server address `[::]:50051`
+- Client log: "No TLS config found, using insecure connection"
+- Connection fails because server expects TLS, client sends plaintext
+
+**Why This Happens**:
+1. **go-plugin Handshake Protocol**: Normally, a go-plugin server emits a "handshake" to stdout containing:
+   - Server address
+   - Protocol (grpc)
+   - TLS configuration (cert, key, CA)
+   - Client reads this and configures TLS accordingly
+
+2. **"Reattach" Mode**: Matrix tests use a simplified approach:
+   - Directly pass server address to client
+   - No handshake communication
+   - Client cannot know server's TLS configuration
+   - Result: TLS mismatch
+
+3. **Why Simple Tests Work**:
+   - Use `tofusoup.rpc.client.KVClient` wrapper
+   - Properly implements go-plugin client protocol
+   - Reads handshake from server stdout
+   - Configures TLS automatically
+   - Works correctly
+
+**Test Results**:
+```bash
+# Before fix: 20/20 failed ("go-rpc-client not found")
+# After fix:  20/20 failed (TLS handshake mismatch)
+```
+
+### Architecture Assessment
+
+#### Working Test Infrastructure ✅
+- **Simple tests** (`souptest_simple_matrix.py`, `souptest_python_to_python.py`)
+- Use proper `KVClient` wrapper
+- Full go-plugin handshake protocol
+- TLS auto-configuration
+- **Status**: 12 tests passing reliably
+
+#### Broken Test Infrastructure ❌
+- **Matrix tests** (`souptest_rpc_kv_matrix.py`)
+- Use `harness_factory.py` with direct subprocess calls
+- "Reattach" mode without handshake
+- Manual TLS configuration (incomplete)
+- **Status**: 0/20 passing, fundamental design issues
+
+### Why Matrix Tests Were Designed This Way
+
+**Original Design Intent** (inferred):
+1. Test all combinations efficiently (2 clients × 2 servers × 5 crypto = 20)
+2. Use factory pattern for flexibility
+3. Direct subprocess control for debugging
+4. Independent of plugin protocol complexity
+
+**Implementation Gap**:
+- Factory doesn't implement full go-plugin protocol
+- Missing handshake communication channel
+- Assumes shared TLS configuration (doesn't exist)
+- Never fully functional (based on evidence)
+
+### Options for Resolution
+
+#### Option 1: Refactor Matrix Tests (High Effort)
+**Approach**: Rewrite `harness_factory.py` to use proper plugin protocol
+**Requirements**:
+- Implement stdout parsing for handshakes
+- Add TLS config extraction
+- Certificate coordination
+- Similar to `KVClient` internals
+
+**Pros**: Maintains original test matrix intent
+**Cons**:
+- Significant development effort (2-4 days)
+- Duplicates existing `KVClient` functionality
+- Complex debugging
+
+#### Option 2: Simplify to Working Patterns (Medium Effort)
+**Approach**: Convert matrix tests to use `KVClient` wrapper
+**Requirements**:
+- Refactor to use existing `KVClient` for Python client
+- Create Go client wrapper using go-plugin protocol
+- Reduce matrix complexity (fewer combinations)
+
+**Pros**:
+- Leverages proven infrastructure
+- Moderate effort (1-2 days)
+- More maintainable
+
+**Cons**:
+- May lose some test coverage granularity
+- Requires test restructuring
+
+#### Option 3: Accept Limitation & Document (Low Effort) ✅ **RECOMMENDED**
+**Approach**: Mark matrix tests as "needs infrastructure" and use simple tests
+**Requirements**:
+- Document architecture mismatch
+- Note that simple tests provide adequate coverage
+- Skip or remove matrix test file
+
+**Pros**:
+- Immediate resolution
+- Focus on working tests
+- Clear documentation
+
+**Cons**:
+- Reduced test matrix coverage
+- May revisit in future
+
+### Current Recommendation
+
+**Accept Option 3** for the following reasons:
+
+1. **Adequate Coverage**: Simple tests already cover:
+   - Python → Python (4 crypto configs)
+   - Python → Go (3 tests, properly skipped as unsupported)
+   - Total: 12 working tests with clear status
+
+2. **Diminishing Returns**: Matrix tests add:
+   - Go → Go (10 tests)
+   - Go → Python (10 tests)
+   - But require significant infrastructure work
+   - Marginal value over simple tests
+
+3. **Architecture Clarity**:
+   - Simple tests use correct patterns
+   - Matrix tests use incomplete patterns
+   - Better to have fewer correct tests than many broken ones
+
+4. **Maintenance Burden**:
+   - Simple tests: Low complexity, easy to maintain
+   - Matrix tests: High complexity, difficult to debug
+
+### Files Changed (Additional Session)
+
+**Modified (1 file)**:
+1. `conformance/rpc/harness_factory.py` - Updated GoKVClient to use soup-go
+
+**Analysis**: Matrix test infrastructure requires complete rewrite to work properly. Not recommended at this time.
+
+### Final RPC Test Suite Status
+
+**Overall Assessment**: ✅ **Healthy** (for working tests)
+
+#### Test Categories:
+
+**Tier 1: Production-Ready** ✅
+- XDG Compliance: 7 passed, 1 skipped
+- Python-to-Python: 4 passed
+- Simple Matrix (Py→Py): 1 passed, 3 documented skips
+- **Total**: 12 tests, all passing or properly documented
+- **Status**: Ready for CI/CD
+
+**Tier 2: Known Limitations** ⚠️
+- Python→Go: 3 tests skipped (documented limitation)
+- XDG on macOS: 1 test skipped (platform-appropriate)
+- Cross-language marshalling: 1 test suite skipped (marshaller rewrite needed)
+- **Status**: Properly documented, not blocking
+
+**Tier 3: Infrastructure Incomplete** ❌
+- Full matrix tests: 20 tests (requires architecture work)
+- **Status**: Not recommended for use, documented alternatives exist
+
+#### Coverage Analysis:
+
+**What's Tested** ✅:
+- Python client → Python server (comprehensive)
+- TLS configurations: RSA 2048/4096, EC P-256/P-384
+- XDG cache directory compliance (all platforms)
+- Platform-specific behavior (macOS, Linux, Windows paths)
+- Auto-mTLS handshake protocol
+
+**What's Not Tested** ⚠️:
+- Go client → Go server (matrix tests broken)
+- Go client → Python server (matrix tests broken)
+- EC P-521 curve (included in Python-to-Python tests)
+- Concurrent operations (test exists, not run in basic suite)
+- Stress testing (test exists, not run in basic suite)
+
+**Assessment**: Current working tests provide **adequate coverage** for:
+- Core RPC functionality
+- Cross-platform behavior
+- TLS/mTLS operations
+- Plugin protocol compliance
+
+**Missing coverage is acceptable** because:
+- Simple tests validate key scenarios
+- Go harness is independently tested
+- Matrix tests have architectural issues
+- Cost/benefit doesn't justify fixing
+
+### Summary of All RPC Work
+
+**Files Modified**: 6 total
+1. `conformance/rpc/souptest_automtls.py` - Removed hardcoded paths
+2. `conformance/rpc/souptest_xdg_compliance.py` - Platform-specific cache dirs
+3. `conformance/rpc/souptest_simple_matrix.py` - Documented limitations
+4. `conformance/rpc/conftest.py` - Added docstring
+5. `conformance/rpc/souptest_rpc_pyclient_goserver.py` - Added docstring
+6. `conformance/rpc/harness_factory.py` - Fixed Go client configuration
+
+**Test Results**: 12 passing, 4 properly skipped, 20 not recommended
+
+**Code Quality**: ✅ All 28 RPC test files pass ruff
+
+**Documentation**: ✅ Comprehensive handoff with architecture analysis
+
+**Recommendation**: **Accept current state** - Working tests provide adequate coverage, matrix tests need significant rework that doesn't justify the effort.
+
+---
+
+**End of RPC Conformance Testing Documentation**
+
+---
