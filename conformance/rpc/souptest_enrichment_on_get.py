@@ -55,7 +55,12 @@ class TestStorageImmutability:
             config = load_tofusoup_config(project_root)
             server_path = str(ensure_go_harness_build("soup-go", project_root, config))
         else:  # python
-            server_path = str(Path(py_server_module.__file__))
+            # Use soup CLI binary for Python server (same pattern as Go)
+            import shutil
+            soup_path = shutil.which("soup")
+            if not soup_path:
+                pytest.skip("soup command not found in PATH")
+            server_path = soup_path
 
         # Create isolated test directory
         test_dir = tmp_path / f"storage_persist_{server_lang}_{crypto_config.name}"
@@ -154,7 +159,12 @@ class TestStorageImmutability:
         logger.info("Testing storage isolation between crypto configurations")
 
         config = load_tofusoup_config(project_root)
-        server_path = str(ensure_go_harness_build("soup-go", project_root, config))
+        # Use soup CLI binary for Python server (matches Go soup-go approach)
+        import shutil
+        soup_path = shutil.which("soup")
+        if not soup_path:
+            pytest.skip("soup command not found in PATH")
+        server_path = soup_path
 
         # Create test directory
         test_dir = tmp_path / "storage_isolation"

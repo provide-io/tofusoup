@@ -158,41 +158,60 @@ class PythonKVServer(ReferenceKVServer):
         self.client_language = client_language or "unknown"
 
     async def start(self) -> None:
-        """Start Python KV server using TofuSoup's server."""
+        """Start Python KV server using TofuSoup's soup CLI."""
 
         # Generate certificates if needed
         cert_manager = CertificateManager(self.work_dir)
         cert_manager.generate_crypto_material(self.crypto_config)
 
-        # Use the existing TofuSoup KV server
-        import tofusoup.rpc.server as kv_server_module
+        # Find soup binary
+        import shutil
+        soup_path = shutil.which("soup")
+        if not soup_path:
+            raise RuntimeError("soup command not found in PATH. Please ensure TofuSoup is properly installed.")
 
-        server_script = Path(kv_server_module.__file__)
+        # Build soup rpc kv server command
+        args = [soup_path, "rpc", "kv", "server"]
+        args.extend(self.crypto_config.to_python_cli_args())
 
-        # Build command to run Python KV server
-        cmd = ["python", str(server_script)]
+        print(f"DEBUG: soup args: {args}")
 
         # Set up environment with combo identification
         env = os.environ.copy()
         env.update(
             {
+                "LOG_LEVEL": "TRACE",
+                "PYTHONUNBUFFERED": "1",
                 "KV_STORAGE_DIR": str(self.storage_dir),
                 "SERVER_LANGUAGE": self.server_language,
                 "CLIENT_LANGUAGE": self.client_language,
                 "COMBO_ID": self.combo_id,
-                # Matrix tests use disabled TLS for simplicity
-                "TLS_MODE": "disabled",
+                "TLS_MODE": self.crypto_config.auth_mode,
+                "TLS_KEY_TYPE": self.crypto_config.key_type,
+                "TLS_KEY_SIZE": str(self.crypto_config.key_size),
             }
         )
 
-        logger.info(f"Starting Python KV server: {' '.join(cmd)}")
+        logger.info(f"Starting Python KV server via soup: {' '.join(args)}")
+        print(f"DEBUG: Full command: {' '.join(args)}")
         self.process = subprocess.Popen(
-            cmd, env=env, cwd=self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            args, env=env, cwd=self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
 
-        # Wait for server to start
-        await asyncio.sleep(2)  # Give server time to start
-        self.address = "127.0.0.1:50051"  # Default port from server.py
+        # Wait for server to start and parse address from stdout
+        # The soup rpc kv server command prints the address to stdout
+        server_started = False
+        while not server_started:
+            line = self.process.stdout.readline()
+            if "Server listening on" in line:
+                self.address = line.split("Server listening on ")[1].strip()
+                self.server_port = int(self.address.split(":")[-1])
+                server_started = True
+            elif self.process.poll() is not None:
+                # Process exited before printing address, something went wrong
+                stdout, stderr = self.process.communicate()
+                raise RuntimeError(f"Python server failed to start. Stdout: {stdout}, Stderr: {stderr}")
+            await asyncio.sleep(0.1)  # Avoid busy-waiting
 
         logger.info(f"Python KV server started at {self.address}")
 
