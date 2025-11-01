@@ -36,3 +36,5 @@ require (
 )
 
 replace github.com/provide-io/tofusoup/proto/kv => ../../proto/kv
+
+replace github.com/hashicorp/go-plugin => /Users/tim/code/gh/hashicorp/go-plugin
