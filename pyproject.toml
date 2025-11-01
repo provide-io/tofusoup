@@ -32,7 +32,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]",
+    "provide-foundation[all]>=0.0.1100",
     "click>=8.1.0",
     "msgpack>=1.0.0",
     "pyyaml>=6.0",
@@ -43,23 +43,23 @@ dependencies = [
     "semver>=3.0.0",
     "jinja2>=3.1.6",
     "tomli-w>=1.0.0",
-    "plating",
+    "plating>=0.0.1100",
     "mkdocs-material>=9.6.20",
-    "pyvider",  # For state inspection encryption (pyvider.common.encryption)
+    "pyvider>=0.0.1100",  # For state inspection encryption (pyvider.common.encryption)
 ]
 
 [project.optional-dependencies]
 cty = [
-    "pyvider-cty",
+    "pyvider-cty>=0.0.1100",
 ]
 hcl = [
-    "pyvider-hcl",
+    "pyvider-hcl>=0.0.1100",
 ]
 rpc = [
-    "pyvider-rpcplugin",
+    "pyvider-rpcplugin>=0.0.1100",
 ]
 test-rpc = [
-    "pyvider-rpcplugin[test]",
+    "pyvider-rpcplugin[test]>=0.0.1100",
 ]
 # Matrix testing support requires wrknv (optional)
 # Install wrknv separately: pip install wrknv
@@ -74,14 +74,14 @@ pyvider = { path = "../pyvider", editable = true }
 
 [dependency-groups]
 dev = [
-    "provide-testkit[standard,advanced-testing,build]",
-    "tofusoup[test-rpc]",
+    "provide-testkit[standard,advanced-testing,build]>=0.0.1100",
+    "tofusoup[test-rpc]>=0.0.1100",
     "pytest-json-report>=1.5.0",
     # Note: wrknv has dependency conflicts with plating (rich version)
     # Install separately if needed for matrix testing
 ]
 docs = [
-    "provide-testkit[docs]",
+    "provide-testkit[docs]>=0.0.1100",
 ]
 
 [project.scripts]

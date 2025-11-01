@@ -2308,10 +2308,10 @@ All commands functional with proper help text and subcommands.
 
 **Installed Packages:**
 ```
-pyvider                    0.0.1000 (local editable)
-pyvider-cty                0.0.1000
-pyvider-hcl                0.0.1000
-pyvider-rpcplugin          0.0.1000
+pyvider                    (local editable build)
+pyvider-cty                (local editable build)
+pyvider-hcl                (local editable build)
+pyvider-rpcplugin          (local editable build)
 ```
 
 **Import Verification:**
@@ -2499,7 +2499,7 @@ uv pip install -e ".[hcl]"
 ```
 
 **Installed Packages:**
-- `pyvider-hcl==0.0.1000`
+- `pyvider-hcl` (local editable install)
 - `lark==1.3.0`
 - `python-hcl2==7.3.1`
 - `regex==2025.10.23`
@@ -2582,7 +2582,7 @@ Successfully resolved both known issues from the previous handoff:
 **Solution:**
 - Added `pyvider` to `pyproject.toml` dependencies (line 44)
 - Configured local path in `[tool.uv.sources]` (line 69)
-- Ran `uv sync` to install `pyvider==0.0.1000` from local source
+- Ran `uv sync` to install the local editable `pyvider` build
 
 **Verification:**
 - ✅ `soup state --help` works
