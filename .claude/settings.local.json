@@ -100,7 +100,8 @@
       "Bash(/tmp/defaults.py.working)",
       "Bash(/tmp/process.py.working)",
       "Bash(tee:*)",
-      "Bash(soup rpc --help:*)"
+      "Bash(soup rpc --help:*)",
+      "Bash(python -m py_compile:*)"
     ],
     "deny": [],
     "ask": [],
