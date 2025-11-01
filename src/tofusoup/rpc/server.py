@@ -295,7 +295,12 @@ async def serve_plugin(
     tls_key_type = tls_key_type or os.getenv("TLS_KEY_TYPE", "ec")
     tls_curve = tls_curve or os.getenv("TLS_CURVE", "secp384r1")
 
-    logger.info(
+    # CRITICAL: Do NOT log to stdout before the handshake!
+    # The go-plugin protocol requires the first output on stdout to be the handshake:
+    # 1|1|unix|socket_path|protocol|cert_base64
+    # Any other output to stdout will corrupt the handshake and break the connection.
+    # All logging must go to stderr.
+    logger.debug(
         "Starting KV plugin server with pyvider-rpcplugin",
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
@@ -323,7 +328,7 @@ async def serve_plugin(
 
     # Create and start the plugin server
     # RPCPluginServer handles:
-    # - Handshake protocol (outputs to stdout)
+    # - Handshake protocol (outputs to stdout - MUST be the only stdout output)
     # - Certificate generation (if mTLS enabled)
     # - gRPC server setup
     # - Signal handling (SIGTERM, SIGINT)
@@ -333,7 +338,7 @@ async def serve_plugin(
         config=config,
     )
 
-    logger.info("RPCPluginServer created, starting serve()")
+    logger.debug("RPCPluginServer created, starting serve()")
     await server.serve()
 
 

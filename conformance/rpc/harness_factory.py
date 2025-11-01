@@ -174,14 +174,14 @@ class PythonKVServer(ReferenceKVServer):
         args = [soup_path, "rpc", "kv", "server"]
         args.extend(self.crypto_config.to_python_cli_args())
 
-        print(f"DEBUG: soup args: {args}")
+        logger.debug(f"Python server args: {args}")
 
         # Set up environment with combo identification
+        # CRITICAL: Do NOT set LOG_LEVEL=TRACE/DEBUG, as it will print to stdout
+        # and corrupt the go-plugin handshake which must be the only stdout output.
         env = os.environ.copy()
         env.update(
             {
-                "LOG_LEVEL": "TRACE",
-                "PYTHONUNBUFFERED": "1",
                 "KV_STORAGE_DIR": str(self.storage_dir),
                 "SERVER_LANGUAGE": self.server_language,
                 "CLIENT_LANGUAGE": self.client_language,
@@ -193,27 +193,57 @@ class PythonKVServer(ReferenceKVServer):
         )
 
         logger.info(f"Starting Python KV server via soup: {' '.join(args)}")
-        print(f"DEBUG: Full command: {' '.join(args)}")
         self.process = subprocess.Popen(
             args, env=env, cwd=self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
 
         # Wait for server to start and parse address from stdout
-        # The soup rpc kv server command prints the address to stdout
+        # The soup rpc kv server uses go-plugin protocol, which outputs:
+        # 1|1|unix|/path/to/socket|grpc|BASE64_CERT
+        # Note: There may be warnings/logs on stdout BEFORE the handshake (from pyvider)
+        # We need to find the line that starts with "1|1|unix|"
         server_started = False
-        while not server_started:
-            line = self.process.stdout.readline()
-            if "Server listening on" in line:
-                self.address = line.split("Server listening on ")[1].strip()
-                self.server_port = int(self.address.split(":")[-1])
-                server_started = True
-            elif self.process.poll() is not None:
-                # Process exited before printing address, something went wrong
-                stdout, stderr = self.process.communicate()
-                raise RuntimeError(f"Python server failed to start. Stdout: {stdout}, Stderr: {stderr}")
-            await asyncio.sleep(0.1)  # Avoid busy-waiting
+        max_read_attempts = 100  # Prevent infinite loops
+        attempts = 0
 
-        logger.info(f"Python KV server started at {self.address}")
+        while not server_started and attempts < max_read_attempts:
+            attempts += 1
+            line = self.process.stdout.readline()
+            if not line:
+                # EOF reached without finding handshake
+                if self.process.poll() is not None:
+                    stdout, stderr = self.process.communicate()
+                    raise RuntimeError(f"Python server failed to start. Stdout: {stdout}, Stderr: {stderr}")
+                await asyncio.sleep(0.1)
+                continue
+
+            line_stripped = line.strip()
+
+            # Parse go-plugin handshake format: 1|1|unix|socket_path|protocol|cert
+            # Skip any lines that don't match this format (e.g., logging/warnings)
+            if line_stripped.startswith("1|"):
+                parts = line_stripped.split("|")
+                if len(parts) >= 4 and parts[0] == "1":
+                    # Found the handshake line
+                    socket_path = parts[3]
+                    # For local Unix sockets, we don't have a TCP port
+                    # The pyvider RPCPluginClient will handle the socket connection internally
+                    self.address = socket_path  # Store socket path for reference
+                    self.server_port = None  # Unix sockets don't have ports
+                    server_started = True
+                    logger.info(f"Python KV server started with socket: {self.address}")
+            elif line_stripped and not line_stripped.startswith("["):
+                # Non-empty line that's not a handshake or log line
+                logger.debug(f"Unexpected server output (may be harmless): {line_stripped[:100]}")
+
+            # Check if process died
+            if self.process.poll() is not None and not server_started:
+                raise RuntimeError(f"Python server process died before sending handshake")
+
+            await asyncio.sleep(0.05)  # Avoid busy-waiting
+
+        if not server_started:
+            raise RuntimeError(f"Python server did not send handshake after {max_read_attempts} attempts")
 
     async def stop(self) -> None:
         """Stop Python KV server."""
