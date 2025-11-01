@@ -98,7 +98,8 @@
       "Bash(/tmp/network.py.working)",
       "Bash(/tmp/runtime.py.working)",
       "Bash(/tmp/defaults.py.working)",
-      "Bash(/tmp/process.py.working)"
+      "Bash(/tmp/process.py.working)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": [],

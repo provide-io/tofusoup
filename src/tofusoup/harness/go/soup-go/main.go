@@ -263,7 +263,7 @@ func init() {
 	serverCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port (only used in standalone mode)")
 	serverCmd.Flags().StringVar(&rpcTLSMode, "tls-mode", "disabled", "TLS mode: disabled, auto, manual (only used in standalone mode)")
 	serverCmd.Flags().StringVar(&rpcTLSKeyType, "tls-key-type", "ec", "Key type for auto TLS: 'ec' or 'rsa' (only used in standalone mode)")
-	serverCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "auto", "Elliptic curve for EC key type: 'auto' (AutoMTLS P-521), 'secp256r1', 'secp384r1', 'secp521r1' (only used in standalone mode)")
+	serverCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "secp384r1", "Elliptic curve for EC key type: 'secp256r1', 'secp384r1', 'secp521r1', or 'auto' (AutoMTLS P-521) - default secp384r1 for Python compatibility")
 	serverCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS, only used in standalone mode)")
 	serverCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS, only used in standalone mode)")
 	
