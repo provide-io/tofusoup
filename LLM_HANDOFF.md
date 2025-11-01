@@ -258,8 +258,103 @@ Both comprehensive and enrichment tests now follow the working pattern from `sou
 - Tests no longer expect non-existent enrichment features
 - Ready for implementation verification
 
+## Session 3: TCP Transport Workaround for Unix Socket Issues (2025-11-01)
+
+### Problem Discovered
+
+During testing of Python-to-Python RPC connections, all 43 previously failing tests were timing out with the same pattern:
+- gRPC channel creation timeout in `pyvider-rpcplugin/client/process.py:_create_grpc_channel_impl()`
+- Channel would never transition to READY state within 10-second timeout
+- Issue affected both Unix socket and the fact that TCP transport worked correctly
+
+### Root Cause Analysis
+
+**Investigation Results:**
+1. **Unix Socket Issue in pyvider-rpcplugin**:
+   - Python server successfully outputs valid go-plugin handshake with Unix socket path
+   - Socket is created successfully by `asyncio.start_unix_server()`
+   - But gRPC channel creation hangs indefinitely
+   - Likely conflict between `transport.listen()` creating `asyncio.start_unix_server()` and gRPC trying to bind to same path
+
+2. **TCP Transport Testing**:
+   - TCP transport works perfectly when tested directly
+   - Created manual test confirming TCP client → Python server works
+   - Data integrity verified: PUT and GET operations succeed
+
+### Solution Implemented
+
+Added `--transport` CLI option to allow toggling between TCP and Unix socket:
+
+**Files Modified:**
+
+1. **`src/tofusoup/rpc/cli.py`**
+   - Added `--transport` option to `soup rpc kv server` command
+   - Defaults to TCP for compatibility
+   - Uses `PLUGIN_SERVER_TRANSPORTS` configuration
+
+2. **`src/tofusoup/rpc/server.py`**
+   - Added `transport` parameter to `serve_plugin()` function
+   - Properly configures transport via pyvider-rpcplugin config dict
+   - Respects `PLUGIN_SERVER_TRANSPORTS` environment variable
+
+3. **`src/tofusoup/rpc/client.py`**
+   - Added `transport` parameter to `KVClient` constructor (defaults to "tcp")
+   - Automatically adds `--transport` flag when invoking `soup` binary
+   - Fixed binary name check to use only "soup" and "soup-go"
+
+4. **`conformance/rpc/harness_factory.py`**
+   - Updated `PythonKVServer` to use `--transport tcp` for all Python servers
+   - Comment explains Unix socket workaround
+
+5. **`conformance/rpc/souptest_cross_language_comprehensive.py`**
+   - Updated Python server startup to use `--transport tcp`
+
+### Key Commits
+
+1. **Add --transport CLI option** - Allows users to select tcp or unix socket transport
+2. **Use TCP transport for Python servers** - Workaround for Unix socket issues in pyvider-rpcplugin
+3. **Add transport parameter to KVClient** - Applies TCP workaround globally to all KVClient-based tests
+4. **Fix binary name check** - Corrected to use only "soup" and "soup-go"
+
+### Testing Status
+
+**TCP Transport Verification:**
+- Manual testing confirmed TCP transport works perfectly
+- Both direct TCP connections and CLI invocations successful
+- Data integrity verified across PUT/GET operations
+
+**Expected Impact on Test Suite:**
+- All 43 previously failing Python-to-Python tests should now pass
+- TCP transport should resolve gRPC channel timeout issues
+- No functional difference from user perspective - just different transport mechanism
+
+### Important Notes
+
+- **Unix Socket Issue Remains**: The underlying pyvider-rpcplugin Unix socket issue is not fixed - only worked around
+- **Future Investigation**: The root cause in pyvider-rpcplugin (likely conflicting socket listeners) should be investigated if Unix sockets become necessary
+- **Default is TCP**: Users can explicitly request Unix sockets via `--transport unix` if needed
+- **Backward Compatible**: All existing tests updated to use TCP, so no changes needed elsewhere
+
+### Configuration Details
+
+**Usage Examples:**
+```bash
+# Use TCP transport (default, new behavior)
+soup rpc kv server --tls-mode auto --tls-key-type rsa
+
+# Explicitly use Unix socket (if needed in future)
+soup rpc kv server --transport unix --tls-mode auto --tls-key-type rsa
+
+# From Python code
+client = KVClient(
+    server_path="/path/to/soup",
+    transport="tcp",  # default
+    tls_mode="auto"
+)
+```
+
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-11-01
+**Document Version**: 1.2
+**Last Updated**: 2025-11-01 (Session 3)
 **Prepared For**: Future LLM assistants or developers continuing this work
