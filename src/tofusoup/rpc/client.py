@@ -56,6 +56,7 @@ class KVClient:
         tls_curve: str = "secp256r1",
         cert_file: str | None = None,
         key_file: str | None = None,
+        transport: str = "tcp",
     ) -> None:
         self.tls_mode = tls_mode
         self.tls_key_type = tls_key_type
@@ -63,6 +64,7 @@ class KVClient:
         self.server_path = server_path
         self.cert_file = cert_file
         self.key_file = key_file
+        self.transport = transport
 
         # Validate language pair compatibility (Python client → server)
         try:
@@ -189,6 +191,9 @@ class KVClient:
         if binary_name in ["soup-go", "go-harness", "soup"]:
             # New harnesses (both Go and Python) expect rpc kv server subcommand
             server_command.extend(["rpc", "kv", "server"])
+            # Add transport configuration for soup (Python server)
+            if binary_name == "soup":
+                server_command.extend(["--transport", self.transport])
 
         # Add TLS configuration arguments
         server_command.extend(self._build_tls_command_args())
