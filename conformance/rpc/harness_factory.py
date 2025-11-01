@@ -197,53 +197,14 @@ class PythonKVServer(ReferenceKVServer):
             args, env=env, cwd=self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
 
-        # Wait for server to start and parse address from stdout
-        # The soup rpc kv server uses go-plugin protocol, which outputs:
-        # 1|1|unix|/path/to/socket|grpc|BASE64_CERT
-        # Note: There may be warnings/logs on stdout BEFORE the handshake (from pyvider)
-        # We need to find the line that starts with "1|1|unix|"
-        server_started = False
-        max_read_attempts = 100  # Prevent infinite loops
-        attempts = 0
+        # The Python server uses go-plugin protocol handled by pyvider-rpcplugin.
+        # The RPCPluginClient (used by KVClient) will parse the handshake from stdout.
+        # We just need to store a placeholder address - the actual connection is handled
+        # by the client code which uses the server_path (soup binary) directly.
+        self.address = "unix-socket"  # Placeholder - actual socket is handled by pyvider
+        self.server_port = None  # Python servers use Unix sockets, not TCP ports
 
-        while not server_started and attempts < max_read_attempts:
-            attempts += 1
-            line = self.process.stdout.readline()
-            if not line:
-                # EOF reached without finding handshake
-                if self.process.poll() is not None:
-                    stdout, stderr = self.process.communicate()
-                    raise RuntimeError(f"Python server failed to start. Stdout: {stdout}, Stderr: {stderr}")
-                await asyncio.sleep(0.1)
-                continue
-
-            line_stripped = line.strip()
-
-            # Parse go-plugin handshake format: 1|1|unix|socket_path|protocol|cert
-            # Skip any lines that don't match this format (e.g., logging/warnings)
-            if line_stripped.startswith("1|"):
-                parts = line_stripped.split("|")
-                if len(parts) >= 4 and parts[0] == "1":
-                    # Found the handshake line
-                    socket_path = parts[3]
-                    # For local Unix sockets, we don't have a TCP port
-                    # The pyvider RPCPluginClient will handle the socket connection internally
-                    self.address = socket_path  # Store socket path for reference
-                    self.server_port = None  # Unix sockets don't have ports
-                    server_started = True
-                    logger.info(f"Python KV server started with socket: {self.address}")
-            elif line_stripped and not line_stripped.startswith("["):
-                # Non-empty line that's not a handshake or log line
-                logger.debug(f"Unexpected server output (may be harmless): {line_stripped[:100]}")
-
-            # Check if process died
-            if self.process.poll() is not None and not server_started:
-                raise RuntimeError(f"Python server process died before sending handshake")
-
-            await asyncio.sleep(0.05)  # Avoid busy-waiting
-
-        if not server_started:
-            raise RuntimeError(f"Python server did not send handshake after {max_read_attempts} attempts")
+        logger.info(f"Python KV server process started (PID: {self.process.pid})")
 
     async def stop(self) -> None:
         """Stop Python KV server."""
