@@ -6,149 +6,288 @@
 """Comprehensive RPC K/V Matrix Testing
 
 Tests all 20 combinations of client/server/crypto configurations:
-- 2 client languages (Go, Python)
-- 2 server languages (Go, Python)
+- 2 client languages (Go, Python via `soup` CLI)
+- 2 server languages (Go via `soup-go`, Python via server module)
 - 5 crypto configs (RSA 2048/4096, EC 256/384/521)
+
+Uses subprocess pattern to test actual CLI commands:
+- Python client: `soup rpc kv {put|get}`
+- Go client: `soup-go rpc kv {put|get}`
 
 Verifies:
 1. K/V storage isolation per combination
-2. JSON enrichment with combo metadata on Get
-3. Correct combo identification in server_handshake
+2. Data integrity (PUT stores what GET retrieves)
+3. Cross-language RPC compatibility
 """
 
-import json
+import os
 from pathlib import Path
+import subprocess
+import uuid
 
 from provide.foundation import logger
 import pytest
 
-from .harness_factory import create_kv_client, create_kv_server
-from .matrix_config import RPC_KV_MATRIX_PARAMS, CryptoConfig
+from tofusoup.common.config import load_tofusoup_config
+from tofusoup.harness.logic import ensure_go_harness_build
+import tofusoup.rpc.server as py_server_module
+
+from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
 
 
-@pytest.mark.skip(reason="TODO: Rewrite to use KVClient instead of custom subprocess management - see souptest_rpc_kv_matrix.py for correct pattern")
-@pytest.mark.integration_rpc
-@pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
-@pytest.mark.asyncio
-async def test_rpc_matrix_comprehensive(
-    client_lang: str,
-    server_lang: str,
-    crypto_config: CryptoConfig,
-    project_root: Path,
-    test_artifacts_dir: Path,
-) -> None:
-    """Test all RPC client/server/crypto combinations with isolation and enrichment verification."""
+class TestRPCMatrixComprehensivePythonClient:
+    """RPC K/V matrix testing using Python client (soup CLI) with server spawning.
 
-    # Create combo-specific directory for isolation
-    combo_id = f"{client_lang}_client_{server_lang}_server_{crypto_config.name}"
-    test_dir = test_artifacts_dir / combo_id
-    test_dir.mkdir(parents=True, exist_ok=True)
+    Tests Python client with both Go and Python servers across all crypto configs.
+    """
 
-    logger.info(f"Testing combination: {combo_id}")
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.harness_python
+    @pytest.mark.parametrize("server_lang", ["go", "python"])
+    @pytest.mark.parametrize("crypto_config", RPC_KV_CRYPTO_CONFIGS)
+    async def test_python_client_basic_operations(
+        self, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path, project_root: Path
+    ) -> None:
+        """
+        Test RPC K/V operations using Python client (soup) with specified server language.
 
-    # Create test key and value
-    test_key = f"test_{combo_id}"
-    test_value = json.dumps(
-        {
-            "test_name": combo_id,
-            "client_language": client_lang,
-            "server_language": server_lang,
-            "crypto_config": crypto_config.name,
-            "key_type": crypto_config.key_type,
-            "key_size": crypto_config.key_size,
-        }
-    ).encode()
+        This test verifies that soup client can:
+        1. Launch a server subprocess (Go or Python) via PLUGIN_SERVER_PATH
+        2. Complete go-plugin handshake with auto-mTLS
+        3. PUT a key-value pair
+        4. GET the same key and retrieve the correct value
+        5. Handle non-existent keys appropriately
 
-    # Start server with combo identification
-    async with create_kv_server(
-        language=server_lang,
-        crypto_config=crypto_config,
-        work_dir=test_dir,
-        combo_id=combo_id,
-        client_language=client_lang,
-    ) as server:
-        logger.info(f"Server started at {server.address}")
+        Matrix coverage: 2 server langs x 5 crypto configs = 10 test combinations
+        """
 
-        # Start client and perform Put/Get operations
-        async with create_kv_client(
-            language=client_lang,
-            crypto_config=crypto_config,
-            server_address=server.address,
-            work_dir=test_dir,
-        ) as client:
-            # Put raw JSON
-            await client.put(test_key, test_value)
-            logger.info(f"Put value for key: {test_key}")
+        logger.info(f"Testing soup client → {server_lang} server with {crypto_config.name}")
 
-            # Get enriched JSON
-            retrieved = await client.get(test_key)
-            assert retrieved is not None, f"Failed to retrieve key: {test_key}"
+        # Get server path based on language
+        if server_lang == "go":
+            config = load_tofusoup_config(project_root)
+            server_path = str(ensure_go_harness_build("soup-go", project_root, config))
+        else:  # python
+            server_path = str(Path(py_server_module.__file__))
 
-            # Parse enriched JSON
-            enriched_data = json.loads(retrieved.decode())
-            logger.info(f"Retrieved enriched value: {json.dumps(enriched_data, indent=2)}")
+        # Create isolated test directory
+        test_dir = tmp_path / f"soup_client_{server_lang}_{crypto_config.name}"
+        test_dir.mkdir()
 
-            # === VERIFICATION ASSERTIONS ===
+        # Set storage directory via environment variable
+        storage_dir = test_dir / "kv-storage"
+        storage_dir.mkdir(parents=True, exist_ok=True)
 
-            # 1. Original data should be present
-            assert enriched_data["test_name"] == combo_id
-            assert enriched_data["client_language"] == client_lang
-            assert enriched_data["server_language"] == server_lang
+        # Generate unique test data
+        test_key = f"py-matrix-test-{uuid.uuid4()}"
+        test_value = f"value-{server_lang}-{crypto_config.name}"
 
-            # 2. Server handshake should be added
-            assert "server_handshake" in enriched_data, "Server should enrich JSON with server_handshake"
-            server_handshake = enriched_data["server_handshake"]
+        # Prepare environment for soup client
+        env = os.environ.copy()
+        env["PLUGIN_SERVER_PATH"] = server_path
+        env["KV_STORAGE_DIR"] = str(storage_dir)
 
-            # 3. Verify combo identification in server_handshake
-            assert server_handshake["server_language"] == server_lang, (
-                f"Expected server_language={server_lang}, got {server_handshake.get('server_language')}"
-            )
-            assert server_handshake["client_language"] == client_lang, (
-                f"Expected client_language={client_lang}, got {server_handshake.get('client_language')}"
-            )
-            assert server_handshake["combo_id"] == combo_id, (
-                f"Expected combo_id={combo_id}, got {server_handshake.get('combo_id')}"
+        # Set TLS configuration for server via environment
+        if crypto_config.key_type == "ec":
+            env["TLS_MODE"] = crypto_config.auth_mode
+            env["TLS_KEY_TYPE"] = "ec"
+            env["TLS_CURVE"] = f"secp{crypto_config.key_size}r1"
+        else:  # rsa
+            env["TLS_MODE"] = crypto_config.auth_mode
+            env["TLS_KEY_TYPE"] = "rsa"
+            env["TLS_KEY_SIZE"] = str(crypto_config.key_size)
+
+        try:
+            # Test 1: PUT operation
+            logger.debug(f"PUT {test_key} = {test_value}")
+            put_result = subprocess.run(
+                ["soup", "rpc", "kv", "put", test_key, test_value],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
 
-            # 4. Verify crypto_config in server_handshake
-            assert "crypto_config" in server_handshake, "Server should include crypto_config"
-            crypto_info = server_handshake["crypto_config"]
-            assert crypto_info["key_type"] == crypto_config.key_type, (
-                f"Expected key_type={crypto_config.key_type}, got {crypto_info.get('key_type')}"
+            assert put_result.returncode == 0, (
+                f"PUT failed with exit code {put_result.returncode}\n"
+                f"stdout: {put_result.stdout}\n"
+                f"stderr: {put_result.stderr}"
+            )
+            logger.debug(f"PUT completed successfully")
+
+            # Test 2: GET operation - verify correct value
+            logger.debug(f"GET {test_key}")
+            get_result = subprocess.run(
+                ["soup", "rpc", "kv", "get", test_key],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
 
-            if crypto_config.key_type == "rsa":
-                assert crypto_info["key_size"] == crypto_config.key_size, (
-                    f"Expected key_size={crypto_config.key_size}, got {crypto_info.get('key_size')}"
-                )
-            elif crypto_config.key_type == "ec":
-                # EC should have curve name
-                curve_map = {256: "secp256r1", 384: "secp384r1", 521: "secp521r1"}
-                expected_curve = curve_map.get(crypto_config.key_size)
-                if expected_curve:
-                    assert crypto_info.get("curve") == expected_curve, (
-                        f"Expected curve={expected_curve}, got {crypto_info.get('curve')}"
-                    )
-
-            # 5. Verify storage isolation - check file exists in combo-specific directory
-            storage_dir = test_dir / f"kv-{combo_id}"
-            storage_file = storage_dir / f"kv-data-{test_key}"
-            assert storage_file.exists(), f"Storage file should exist at {storage_file}"
-
-            # Read the stored file and verify it's RAW (not enriched)
-            with storage_file.open("rb") as f:
-                stored_data = json.loads(f.read())
-
-            # The stored file should NOT have server_handshake (enrichment is on Get)
-            assert "server_handshake" not in stored_data, (
-                "Stored file should contain raw JSON without enrichment (enrichment happens on Get)"
+            assert get_result.returncode == 0, (
+                f"GET failed with exit code {get_result.returncode}\n"
+                f"stdout: {get_result.stdout}\n"
+                f"stderr: {get_result.stderr}"
             )
 
-            logger.info(f"✅ Combination {combo_id} verified successfully")
-            logger.info(f"   Storage: {storage_file}")
-            logger.info(f"   Server: {server_handshake['server_language']}")
-            logger.info(f"   Client: {server_handshake['client_language']}")
-            logger.info(f"   Crypto: {crypto_config.name}")
+            retrieved_value = get_result.stdout.strip()
+            assert retrieved_value == test_value, (
+                f"Value mismatch: expected {test_value!r}, got {retrieved_value!r}"
+            )
+            logger.debug(f"GET {test_key} = {retrieved_value} (verified)")
+
+            # Test 3: GET non-existent key - should exit with non-zero
+            non_existent_key = f"does-not-exist-{uuid.uuid4()}"
+            logger.debug(f"GET {non_existent_key} (expecting not found)")
+            get_missing_result = subprocess.run(
+                ["soup", "rpc", "kv", "get", non_existent_key],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            # soup should exit with error code for missing key
+            assert get_missing_result.returncode != 0, (
+                f"Expected non-zero exit code for missing key, got {get_missing_result.returncode}"
+            )
+            logger.debug(f"GET {non_existent_key} = not found (expected)")
+
+            logger.info(f"✅ Python client → {server_lang} server ({crypto_config.name}) verified")
+
+        except subprocess.TimeoutExpired as e:
+            pytest.fail(f"Command timed out after 30s: {e.cmd}\nstdout: {e.stdout}\nstderr: {e.stderr}")
+
+
+class TestRPCMatrixComprehensiveGoClient:
+    """RPC K/V matrix testing using Go client (soup-go) with server spawning.
+
+    Tests Go client with both Go and Python servers across all crypto configs.
+    """
+
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.harness_python
+    @pytest.mark.parametrize("server_lang", ["go", "python"])
+    @pytest.mark.parametrize("crypto_config", RPC_KV_CRYPTO_CONFIGS)
+    async def test_go_client_basic_operations(
+        self, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path, project_root: Path
+    ) -> None:
+        """
+        Test RPC K/V operations using Go client (soup-go) with specified server language.
+
+        This test verifies that soup-go client can:
+        1. Launch a server subprocess (Go or Python) via PLUGIN_SERVER_PATH
+        2. Complete go-plugin handshake with auto-mTLS
+        3. PUT a key-value pair
+        4. GET the same key and retrieve the correct value
+        5. Handle non-existent keys appropriately
+
+        Matrix coverage: 2 server langs x 5 crypto configs = 10 test combinations
+        """
+
+        logger.info(f"Testing soup-go client → {server_lang} server with {crypto_config.name}")
+
+        # Get soup-go client path
+        config = load_tofusoup_config(project_root)
+        soup_go_path = str(ensure_go_harness_build("soup-go", project_root, config))
+
+        # Get server path based on language
+        if server_lang == "go":
+            server_path = soup_go_path  # soup-go acts as both client and server
+        else:  # python
+            server_path = str(Path(py_server_module.__file__))
+
+        # Create isolated test directory
+        test_dir = tmp_path / f"go_client_{server_lang}_{crypto_config.name}"
+        test_dir.mkdir()
+
+        # Set storage directory via environment variable
+        storage_dir = test_dir / "kv-storage"
+        storage_dir.mkdir(parents=True, exist_ok=True)
+
+        # Generate unique test data
+        test_key = f"go-matrix-test-{uuid.uuid4()}"
+        test_value = f"value-{server_lang}-{crypto_config.name}"
+
+        # Prepare environment for soup-go client
+        env = os.environ.copy()
+        env["PLUGIN_SERVER_PATH"] = server_path
+        env["KV_STORAGE_DIR"] = str(storage_dir)
+
+        # Set TLS configuration for server via environment
+        if crypto_config.key_type == "ec":
+            env["TLS_MODE"] = crypto_config.auth_mode
+            env["TLS_KEY_TYPE"] = "ec"
+            env["TLS_CURVE"] = f"secp{crypto_config.key_size}r1"
+        else:  # rsa
+            env["TLS_MODE"] = crypto_config.auth_mode
+            env["TLS_KEY_TYPE"] = "rsa"
+            env["TLS_KEY_SIZE"] = str(crypto_config.key_size)
+
+        try:
+            # Test 1: PUT operation
+            logger.debug(f"PUT {test_key} = {test_value}")
+            put_result = subprocess.run(
+                [soup_go_path, "rpc", "kv", "put", test_key, test_value],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            assert put_result.returncode == 0, (
+                f"PUT failed with exit code {put_result.returncode}\n"
+                f"stdout: {put_result.stdout}\n"
+                f"stderr: {put_result.stderr}"
+            )
+            logger.debug(f"PUT completed successfully")
+
+            # Test 2: GET operation - verify correct value
+            logger.debug(f"GET {test_key}")
+            get_result = subprocess.run(
+                [soup_go_path, "rpc", "kv", "get", test_key],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            assert get_result.returncode == 0, (
+                f"GET failed with exit code {get_result.returncode}\n"
+                f"stdout: {get_result.stdout}\n"
+                f"stderr: {get_result.stderr}"
+            )
+
+            retrieved_value = get_result.stdout.strip()
+            assert retrieved_value == test_value, (
+                f"Value mismatch: expected {test_value!r}, got {retrieved_value!r}"
+            )
+            logger.debug(f"GET {test_key} = {retrieved_value} (verified)")
+
+            # Test 3: GET non-existent key - should exit with non-zero
+            non_existent_key = f"does-not-exist-{uuid.uuid4()}"
+            logger.debug(f"GET {non_existent_key} (expecting not found)")
+            get_missing_result = subprocess.run(
+                [soup_go_path, "rpc", "kv", "get", non_existent_key],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            # soup-go should exit with error code for missing key
+            assert get_missing_result.returncode != 0, (
+                f"Expected non-zero exit code for missing key, got {get_missing_result.returncode}"
+            )
+            logger.debug(f"GET {non_existent_key} = not found (expected)")
+
+            logger.info(f"✅ Go client → {server_lang} server ({crypto_config.name}) verified")
+
+        except subprocess.TimeoutExpired as e:
+            pytest.fail(f"Command timed out after 30s: {e.cmd}\nstdout: {e.stdout}\nstderr: {e.stderr}")
 
 
 # 🥣🔬🔚
