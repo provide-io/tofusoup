@@ -66,7 +66,10 @@ class TestRPCKVMatrix:
             config = load_tofusoup_config(project_root)
             server_path = str(ensure_go_harness_build("soup-go", project_root, config))
         else:  # python
-            server_path = str(Path(py_server_module.__file__))
+            soup_path = shutil.which("soup")
+            if not soup_path:
+                pytest.skip("soup executable not found in PATH")
+            server_path = soup_path
 
         # Create isolated test directory
         test_dir = tmp_path / f"kvclient_{server_lang}_{crypto_config.name}"
@@ -144,7 +147,10 @@ class TestRPCKVMatrix:
             config = load_tofusoup_config(project_root)
             server_path = str(ensure_go_harness_build("soup-go", project_root, config))
         else:
-            server_path = str(Path(py_server_module.__file__))
+            soup_path = shutil.which("soup")
+            if not soup_path:
+                pytest.skip("soup executable not found in PATH")
+            server_path = soup_path
 
         # Create test directory
         test_dir = tmp_path / f"kvclient_{server_lang}_{crypto_config.name}_multi"
@@ -244,7 +250,10 @@ class TestRPCKVMatrixGoClient:
         if server_lang == "go":
             server_path = soup_go_path  # soup-go acts as both client and server
         else:  # python
-            server_path = str(Path(py_server_module.__file__))
+            soup_path = shutil.which("soup")
+            if not soup_path:
+                pytest.skip("soup executable not found in PATH")
+            server_path = soup_path
 
         # Create isolated test directory
         test_dir = tmp_path / f"go_client_{server_lang}_{crypto_config.name}"
@@ -381,7 +390,10 @@ class TestRPCKVMatrixGoClient:
         if server_lang == "go":
             server_path = soup_go_path
         else:
-            server_path = str(Path(py_server_module.__file__))
+            soup_path = shutil.which("soup")
+            if not soup_path:
+                pytest.skip("soup executable not found in PATH")
+            server_path = soup_path
 
         # Create test directory
         test_dir = tmp_path / f"go_client_{server_lang}_{crypto_config.name}_multi"
