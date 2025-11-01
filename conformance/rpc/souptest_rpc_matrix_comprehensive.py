@@ -38,43 +38,42 @@ from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
 
 
 class TestRPCMatrixComprehensivePythonClient:
-    """RPC K/V matrix testing using Python KVClient with server spawning.
+    """RPC K/V matrix testing using Python KVClient with Python server only.
 
-    Tests Python client (via KVClient) with both Go and Python servers.
+    Note: Python client → Go server is NOT currently supported by pyvider-rpcplugin.
+    This tests Python client with Python servers across all crypto configs.
+
+    (Go client tests cover Go-to-Go and Go-to-Python combinations)
     """
 
     @pytest.mark.integration_rpc
-    @pytest.mark.harness_go
     @pytest.mark.harness_python
-    @pytest.mark.parametrize("server_lang", ["go", "python"])
     @pytest.mark.parametrize("crypto_config", RPC_KV_CRYPTO_CONFIGS)
-    async def test_python_client_basic_operations(
-        self, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path, project_root: Path
+    async def test_python_client_to_python_server(
+        self, crypto_config: CryptoConfig, tmp_path: Path, project_root: Path
     ) -> None:
         """
-        Test RPC K/V operations using Python KVClient with specified server language.
+        Test RPC K/V operations using Python KVClient with Python server.
 
         This test verifies that KVClient can:
-        1. Start a server subprocess (Go or Python)
+        1. Start a Python server subprocess
         2. Complete go-plugin handshake with auto-mTLS
         3. PUT a key-value pair
         4. GET the same key and retrieve the correct value
-        5. Handle non-existent keys appropriately
 
-        Matrix coverage: 2 server langs x 5 crypto configs = 10 test combinations
+        Matrix coverage: 1 client (Python) x 1 server (Python) x 5 crypto configs = 5 test combinations
+
+        Note: Python client → Go server is not supported by pyvider-rpcplugin and is tested
+        via Go client instead (TestRPCMatrixComprehensiveGoClient).
         """
 
-        logger.info(f"Testing KVClient → {server_lang} server with {crypto_config.name}")
+        logger.info(f"Testing KVClient → Python server with {crypto_config.name}")
 
-        # Get server path based on language
-        if server_lang == "go":
-            config = load_tofusoup_config(project_root)
-            server_path = str(ensure_go_harness_build("soup-go", project_root, config))
-        else:  # python
-            server_path = str(Path(py_server_module.__file__))
+        # Python server only
+        server_path = str(Path(py_server_module.__file__))
 
         # Create isolated test directory
-        test_dir = tmp_path / f"kvclient_{server_lang}_{crypto_config.name}"
+        test_dir = tmp_path / f"kvclient_python_{crypto_config.name}"
         test_dir.mkdir()
 
         # Set storage directory via environment variable
@@ -83,8 +82,8 @@ class TestRPCMatrixComprehensivePythonClient:
         os.environ["KV_STORAGE_DIR"] = str(storage_dir)
 
         # Generate unique test data
-        test_key = f"matrix-test-{uuid.uuid4()}"
-        test_value = f"value-{server_lang}-{crypto_config.name}".encode()
+        test_key = f"py-matrix-test-{uuid.uuid4()}"
+        test_value = f"value-python-{crypto_config.name}".encode()
 
         # Create KVClient with specified crypto config
         client = KVClient(
@@ -99,7 +98,7 @@ class TestRPCMatrixComprehensivePythonClient:
         try:
             # Start client (which starts server subprocess and handles handshake)
             await client.start()
-            logger.info(f"KVClient connected to {server_lang} server")
+            logger.info(f"KVClient connected to Python server")
 
             # Test 1: PUT operation
             await client.put(test_key, test_value)
@@ -112,7 +111,7 @@ class TestRPCMatrixComprehensivePythonClient:
             )
             logger.debug(f"GET {test_key} verified")
 
-            logger.info(f"✅ KVClient → {server_lang} server ({crypto_config.name}) verified")
+            logger.info(f"✅ KVClient → Python server ({crypto_config.name}) verified")
 
         finally:
             await client.close()
