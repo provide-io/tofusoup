@@ -188,8 +188,8 @@ class KVClient:
 
         # Check if binary name suggests it needs subcommands
         binary_name = Path(self.server_path).name
-        if binary_name in ["soup-go", "go-harness", "soup"]:
-            # New harnesses (both Go and Python) expect rpc kv server subcommand
+        if binary_name in ["soup", "soup-go"]:
+            # Both soup (Python) and soup-go (Go) expect rpc kv server subcommand
             server_command.extend(["rpc", "kv", "server"])
             # Add transport configuration for soup (Python server)
             if binary_name == "soup":
