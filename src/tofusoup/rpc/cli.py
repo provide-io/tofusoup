@@ -149,14 +149,12 @@ def server_start(tls_mode: str, tls_key_type: str, tls_curve: str, transport: st
         transport=transport,
     )
 
-    # Set transport preference via environment variable
-    os.environ["PLUGIN_SERVER_TRANSPORTS"] = transport
-
-    # Run async server with TLS configuration from CLI args
+    # Run async server with TLS and transport configuration from CLI args
     asyncio.run(serve_plugin(
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
         tls_curve=tls_curve,
+        transport=transport,
     ))
 
 

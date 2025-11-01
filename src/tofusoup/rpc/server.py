@@ -267,6 +267,7 @@ async def serve_plugin(
     tls_mode: str | None = None,
     tls_key_type: str | None = None,
     tls_curve: str | None = None,
+    transport: str | None = None,
 ) -> None:
     """Start the KV plugin server using pyvider-rpcplugin.
 
@@ -281,6 +282,7 @@ async def serve_plugin(
         tls_mode: TLS mode ('disabled' or 'auto'). If None, reads from TLS_MODE environment variable.
         tls_key_type: TLS key type ('ec' or 'rsa'). If None, reads from TLS_KEY_TYPE environment variable.
         tls_curve: EC curve name. If None, reads from TLS_CURVE environment variable.
+        transport: Transport type ('tcp' or 'unix'). If None, reads from PLUGIN_SERVER_TRANSPORTS environment variable.
     """
     # Read storage_dir from parameter, environment variable, or use default
     if storage_dir is None:
@@ -294,6 +296,7 @@ async def serve_plugin(
     tls_mode = tls_mode or os.getenv("TLS_MODE", "disabled")
     tls_key_type = tls_key_type or os.getenv("TLS_KEY_TYPE", "ec")
     tls_curve = tls_curve or os.getenv("TLS_CURVE", "secp384r1")
+    transport = transport or os.getenv("PLUGIN_SERVER_TRANSPORTS", "unix")
 
     # CRITICAL: Do NOT log to stdout before the handshake!
     # The go-plugin protocol requires the first output on stdout to be the handshake:
@@ -305,6 +308,7 @@ async def serve_plugin(
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
         tls_curve=tls_curve,
+        transport=transport,
         storage_dir=storage_dir,
     )
 
@@ -318,6 +322,10 @@ async def serve_plugin(
         "PLUGIN_MAGIC_COOKIE_KEY": os.getenv("PLUGIN_MAGIC_COOKIE_KEY", "BASIC_PLUGIN"),
         "PLUGIN_MAGIC_COOKIE_VALUE": os.getenv("BASIC_PLUGIN", "hello"),
     }
+
+    # Configure transport (tcp or unix socket) via rpcplugin config
+    # This uses provide-foundation's configuration system
+    config["PLUGIN_SERVER_TRANSPORTS"] = transport
 
     # Configure TLS/mTLS if enabled
     if tls_mode != "disabled":
