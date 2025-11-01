@@ -102,7 +102,8 @@
       "Bash(tee:*)",
       "Bash(soup rpc --help:*)",
       "Bash(python -m py_compile:*)",
-      "Bash(PLUGIN_SERVER_PATH=/dev/null KV_STORAGE_DIR=/tmp/test soup rpc kv put:*)"
+      "Bash(PLUGIN_SERVER_PATH=/dev/null KV_STORAGE_DIR=/tmp/test soup rpc kv put:*)",
+      "Bash(KV_STORAGE_DIR=/tmp/test_soup_go soup-go rpc kv put:*)"
     ],
     "deny": [],
     "ask": [],
