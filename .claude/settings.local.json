@@ -108,7 +108,8 @@
       "Bash(python /Users/tim/code/gh/provide-io/tofusoup/src/tofusoup/rpc/server.py:*)",
       "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test_soup timeout 5 soup rpc kv server:*)",
       "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test_soup timeout 2 soup rpc kv server:*)",
-      "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test_soup_direct timeout:*)"
+      "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test_soup_direct timeout:*)",
+      "Bash(PLUGIN_MAGIC_COOKIE_KEY=BASIC_PLUGIN BASIC_PLUGIN=hello TLS_MODE=auto TLS_KEY_TYPE=rsa KV_STORAGE_DIR=/tmp/test_socket timeout:*)"
     ],
     "deny": [],
     "ask": [],
