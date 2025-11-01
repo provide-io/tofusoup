@@ -104,7 +104,8 @@
       "Bash(python -m py_compile:*)",
       "Bash(PLUGIN_SERVER_PATH=/dev/null KV_STORAGE_DIR=/tmp/test soup rpc kv put:*)",
       "Bash(KV_STORAGE_DIR=/tmp/test_soup_go soup-go rpc kv put:*)",
-      "Bash(soup harness clean:*)"
+      "Bash(soup harness clean:*)",
+      "Bash(python /Users/tim/code/gh/provide-io/tofusoup/src/tofusoup/rpc/server.py:*)"
     ],
     "deny": [],
     "ask": [],
