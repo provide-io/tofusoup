@@ -277,13 +277,14 @@ async def serve_plugin(
     - Signal handling
 
     Args:
-        storage_dir: Directory to store KV data files. Defaults to XDG_CACHE_HOME/tofusoup/kv-store.
+        storage_dir: Directory to store KV data files. Defaults to KV_STORAGE_DIR env var or XDG_CACHE_HOME/tofusoup/kv-store.
         tls_mode: TLS mode ('disabled' or 'auto'). If None, reads from TLS_MODE environment variable.
         tls_key_type: TLS key type ('ec' or 'rsa'). If None, reads from TLS_KEY_TYPE environment variable.
         tls_curve: EC curve name. If None, reads from TLS_CURVE environment variable.
     """
+    # Read storage_dir from parameter, environment variable, or use default
     if storage_dir is None:
-        storage_dir = str(get_cache_dir() / "kv-store")
+        storage_dir = os.getenv("KV_STORAGE_DIR") or str(get_cache_dir() / "kv-store")
 
     # Ensure storage directory exists
     Path(storage_dir).mkdir(parents=True, exist_ok=True)
