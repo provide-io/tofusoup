@@ -99,7 +99,8 @@
       "Bash(/tmp/runtime.py.working)",
       "Bash(/tmp/defaults.py.working)",
       "Bash(/tmp/process.py.working)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(soup rpc --help:*)"
     ],
     "deny": [],
     "ask": [],
