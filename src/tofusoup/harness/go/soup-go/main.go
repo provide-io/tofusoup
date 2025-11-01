@@ -140,13 +140,17 @@ a standalone gRPC server on a specific port for manual testing.`,
 				GRPCServer: plugin.DefaultGRPCServer,
 			}
 
-			// If TLS is enabled, configure TLSProvider with custom curve
-			// This allows go-plugin to use curves other than the default P-521
-			if rpcTLSMode != "" && rpcTLSMode != "disabled" {
-				logger.Info("Configuring go-plugin TLSProvider for custom curve support")
-				provider := createTLSProvider(logger.Named("tls"), rpcTLSCurve)
-				serveConfig.TLSProvider = provider
-			}
+		// Configure TLS: use native AutoMTLS for "auto", custom TLSProvider for specific curves
+		if rpcTLSMode == "auto" && rpcTLSCurve == "auto" {
+			// Use go-plugin's native AutoMTLS (P-521)
+			logger.Info("Using go-plugin native AutoMTLS (P-521)")
+			serveConfig.AutoMTLS = true
+		} else if rpcTLSMode != "" && rpcTLSMode != "disabled" {
+			// Use custom TLSProvider for specific curves (secp256r1, secp384r1, etc.)
+			logger.Info("Configuring go-plugin TLSProvider for custom curve support", "curve", rpcTLSCurve)
+			provider := createTLSProvider(logger.Named("tls"), rpcTLSCurve)
+			serveConfig.TLSProvider = provider
+		}
 
 			plugin.Serve(serveConfig)
 		}
