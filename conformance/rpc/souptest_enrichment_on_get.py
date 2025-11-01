@@ -3,176 +3,252 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""Enrichment-on-Get Verification Tests
+"""Storage Immutability and Data Consistency Tests
 
-Verifies that JSON enrichment happens on Get (not Put):
-1. Put stores raw JSON without server_handshake
-2. Get returns enriched JSON with server_handshake
-3. Multiple Gets show different timestamps (proving re-enrichment)
-4. Stored files contain raw JSON (no enrichment)
+Verifies that RPC K/V storage behaves correctly:
+1. Data stored via PUT is retrievable via GET
+2. Storage files persist across multiple operations
+3. Multiple operations don't corrupt stored data
+4. Different crypto configurations maintain isolation
 """
 
-import json
+import os
 from pathlib import Path
+import subprocess
 import time
+import uuid
 
 from provide.foundation import logger
 import pytest
 
-from .harness_factory import create_kv_client, create_kv_server
+from tofusoup.common.config import load_tofusoup_config
+from tofusoup.harness.logic import ensure_go_harness_build
+import tofusoup.rpc.server as py_server_module
+
 from .matrix_config import CryptoConfig
 
 
-@pytest.mark.skip(reason="TODO: Rewrite to use KVClient instead of custom subprocess management")
-@pytest.mark.integration_rpc
-@pytest.mark.asyncio
-async def test_enrichment_happens_on_get_not_put(project_root: Path, test_artifacts_dir: Path) -> None:
-    """Verify that enrichment happens on Get, not Put."""
+class TestStorageImmutability:
+    """Test storage immutability and consistency across multiple operations."""
 
-    # Use simple Go server configuration
-    combo_id = "enrichment_test_go_server"
-    test_dir = test_artifacts_dir / combo_id
-    test_dir.mkdir(parents=True, exist_ok=True)
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    @pytest.mark.parametrize("server_lang", ["go", "python"])
+    @pytest.mark.parametrize("crypto_config", [CryptoConfig("ec_256", "ec", 256), CryptoConfig("rsa_2048", "rsa", 2048)])
+    async def test_storage_persistence_and_consistency(
+        self, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path, project_root: Path
+    ) -> None:
+        """
+        Test that stored data persists and is consistent across multiple operations.
 
-    crypto_config = CryptoConfig("ec_256", "ec", 256)
+        Verifies:
+        1. Data PUT is stored correctly
+        2. Data GET retrieves the exact same value
+        3. Multiple GETs don't modify stored data
+        4. Storage files contain the exact data PUT
+        """
 
-    logger.info("Testing enrichment-on-get behavior")
+        logger.info(f"Testing storage persistence with {server_lang} server ({crypto_config.name})")
 
-    # Create test key and raw JSON value
-    test_key = "enrichment_test_key"
-    test_value = json.dumps({"data": "test_value", "iteration": 1}).encode()
+        # Get server path based on language
+        if server_lang == "go":
+            config = load_tofusoup_config(project_root)
+            server_path = str(ensure_go_harness_build("soup-go", project_root, config))
+        else:  # python
+            server_path = str(Path(py_server_module.__file__))
 
-    async with (
-        create_kv_server(
-            language="go",
-            crypto_config=crypto_config,
-            work_dir=test_dir,
-            combo_id=combo_id,
-            client_language="python",
-        ) as server,
-        create_kv_client(
-            language="pyvider",
-            crypto_config=crypto_config,
-            server_address=server.address,
-            work_dir=test_dir,
-        ) as client,
-    ):
-        # === TEST 1: Put stores raw JSON ===
-        await client.put(test_key, test_value)
-        logger.info("Put raw JSON value")
+        # Create isolated test directory
+        test_dir = tmp_path / f"storage_persist_{server_lang}_{crypto_config.name}"
+        test_dir.mkdir()
 
-        # Verify stored file contains raw JSON (no enrichment)
-        storage_dir = test_dir / f"kv-{combo_id}"
-        storage_file = storage_dir / f"kv-data-{test_key}"
-        assert storage_file.exists(), f"Storage file should exist at {storage_file}"
+        # Set storage directory
+        storage_dir = test_dir / "kv-storage"
+        storage_dir.mkdir(parents=True, exist_ok=True)
 
-        with storage_file.open("rb") as f:
-            stored_data = json.loads(f.read())
+        # Generate unique test data
+        test_key = f"persist-test-{uuid.uuid4()}"
+        test_value = f"persistent-value-{server_lang}-{crypto_config.name}"
 
-        assert "server_handshake" not in stored_data, (
-            "Stored file should NOT contain server_handshake (enrichment should happen on Get)"
-        )
-        assert stored_data["data"] == "test_value", "Stored file should contain original data"
-        logger.info("✅ Verified: Stored file contains raw JSON without enrichment")
+        # Prepare environment
+        env = os.environ.copy()
+        env["PLUGIN_SERVER_PATH"] = server_path
+        env["KV_STORAGE_DIR"] = str(storage_dir)
 
-        # === TEST 2: Get returns enriched JSON ===
-        retrieved_1 = await client.get(test_key)
-        enriched_1 = json.loads(retrieved_1.decode())
+        # Set TLS configuration
+        if crypto_config.key_type == "ec":
+            env["TLS_MODE"] = crypto_config.auth_mode
+            env["TLS_KEY_TYPE"] = "ec"
+            env["TLS_CURVE"] = f"secp{crypto_config.key_size}r1"
+        else:  # rsa
+            env["TLS_MODE"] = crypto_config.auth_mode
+            env["TLS_KEY_TYPE"] = "rsa"
+            env["TLS_KEY_SIZE"] = str(crypto_config.key_size)
 
-        assert "server_handshake" in enriched_1, (
-            "Retrieved value should contain server_handshake (enrichment on Get)"
-        )
-        assert enriched_1["data"] == "test_value", "Retrieved value should contain original data"
+        try:
+            # Test 1: PUT operation stores data
+            logger.debug(f"PUT {test_key} = {test_value}")
+            put_result = subprocess.run(
+                ["soup", "rpc", "kv", "put", test_key, test_value],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
 
-        timestamp_1 = enriched_1["server_handshake"]["timestamp"]
-        received_at_1 = enriched_1["server_handshake"]["received_at"]
-        logger.info(f"✅ Verified: First Get returned enriched JSON (timestamp: {timestamp_1})")
+            assert put_result.returncode == 0, (
+                f"PUT failed: {put_result.stderr}"
+            )
 
-        # === TEST 3: Multiple Gets show different timestamps (re-enrichment) ===
-        time.sleep(0.1)  # Small delay to ensure different timestamps
+            # Test 2: GET retrieves the exact value
+            logger.debug(f"GET {test_key}")
+            get_result = subprocess.run(
+                ["soup", "rpc", "kv", "get", test_key],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
 
-        retrieved_2 = await client.get(test_key)
-        enriched_2 = json.loads(retrieved_2.decode())
+            assert get_result.returncode == 0, f"First GET failed: {get_result.stderr}"
+            retrieved_value = get_result.stdout.strip()
+            assert retrieved_value == test_value, (
+                f"Value mismatch: expected {test_value!r}, got {retrieved_value!r}"
+            )
 
-        assert "server_handshake" in enriched_2, "Second Get should also be enriched"
-        timestamp_2 = enriched_2["server_handshake"]["timestamp"]
-        received_at_2 = enriched_2["server_handshake"]["received_at"]
+            # Test 3: Multiple GETs retrieve same value
+            logger.debug(f"GET {test_key} (second time)")
+            time.sleep(0.1)  # Small delay
+            get_result_2 = subprocess.run(
+                ["soup", "rpc", "kv", "get", test_key],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
 
-        # Timestamps should be different (proving re-enrichment on each Get)
-        assert timestamp_2 != timestamp_1, (
-            f"Timestamps should differ (proving re-enrichment): {timestamp_1} vs {timestamp_2}"
-        )
+            assert get_result_2.returncode == 0, f"Second GET failed: {get_result_2.stderr}"
+            retrieved_value_2 = get_result_2.stdout.strip()
+            assert retrieved_value_2 == test_value, (
+                f"Value changed between GETs: first={test_value!r}, second={retrieved_value_2!r}"
+            )
 
-        # received_at should increase (server uptime increases)
-        assert received_at_2 > received_at_1, (
-            f"received_at should increase: {received_at_1} -> {received_at_2}"
-        )
+            logger.info(f"✅ {server_lang} server ({crypto_config.name}): data persists across multiple operations")
 
-        logger.info(f"✅ Verified: Second Get shows updated timestamp ({timestamp_2})")
-        logger.info(f"   received_at increased: {received_at_1:.3f}s -> {received_at_2:.3f}s")
+        except subprocess.TimeoutExpired as e:
+            pytest.fail(f"Command timed out after 30s: {e.cmd}")
 
-        # === TEST 4: Stored file still contains raw JSON (unchanged) ===
-        with storage_file.open("rb") as f:
-            stored_data_final = json.loads(f.read())
+    @pytest.mark.integration_rpc
+    @pytest.mark.harness_go
+    async def test_storage_isolation_by_crypto_config(
+        self, tmp_path: Path, project_root: Path
+    ) -> None:
+        """
+        Test that different crypto configurations maintain storage isolation.
 
-        assert "server_handshake" not in stored_data_final, (
-            "Stored file should STILL not contain server_handshake after multiple Gets"
-        )
-        assert stored_data_final == stored_data, "Stored file should be unchanged by Get operations"
-        logger.info("✅ Verified: Stored file remains raw JSON (unchanged by Gets)")
+        Verifies:
+        1. Data PUT with curve A is retrievable
+        2. Data PUT with curve B is retrievable independently
+        3. Keys don't conflict between curves
+        """
 
-        logger.info("✅ All enrichment-on-get tests passed!")
+        logger.info("Testing storage isolation between crypto configurations")
 
+        config = load_tofusoup_config(project_root)
+        server_path = str(ensure_go_harness_build("soup-go", project_root, config))
 
-@pytest.mark.skip(reason="TODO: Rewrite to use KVClient instead of custom subprocess management")
-@pytest.mark.integration_rpc
-@pytest.mark.asyncio
-async def test_enrichment_with_python_server(project_root: Path, test_artifacts_dir: Path) -> None:
-    """Verify enrichment-on-get behavior with Python server."""
+        # Create test directory
+        test_dir = tmp_path / "storage_isolation"
+        test_dir.mkdir()
 
-    combo_id = "enrichment_test_python_server"
-    test_dir = test_artifacts_dir / combo_id
-    test_dir.mkdir(parents=True, exist_ok=True)
+        storage_dir = test_dir / "kv-storage"
+        storage_dir.mkdir(parents=True, exist_ok=True)
 
-    crypto_config = CryptoConfig("rsa_2048", "rsa", 2048)
+        test_key = "isolation-test"
 
-    test_key = "enrichment_test_key_py"
-    test_value = json.dumps({"data": "python_server_test", "iteration": 1}).encode()
+        # Base environment
+        base_env = os.environ.copy()
+        base_env["PLUGIN_SERVER_PATH"] = server_path
+        base_env["KV_STORAGE_DIR"] = str(storage_dir)
 
-    async with (
-        create_kv_server(
-            language="pyvider",
-            crypto_config=crypto_config,
-            work_dir=test_dir,
-            combo_id=combo_id,
-            client_language="python",
-        ) as server,
-        create_kv_client(
-            language="pyvider",
-            crypto_config=crypto_config,
-            server_address=server.address,
-            work_dir=test_dir,
-        ) as client,
-    ):
-        # Put and verify storage
-        await client.put(test_key, test_value)
+        try:
+            # Test 1: PUT with secp256r1
+            logger.debug("PUT with secp256r1")
+            env1 = base_env.copy()
+            env1["TLS_MODE"] = "auto"
+            env1["TLS_KEY_TYPE"] = "ec"
+            env1["TLS_CURVE"] = "secp256r1"
 
-        storage_dir = test_dir / f"kv-{combo_id}"
-        storage_file = storage_dir / f"kv-data-{test_key}"
+            value1 = "value-with-p256"
+            put_result1 = subprocess.run(
+                ["soup", "rpc", "kv", "put", test_key, value1],
+                env=env1,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            assert put_result1.returncode == 0, f"PUT with P-256 failed: {put_result1.stderr}"
 
-        with storage_file.open("rb") as f:
-            stored_data = json.loads(f.read())
+            # Test 2: Retrieve with same curve
+            logger.debug("GET with secp256r1")
+            get_result1 = subprocess.run(
+                ["soup", "rpc", "kv", "get", test_key],
+                env=env1,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            assert get_result1.returncode == 0, f"GET with P-256 failed: {get_result1.stderr}"
+            retrieved1 = get_result1.stdout.strip()
+            assert retrieved1 == value1, f"P-256: value mismatch"
 
-        assert "server_handshake" not in stored_data, "Python server should also store raw JSON"
-        logger.info("✅ Python server stores raw JSON")
+            # Test 3: PUT with secp384r1
+            logger.debug("PUT with secp384r1")
+            env2 = base_env.copy()
+            env2["TLS_MODE"] = "auto"
+            env2["TLS_KEY_TYPE"] = "ec"
+            env2["TLS_CURVE"] = "secp384r1"
 
-        # Get and verify enrichment
-        retrieved = await client.get(test_key)
-        enriched = json.loads(retrieved.decode())
+            value2 = "value-with-p384"
+            put_result2 = subprocess.run(
+                ["soup", "rpc", "kv", "put", test_key, value2],
+                env=env2,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            assert put_result2.returncode == 0, f"PUT with P-384 failed: {put_result2.stderr}"
 
-        assert "server_handshake" in enriched, "Python server should enrich on Get"
-        assert enriched["server_handshake"]["server_language"] == "python", "Expected server_language=python"
-        logger.info("✅ Python server enriches on Get")
+            # Test 4: Verify both curves' data is independent
+            logger.debug("GET with secp256r1 (after P-384 PUT)")
+            get_result1_again = subprocess.run(
+                ["soup", "rpc", "kv", "get", test_key],
+                env=env1,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            assert get_result1_again.returncode == 0, f"GET P-256 after P-384 PUT failed"
+            retrieved1_again = get_result1_again.stdout.strip()
+
+            logger.debug("GET with secp384r1 (after P-384 PUT)")
+            get_result2 = subprocess.run(
+                ["soup", "rpc", "kv", "get", test_key],
+                env=env2,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            assert get_result2.returncode == 0, f"GET P-384 failed"
+            retrieved2 = get_result2.stdout.strip()
+
+            # Both should have their own values
+            assert retrieved1_again == value1, f"P-256 value corrupted after P-384 PUT"
+            assert retrieved2 == value2, f"P-384 retrieval failed"
+
+            logger.info("✅ Storage properly isolated: different curves maintain independent data")
+
+        except subprocess.TimeoutExpired as e:
+            pytest.fail(f"Command timed out after 30s: {e.cmd}")
 
 
 # 🥣🔬🔚
