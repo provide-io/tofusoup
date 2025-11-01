@@ -53,18 +53,23 @@ def clean_harness_command(ctx: click.Context, harness_names: tuple[str, ...], cl
         if name in GO_HARNESS_CONFIG:
             output_name = GO_HARNESS_CONFIG[name]["output_name"]
             harness_path = harness_bin_dir / output_name
+            # Try to show path relative to project root, but fall back to absolute path if outside project
+            try:
+                display_path = harness_path.relative_to(project_root)
+            except ValueError:
+                display_path = harness_path
             if harness_path.exists():
                 try:
                     harness_path.unlink()
                     rich_print(
-                        f"[green]Removed harness '{name}': {harness_path.relative_to(project_root)}[/green]"
+                        f"[green]Removed harness '{name}': {display_path}[/green]"
                     )
                 except OSError as e:
                     logger.error(f"Failed to remove harness '{name}': {e}")
                     sys.exit(1)
             else:
                 rich_print(
-                    f"[yellow]Harness '{name}' not found at {harness_path.relative_to(project_root)}. Skipping.[/yellow]"
+                    f"[yellow]Harness '{name}' not found at {display_path}. Skipping.[/yellow]"
                 )
         else:
             logger.warning(f"Unknown harness: '{name}'. Skipping.")
@@ -85,7 +90,12 @@ def list_harnesses_command(ctx: click.Context) -> None:
         status = "[red]Not Built[/red]"
         if output_path.exists() and os.access(output_path, os.X_OK):
             status = "[green]Built[/green]"
-        table.add_row(name, str(output_path.relative_to(project_root)), status)
+        # Try to show path relative to project root, but fall back to absolute path if outside project
+        try:
+            display_path = str(output_path.relative_to(project_root))
+        except ValueError:
+            display_path = str(output_path)
+        table.add_row(name, display_path, status)
     rich_print(table)
 
 
