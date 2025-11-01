@@ -27,7 +27,7 @@ class CryptoConfig:
 
     def to_go_cli_args(self) -> list[str]:
         """Convert to CLI arguments for Go harness."""
-        args = ["--tls-mode", "auto"]
+        args = ["--standalone", "--tls-mode", "auto"]
 
         if self.key_type == "rsa":
             args.extend(["--tls-key-type", "rsa"])
