@@ -38,7 +38,7 @@ from pyvider.rpcplugin.protocol.base import RPCPluginProtocol
 from pyvider.rpcplugin.server import RPCPluginServer
 
 from tofusoup.common.utils import get_cache_dir
-from tofusoup.config.defaults import DEFAULT_GRPC_PORT
+from tofusoup.config.defaults import DEFAULT_GRPC_PORT, ENV_KV_STORAGE_DIR
 from tofusoup.harness.proto.kv import kv_pb2, kv_pb2_grpc
 
 
@@ -284,7 +284,7 @@ async def serve_plugin(
     """
     # Read storage_dir from parameter, environment variable, or use default
     if storage_dir is None:
-        storage_dir = os.getenv("KV_STORAGE_DIR") or str(get_cache_dir() / "kv-store")
+        storage_dir = os.getenv(ENV_KV_STORAGE_DIR) or str(get_cache_dir() / "kv-store")
 
     # Ensure storage directory exists
     Path(storage_dir).mkdir(parents=True, exist_ok=True)
