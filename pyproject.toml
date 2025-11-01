@@ -86,6 +86,7 @@ docs = [
 
 [project.scripts]
 soup = "tofusoup.cli:entry_point"
+soup-py = "tofusoup.cli:entry_point"
 
 [project.urls]
 Homepage = "https://github.com/provide-io/tofusoup"
