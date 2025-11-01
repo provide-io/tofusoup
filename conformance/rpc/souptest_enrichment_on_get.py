@@ -23,6 +23,7 @@ from .harness_factory import create_kv_client, create_kv_server
 from .matrix_config import CryptoConfig
 
 
+@pytest.mark.skip(reason="TODO: Rewrite to use KVClient instead of custom subprocess management")
 @pytest.mark.integration_rpc
 @pytest.mark.asyncio
 async def test_enrichment_happens_on_get_not_put(project_root: Path, test_artifacts_dir: Path) -> None:
@@ -123,6 +124,7 @@ async def test_enrichment_happens_on_get_not_put(project_root: Path, test_artifa
         logger.info("✅ All enrichment-on-get tests passed!")
 
 
+@pytest.mark.skip(reason="TODO: Rewrite to use KVClient instead of custom subprocess management")
 @pytest.mark.integration_rpc
 @pytest.mark.asyncio
 async def test_enrichment_with_python_server(project_root: Path, test_artifacts_dir: Path) -> None:

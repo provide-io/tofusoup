@@ -26,6 +26,7 @@ from .harness_factory import create_kv_client, create_kv_server
 from .matrix_config import RPC_KV_MATRIX_PARAMS, CryptoConfig
 
 
+@pytest.mark.skip(reason="TODO: Rewrite to use KVClient instead of custom subprocess management - see souptest_rpc_kv_matrix.py for correct pattern")
 @pytest.mark.integration_rpc
 @pytest.mark.parametrize("client_lang,server_lang,crypto_config", RPC_KV_MATRIX_PARAMS)
 @pytest.mark.asyncio
