@@ -27,18 +27,16 @@ class CryptoConfig:
 
     def to_go_cli_args(self) -> list[str]:
         """Convert to CLI arguments for Go harness."""
-        # Note: comprehensive matrix tests are currently broken due to architecture mismatch
-        # They try to test standalone servers but soup-go clients expect go-plugin protocol
-        # For now, keep original behavior (plugin mode with AutoMTLS)
         args = ["--tls-mode", "auto"]
 
         if self.key_type == "rsa":
-            args.extend(["--tls-key-type", "rsa"])
+            # RSA uses native go-plugin AutoMTLS (P-521)
+            args.extend(["--tls-key-type", "rsa", "--tls-curve", "auto"])
         elif self.key_type == "ec":
             args.extend(["--tls-key-type", "ec"])
-            # Map key sizes to curve names
+            # Map key sizes to curve names - use custom TLSProvider
             curve_map = {256: "secp256r1", 384: "secp384r1", 521: "secp521r1"}
-            curve = curve_map.get(self.key_size, "auto")
+            curve = curve_map.get(self.key_size, "secp384r1")
             args.extend(["--tls-curve", curve])
 
         return args
