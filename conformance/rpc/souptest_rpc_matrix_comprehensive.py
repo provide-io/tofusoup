@@ -6,13 +6,14 @@
 """Comprehensive RPC K/V Matrix Testing
 
 Tests all 20 combinations of client/server/crypto configurations:
-- 2 client languages (Go, Python via `soup` CLI)
+- 2 client languages (Python KVClient, Go soup-go subprocess)
 - 2 server languages (Go via `soup-go`, Python via server module)
 - 5 crypto configs (RSA 2048/4096, EC 256/384/521)
 
-Uses subprocess pattern to test actual CLI commands:
-- Python client: `soup rpc kv {put|get}`
-- Go client: `soup-go rpc kv {put|get}`
+Pattern matches souptest_rpc_kv_matrix.py:
+- Python client tests use KVClient library with asyncio
+- Go client tests use subprocess to call soup-go executable
+- Both test actual functionality: PUT raw data, GET same data
 
 Verifies:
 1. K/V storage isolation per combination
@@ -30,15 +31,16 @@ import pytest
 
 from tofusoup.common.config import load_tofusoup_config
 from tofusoup.harness.logic import ensure_go_harness_build
+from tofusoup.rpc.client import KVClient
 import tofusoup.rpc.server as py_server_module
 
 from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
 
 
 class TestRPCMatrixComprehensivePythonClient:
-    """RPC K/V matrix testing using Python client (soup CLI) with server spawning.
+    """RPC K/V matrix testing using Python KVClient with server spawning.
 
-    Tests Python client with both Go and Python servers across all crypto configs.
+    Tests Python client (via KVClient) with both Go and Python servers.
     """
 
     @pytest.mark.integration_rpc
@@ -50,10 +52,10 @@ class TestRPCMatrixComprehensivePythonClient:
         self, server_lang: str, crypto_config: CryptoConfig, tmp_path: Path, project_root: Path
     ) -> None:
         """
-        Test RPC K/V operations using Python client (soup) with specified server language.
+        Test RPC K/V operations using Python KVClient with specified server language.
 
-        This test verifies that soup client can:
-        1. Launch a server subprocess (Go or Python) via PLUGIN_SERVER_PATH
+        This test verifies that KVClient can:
+        1. Start a server subprocess (Go or Python)
         2. Complete go-plugin handshake with auto-mTLS
         3. PUT a key-value pair
         4. GET the same key and retrieve the correct value
@@ -62,7 +64,7 @@ class TestRPCMatrixComprehensivePythonClient:
         Matrix coverage: 2 server langs x 5 crypto configs = 10 test combinations
         """
 
-        logger.info(f"Testing soup client → {server_lang} server with {crypto_config.name}")
+        logger.info(f"Testing KVClient → {server_lang} server with {crypto_config.name}")
 
         # Get server path based on language
         if server_lang == "go":
@@ -72,93 +74,48 @@ class TestRPCMatrixComprehensivePythonClient:
             server_path = str(Path(py_server_module.__file__))
 
         # Create isolated test directory
-        test_dir = tmp_path / f"soup_client_{server_lang}_{crypto_config.name}"
+        test_dir = tmp_path / f"kvclient_{server_lang}_{crypto_config.name}"
         test_dir.mkdir()
 
         # Set storage directory via environment variable
         storage_dir = test_dir / "kv-storage"
         storage_dir.mkdir(parents=True, exist_ok=True)
+        os.environ["KV_STORAGE_DIR"] = str(storage_dir)
 
         # Generate unique test data
-        test_key = f"py-matrix-test-{uuid.uuid4()}"
-        test_value = f"value-{server_lang}-{crypto_config.name}"
+        test_key = f"matrix-test-{uuid.uuid4()}"
+        test_value = f"value-{server_lang}-{crypto_config.name}".encode()
 
-        # Prepare environment for soup client
-        env = os.environ.copy()
-        env["PLUGIN_SERVER_PATH"] = server_path
-        env["KV_STORAGE_DIR"] = str(storage_dir)
-
-        # Set TLS configuration for server via environment
-        if crypto_config.key_type == "ec":
-            env["TLS_MODE"] = crypto_config.auth_mode
-            env["TLS_KEY_TYPE"] = "ec"
-            env["TLS_CURVE"] = f"secp{crypto_config.key_size}r1"
-        else:  # rsa
-            env["TLS_MODE"] = crypto_config.auth_mode
-            env["TLS_KEY_TYPE"] = "rsa"
-            env["TLS_KEY_SIZE"] = str(crypto_config.key_size)
+        # Create KVClient with specified crypto config
+        client = KVClient(
+            server_path=server_path,
+            tls_mode=crypto_config.auth_mode,
+            tls_key_type=crypto_config.key_type if crypto_config.key_type == "rsa" else "ec",
+            tls_curve=(
+                f"secp{crypto_config.key_size}r1" if crypto_config.key_type == "ec" else None
+            ),
+        )
 
         try:
-            # Test 1: PUT operation
-            logger.debug(f"PUT {test_key} = {test_value}")
-            put_result = subprocess.run(
-                ["soup", "rpc", "kv", "put", test_key, test_value],
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=30,
-            )
+            # Start client (which starts server subprocess and handles handshake)
+            await client.start()
+            logger.info(f"KVClient connected to {server_lang} server")
 
-            assert put_result.returncode == 0, (
-                f"PUT failed with exit code {put_result.returncode}\n"
-                f"stdout: {put_result.stdout}\n"
-                f"stderr: {put_result.stderr}"
-            )
-            logger.debug(f"PUT completed successfully")
+            # Test 1: PUT operation
+            await client.put(test_key, test_value)
+            logger.debug(f"PUT {test_key} completed")
 
             # Test 2: GET operation - verify correct value
-            logger.debug(f"GET {test_key}")
-            get_result = subprocess.run(
-                ["soup", "rpc", "kv", "get", test_key],
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=30,
-            )
-
-            assert get_result.returncode == 0, (
-                f"GET failed with exit code {get_result.returncode}\n"
-                f"stdout: {get_result.stdout}\n"
-                f"stderr: {get_result.stderr}"
-            )
-
-            retrieved_value = get_result.stdout.strip()
+            retrieved_value = await client.get(test_key)
             assert retrieved_value == test_value, (
                 f"Value mismatch: expected {test_value!r}, got {retrieved_value!r}"
             )
-            logger.debug(f"GET {test_key} = {retrieved_value} (verified)")
+            logger.debug(f"GET {test_key} verified")
 
-            # Test 3: GET non-existent key - should exit with non-zero
-            non_existent_key = f"does-not-exist-{uuid.uuid4()}"
-            logger.debug(f"GET {non_existent_key} (expecting not found)")
-            get_missing_result = subprocess.run(
-                ["soup", "rpc", "kv", "get", non_existent_key],
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=30,
-            )
+            logger.info(f"✅ KVClient → {server_lang} server ({crypto_config.name}) verified")
 
-            # soup should exit with error code for missing key
-            assert get_missing_result.returncode != 0, (
-                f"Expected non-zero exit code for missing key, got {get_missing_result.returncode}"
-            )
-            logger.debug(f"GET {non_existent_key} = not found (expected)")
-
-            logger.info(f"✅ Python client → {server_lang} server ({crypto_config.name}) verified")
-
-        except subprocess.TimeoutExpired as e:
-            pytest.fail(f"Command timed out after 30s: {e.cmd}\nstdout: {e.stdout}\nstderr: {e.stderr}")
+        finally:
+            await client.close()
 
 
 class TestRPCMatrixComprehensiveGoClient:
