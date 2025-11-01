@@ -24,6 +24,7 @@ Verifies:
 import os
 from pathlib import Path
 import subprocess
+import shutil
 import uuid
 
 from provide.foundation import logger
@@ -32,7 +33,6 @@ import pytest
 from tofusoup.common.config import load_tofusoup_config
 from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
-import tofusoup.rpc.server as py_server_module
 
 from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
 
@@ -69,8 +69,11 @@ class TestRPCMatrixComprehensivePythonClient:
 
         logger.info(f"Testing KVClient → Python server with {crypto_config.name}")
 
-        # Python server only
-        server_path = str(Path(py_server_module.__file__))
+        # Use soup CLI binary for Python server
+        soup_path = shutil.which("soup")
+        if not soup_path:
+            pytest.skip("soup executable not found in PATH")
+        server_path = soup_path
 
         # Create isolated test directory
         test_dir = tmp_path / f"kvclient_python_{crypto_config.name}"
@@ -154,7 +157,10 @@ class TestRPCMatrixComprehensiveGoClient:
         if server_lang == "go":
             server_path = soup_go_path  # soup-go acts as both client and server
         else:  # python
-            server_path = str(Path(py_server_module.__file__))
+            soup_path = shutil.which("soup")
+            if not soup_path:
+                pytest.skip("soup executable not found in PATH")
+            server_path = soup_path
 
         # Create isolated test directory
         test_dir = tmp_path / f"go_client_{server_lang}_{crypto_config.name}"

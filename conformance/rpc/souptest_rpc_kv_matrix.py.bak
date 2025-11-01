@@ -30,7 +30,7 @@ import pytest
 from tofusoup.common.config import load_tofusoup_config
 from tofusoup.harness.logic import ensure_go_harness_build
 from tofusoup.rpc.client import KVClient
-import shutil
+import tofusoup.rpc.server as py_server_module
 
 from .matrix_config import RPC_KV_CRYPTO_CONFIGS, CryptoConfig
 
