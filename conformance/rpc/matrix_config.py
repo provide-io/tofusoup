@@ -27,7 +27,10 @@ class CryptoConfig:
 
     def to_go_cli_args(self) -> list[str]:
         """Convert to CLI arguments for Go harness."""
-        args = ["--standalone", "--tls-mode", "auto"]
+        # Note: comprehensive matrix tests are currently broken due to architecture mismatch
+        # They try to test standalone servers but soup-go clients expect go-plugin protocol
+        # For now, keep original behavior (plugin mode with AutoMTLS)
+        args = ["--tls-mode", "auto"]
 
         if self.key_type == "rsa":
             args.extend(["--tls-key-type", "rsa"])
