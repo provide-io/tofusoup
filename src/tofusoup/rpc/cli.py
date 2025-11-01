@@ -94,7 +94,13 @@ def kv_get(address: str, key: str) -> None:
     default="secp384r1",
     help="Elliptic curve for EC key type: 'secp256r1'/'P-256', 'secp384r1'/'P-384', or 'secp521r1'/'P-521'",
 )
-def server_start(tls_mode: str, tls_key_type: str, tls_curve: str) -> None:
+@click.option(
+    "--transport",
+    type=click.Choice(["tcp", "unix"]),
+    default="unix",
+    help="Transport type: 'tcp' (TCP/IP) or 'unix' (Unix domain socket)",
+)
+def server_start(tls_mode: str, tls_key_type: str, tls_curve: str, transport: str) -> None:
     """Starts the KV plugin server using pyvider-rpcplugin.
 
     This server uses the go-plugin protocol and requires magic cookie environment variables:
@@ -140,7 +146,11 @@ def server_start(tls_mode: str, tls_key_type: str, tls_curve: str) -> None:
         tls_mode=tls_mode,
         tls_key_type=tls_key_type,
         tls_curve=tls_curve,
+        transport=transport,
     )
+
+    # Set transport preference via environment variable
+    os.environ["PLUGIN_SERVER_TRANSPORTS"] = transport
 
     # Run async server with TLS configuration from CLI args
     asyncio.run(serve_plugin(
