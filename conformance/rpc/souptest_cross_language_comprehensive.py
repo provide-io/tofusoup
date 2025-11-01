@@ -142,7 +142,8 @@ async def test_go_to_python(
     env["PLUGIN_MAGIC_COOKIE_KEY"] = "BASIC_PLUGIN"
 
     # 1. Start the Python server with mTLS enabled
-    server_command = [str(soup_path), "rpc", "kv", "server", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
+    # Use TCP transport to work around Unix socket issues in pyvider-rpcplugin
+    server_command = [str(soup_path), "rpc", "kv", "server", "--transport", "tcp", "--tls-mode", "auto", "--tls-curve", "secp256r1"]
     logger.info(f"🚀 Starting Python server with command: {' '.join(server_command)}")
     logger.info("🔐 TLS Configuration: mode=auto, curve=secp256r1 (P-256)")
     server_process = subprocess.Popen(

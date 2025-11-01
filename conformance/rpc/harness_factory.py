@@ -171,7 +171,8 @@ class PythonKVServer(ReferenceKVServer):
             raise RuntimeError("soup command not found in PATH. Please ensure TofuSoup is properly installed.")
 
         # Build soup rpc kv server command
-        args = [soup_path, "rpc", "kv", "server"]
+        # Use TCP transport to work around Unix socket issues in pyvider-rpcplugin
+        args = [soup_path, "rpc", "kv", "server", "--transport", "tcp"]
         args.extend(self.crypto_config.to_python_cli_args())
 
         logger.debug(f"Python server args: {args}")
