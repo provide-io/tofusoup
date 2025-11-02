@@ -34,17 +34,18 @@ ENV_VARS = {
 }
 
 # Phase emojis for status display
+# These appear in the "Phase" column (column 2) of the status table
 PHASE_EMOJI = {
-    "PENDING": "⏳",
-    "SCANNING": "🔍",
-    "DOWNLOADING": "📥",
-    "CLEANING": "🧹",
-    "INIT": "🔄",
-    "APPLYING": "🚀",
-    "DESTROYING": "💥",
-    "FAIL": "❌",
-    "ERROR": "🔥",
-    "SKIPPED": "⏭️",
+    "PENDING": "💤",  # Test queued, not started yet
+    "SCANNING": "🔍",  # Scanning for provider requirements
+    "DOWNLOADING": "📥",  # Downloading providers to cache
+    "CLEANING": "🧹",  # Removing old .terraform directories
+    "INIT": "🔄",  # Running terraform init
+    "APPLYING": "🚀",  # Running terraform apply
+    "DESTROYING": "💥",  # Running terraform destroy
+    "FAIL": "❌",  # Test failed (terraform command returned non-zero)
+    "ERROR": "🔥",  # Critical error/exception in test harness
+    "SKIPPED": "⏭️",  # Test skipped (no .tf files or other reason)
 }
 
 # 🥣🔬🔚

@@ -3,7 +3,35 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
+"""Test lifecycle executor for terraform/tofu test suites.
+
+This module manages the execution of individual terraform tests through their complete lifecycle.
+
+Test Status States
+------------------
+The executor tracks tests through multiple states, distinguished by their outcome:
+
+FAIL (❌):
+    Expected failure - A terraform/tofu command (init, apply, destroy) returned a non-zero
+    exit code. This is a normal test failure where the infrastructure code has an issue.
+    Examples: Invalid HCL syntax, missing provider, resource creation failure.
+
+ERROR (🔥):
+    Unexpected exception - The test harness itself encountered an unexpected error or
+    exception during test execution. This indicates a problem with the test framework,
+    not the terraform code being tested.
+    Examples: Python exception, file system error, async task failure.
+
+Other States:
+    PENDING (💤): Test queued, not yet started
+    CLEANING (🧹): Removing old .terraform directories
+    INIT (🔄): Running terraform init
+    APPLYING (🚀): Running terraform apply
+    ANALYZING (🔬): Parsing terraform state output
+    DESTROYING (💥): Running terraform destroy
+    SKIPPED (⏭️): Test skipped (no .tf files found)
+    PASS (✅): Test completed successfully
+"""
 
 import asyncio
 import json
@@ -207,7 +235,19 @@ async def run_test_lifecycle(
 
 
 def initialize_tests(test_dirs: list[Path]) -> None:
-    """Initialize test directories and status tracking."""
+    """Initialize test directories and status tracking.
+
+    Color Scheme for Phase Text:
+    - dim: Inactive/skipped states (PENDING, SKIPPED)
+    - dim yellow: Preparatory active phase (CLEANING)
+    - yellow: Initialization active phase (INIT)
+    - blue: Main execution phase (APPLYING)
+    - magenta: Analysis phase (ANALYZING)
+    - dim green: Cleanup after success (DESTROYING on success path)
+    - bold green: Final success state (PASS)
+    - dim red: Cleanup after failure (DESTROYING on failure path)
+    - bold red: Final failure states (FAIL, ERROR)
+    """
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
     for d in test_dirs:
         test_statuses[d.name] = {

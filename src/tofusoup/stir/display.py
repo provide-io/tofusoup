@@ -41,14 +41,32 @@ def _get_sorted_status_items() -> list[tuple[str, dict]]:
 
 
 def _get_status_emoji(status_info: dict) -> str:
-    """Get the status emoji based on test state."""
+    """Get the status emoji based on test state.
+
+    States:
+    - 💤 Pending: Test queued but not yet started (PENDING phase)
+    - 🔄 Active: Test currently running
+    - ⚠️  Active with warnings: Test running but warnings detected
+    - ⏭️  Skipped: Test was skipped (no .tf files)
+    - ✅ Success: Test passed
+    - ❌ Fail: Test failed (terraform command returned non-zero)
+    """
+    # Check if test is pending (queued but not started)
+    phase_text = status_info.get("text", "")
+    if phase_text == "PENDING":
+        return "[dim]💤[/dim]"
+
+    # Active tests (currently running)
     if status_info.get("active"):
         return "[yellow]🔄[/yellow]" if not status_info.get("has_warnings") else "[yellow]⚠️[/yellow]"
+
+    # Completed states
     elif status_info.get("skipped"):
         return "[dim]⏭️[/dim]"
     elif status_info.get("success"):
         return "[green]✅[/green]"
     else:
+        # Only show red X if test has actually failed (not pending)
         return "[red]❌[/red]"
 
 
@@ -66,6 +84,7 @@ def generate_status_table() -> Table:
     table = Table(box=None, expand=True, show_header=True)
     table.add_column("Status", justify="center", width=4)
     table.add_column("Phase", justify="center", width=4)
+    table.add_column("#", justify="center", style="dim", width=7)  # Test number indicator
     table.add_column("Test Suite", justify="left", style="cyan", no_wrap=True, ratio=2)
     table.add_column("Elapsed", justify="right", style="magenta", width=10)
     table.add_column("Prov", justify="center", style="blue", width=5)
@@ -80,13 +99,25 @@ def generate_status_table() -> Table:
     table.add_column("Outs", justify="center", style="blue", width=5)
     table.add_column("Last Log", justify="left", style="yellow", ratio=5)
 
-    for directory, status_info in _get_sorted_status_items():
+    # Get sorted items and calculate total test count (excluding provider prep)
+    sorted_items = _get_sorted_status_items()
+    total_tests = sum(1 for directory, _ in sorted_items if directory != "__PROVIDER_PREP__")
+
+    test_number = 0
+    for directory, status_info in sorted_items:
         phase_text = status_info["text"]
         last_log = status_info.get("last_log", "")
 
         elapsed_str = _calculate_elapsed_time(status_info.get("start_time"), status_info.get("end_time"))
         phase_emoji = PHASE_EMOJI.get(phase_text.split(" ")[-1], "❓")
         status_emoji = _get_status_emoji(status_info)
+
+        # Calculate test number (skip provider prep)
+        if directory != "__PROVIDER_PREP__":
+            test_number += 1
+            test_num_str = f"[dim]{test_number}/{total_tests}[/dim]"
+        else:
+            test_num_str = ""
 
         # Special formatting for provider prep row
         display_name = (
@@ -98,6 +129,7 @@ def generate_status_table() -> Table:
         row_data = [
             status_emoji,
             phase_emoji,
+            test_num_str,
             display_name,
             elapsed_str,
             str(status_info.get("providers", "")),
