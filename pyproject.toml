@@ -1,0 +1,233 @@
+#
+# tofusoup/pyproject.toml
+#
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tofusoup"
+description = "Cross-language conformance test suite for OpenTofu tooling."
+dynamic = ["version"]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+    { name = "Tim Perkins", email = "code@tim.life" },
+]
+maintainers = [
+    { name = "provide.io", email = "code@provide.io" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "provide-foundation[all]",
+    "click>=8.1.0",
+    "msgpack>=1.0.0",
+    "pyyaml>=6.0",
+    "httpx>=0.25.0",
+    "respx>=0.20.0",
+    "textual>=3.2.0",
+    "aiosqlite>=0.19.0",
+    "semver>=3.0.0",
+    "jinja2>=3.1.6",
+    "tomli-w>=1.0.0",
+    "plating",
+    "mkdocs-material>=9.6.20",
+    "pyvider",  # For state inspection encryption (pyvider.common.encryption)
+]
+
+[project.optional-dependencies]
+cty = [
+    "pyvider-cty",
+]
+hcl = [
+    "pyvider-hcl",
+]
+rpc = [
+    "pyvider-rpcplugin",
+]
+test-rpc = [
+    "pyvider-rpcplugin[test]",
+]
+# Matrix testing support requires wrknv (optional)
+# Install wrknv separately: pip install wrknv
+# Or use local editable: pip install -e ../wrknv
+all = [
+    "tofusoup[cty,hcl,rpc]",
+]
+
+[tool.uv.sources]
+wrknv = { path = "../wrknv", editable = true }
+pyvider = { path = "../pyvider", editable = true }
+
+[dependency-groups]
+dev = [
+    "provide-testkit[standard,advanced-testing,build]",
+    "tofusoup[test-rpc]",
+    # Note: wrknv has dependency conflicts with plating (rich version)
+    # Install separately if needed for matrix testing
+]
+docs = [
+    "provide-testkit[docs]",
+]
+
+[project.scripts]
+soup = "tofusoup.cli:entry_point"
+soup-py = "tofusoup.cli:entry_point"
+
+[project.urls]
+Homepage = "https://github.com/provide-io/tofusoup"
+Documentation = "https://foundry.provide.io/tofusoup/"
+Repository = "https://github.com/provide-io/tofusoup"
+"Bug Tracker" = "https://github.com/provide-io/tofusoup/issues"
+Changelog = "https://foundry.provide.io/tofusoup/CHANGELOG/"
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["tofusoup*"]
+namespaces = false
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+log_cli = true
+log_cli_level = "DEBUG"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+asyncio_default_test_loop_scope = "function"
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py", "souptest_*.py"]
+python_classes = ["Test*", "*Tests"]
+python_functions = ["test_*", "*_test"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--color=yes",
+    "--benchmark-columns=min,max,mean,stddev,median,iqr,ops",
+    "--benchmark-sort=mean",
+    "--dist=loadscope",
+    "-m", "not integration",
+    "-rFE",
+    # Exclude known problematic tests by default
+    "-k", "not (test_pyclient_pyserver_with_mtls or test_stir)",
+]
+markers = [
+    # Test speed/type markers
+    "serial: run tests serially to avoid event loop conflicts",
+    "async_unsafe: async tests that must run serially",
+    "unit: fast unit tests",
+    "fast: tests taking <100ms",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "benchmark: benchmark/performance tests using pytest-benchmark",
+    # TofuSoup specific markers
+    "conformance: marks tests as conformance tests",
+    "tdd: marks tests as TDD (test-driven development)",
+    "browser: marks tests that use the browser UI (Textual app)",
+    # Integration markers
+    "integration: marks tests requiring optional dependencies",
+    "integration_cty: requires CTY integration (pyvider-cty)",
+    "integration_cty_comprehensive: comprehensive cross-language CTY tests (slow)",
+    "integration_hcl: requires HCL integration (pyvider-hcl + pyvider-cty)",
+    "integration_rpc: requires RPC integration (pyvider-rpcplugin)",
+    # Harness markers
+    "harness_go: requires Go harness",
+    "harness_python: requires Python harness",
+    # CTY comprehensive testing markers
+    "cty_primitives: tests for CTY primitive types (String, Number, Bool, Dynamic)",
+    "cty_collections: tests for CTY collection types (List, Set, Map)",
+    "cty_structural: tests for CTY structural types (Object, Tuple)",
+    "cty_roundtrip: tests for serialization/deserialization roundtrip",
+    "cty_interop: tests for cross-language interoperability",
+    "cty_types: tests for CTY type specifications",
+    "cty_unknowns: tests for refined unknown values",
+    "cty_marks: tests for value marks (sensitive, etc.)",
+    "cty_errors: tests for validation errors",
+    "cty_edge: tests for edge cases and stress testing",
+    "cty_cli: tests for CTY CLI commands",
+    # Environment/dependency markers
+    "requires_textual: marks tests that require Textual app context",
+    "requires_docker: skip if docker not available",
+    "requires_network: skip if offline",
+    "skip_in_ci: marks tests to skip in CI environments",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
+    "ignore:cannot collect test class 'Test.*' because it has a __init__ constructor:pytest.PytestCollectionWarning",
+    "ignore:cannot collect test class .* because it has a __init__ constructor:pytest.PytestCollectionWarning",
+    "ignore:.* KqueueSelector constructor:pytest.PytestCollectionWarning",
+    "ignore:coroutine .* was never awaited:RuntimeWarning",
+    "ignore:Module already imported so cannot be rewritten.*:pytest.PytestAssertRewriteWarning",
+]
+norecursedirs = [
+    ".git", ".hg", ".svn", "*_build", "build", "dist", "*.egg-info",
+    ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
+]
+
+[tool.ruff]
+line-length = 111
+indent-width = 4
+target-version = "py311"
+exclude = [
+    "**/*_pb2.py",
+    "**/*_pb2_grpc.py",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "ANN", "B", "C90", "SIM", "PTH", "RUF"]
+ignore = ["ANN401", "B008", "E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["tofusoup", "flavor", "pyvider", "tests"]
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+strict = true
+pretty = true
+show_error_codes = true
+show_column_numbers = true
+warn_unused_ignores = true
+warn_unused_configs = true
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = ["structlog.*", "google.*", "grpc.*", "pytest.*", "jq.*", "psutil.*", "opentelemetry.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["tofusoup"]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError", "if __name__ == .__main__.:", "if TYPE_CHECKING:", "def __repr__", "def __str__", "pass"]
