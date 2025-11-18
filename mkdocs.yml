@@ -1,0 +1,43 @@
+INHERIT: .provide/foundry/base-mkdocs.yml
+site_name: tofusoup
+site_description: Cross-language conformance testing framework
+site_author: provide.io
+site_url: https://foundry.provide.io/tofusoup/
+repo_url: https://github.com/provide-io/tofusoup
+repo_name: provide-io/tofusoup
+edit_uri: edit/main/docs/
+copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
+dev_addr: 127.0.0.1:11010
+docs_dir: docs
+hooks:
+- scripts/mkdocs_hooks.py
+exclude_docs: 'historical/
+
+  STATUS.md
+
+  '
+theme:
+  font:
+    text: Inter
+    code: Fira Code
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    primary: black
+    accent: deep purple
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - media: '(prefers-color-scheme: dark)'
+    scheme: slate
+    primary: indigo
+    accent: deep purple
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+nav:
+- Overview: index.md
+- Guides:
+  - Migration: guides/migration.md
+- Data Sources:
+  - Provider Info: data-sources/provider_info.md

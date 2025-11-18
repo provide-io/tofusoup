@@ -1,0 +1,18 @@
+[workenv]
+terraform_flavor = "opentofu"
+
+[workenv.tools]
+terraform = "1.8.5"
+tofu = "1.10.5"
+
+[workenv.settings]
+verify_checksums = true
+cache_downloads = true
+
+[workenv.matrix]
+parallel_jobs = 4
+timeout_minutes = 30
+
+[workenv.matrix.versions]
+terraform = ["1.5.7", "1.6.0", "1.6.1"]
+tofu = ["1.6.2", "1.7.0", "1.8.0"]

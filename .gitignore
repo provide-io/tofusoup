@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDEs
+.idea/
+.vscode/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Backup and log files
+*.bak
+*.log
+logs/
+
+# TofuSoup specific output directory
+soup/output/
+
+# Harness specific ignores
+# General build/cache outputs that might appear in harnesses
+*.logbin/
+generated/
+
+# Hypothesis test data
+.hypothesis/
+
+# UV lock file (can be regenerated)
+uv.lock
+
+# Downloaded scripts
+dotnet-install.sh
+output/
+
+# Synced theme files (source: provide-foundry/shared-theme/)
+docs/.shared-theme/
+*bfiles*
+site
+bf-*
+*.local.json
+
+# Extracted provide.io tooling artifacts
+.provide/foundry/
+
+# Terraform state (sensitive)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+
+# Archives
+.archive/
+
+# Work environment
+workenv/
+
+# macOS
+.DS_Store
