@@ -123,7 +123,7 @@ addopts = [
     "--color=yes",
     "--benchmark-columns=min,max,mean,stddev,median,iqr,ops",
     "--benchmark-sort=mean",
-    "--dist=loadscope",
+    "--dist=load",
     "-m", "not integration",
     "-rFE",
     # Exclude known problematic tests by default
