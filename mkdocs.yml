@@ -10,7 +10,7 @@ repo_url: https://github.com/provide-io/tofusoup
 repo_name: provide-io/tofusoup
 edit_uri: edit/main/docs/
 copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
-dev_addr: 127.0.0.1:11014
+dev_addr: 127.0.0.1:11025
 docs_dir: docs
 hooks:
 - .provide/foundry/theme/hooks/global_partials_hook.py
