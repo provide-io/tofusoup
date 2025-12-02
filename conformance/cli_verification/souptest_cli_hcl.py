@@ -60,7 +60,7 @@ def test_hcl_cli_parse(
         if actual_output and "body" in actual_output:
             # Extract the body for comparison
             actual_body = actual_output.get("body", {})
-            assert actual_body == expected_json_output or actual_body == {"blocks": [], **expected_json_output}
+            assert actual_body in (expected_json_output, {"blocks": [], **expected_json_output})
         else:
             assert actual_output == expected_json_output
 

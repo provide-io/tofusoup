@@ -198,6 +198,7 @@ exclude = [
 select = ["E", "F", "W", "I", "UP", "ANN", "B", "BLE", "C90", "PIE", "PLR", "S", "SIM", "PTH", "RUF"]
 ignore = [
     "ANN401",   # any-type (too restrictive)
+    "BLE001",   # blind-except (CLI error handlers legitimately catch Exception)
     "B008",     # function-call-in-default-argument (Click uses this pattern)
     "E501",     # line-too-long (handled by formatter)
     "S101",     # assert (valid in tests)
@@ -211,6 +212,10 @@ ignore = [
     "PLR0915",  # too-many-statements (refactor later)
     "PLR2004",  # magic-value-comparison (too noisy)
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "BLE001", "S110"]
+"conformance/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "BLE001", "S110"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["tofusoup", "flavor", "pyvider", "tests"]

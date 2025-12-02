@@ -6,7 +6,7 @@ from wrknv.memray.runner import run_memray_stress
 pytestmark = [pytest.mark.memray, pytest.mark.slow]
 
 
-def test_discovery_allocations(memray_output_dir, memray_baseline, memray_baselines_path):
+def test_discovery_allocations(memray_output_dir, memray_baseline, memray_baselines_path) -> None:
     """Profile memory allocations in test discovery hot path."""
     run_memray_stress(
         script="scripts/memray/memray_discovery_stress.py",

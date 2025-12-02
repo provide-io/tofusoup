@@ -30,6 +30,7 @@ uv sync
 This project uses `wrknv` for task automation. Commands are defined in `wrknv.toml`.
 
 ### Quick Reference
+
 ```bash
 we tasks             # List all available tasks
 we run test          # Run tests
