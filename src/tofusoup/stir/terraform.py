@@ -315,6 +315,7 @@ async def run_terraform_command(
     # subprocess.run without shell=True requires an absolute path, and the
     # custom env dict may not include the PATH entry where tofu was installed.
     import shutil
+
     tf_bin = shutil.which(TF_COMMAND) or TF_COMMAND
     command = [tf_bin, *args]
 

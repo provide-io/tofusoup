@@ -126,4 +126,3 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 	logger.Info("🗄️✅ server exited")
 	return nil
 }
-

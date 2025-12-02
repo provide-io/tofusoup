@@ -6,8 +6,8 @@ invoked on every `soup stir` run to find test directories.
 """
 
 import os
-import tempfile
 from pathlib import Path
+import tempfile
 
 os.environ.setdefault("LOG_LEVEL", "ERROR")
 
@@ -58,10 +58,7 @@ def main() -> None:
     cycles = 200
     for i in range(cycles):
         # Alternate between flat and recursive
-        if i % 2 == 0:
-            d = TestDiscovery(recursive=False)
-        else:
-            d = TestDiscovery(recursive=True, max_depth=4)
+        d = TestDiscovery(recursive=False) if i % 2 == 0 else TestDiscovery(recursive=True, max_depth=4)
         tests = d.discover_tests(tmpdir)
 
         # Apply filters on half the iterations

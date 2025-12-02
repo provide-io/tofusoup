@@ -113,7 +113,7 @@ func initWireEncodeCmd() *cobra.Command {
 	cmd.Flags().StringVar(&wireInputFormat, "input-format", "json", "Input format (json)")
 	cmd.Flags().StringVar(&wireOutputFormat, "output-format", "msgpack", "Output format (msgpack, json)")
 	cmd.Flags().StringVar(&wireTypeJSON, "type", "", "Type specification as JSON (optional)")
-	
+
 	return cmd
 }
 
@@ -219,11 +219,11 @@ func initWireDecodeCmd() *cobra.Command {
 			return nil
 		},
 	}
-	
+
 	// Add flags
 	cmd.Flags().StringVar(&wireInputFormat, "input-format", "msgpack", "Input format (msgpack)")
 	cmd.Flags().StringVar(&wireOutputFormat, "output-format", "json", "Output format (json)")
 	cmd.Flags().StringVar(&wireTypeJSON, "type", "", "Type specification as JSON (optional)")
-	
+
 	return cmd
 }

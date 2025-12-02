@@ -13,8 +13,6 @@ from rich.console import Console
 from rich.live import Live
 from rich.table import Table
 
-from typing import Any
-
 from tofusoup.stir.config import PHASE_EMOJI
 
 # Shared state for the live display

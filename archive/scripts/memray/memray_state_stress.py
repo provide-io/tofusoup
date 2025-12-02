@@ -11,8 +11,8 @@ running `soup state show`.
 
 import json
 import os
-import tempfile
 from pathlib import Path
+import tempfile
 
 os.environ.setdefault("LOG_LEVEL", "ERROR")
 
@@ -82,7 +82,7 @@ def main() -> None:
 
     # Stress: parse + extract resources across sizes
     cycles = 200
-    for i in range(cycles):
+    for _i in range(cycles):
         for label in ("small", "medium", "large"):
             state = load_terraform_state(paths[label])
             find_resources_with_private_state(state)

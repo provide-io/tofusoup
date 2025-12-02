@@ -1,8 +1,6 @@
 # TofuSoup Documentation
 
-!!! warning "Pre-release"
-    This documentation covers a pre-release. APIs and features may change, and some documented items are exploratory and may change or be removed.
-
+!!! warning "Pre-release" This documentation covers a pre-release. APIs and features may change, and some documented items are exploratory and may change or be removed.
 
 Welcome to TofuSoup - A comprehensive toolkit and conformance testing suite for the OpenTofu/Terraform ecosystem.
 

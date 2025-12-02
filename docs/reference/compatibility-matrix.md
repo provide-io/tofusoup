@@ -178,9 +178,9 @@ Original error: TimeoutError: Connection timeout
 Exploratory enhancements to the compatibility matrix:
 
 1. **Fix Python → Go connection** (pyvider-rpcplugin update needed)
-2. **Add Rust client/server support** (exploratory runtime)
-3. **Add secp521r1 support for Python** (requires grpcio update or alternative)
-4. **Enhanced curve negotiation** (automatic downgrade for compatibility)
+1. **Add Rust client/server support** (exploratory runtime)
+1. **Add secp521r1 support for Python** (requires grpcio update or alternative)
+1. **Enhanced curve negotiation** (automatic downgrade for compatibility)
 
 ## Related Documentation
 

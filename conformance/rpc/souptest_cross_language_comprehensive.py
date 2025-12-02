@@ -173,10 +173,7 @@ async def test_go_to_python(
         if line:
             # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
             if (
-                line.startswith("1|1|tcp|")
-                or line.startswith("1|1|unix|")
-                or "|tcp|" in line
-                or "|unix|" in line
+                line.startswith(("1|1|tcp|", "1|1|unix|")) or "|tcp|" in line or "|unix|" in line
             ):
                 handshake_line = line.strip()
                 break
@@ -325,7 +322,7 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
     while time.time() - start_time < timeout_seconds:
         line = server_process.stdout.readline()
         if line and (
-            line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line
+            line.startswith(("1|1|tcp|", "1|1|unix|")) or "|tcp|" in line or "|unix|" in line
         ):
             handshake_line = line.strip()
             break

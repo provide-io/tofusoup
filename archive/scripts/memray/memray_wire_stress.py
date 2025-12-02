@@ -10,8 +10,8 @@ the data pipeline path used when converting between formats.
 
 import json
 import os
-import tempfile
 from pathlib import Path
+import tempfile
 
 os.environ.setdefault("LOG_LEVEL", "ERROR")
 

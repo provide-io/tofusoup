@@ -180,7 +180,7 @@ var harnessListCmd = &cobra.Command{
 		harnesses := []map[string]string{
 			{"name": "soup-go", "status": "active", "version": version},
 		}
-		
+
 		if outputJSON, _ := cmd.Flags().GetBool("json"); outputJSON {
 			logger.Debug("outputting harness list as JSON")
 			json.NewEncoder(os.Stdout).Encode(harnesses)
@@ -224,7 +224,7 @@ var configShowCmd = &cobra.Command{
 			"log_level": logLevel,
 			"verbose":   verbose,
 		}
-		
+
 		if outputJSON, _ := cmd.Flags().GetBool("json"); outputJSON {
 			json.NewEncoder(os.Stdout).Encode(config)
 		} else {
@@ -256,15 +256,15 @@ func init() {
 	getCmd = initKVGetCmd()
 	putCmd = initKVPutCmd()
 	connectionCmd = initValidateConnectionCmd()
-	
+
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "info", "Set log level (trace, debug, info, warn, error)")
-	
+
 	// Add JSON output flag to relevant commands
 	harnessListCmd.Flags().Bool("json", false, "Output in JSON format")
 	configShowCmd.Flags().Bool("json", false, "Output in JSON format")
-	
+
 	// RPC server flags
 	serverCmd.Flags().BoolVar(&rpcStandalone, "standalone", false, "Run in standalone mode instead of plugin mode")
 	serverCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port (only used in standalone mode)")
@@ -273,7 +273,7 @@ func init() {
 	serverCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "secp384r1", "Elliptic curve for EC key type: 'secp256r1', 'secp384r1', 'secp521r1', or 'auto' (AutoMTLS P-521) - default secp384r1 for Python compatibility")
 	serverCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS, only used in standalone mode)")
 	serverCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS, only used in standalone mode)")
-	
+
 	// Build command tree
 	rootCmd.AddCommand(ctyCmd)
 	rootCmd.AddCommand(hclCmd)
@@ -282,20 +282,20 @@ func init() {
 	rootCmd.AddCommand(harnessCmd)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(generateCmd)
-	
+
 	// CTY subcommands
 	ctyCmd.AddCommand(ctyValidateCmd)
 	ctyCmd.AddCommand(ctyConvertCmd)
-	
+
 	// HCL subcommands
 	hclCmd.AddCommand(hclViewCmd)
 	hclCmd.AddCommand(hclValidateCmd)
 	hclCmd.AddCommand(hclConvertCmd)
-	
+
 	// Wire subcommands
 	wireCmd.AddCommand(wireEncodeCmd)
 	wireCmd.AddCommand(wireDecodeCmd)
-	
+
 	// RPC subcommands
 	rpcCmd.AddCommand(kvCmd)
 	rpcCmd.AddCommand(validateCmd)
@@ -308,11 +308,11 @@ func init() {
 
 	// Validate subcommands
 	validateCmd.AddCommand(connectionCmd)
-	
+
 	// Harness subcommands
 	harnessCmd.AddCommand(harnessListCmd)
 	harnessCmd.AddCommand(harnessTestCmd)
-	
+
 	// Config subcommands
 	configCmd.AddCommand(configShowCmd)
 }
@@ -320,7 +320,7 @@ func init() {
 func main() {
 	// Initialize logger early
 	initLogger()
-	
+
 	if err := rootCmd.Execute(); err != nil {
 		logger.Error("command execution failed", "error", err)
 		fmt.Fprintln(os.Stderr, err)
@@ -334,7 +334,7 @@ func initLogger() {
 	if envLevel := os.Getenv("LOG_LEVEL"); envLevel != "" {
 		logLevel = envLevel
 	}
-	
+
 	switch logLevel {
 	case "trace":
 		level = hclog.Trace
@@ -347,7 +347,7 @@ func initLogger() {
 	case "error":
 		level = hclog.Error
 	}
-	
+
 	// Create logger with nice formatting
 	logger = hclog.New(&hclog.LoggerOptions{
 		Name:       "soup-go",

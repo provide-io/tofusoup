@@ -67,18 +67,18 @@ func initHclConvertCmd() *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("failed to marshal intermediate JSON for msgpack: %w", err)
 				}
-				
+
 				// Infer cty type from the JSON
 				impliedType, err := ctyjson.ImpliedType(jsonBytes)
 				if err != nil {
 					return fmt.Errorf("failed to infer cty type for msgpack conversion: %w", err)
 				}
-				
+
 				ctyValue, err := ctyjson.Unmarshal(jsonBytes, impliedType)
 				if err != nil {
 					return fmt.Errorf("failed to unmarshal JSON to cty.Value for msgpack: %w", err)
 				}
-				
+
 				outputData, err = ctymsgpack.Marshal(ctyValue, impliedType)
 				if err != nil {
 					return fmt.Errorf("failed to marshal to msgpack: %w", err)
@@ -100,10 +100,10 @@ func initHclConvertCmd() *cobra.Command {
 			return nil
 		},
 	}
-	
+
 	// Add flags
 	cmd.Flags().StringVar(&hclConvertOutputFormat, "output-format", "json", "Output format (json, msgpack)")
-	
+
 	return cmd
 }
 
@@ -125,7 +125,7 @@ func initHclViewCmd() *cobra.Command {
 			// Parse the HCL file
 			parser := hclparse.NewParser()
 			file, diags := parser.ParseHCL(content, filename)
-			
+
 			if diags.HasErrors() {
 				if hclOutputFormat == "diagnostic" {
 					for _, diag := range diags {
@@ -162,10 +162,10 @@ func initHclViewCmd() *cobra.Command {
 			return nil
 		},
 	}
-	
+
 	// Add flags
 	cmd.Flags().StringVar(&hclOutputFormat, "output-format", "json", "Output format (json, diagnostic)")
-	
+
 	return cmd
 }
 
@@ -204,7 +204,7 @@ func initHclValidateCmd() *cobra.Command {
 			return nil
 		},
 	}
-	
+
 	return cmd
 }
 
@@ -240,15 +240,15 @@ func hclFileToJSON(file *hcl.File) (interface{}, error) {
 				"type":   block.Type,
 				"labels": block.Labels,
 			}
-			
+
 			// Recursively process block body
 			if blockBody, err := hclBlockToJSON(block.Body); err == nil {
 				blockData["body"] = blockBody
 			}
-			
+
 			blocks = append(blocks, blockData)
 		}
-		
+
 		if len(blocks) > 0 {
 			result["blocks"] = blocks
 		}
@@ -261,7 +261,7 @@ func hclFileToJSON(file *hcl.File) (interface{}, error) {
 func hclBlockToJSON(body hcl.Body) (interface{}, error) {
 	if syntaxBody, ok := body.(*hclsyntax.Body); ok {
 		result := make(map[string]interface{})
-		
+
 		// Process attributes in the block
 		for name, attr := range syntaxBody.Attributes {
 			val, diags := attr.Expr.Value(&hcl.EvalContext{
@@ -278,7 +278,7 @@ func hclBlockToJSON(body hcl.Body) (interface{}, error) {
 				}
 			}
 		}
-		
+
 		// Process nested blocks
 		if len(syntaxBody.Blocks) > 0 {
 			blocks := make([]map[string]interface{}, 0)
@@ -287,19 +287,19 @@ func hclBlockToJSON(body hcl.Body) (interface{}, error) {
 					"type":   block.Type,
 					"labels": block.Labels,
 				}
-				
+
 				if blockBody, err := hclBlockToJSON(block.Body); err == nil {
 					blockData["body"] = blockBody
 				}
-				
+
 				blocks = append(blocks, blockData)
 			}
 			result["blocks"] = blocks
 		}
-		
+
 		return result, nil
 	}
-	
+
 	return nil, fmt.Errorf("unsupported body type")
 }
 
