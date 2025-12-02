@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
 
 from decimal import Decimal  # Added for DecimalAwareJSONEncoder
 import hashlib
