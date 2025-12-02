@@ -102,7 +102,7 @@ class VersionMatrix:
                 "Or install from source: pip install -e /path/to/wrknv"
             )
 
-        self.config = config or create_workenv_config_with_soup()  # type: ignore
+        self.config = config or create_workenv_config_with_soup()
         self.base_tools = base_tools
 
         # Get matrix configuration (from soup.toml or wrkenv.toml)
@@ -400,7 +400,7 @@ async def run_matrix_stir_tests(
         )
 
     if config is None:
-        config = create_workenv_config_with_soup()  # type: ignore
+        config = create_workenv_config_with_soup()
 
     if tools is None:
         # Get tools from current configuration
