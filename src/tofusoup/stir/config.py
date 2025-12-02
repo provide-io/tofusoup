@@ -15,6 +15,7 @@ from tofusoup.config.defaults import (
     ENV_TF_LOG,
 )
 
+
 # Configuration constants
 def _find_tf_command() -> str:
     """Find the tofu/terraform binary, checking TOFU_CLI_PATH env var first."""
