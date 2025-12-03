@@ -101,6 +101,9 @@ where = ["src"]
 include = ["tofusoup*"]
 namespaces = false
 
+[tool.setuptools.package-data]
+tofusoup = ["py.typed"]
+
 [tool.setuptools.dynamic]
 version = {file = "VERSION"}
 
