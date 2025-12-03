@@ -252,7 +252,7 @@ def entry_point() -> None:
 
     # Normal CLI invocation - initialize Foundation for CLI mode
     # Load TofuSoup configuration from environment
-    tofusoup_config = TofuSoupConfig.from_env()  # type: ignore[attr-defined]
+    tofusoup_config = TofuSoupConfig.from_env()
 
     # Get base telemetry config from environment
     base_telemetry = TelemetryConfig.from_env()
