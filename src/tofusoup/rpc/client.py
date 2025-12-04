@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
 
 import asyncio
 import logging
@@ -101,7 +100,7 @@ class KVClient:
             "PLUGIN_MAGIC_COOKIE_KEY": go_server_expected_cookie_key,
             go_server_expected_cookie_key: go_server_expected_cookie_value,
             "PLUGIN_PROTOCOL_VERSIONS": go_server_protocol_version,
-            "LOG_LEVEL": os.getenv("LOG_LEVEL", logger.level.name if hasattr(logger, "level") else "INFO"),  # type: ignore
+            "LOG_LEVEL": os.getenv("LOG_LEVEL", logger.level.name if hasattr(logger, "level") else "INFO"),
             "PYTHONUNBUFFERED": "1",
             "GODEBUG": os.getenv("GODEBUG", "asyncpreemptoff=1,panicasync=1"),
             "PLUGIN_AUTO_MTLS": "true" if use_auto_mtls else "false",
