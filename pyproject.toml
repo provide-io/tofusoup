@@ -67,10 +67,6 @@ all = [
     "tofusoup[cty,hcl,rpc]",
 ]
 
-[tool.uv.sources]
-wrknv = { path = "../wrknv", editable = true }
-pyvider = { path = "../pyvider", editable = true }
-
 [dependency-groups]
 dev = [
     "provide-testkit[standard,advanced-testing,build]",
