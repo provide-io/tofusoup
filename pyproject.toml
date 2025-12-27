@@ -60,16 +60,9 @@ rpc = [
 test-rpc = [
     "pyvider-rpcplugin[test]",
 ]
-# Matrix testing support requires wrknv (optional)
-# Install wrknv separately: pip install wrknv
-# Or use local editable: pip install -e ../wrknv
 all = [
     "tofusoup[cty,hcl,rpc]",
 ]
-
-[tool.uv.sources]
-wrknv = { path = "../wrknv", editable = true }
-pyvider = { path = "../pyvider", editable = true }
 
 [dependency-groups]
 dev = [
