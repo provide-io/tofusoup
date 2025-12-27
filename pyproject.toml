@@ -235,3 +235,6 @@ fail_under = 70
 show_missing = true
 skip_covered = true
 exclude_lines = ["pragma: no cover", "raise NotImplementedError", "if __name__ == .__main__.:", "if TYPE_CHECKING:", "def __repr__", "def __str__", "pass"]
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests", "workenv"]
