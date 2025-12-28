@@ -10,6 +10,7 @@ from __future__ import annotations
 import fnmatch
 from pathlib import Path
 import re
+import tomllib
 
 
 class TestDiscovery:
@@ -363,6 +364,54 @@ class TestFilter:
             return bool(self.regex_pattern.search(str(test)))
         return True
 
+    def _extract_tags_from_directory_name(self, test: Path) -> list[str]:
+        """Extract tags from directory name patterns."""
+        name = test.name.lower()
+        for pattern in ["test_", "_test", "example_", "_example"]:
+            name = name.replace(pattern, " ")
+        parts = [p for p in name.split("_") if p and len(p) > 1]
+        skip_words = {"test", "tests", "example", "examples"}
+        return [p for p in parts if p not in skip_words]
+
+    def _extract_tags_from_soup_toml(self, test: Path) -> list[str]:
+        """Extract tags from soup.toml metadata."""
+        soup_toml = test / "soup.toml"
+        if not soup_toml.exists():
+            return []
+        try:
+            with soup_toml.open("rb") as f:
+                data = tomllib.load(f)
+            if "metadata" in data and "tags" in data["metadata"]:
+                return list(data["metadata"]["tags"])
+            if "test" in data and "tags" in data["test"]:
+                return list(data["test"]["tags"])
+        except Exception:
+            pass
+        return []
+
+    def _extract_tags_from_main_tf(self, test: Path) -> list[str]:
+        """Extract tags from # @tags: comments in main.tf."""
+        main_tf = test / "main.tf"
+        if not main_tf.exists():
+            return []
+        try:
+            content = main_tf.read_text()
+            for line in content.splitlines()[:20]:
+                if line.strip().startswith("# @tags:"):
+                    tag_str = line.split(":", 1)[1].strip()
+                    return [t.strip() for t in tag_str.split(",") if t.strip()]
+        except Exception:
+            pass
+        return []
+
+    def _get_all_tags(self, test: Path) -> set[str]:
+        """Get all tags from all sources."""
+        tags: set[str] = set()
+        tags.update(self._extract_tags_from_directory_name(test))
+        tags.update(self._extract_tags_from_soup_toml(test))
+        tags.update(self._extract_tags_from_main_tf(test))
+        return tags
+
     def _matches_tags(self, test: Path) -> bool:
         """Check if test matches required tags.
 
@@ -372,23 +421,13 @@ class TestFilter:
         Returns:
             True if test has required tags
         """
-        # TODO: Implement tag extraction from:
-        # - Directory name patterns (e.g., test_basic, test_advanced)
-        # - soup.toml metadata
-        # - Comments in main.tf
-
-        # For now, do basic pattern matching on directory name
-        test_name = test.name.lower()
+        all_tags = self._get_all_tags(test)
         for tag in self.tags:
-            # Handle negation
             if tag.startswith("!"):
-                if tag[1:] in test_name:
+                if tag[1:] in all_tags:
                     return False
-            else:
-                if tag in test_name:
-                    return True
-
-        # If only negative tags, default to include
+            elif tag in all_tags:
+                return True
         return bool(all(t.startswith("!") for t in self.tags))
 
 
