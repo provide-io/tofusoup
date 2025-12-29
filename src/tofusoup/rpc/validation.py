@@ -39,8 +39,10 @@ class CurveNotSupportedError(ValueError):
     """Raised when a curve is not supported by the runtime."""
 
 
+
 class LanguagePairNotSupportedError(ValueError):
     """Raised when a language pair combination is not supported."""
+
 
 
 def normalize_curve_name(curve: str) -> str:
