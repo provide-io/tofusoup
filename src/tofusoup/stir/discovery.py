@@ -349,7 +349,7 @@ class TestFilter:
             if is_negated:
                 if compiled.match(test_str):
                     return False
-            elif compiled.match(test_str):
+            elif fnmatch.fnmatch(test_str, f"*{filter_pattern}*"):
                 return True
 
         # If only negative filters, default to include
