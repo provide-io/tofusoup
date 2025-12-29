@@ -63,7 +63,6 @@ def get_stock_binary_path(language: str, role: str) -> Path:
 @click.group("stock")
 def stock_cli() -> None:
     """Direct gRPC Stock service commands (no plugin handshake)."""
-    pass
 
 
 @stock_cli.command("server")

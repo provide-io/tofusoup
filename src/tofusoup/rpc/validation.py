@@ -38,13 +38,11 @@ CURVE_NAME_ALIASES = {
 class CurveNotSupportedError(ValueError):
     """Raised when a curve is not supported by the runtime."""
 
-    pass
 
 
 class LanguagePairNotSupportedError(ValueError):
     """Raised when a language pair combination is not supported."""
 
-    pass
 
 
 def normalize_curve_name(curve: str) -> str:
