@@ -80,11 +80,10 @@ soup = "tofusoup.cli:entry_point"
 soup-py = "tofusoup.cli:entry_point"
 
 [project.urls]
-Homepage = "https://github.com/provide-io/tofusoup"
+Homepage = "https://foundry.provide.io/tofusoup/"
 Documentation = "https://foundry.provide.io/tofusoup/"
 Repository = "https://github.com/provide-io/tofusoup"
-"Bug Tracker" = "https://github.com/provide-io/tofusoup/issues"
-Changelog = "https://foundry.provide.io/tofusoup/CHANGELOG/"
+Issues = "https://github.com/provide-io/tofusoup/issues"
 
 [tool.uv]
 package = true
