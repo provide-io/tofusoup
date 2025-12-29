@@ -37,14 +37,12 @@ def safe_async_run(coro_func: Callable[[], Awaitable[T]]) -> T:
 def registry_cli(ctx: click.Context) -> None:
     """Commands for querying and managing Terraform/OpenTofu registries."""
     logger.debug("TofuSoup 'registry' command group invoked.")
-    pass
 
 
 # Provider subcommands
 @registry_cli.group("provider")
 def provider_group() -> None:
     """Commands for working with providers."""
-    pass
 
 
 @provider_group.command("info")
@@ -145,7 +143,6 @@ def provider_versions(ctx: click.Context, provider: str, registry: str, latest: 
 @registry_cli.group("module")
 def module_group() -> None:
     """Commands for working with modules."""
-    pass
 
 
 @module_group.command("info")

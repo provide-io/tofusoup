@@ -15,7 +15,6 @@ from tofusoup.browser.ui.app import TFBrowserApp
 def sui_cli(ctx: click.Context) -> None:
     """Graphical UI for browsing Terraform and OpenTofu registries."""
     logger.debug("TofuSoup 'sui' command group invoked.")
-    pass
 
 
 @sui_cli.command("tui")

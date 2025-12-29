@@ -17,7 +17,6 @@ from .logic import convert_json_to_msgpack, convert_msgpack_to_json
 @click.group()
 def wire() -> None:
     """Commands for working with the Terraform wire protocol."""
-    pass
 
 
 @wire.command("to-msgpack")

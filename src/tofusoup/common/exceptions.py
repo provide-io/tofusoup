@@ -11,19 +11,16 @@ from provide.foundation.errors import FoundationError, ProcessError
 class TofuSoupError(FoundationError):
     """Base class for exceptions in TofuSoup."""
 
-    pass
 
 
 class ConversionError(TofuSoupError):
     """Custom exception for errors during data conversion (e.g., HCL to JSON, CTY operations)."""
 
-    pass
 
 
 class TofuSoupConfigError(TofuSoupError):
     """Custom exception for errors related to TofuSoup configuration loading or validation."""
 
-    pass
 
 
 # Add other general TofuSoup errors here as needed.

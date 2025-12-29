@@ -26,7 +26,6 @@ from .logic import (
 @click.group("harness")
 def harness_cli() -> None:
     """Commands to build, list, and clean test harnesses."""
-    pass
 
 
 @harness_cli.command("clean")

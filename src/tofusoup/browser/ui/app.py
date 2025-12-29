@@ -33,7 +33,6 @@ class MainSearchScreen(Screen[None]):
     class SearchComplete(Message):
         """A message to signal that the search stream has finished."""
 
-        pass
 
     def compose(self) -> ComposeResult:
         """Compose the screen layout."""

@@ -27,7 +27,6 @@ from .logic import convert_hcl_file_to_output_format, load_hcl_file_as_cty
 @click.group("hcl")
 def hcl_cli() -> None:
     """Commands for HCL (HashiCorp Configuration Language) operations."""
-    pass
 
 
 @hcl_cli.command("view")

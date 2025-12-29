@@ -157,7 +157,6 @@ def display_resource_details(resource: dict[str, Any], show_encrypted: bool = Fa
 @click.group("state")
 def state_cli() -> None:
     """Commands for inspecting Terraform state with private state support."""
-    pass
 
 
 def _get_target_resources(state: dict[str, Any], private_only: bool) -> list[dict[str, Any]]:
