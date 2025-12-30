@@ -44,7 +44,6 @@ class LogViewer(Widget):
 
     def flush(self) -> None:
         """A no-op flush method to satisfy the stream protocol."""
-        pass
 
     def clear(self) -> None:
         """Clear the log."""

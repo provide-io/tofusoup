@@ -22,7 +22,6 @@ from tofusoup.common.exceptions import TofuSoupError
 class CtyTypeParseError(TofuSoupError):
     """Custom exception for CTY type string parsing errors."""
 
-    pass
 
 
 def _split_by_delimiter_respecting_nesting(text: str, delimiter: str) -> list[str]:
