@@ -21,7 +21,6 @@ from .logic import (
 
 def _print_results_report(results: list) -> None:
     """Prints a summary table and detailed failure report."""
-    pass
 
 
 @click.group("test")

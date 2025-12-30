@@ -324,9 +324,8 @@ class TestFilter:
             if filter_pattern.startswith("!"):
                 if fnmatch.fnmatch(test_str, filter_pattern[1:]):
                     return False
-            else:
-                if fnmatch.fnmatch(test_str, f"*{filter_pattern}*"):
-                    return True
+            elif fnmatch.fnmatch(test_str, f"*{filter_pattern}*"):
+                return True
 
         # If only negative filters, default to include
         return bool(all(f.startswith("!") for f in self.path_filters))

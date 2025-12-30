@@ -31,13 +31,11 @@ from .validation import (
 @click.group("rpc")
 def rpc_cli() -> None:
     """Commands for interacting with gRPC services."""
-    pass
 
 
 @click.group("kv")
 def kv_cli() -> None:
     """Commands for the Key-Value store."""
-    pass
 
 
 @kv_cli.command("put")
@@ -163,7 +161,6 @@ def server_start(tls_mode: str, tls_key_type: str, tls_curve: str, transport: st
 @click.group("validate")
 def validate_cli() -> None:
     """Commands for validation."""
-    pass
 
 
 @validate_cli.command("connection")

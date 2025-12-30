@@ -273,7 +273,7 @@ class GoKVClient(ReferenceKVClient):
 
     async def stop(self) -> None:
         """Cleanup Go KV client."""
-        pass  # No persistent process to stop
+        # No persistent process to stop
 
     async def _run_go_command(self, operation: str, key: str, value: bytes | None = None) -> bytes:
         """Run Go client command and return output."""
@@ -400,7 +400,6 @@ sys.exit(0)
     async def delete(self, key: str) -> None:
         """Delete key using Python client."""
         # TofuSoup KVClient might not have delete implemented
-        pass
 
 
 # Factory functions

@@ -99,7 +99,6 @@ def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_fi
 @click.group("config")
 def config_cli() -> None:
     """Commands for TofuSoup configuration management."""
-    pass
 
 
 @config_cli.command("show")

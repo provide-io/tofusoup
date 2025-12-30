@@ -24,7 +24,6 @@ from ..common.rich_utils import print_json
 @click.group("cty")
 def cty_cli() -> None:
     """Commands for working with cty values."""
-    pass
 
 
 @cty_cli.command("view")
@@ -46,15 +45,14 @@ def view_command(input_file: TextIO, input_format: str, type_spec: str) -> None:
             # So we need to parse it the same way: as JSON bytes
             type_data = json.loads(type_spec) if type_spec.startswith('"') else type_spec
             cty_type = parse_tf_type_to_ctytype(type_data)
+        # Try to infer type from JSON structure
+        elif input_format == "json":
+            json_data = json.loads(data.decode())
+            # For now, use dynamic type - could be improved with type inference
+            cty_type = CtyDynamic()
         else:
-            # Try to infer type from JSON structure
-            if input_format == "json":
-                json_data = json.loads(data.decode())
-                # For now, use dynamic type - could be improved with type inference
-                cty_type = CtyDynamic()
-            else:
-                click.echo("--type is required for MessagePack input", err=True)
-                sys.exit(1)
+            click.echo("--type is required for MessagePack input", err=True)
+            sys.exit(1)
 
         # Deserialize the value
         if input_format == "json":
