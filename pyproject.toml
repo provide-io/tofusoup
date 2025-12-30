@@ -1,6 +1,8 @@
 #
 # tofusoup/pyproject.toml
 #
+# Cross-language conformance test suite for OpenTofu tooling
+#
 
 [build-system]
 requires = ["setuptools>=75.0", "wheel"]
