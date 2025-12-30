@@ -42,7 +42,6 @@ dependencies = [
     "semver>=3.0.0",
     "jinja2>=3.1.6",
     "plating",
-    "mkdocs-material>=9.7.1",
     "pyvider",  # For state inspection encryption (pyvider.common.encryption)
 ]
 
@@ -72,6 +71,7 @@ dev = [
 ]
 docs = [
     "provide-testkit[docs]",
+    "mkdocs-material>=9.7.1",
 ]
 
 [project.scripts]
