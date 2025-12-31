@@ -154,7 +154,7 @@ def _run_client_cmd(cmd: list[str], language: str, operation: str, server: str) 
         if result.stdout:
             console.print(result.stdout.strip())
         if result.stderr and result.returncode != 0:
-            console.print(f"[red]{result.stderr.strip()}[/red]", stderr=True)
+            print(f"[red]{result.stderr.strip()}[/red]", file=sys.stderr)
             sys.exit(result.returncode)
     except Exception as e:
         console.print(f"[red]Error running client: {e}[/red]")
