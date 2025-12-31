@@ -17,12 +17,12 @@ from typing import Any
 
 # Optional wrknv import - graceful degradation if not available
 try:
-    from wrknv import WorkenvConfig
+    from wrknv import WorkenvConfig  # type: ignore[import-not-found]
 
     WORKENV_AVAILABLE = True
 except ImportError:
     WORKENV_AVAILABLE = False
-    WorkenvConfig = None  # type: ignore
+    WorkenvConfig = None
 
 
 def load_soup_config(project_root: Path | None = None) -> dict[str, Any]:
@@ -76,10 +76,10 @@ def create_workenv_config_with_soup(project_root: Path | None = None) -> Any:
 
     if not workenv_section:
         # No workenv config in soup.toml, just return standard WorkenvConfig
-        return WorkenvConfig(project_root=project_root)  # type: ignore
+        return WorkenvConfig(project_root=project_root)
 
     # Create a custom ConfigSource for soup.toml
-    from wrknv.env.config import FileConfigSource
+    from wrknv.env.config import FileConfigSource  # type: ignore[import-not-found]
 
     # Create a soup.toml source
     soup_source = FileConfigSource(
@@ -87,7 +87,7 @@ def create_workenv_config_with_soup(project_root: Path | None = None) -> Any:
     )
 
     # Create WorkenvConfig and add soup source with highest priority
-    config = WorkenvConfig(project_root=project_root)  # type: ignore
+    config = WorkenvConfig(project_root=project_root)
     config.sources.insert(0, soup_source)  # Insert at beginning for highest priority
 
     return config
@@ -104,7 +104,8 @@ def get_matrix_config_from_soup(project_root: Path | None = None) -> dict[str, A
         Matrix configuration dictionary.
     """
     soup_config = load_soup_config(project_root)
-    return soup_config.get("workenv", {}).get("matrix", {})
+    result: dict[str, Any] = soup_config.get("workenv", {}).get("matrix", {})
+    return result
 
 
 # 🥣🔬🔚

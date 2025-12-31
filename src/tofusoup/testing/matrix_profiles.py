@@ -23,14 +23,14 @@ from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTE
 
 # Optional wrknv imports - graceful degradation if not available
 try:
-    from wrknv import WorkenvConfig, get_tool_manager
+    from wrknv import WorkenvConfig, get_tool_manager  # type: ignore[import-not-found]
 
     from ..workenv_integration import WORKENV_AVAILABLE, create_workenv_config_with_soup
 except ImportError:
     WORKENV_AVAILABLE = False
-    WorkenvConfig = None  # type: ignore
-    get_tool_manager = None  # type: ignore
-    create_workenv_config_with_soup = None  # type: ignore
+    WorkenvConfig = None
+    get_tool_manager = None
+    create_workenv_config_with_soup = None
 
 console = Console()
 
@@ -46,7 +46,7 @@ class ProfileTestResult:
     test_results: dict[str, Any] = field(default_factory=dict)
     tools: dict[str, str] = field(default_factory=dict)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "profile": self.profile_name,
@@ -84,7 +84,8 @@ class ProfileMatrix:
             List of profile names from matrix config
         """
         if self.matrix_profiles:
-            return self.matrix_profiles
+            result: list[str] = self.matrix_profiles
+            return result
 
         # If no explicit matrix profiles, test all available profiles
         all_profiles = self.config.get_all_profiles()

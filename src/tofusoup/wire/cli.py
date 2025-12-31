@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 import click
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 from rich import print_json
 
 from .logic import convert_json_to_msgpack, convert_msgpack_to_json
