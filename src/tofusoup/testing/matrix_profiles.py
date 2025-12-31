@@ -277,6 +277,7 @@ class ProfileMatrix:
 
         stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=self.timeout_minutes * 60)
 
+        result: dict[str, Any]
         if process.returncode == 0:
             # Parse JSON output if available
             try:

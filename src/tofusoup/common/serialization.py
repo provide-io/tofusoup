@@ -9,7 +9,7 @@ import decimal  # For loading JSON with Decimal
 import json
 from typing import Any  # For type hinting
 
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 
 # from lark.exceptions import LarkError # Not used in this generic serialization module
 from .exceptions import ConversionError
@@ -71,7 +71,8 @@ def dump_python_to_json_string(data: Any, pretty: bool = True) -> str:
 def dump_python_to_msgpack_bytes(data: Any) -> bytes:
     """Serializes a Python object to Msgpack formatted bytes."""
     try:
-        return msgpack.packb(data, use_bin_type=True)
+        result: bytes = msgpack.packb(data, use_bin_type=True)
+        return result
     except msgpack.PackException as e:
         raise ConversionError(f"Error packing data to Msgpack: {e}") from e
     except Exception as e:
