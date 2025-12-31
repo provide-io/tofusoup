@@ -34,7 +34,7 @@ except ImportError:
     WORKENV_AVAILABLE = False
     WorkenvConfig = None
     get_tool_manager = None
-    create_workenv_config_with_soup = None
+    create_workenv_config_with_soup = None  # type: ignore[assignment]
 
 console = Console()
 
@@ -137,7 +137,7 @@ class VersionMatrix:
             tool_versions[tool_name] = all_versions
 
         # Generate all combinations
-        combinations = []
+        combinations: list[MatrixCombination] = []
 
         if not tool_versions:
             return combinations
@@ -318,6 +318,7 @@ class VersionMatrix:
 
         stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=self.timeout_minutes * 60)
 
+        result: dict[str, Any]
         if process.returncode == 0:
             # Parse JSON output if available
             try:
