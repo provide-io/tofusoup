@@ -29,7 +29,8 @@ jobs:
       run: |
         uv venv
         uv pip install -e .
-        uv pip install "wrknv @ git+https://github.com/provide-io/wrknv.git@main"
+        WRKNV_URL=$(curl -sL https://api.github.com/repos/provide-io/wrknv/releases/latest | jq -r '.assets[] | select(.name | endswith(".whl")) | .browser_download_url')
+        uv pip install "$WRKNV_URL"
 
     - name: Run tests
       run: |
@@ -61,7 +62,8 @@ jobs:
       run: |
         uv venv
         uv pip install -e .
-        uv pip install "wrknv @ git+https://github.com/provide-io/wrknv.git@main"
+        WRKNV_URL=$(curl -sL https://api.github.com/repos/provide-io/wrknv/releases/latest | jq -r '.assets[] | select(.name | endswith(".whl")) | .browser_download_url')
+        uv pip install "$WRKNV_URL"
 
     - name: Run quality checks
       run: |
