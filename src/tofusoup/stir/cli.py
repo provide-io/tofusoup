@@ -224,7 +224,10 @@ def stir_cli(
         if matrix:
             # Run matrix testing (requires optional workenv dependency)
             try:
-                from tofusoup.testing.matrix import WORKENV_AVAILABLE, run_matrix_stir_tests  # type: ignore[attr-defined]
+                from tofusoup.testing.matrix import (  # type: ignore[attr-defined]
+                    WORKENV_AVAILABLE,
+                    run_matrix_stir_tests,
+                )
 
                 if not WORKENV_AVAILABLE:
                     console.print(
