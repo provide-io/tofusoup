@@ -135,7 +135,7 @@ def start_go_plugin_server_process(
     cli_log_level: str | None = None,
     additional_args: list[str] | None = None,
     custom_env: dict[str, str] | None = None,
-) -> subprocess.Popen:
+) -> subprocess.Popen[bytes]:
     """
     Ensures a Go harness is built and starts it as a server process.
     """

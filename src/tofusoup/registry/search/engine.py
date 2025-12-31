@@ -6,6 +6,7 @@
 
 import asyncio
 from collections.abc import AsyncGenerator
+from typing import Any
 
 from attrs import define, field
 from provide.foundation import logger
@@ -65,7 +66,7 @@ class SearchEngine:
 
         logger.info("SearchEngine.search finished streaming results.")
 
-    def _parse_latest_version(self, versions: list, resource_id: str) -> str | None:
+    def _parse_latest_version(self, versions: list[Any], resource_id: str) -> str | None:
         """Parse and return the latest valid semver version from a list.
 
         Args:

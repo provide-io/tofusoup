@@ -7,7 +7,7 @@
 import click
 from provide.foundation import get_hub, logger
 
-from tofusoup.browser.ui.app import TFBrowserApp
+from tofusoup.browser.ui.app import TFBrowserApp  # type: ignore[attr-defined]
 
 
 @click.group("sui")

@@ -116,7 +116,7 @@ class SearchView(Vertical):
                 total_versions,
                 result.latest_version or "N/A",
                 result.description or "",
-                key=row_key,
+                key=row_key,  # type: ignore[arg-type]
             )
 
         # Re-sort the table after every update

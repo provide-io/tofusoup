@@ -12,16 +12,18 @@ from rich.console import Console
 from rich.live import Live
 from rich.table import Table
 
+from typing import Any
+
 from tofusoup.stir.config import PHASE_EMOJI
 
 # Shared state for the live display
-test_statuses: dict[str, dict] = {}
+test_statuses: dict[str, dict[str, Any]] = {}
 
 # Rich Console Initialization
 console = Console(record=True)
 
 
-def _get_sorted_status_items() -> list[tuple[str, dict]]:
+def _get_sorted_status_items() -> list[tuple[str, dict[str, Any]]]:
     """Sort status items with __PROVIDER_PREP__ first if it exists."""
     sorted_items = []
     provider_prep_item = None
@@ -40,7 +42,7 @@ def _get_sorted_status_items() -> list[tuple[str, dict]]:
     return sorted_items
 
 
-def _get_status_emoji(status_info: dict) -> str:
+def _get_status_emoji(status_info: dict[str, Any]) -> str:
     """Get the status emoji based on test state.
 
     States:

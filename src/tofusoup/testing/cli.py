@@ -10,6 +10,8 @@ import sys
 import click
 from provide.foundation import logger
 
+from typing import Any
+
 from tofusoup.common.exceptions import TofuSoupError
 
 from .logic import (
@@ -19,7 +21,7 @@ from .logic import (
 )
 
 
-def _print_results_report(results: list) -> None:
+def _print_results_report(results: list[Any]) -> None:
     """Prints a summary table and detailed failure report."""
 
 

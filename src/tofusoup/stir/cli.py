@@ -20,14 +20,14 @@ from tofusoup.stir.reporting import print_failure_report, print_summary_panel
 from tofusoup.stir.runtime import StirRuntime
 
 
-def process_results(results: list[TestResult | Exception]) -> tuple[list[TestResult], int, bool]:
+def process_results(results: list[TestResult | BaseException]) -> tuple[list[TestResult], int, bool]:
     """Process test results and return failure analysis."""
     failed_tests = []
     skipped_count = 0
     all_passed = True
 
     for res in results:
-        if isinstance(res, TestResult):
+        if isinstance(res, TestResult):  # type: ignore[misc]
             if res.skipped:
                 skipped_count += 1
             elif not res.success:
@@ -224,7 +224,7 @@ def stir_cli(
         if matrix:
             # Run matrix testing (requires optional workenv dependency)
             try:
-                from tofusoup.testing.matrix import WORKENV_AVAILABLE, run_matrix_stir_tests
+                from tofusoup.testing.matrix import WORKENV_AVAILABLE, run_matrix_stir_tests  # type: ignore[attr-defined]
 
                 if not WORKENV_AVAILABLE:
                     console.print(
