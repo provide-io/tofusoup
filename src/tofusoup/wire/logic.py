@@ -7,7 +7,7 @@
 import json
 from pathlib import Path
 
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 
 
 def convert_json_to_msgpack(input_path: Path, output_path: Path | None) -> Path:

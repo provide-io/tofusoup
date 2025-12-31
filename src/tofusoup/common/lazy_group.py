@@ -40,7 +40,8 @@ class LazyGroup(click.Group):
             try:
                 module_path, command_name = self.lazy_commands[cmd_name]
                 module = importlib.import_module(module_path)
-                return getattr(module, command_name)
+                cmd: click.Command | None = getattr(module, command_name)
+                return cmd
             except (ImportError, AttributeError) as e:
                 raise click.UsageError(f"Error loading command '{cmd_name}': {e}") from e
         return super().get_command(ctx, cmd_name)
