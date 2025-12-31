@@ -223,7 +223,6 @@ class SearchEngine:
 
     async def close(self) -> None:
         logger.debug("SearchEngine.close called, no specific resources to clean up here.")
-        pass
 
 
 async def async_search_runner(search_term: str, registry_choice: str) -> list[SearchResult]:
