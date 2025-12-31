@@ -42,7 +42,7 @@ class BaseTfRegistry(ABC):
         pass
 
     @abstractmethod
-    async def get_provider_details(self, namespace: str, name: str) -> dict:
+    async def get_provider_details(self, namespace: str, name: str) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -54,7 +54,7 @@ class BaseTfRegistry(ABC):
         pass
 
     @abstractmethod
-    async def get_module_details(self, namespace: str, name: str, provider: str, version: str) -> dict:
+    async def get_module_details(self, namespace: str, name: str, provider: str, version: str) -> dict[str, Any]:
         pass
 
     @abstractmethod

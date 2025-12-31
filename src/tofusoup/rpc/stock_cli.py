@@ -117,7 +117,7 @@ def server_cmd(
 
 
 def _get_client_cmd(
-    language: str, operation: str, args: tuple, server: str, tls: bool, ca_file: str | None
+    language: str, operation: str, args: tuple[str, ...], server: str, tls: bool, ca_file: str | None
 ) -> list[str]:
     binary_path = get_stock_binary_path(language, "client")
 
@@ -154,7 +154,7 @@ def _run_client_cmd(cmd: list[str], language: str, operation: str, server: str) 
         if result.stdout:
             console.print(result.stdout.strip())
         if result.stderr and result.returncode != 0:
-            console.print(f"[red]{result.stderr.strip()}[/red]", file=sys.stderr)
+            console.print(f"[red]{result.stderr.strip()}[/red]", stderr=True)
             sys.exit(result.returncode)
     except Exception as e:
         console.print(f"[red]Error running client: {e}[/red]")
@@ -171,7 +171,7 @@ def _run_client_cmd(cmd: list[str], language: str, operation: str, server: str) 
 def client_cmd(
     language: str,
     operation: str,
-    args: tuple,
+    args: tuple[str, ...],
     server: str,
     tls: bool,
     ca_file: str | None,
@@ -185,7 +185,7 @@ def client_cmd(
 @click.option("--client", multiple=True, help="Client languages to test")
 @click.option("--server", multiple=True, help="Server languages to test")
 @click.option("--quick", is_flag=True, help="Run quick subset of tests")
-def matrix_cmd(client: tuple, server: tuple, quick: bool) -> None:
+def matrix_cmd(client: tuple[str, ...], server: tuple[str, ...], quick: bool) -> None:
     """Run Stock service matrix tests across languages."""
     clients = list(client) if client else SUPPORTED_LANGUAGES
     servers = list(server) if server else SUPPORTED_LANGUAGES

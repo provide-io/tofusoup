@@ -27,14 +27,14 @@ from tofusoup.config.defaults import MATRIX_PARALLEL_JOBS, MATRIX_TIMEOUT_MINUTE
 
 # Optional wrknv imports
 try:
-    from wrknv import WorkenvConfig, get_tool_manager
+    from wrknv import WorkenvConfig, get_tool_manager  # type: ignore[import-not-found]
 
     from ..workenv_integration import WORKENV_AVAILABLE, create_workenv_config_with_soup
 except ImportError:
     WORKENV_AVAILABLE = False
-    WorkenvConfig = None  # type: ignore
-    get_tool_manager = None  # type: ignore
-    create_workenv_config_with_soup = None  # type: ignore
+    WorkenvConfig = None
+    get_tool_manager = None
+    create_workenv_config_with_soup = None
 
 console = Console()
 
@@ -50,12 +50,12 @@ class MatrixCombination:
         tool_strs = [f"{tool}:{version}" for tool, version in self.tools.items()]
         return f"[{', '.join(tool_strs)}]"
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {"tools": self.tools}
 
     @classmethod
-    def from_dict(cls, data: dict) -> "MatrixCombination":
+    def from_dict(cls, data: dict[str, Any]) -> "MatrixCombination":
         """Create from dictionary."""
         return cls(tools=data.get("tools", {}))
 
@@ -70,7 +70,7 @@ class MatrixResult:
     error_message: str | None = None
     test_results: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "combination": self.combination.to_dict(),
