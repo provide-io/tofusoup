@@ -30,7 +30,7 @@ except ImportError:
     WORKENV_AVAILABLE = False
     WorkenvConfig = None
     get_tool_manager = None
-    create_workenv_config_with_soup = None  # type: ignore[assignment]
+    create_workenv_config_with_soup = None
 
 console = Console()
 
