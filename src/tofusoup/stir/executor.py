@@ -269,7 +269,7 @@ def initialize_tests(test_dirs: list[Path]) -> None:
         }
 
 
-async def execute_tests(test_dirs: list[Path], runtime: StirRuntime) -> list[TestResult | Exception]:
+async def execute_tests(test_dirs: list[Path], runtime: StirRuntime) -> list[TestResult | BaseException]:
     """Execute all tests concurrently."""
     semaphore = asyncio.Semaphore(MAX_CONCURRENT_TESTS)
     tasks = [run_test_lifecycle(d, semaphore, runtime) for d in test_dirs]

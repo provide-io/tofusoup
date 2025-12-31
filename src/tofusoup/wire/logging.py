@@ -31,7 +31,7 @@ def configure_logging() -> None:
         logging=evolve(
             base_telemetry.logging,
             console_formatter="json",
-            default_level=tofusoup_config.log_level,
+            default_level=tofusoup_config.log_level,  # type: ignore[arg-type]
             das_emoji_prefix_enabled=True,
             logger_name_emoji_prefix_enabled=False,
         ),
