@@ -95,7 +95,8 @@ class DecimalAwareJSONEncoder(json.JSONEncoder):
             # For CTY's purposes where it often round-trips from JSON numbers (floats),
             # this is usually acceptable. If exact decimal string representation is needed,
             # this would need to output strings for Decimals.
-            if o.as_tuple().exponent >= 0:  # It's an integer
+            exponent = o.as_tuple().exponent
+            if isinstance(exponent, int) and exponent >= 0:  # It's an integer
                 return int(o)
             else:  # It has a fractional part
                 return float(o)

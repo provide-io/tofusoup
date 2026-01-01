@@ -47,7 +47,7 @@ class OpenTofuRegistry(BaseTfRegistry):
             )
             return []
 
-    async def list_modules(self, query: str | None) -> list[Module]:
+    async def list_modules(self, query: str | None = None) -> list[Module]:
         items_data = await self._search_api_opentofu(query)
         result_modules: list[Module] = []
         for item in items_data:
@@ -92,7 +92,8 @@ class OpenTofuRegistry(BaseTfRegistry):
             if response.status_code == 404:
                 return {}
             response.raise_for_status()
-            return response.json()
+            result: dict[str, Any] = response.json()
+            return result
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
             logger.error(
                 f"Error fetching OpenTofu provider details for '{namespace}/{name}'",
@@ -142,7 +143,8 @@ class OpenTofuRegistry(BaseTfRegistry):
             if response.status_code == 404:
                 return {}
             response.raise_for_status()
-            return response.json()
+            result: dict[str, Any] = response.json()
+            return result
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
             logger.error(
                 f"Error fetching OpenTofu module details for '{namespace}/{name}/{provider}/{version}'",
