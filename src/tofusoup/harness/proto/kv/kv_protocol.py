@@ -11,7 +11,7 @@ from pyvider.rpcplugin.protocol import RPCPluginProtocol
 from . import kv_pb2_grpc
 
 
-class KVProtocol(RPCPluginProtocol):
+class KVProtocol(RPCPluginProtocol):  # type: ignore[type-arg]
     """Protocol implementation for KV service using centralized proto."""
 
     async def get_grpc_descriptors(self) -> tuple[Any, str]:
@@ -26,7 +26,7 @@ class KVProtocol(RPCPluginProtocol):
             raise ValueError("Invalid KV handler: missing 'Put' method")
 
         # Register the KV service implementation
-        kv_pb2_grpc.add_KVServicer_to_server(handler, server)
+        kv_pb2_grpc.add_KVServicer_to_server(handler, server)  # type: ignore[attr-defined]
 
 
 # 🥣🔬🔚

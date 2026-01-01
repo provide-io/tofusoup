@@ -90,7 +90,8 @@ class IBMTerraformRegistry(BaseTfRegistry):
             if response.status_code == 404:
                 return {}
             response.raise_for_status()
-            return response.json()
+            result: dict[str, Any] = response.json()
+            return result
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
             logger.error(
                 f"Error fetching Terraform provider details for '{namespace}/{name}'",
@@ -140,7 +141,8 @@ class IBMTerraformRegistry(BaseTfRegistry):
             if response.status_code == 404:
                 return {}
             response.raise_for_status()
-            return response.json()
+            result: dict[str, Any] = response.json()
+            return result
         except (httpx.HTTPStatusError, httpx.RequestError) as e:
             logger.error(
                 f"Error fetching Terraform module details for '{namespace}/{name}/{provider}/{version}'",
