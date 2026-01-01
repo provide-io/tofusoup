@@ -1,6 +1,8 @@
 #
 # tofusoup/pyproject.toml
 #
+# Cross-language conformance test suite for OpenTofu tooling
+#
 
 [build-system]
 requires = ["setuptools>=75.0", "wheel"]
@@ -19,6 +21,7 @@ authors = [
 maintainers = [
     { name = "provide.io", email = "code@provide.io" },
 ]
+keywords = ["opentofu", "terraform", "testing", "conformance", "validation"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
