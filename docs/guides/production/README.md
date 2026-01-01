@@ -6,10 +6,10 @@ This directory is reserved for production deployment and operation guides.
 
 For production use, refer to:
 
-- **[Configuration Reference](../../reference/configuration/)** - Complete configuration documentation
-- **[Troubleshooting](../../troubleshooting/)** - Common issues and solutions
-- **[Matrix Testing Guide](../cli-usage/matrix-testing/)** - Testing across multiple versions
-- **[State Inspection](../cli-usage/state-inspection/)** - Production state management
+- **[Configuration Reference](../../reference/configuration.md)** - Complete configuration documentation
+- **[Troubleshooting](../../troubleshooting.md)** - Common issues and solutions
+- **[Matrix Testing Guide](../cli-usage/matrix-testing.md)** - Testing across multiple versions
+- **[State Inspection](../cli-usage/state-inspection.md)** - Production state management
 
 ## Planned Content
 
