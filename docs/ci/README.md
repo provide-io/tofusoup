@@ -32,7 +32,6 @@ As of today, `soup stir`:
 This suite consists of the following documents:
 
 ### 1. [SPEC.md](./SPEC.md) - Feature Specifications
-
 Complete technical specifications for all 15 improvements including:
 
 - Feature descriptions
@@ -43,7 +42,6 @@ Complete technical specifications for all 15 improvements including:
 - Priority and effort estimates
 
 ### 2. [ARCHITECTURE.md](./ARCHITECTURE.md) - Architecture & Design
-
 Architectural decisions and design patterns:
 
 - CI/CD detection mechanism
@@ -53,7 +51,6 @@ Architectural decisions and design patterns:
 - Extensibility points
 
 ### 3. [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md) - Output Format Specifications
-
 Detailed specifications for all output formats:
 
 - JSON schema and examples
@@ -62,8 +59,15 @@ Detailed specifications for all output formats:
 - Plain text format
 - TAP (Test Anything Protocol) format
 
-### 4. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
+### 4. [IMPLEMENTATION.md](./IMPLEMENTATION.md) - Implementation Guide
+Step-by-step implementation guide:
+- Implementation phases and order
+- Files to modify per improvement
+- Dependencies between features
+- Testing strategy
+- Rollout plan
 
+### 5. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
 Complete reference documentation:
 
 - All new CLI flags and arguments
@@ -72,8 +76,7 @@ Complete reference documentation:
 - Exit codes
 - Signal handling
 
-### 5. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
-
+### 6. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
 Real-world usage examples:
 
 - GitHub Actions workflows
@@ -85,39 +88,30 @@ Real-world usage examples:
 ## Quick Reference: Which Improvement to Use When
 
 ### Running in GitHub Actions?
-
 → Use `--format=github` for native annotations ([#4](./SPEC.md#4-format-flag-with-multiple-output-modes))
 
 ### Need test results in CI dashboard?
-
 → Use `--junit-xml=results.xml` ([#3](./SPEC.md#3-junit-xml-output))
 
 ### Need to parse results programmatically?
-
 → Use `--json` ([#2](./SPEC.md#2-json-output-for-standard-mode))
 
 ### Tests running too long?
-
 → Use `--timeout=600 --test-timeout=300` ([#5](./SPEC.md#5-timeout-controls))
 
 ### Want cleaner CI logs?
-
 → Auto-detects CI and adapts ([#1](./SPEC.md#1-auto-detect-cicd-environments))
 
 ### Debugging test failures?
-
 → Use `--jobs=1 --stream-logs` ([#6](./SPEC.md#6-parallelism-control), [#9](./SPEC.md#9-log-aggregation-streaming))
 
 ### Want minimal noise in CI?
-
 → Use `--format=quiet` or `--format=plain` ([#4](./SPEC.md#4-format-flag-with-multiple-output-modes))
 
 ### Need to know which phase is slow?
-
 → Use `--show-phase-timing` ([#11](./SPEC.md#11-per-phase-timing-breakdown))
 
 ### Stop at first failure?
-
 → Use `--fail-fast` ([#15](./SPEC.md#15-failure-only-mode))
 
 ## Priority Matrix
@@ -133,9 +127,10 @@ Real-world usage examples:
 When implementing these improvements:
 
 1. Follow the specifications in [SPEC.md](./SPEC.md)
-1. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE.md)
-1. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
-1. Add examples to [EXAMPLES.md](./EXAMPLES.md)
+2. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE.md)
+3. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
+4. Follow implementation order in [IMPLEMENTATION.md](./IMPLEMENTATION.md)
+5. Add examples to [EXAMPLES.md](./EXAMPLES.md)
 
 ## Related Documentation
 
