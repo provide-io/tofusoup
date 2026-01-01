@@ -7,12 +7,11 @@
 
 import asyncio
 from time import monotonic
+from typing import Any
 
 from rich.console import Console
 from rich.live import Live
 from rich.table import Table
-
-from typing import Any
 
 from tofusoup.stir.config import PHASE_EMOJI
 

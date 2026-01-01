@@ -6,11 +6,10 @@
 
 import asyncio
 import sys
+from typing import Any
 
 import click
 from provide.foundation import logger
-
-from typing import Any
 
 from tofusoup.common.exceptions import TofuSoupError
 
