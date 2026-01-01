@@ -131,7 +131,7 @@ class TestDiscovery:
         Returns:
             List of test directories
         """
-        tests = []
+        tests: list[Path] = []
 
         # Check depth limit
         if self.max_depth is not None and depth > self.max_depth:
@@ -219,7 +219,7 @@ class TestDiscovery:
         """
         # Sort by path depth (shallow first)
         sorted_tests = sorted(tests, key=lambda p: len(p.parts))
-        deduplicated = []
+        deduplicated: list[Path] = []
 
         for test in sorted_tests:
             # Check if this test is a child of any already added test

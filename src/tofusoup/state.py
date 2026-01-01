@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import click
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 from provide.foundation import logger
 from rich.console import Console
 from rich.panel import Panel
@@ -32,7 +32,8 @@ def load_terraform_state(state_file: Path) -> dict[str, Any]:
     """Load and parse Terraform state file."""
     try:
         with state_file.open() as f:
-            return json.load(f)
+            result: dict[str, Any] = json.load(f)
+            return result
     except json.JSONDecodeError as e:
         raise click.ClickException(f"Invalid JSON in state file: {e}") from e
     except FileNotFoundError as e:
@@ -71,7 +72,7 @@ def decrypt_private_state(encrypted_private: str) -> dict[str, Any] | None:
         decrypted_bytes = decrypt(encrypted_bytes)
 
         # Unpack msgpack
-        private_data = msgpack.unpackb(decrypted_bytes, raw=False)
+        private_data: dict[str, Any] | None = msgpack.unpackb(decrypted_bytes, raw=False)
 
         return private_data
     except Exception as e:
@@ -180,7 +181,7 @@ def _get_target_resources(state: dict[str, Any], private_only: bool) -> list[dic
     return target_resources
 
 
-def _display_state_overview(target_resources: list, resources_with_private: list, private_only: bool) -> None:
+def _display_state_overview(target_resources: list[dict[str, Any]], resources_with_private: list[dict[str, Any]], private_only: bool) -> None:
     if private_only:
         console.print(f"[bold]Found {len(resources_with_private)} resources with private state:[/bold]\n")
     else:
