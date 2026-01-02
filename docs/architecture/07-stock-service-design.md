@@ -189,7 +189,7 @@ soup stock go client monitor "tf_state/*"
 3. **Performance**: Benchmark data for each language pair
 4. **Adoption**: Stock becomes the standard for gRPC testing in TofuSoup
 
-## Future Extensions
+## Exploratory Extensions
 
 1. **Additional Patterns**:
    - Request deadlines/timeouts

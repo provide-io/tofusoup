@@ -707,7 +707,7 @@ exporter.export(results)
 - ✅ Prevents overload
 - ❌ No I/O vs CPU awareness
 
-**Future Enhancement**: Adaptive parallelism
+**Exploratory Enhancement**: Adaptive parallelism
 - Detect I/O-bound vs CPU-bound tests
 - Adjust parallelism dynamically
 - Monitor system load
