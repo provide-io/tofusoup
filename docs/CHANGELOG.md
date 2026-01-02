@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
   - `soup state` command documentation with state inspection, decryption, and validation guides
   - Complete API documentation with extensive usage examples and integration patterns
 - **Documentation infrastructure**:
-  - Placeholder READMEs for future content (tutorials, development guides, production guides, examples)
+  - Placeholder READMEs for exploratory content (tutorials, development guides, production guides, examples; scope may change)
   - Historical documentation index at `docs/historical/README.md` explaining archived documents
   - Build artifact documentation for `harnesses/bin/` directory with troubleshooting
   - Configuration management guide with examples for dev/CI/production environments
