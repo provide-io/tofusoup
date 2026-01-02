@@ -1,6 +1,6 @@
 # Development Guides
 
-This directory is reserved for development-focused guides.
+This directory contains development-focused guides.
 
 ## Current Development Resources
 
@@ -11,9 +11,9 @@ For now, please refer to:
 - **[Architecture Documentation](../../architecture/01-overview.md)** - System design and architecture
 - **[Test Harness Development](../testing/test-harness-development.md)** - Building and testing harnesses
 
-## Planned Content
+## Additional Topics
 
-We plan to add guides for:
+Suggested additions:
 - Setting up a development environment
 - Understanding the codebase architecture
 - Extending TofuSoup with new components
