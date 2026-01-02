@@ -17,13 +17,19 @@ It provides:
 -   **A powerful Command-Line Interface (CLI):** For development, testing, data conversion, and interaction with test services.
 
 ## Key Features
-Key features are highlighted in the sections below and in the documentation.
+- Conformance test suite for Terraform and OpenTofu tooling.
+- CLI workflows for matrix testing and state inspection.
+- Harnesses and fixtures for cross-language compatibility testing.
 
 ## Quick Start
-For a quick start, see [docs/index.md](docs/index.md).
+1. Install: `pip install tofusoup`
+2. Read the [Quick Start guide](docs/getting-started/quick-start.md).
+3. Run sample tests from [docs/examples/README.md](docs/examples/README.md).
 
 ## Documentation
-Documentation lives in [docs/index.md](docs/index.md).
+- [Documentation index](docs/index.md)
+- [Getting started](docs/getting-started/index.md)
+- [CLI reference](docs/reference/cli.md)
 
 ## Development
 --------------
