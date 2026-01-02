@@ -277,4 +277,4 @@ Runs Pytest-based conformance test suites located in `conformance/`. Test behavi
         -   `guides/`: Step-by-step usage guides.
     -   **`tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).
 
-Copyright (c) Provide.io LLC.
+Copyright (c) provide.io LLC.
