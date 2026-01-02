@@ -36,7 +36,7 @@ jobs:
 
       - name: Install TofuSoup
         run: |
-          pip install tofusoup
+          uv tool install tofusoup
 
       - name: Run provider tests
         run: |
@@ -65,7 +65,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install tofusoup
+          uv tool install tofusoup
 
       - name: Run tests with JUnit output
         run: |
@@ -111,7 +111,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install TofuSoup
-        run: pip install tofusoup
+        run: uv tool install tofusoup
 
       - name: Run tests with GitHub format
         run: |
@@ -150,7 +150,7 @@ jobs:
           terraform_version: ${{ matrix.terraform_version }}
 
       - name: Install TofuSoup
-        run: pip install tofusoup
+        run: uv tool install tofusoup
 
       - name: Run tests
         run: |
@@ -188,7 +188,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install TofuSoup
-        run: pip install tofusoup
+        run: uv tool install tofusoup
 
       - name: Run tests
         id: tests
@@ -249,7 +249,7 @@ test:terraform:
   image: python:3.11
   timeout: 30m
   script:
-    - pip install tofusoup
+    - uv tool install tofusoup
     - soup stir tests/
 ```
 
@@ -267,7 +267,7 @@ test:provider:
   timeout: 30m
 
   script:
-    - pip install tofusoup
+    - uv tool install tofusoup
     - |
       soup stir \
         --junit-xml=results.xml \
@@ -303,7 +303,7 @@ stages:
   - test
 
 before_script:
-  - pip install tofusoup
+  - uv tool install tofusoup
 
 test:comprehensive:
   stage: test
@@ -347,7 +347,7 @@ stages:
   image: python:3.11
   timeout: 20m
   script:
-    - pip install tofusoup
+    - uv tool install tofusoup
     - soup stir --junit-xml=results-$TEST_SUITE.xml tests/$TEST_SUITE/
   artifacts:
     when: always
@@ -398,7 +398,7 @@ pipeline {
                 sh '''
                     python3 -m venv venv
                     . venv/bin/activate
-                    pip install tofusoup
+                    uv tool install tofusoup
                 '''
             }
         }
@@ -463,7 +463,7 @@ node {
         sh '''
             python3 -m venv venv
             . venv/bin/activate
-            pip install tofusoup
+            uv tool install tofusoup
         '''
     }
 
