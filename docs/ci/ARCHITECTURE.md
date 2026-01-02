@@ -731,7 +731,6 @@ ______________________________________________________________________
 - ❌ No I/O vs CPU awareness
 
 **Exploratory Enhancement**: Adaptive parallelism
-
 - Detect I/O-bound vs CPU-bound tests
 - Adjust parallelism dynamically
 - Monitor system load
