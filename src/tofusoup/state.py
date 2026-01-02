@@ -181,7 +181,9 @@ def _get_target_resources(state: dict[str, Any], private_only: bool) -> list[dic
     return target_resources
 
 
-def _display_state_overview(target_resources: list[dict[str, Any]], resources_with_private: list[dict[str, Any]], private_only: bool) -> None:
+def _display_state_overview(
+    target_resources: list[dict[str, Any]], resources_with_private: list[dict[str, Any]], private_only: bool
+) -> None:
     if private_only:
         console.print(f"[bold]Found {len(resources_with_private)} resources with private state:[/bold]\n")
     else:
