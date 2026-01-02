@@ -26,15 +26,10 @@ jobs:
       uses: astral-sh/setup-uv@v4
     
     - name: Install dependencies
-      run: |
-        uv venv
-        uv pip install -e .
-        uv pip install --python .venv/bin/python "wrknv @ https://github.com/provide-io/wrknv/releases/download/v0.3.0/wrknv-0.3.0-py3-none-any.whl"
+      run: uv sync --all-groups
 
     - name: Run tests
-      run: |
-        source .venv/bin/activate
-        we run test coverage xml
+      run: uv run pytest --cov=src --cov-report=xml --cov-report=term
     
     - name: Upload coverage
       uses: codecov/codecov-action@v3
@@ -58,15 +53,16 @@ jobs:
       uses: astral-sh/setup-uv@v4
     
     - name: Install dependencies
-      run: |
-        uv venv
-        uv pip install -e .
-        uv pip install --python .venv/bin/python "wrknv @ https://github.com/provide-io/wrknv/releases/download/v0.3.0/wrknv-0.3.0-py3-none-any.whl"
+      run: uv sync --all-groups
 
-    - name: Run quality checks
-      run: |
-        source .venv/bin/activate
-        we run quality
+    - name: Check formatting
+      run: uv run ruff format . --check
+
+    - name: Lint
+      run: uv run ruff check .
+
+    - name: Type check
+      run: uv run mypy src/
 
   build:
     name: 📦 Build Package
@@ -84,14 +80,10 @@ jobs:
       uses: astral-sh/setup-uv@v4
 
     - name: Install dependencies
-      run: |
-        uv venv
-        uv pip install -e .
+      run: uv sync
 
     - name: 📦 Build Package
-      run: |
-        source .venv/bin/activate
-        uv build
+      run: uv build
 
     - name: 📤 Upload Artifacts
       uses: actions/upload-artifact@v4
