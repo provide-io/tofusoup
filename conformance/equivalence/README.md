@@ -1,6 +1,7 @@
 # Tofusoup Equivalence Tests
 
 This document tracks the implementation status of the upstream Terraform equivalence tests.
+Path references in the table are captured from containerized runs and use `/app/...` prefixes; adjust for your local workspace layout.
 
 ## Test Status
 
