@@ -265,7 +265,6 @@ soup config show
 **Cause**: Matrix testing is an optional feature that requires `wrknv`.
 
 **Solution**:
-
 ```bash
 # Install wrknv from local source
 uv tool install /path/to/wrknv
