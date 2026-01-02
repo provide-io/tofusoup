@@ -16,6 +16,60 @@ It provides:
 -   **Go test harnesses:** Reference implementations for CTY, tfwire, and example RPC services.
 -   **A powerful Command-Line Interface (CLI):** For development, testing, data conversion, and interaction with test services.
 
+## Key Features
+Key features are highlighted in the sections below and in the documentation.
+
+## Quick Start
+For a quick start, see [docs/index.md](docs/index.md).
+
+## Documentation
+Documentation lives in [docs/index.md](docs/index.md).
+
+## Development
+--------------
+
+### Quick Start
+
+```bash
+# Set up environment
+uv sync
+
+# Run common tasks
+we test           # Run tests
+we lint           # Check code
+we format         # Format code
+we tasks          # See all available commands
+```
+
+### Available Commands
+
+This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
+
+**Common tasks:**
+- `we test` - Run all tests
+- `we test coverage` - Run tests with coverage
+- `we test parallel` - Run tests in parallel
+- `we lint` - Check code quality
+- `we lint fix` - Auto-fix linting issues
+- `we format` - Format code
+- `we typecheck` - Run type checker
+
+See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
+
+## Contributing
+------------
+
+Contributions are welcome! Please look for a `CONTRIBUTING.md` file (or create one if it doesn't exist) for guidelines. Key areas for contribution:
+
+-   Implementing the placeholder commands and test logic in the new CLI structure.
+-   Adding more test cases for CTY, HCL, RPC, and Wire.
+-   Developing or improving Rust and JavaScript test harnesses and drivers.
+-   Enhancing the CLI with new features or improved usability.
+-   Improving documentation and adding examples.
+
+## License
+See [LICENSE](LICENSE) for license details.
+
 ## Core Philosophy
 ---------------
 
@@ -216,45 +270,3 @@ Runs Pytest-based conformance test suites located in `conformance/`. Test behavi
         -   `architecture/`: Architecture and design documents.
         -   `guides/`: Step-by-step usage guides.
     -   **`tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).
-
-## Development
---------------
-
-### Quick Start
-
-```bash
-# Set up environment
-uv sync
-
-# Run common tasks
-we test           # Run tests
-we lint           # Check code
-we format         # Format code
-we tasks          # See all available commands
-```
-
-### Available Commands
-
-This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
-
-**Common tasks:**
-- `we test` - Run all tests
-- `we test coverage` - Run tests with coverage
-- `we test parallel` - Run tests in parallel
-- `we lint` - Check code quality
-- `we lint fix` - Auto-fix linting issues
-- `we format` - Format code
-- `we typecheck` - Run type checker
-
-See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
-
-## Contributing
-------------
-
-Contributions are welcome! Please look for a `CONTRIBUTING.md` file (or create one if it doesn't exist) for guidelines. Key areas for contribution:
-
--   Implementing the placeholder commands and test logic in the new CLI structure.
--   Adding more test cases for CTY, HCL, RPC, and Wire.
--   Developing or improving Rust and JavaScript test harnesses and drivers.
--   Enhancing the CLI with new features or improved usability.
--   Improving documentation and adding examples.
