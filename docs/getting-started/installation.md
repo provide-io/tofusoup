@@ -33,6 +33,24 @@ uv tool install tofusoup
 uv tool install "tofusoup[all]"
 ```
 
+**Using pipx (Alternative):**
+```bash
+# Install as isolated CLI tool
+pipx install tofusoup
+
+# With all features
+pipx install "tofusoup[all]"
+```
+
+**Using pip:**
+```bash
+# Basic installation
+uv tool install tofusoup
+
+# With all optional dependencies
+uv add tofusoup[all]
+```
+
 ### As a Library Dependency
 
 If you're integrating TofuSoup into your project:
@@ -87,7 +105,7 @@ TofuSoup has several optional dependency groups for specific features:
 ### CTY Support
 
 ```bash
-uv tool install tofusoup[cty]
+uv add tofusoup[cty]
 ```
 
 **Includes:**
@@ -106,7 +124,7 @@ soup cty convert input.json output.msgpack
 ### HCL Support
 
 ```bash
-uv tool install tofusoup[hcl]
+uv add tofusoup[hcl]
 ```
 
 **Includes:**
@@ -125,7 +143,7 @@ soup hcl to-json config.hcl output.json
 ### RPC Support
 
 ```bash
-uv tool install tofusoup[rpc]
+uv add tofusoup[rpc]
 ```
 
 **Includes:**
@@ -147,7 +165,7 @@ soup rpc kv get key
 The interactive Terminal UI (sui command) requires additional dependencies:
 
 ```bash
-uv tool install tofusoup[browser]
+uv add tofusoup[browser]
 ```
 
 **Features:**
@@ -167,7 +185,7 @@ sui  # Launch interactive browser
 Matrix testing across multiple Terraform/OpenTofu versions requires `wrknv`:
 
 ```bash
-# Install from local source
+# Install from local source (not yet on PyPI)
 uv pip install -e /path/to/wrknv
 ```
 
@@ -182,7 +200,7 @@ uv pip install -e /path/to/wrknv
 Install all optional dependencies at once:
 
 ```bash
-uv tool install tofusoup[all]
+uv add tofusoup[all]
 ```
 
 Includes: cty, hcl, rpc, and browser support.
@@ -454,10 +472,10 @@ Install required optional dependencies:
 
 ```bash
 # Install all extras
-uv tool install tofusoup[all]
+uv add tofusoup[all]
 
 # Or specific extras
-uv tool install tofusoup[cty,hcl,rpc]
+uv add tofusoup[cty,hcl,rpc]
 
 # Verify pyvider packages
 uv run python -c "import importlib.metadata as m; print(m.version('pyvider'))"
