@@ -48,7 +48,7 @@ pipx install "tofusoup[all]"
 uv tool install tofusoup
 
 # With all optional dependencies
-uv add tofusoup[all]
+uv tool install tofusoup[all]
 ```
 
 ### As a Library Dependency
@@ -57,10 +57,10 @@ If you're integrating TofuSoup into your project:
 
 **Using uv:**
 ```bash
-uv add tofusoup
+uv tool install tofusoup
 
 # Or with specific extras
-uv add "tofusoup[cty,hcl,rpc]"
+uv tool install tofusoup[cty,hcl,rpc]
 ```
 
 **In your `pyproject.toml`:**
@@ -103,7 +103,7 @@ TofuSoup has several optional dependency groups for specific features:
 ### CTY Support
 
 ```bash
-uv add tofusoup[cty]
+uv tool install tofusoup[cty]
 ```
 
 **Includes:**
@@ -120,7 +120,7 @@ soup cty convert input.json output.msgpack
 ### HCL Support
 
 ```bash
-uv add tofusoup[hcl]
+uv tool install tofusoup[hcl]
 ```
 
 **Includes:**
@@ -137,7 +137,7 @@ soup hcl to-json config.hcl output.json
 ### RPC Support
 
 ```bash
-uv add tofusoup[rpc]
+uv tool install tofusoup[rpc]
 ```
 
 **Includes:**
@@ -157,7 +157,7 @@ soup rpc kv get key
 The interactive Terminal UI (sui command) requires additional dependencies:
 
 ```bash
-uv add tofusoup[browser]
+uv tool install tofusoup[browser]
 ```
 
 **Features:**
@@ -189,7 +189,7 @@ uv pip install -e /path/to/wrknv
 Install all optional dependencies at once:
 
 ```bash
-uv add tofusoup[all]
+uv tool install tofusoup[all]
 ```
 
 Includes: cty, hcl, rpc, and browser support.
@@ -453,10 +453,10 @@ Install required optional dependencies:
 
 ```bash
 # Install all extras
-uv add tofusoup[all]
+uv tool install tofusoup[all]
 
 # Or specific extras
-uv add tofusoup[cty,hcl,rpc]
+uv tool install tofusoup[cty,hcl,rpc]
 
 # Verify pyvider packages
 pip list | grep pyvider
