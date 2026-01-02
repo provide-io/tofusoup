@@ -40,6 +40,6 @@ Flags:
 This strategy transforms the Go harnesses from simple, single-purpose test executables into a full-featured, language-specific implementation of the TofuSoup toolkit. This enables a powerful, symmetric testing model:
 
 -   **Python vs. Go**: The `soup test` command can invoke `soup-go` to get canonical outputs for comparison.
--   **Go vs. Python**: A future Go-based test runner could invoke the Python `soup` CLI to validate Go components.
+-   **Go vs. Python**: A potential Go-based test runner could invoke the Python `soup` CLI to validate Go components.
 
 This ensures that the entire toolchain, not just the underlying libraries, is conformant across languages.

@@ -575,7 +575,7 @@ Users don't need to change anything unless they want new features:
 
 ### Deprecation Policy
 
-No existing features are deprecated. If future versions need to change behavior:
+No existing features are deprecated. If later versions need to change behavior:
 
 1. **Announce**: Document in CHANGELOG
 2. **Warn**: Add deprecation warning (at least one major version)
@@ -586,7 +586,7 @@ No existing features are deprecated. If future versions need to change behavior:
 
 ## Extensibility Points
 
-The architecture provides several extension points for future enhancements:
+The architecture provides several extension points for potential enhancements:
 
 ### 1. Custom Renderers
 
@@ -722,7 +722,7 @@ Option 1: Stream JSON to stdout (current plan)
 - ✅ Simple, works for most cases
 - ❌ Memory usage for very large suites
 
-Option 2: Streaming JSON (future)
+Option 2: Streaming JSON (exploratory)
 - Use `ijson` or similar
 - Stream results as they complete
 - ✅ Constant memory
@@ -746,7 +746,7 @@ Option 2: Streaming JSON (future)
 Terraform logs may contain sensitive data. Consider:
 
 1. **Secrets in Errors**: Terraform errors might expose secrets
-   - Solution: Add `--sanitize-logs` flag (future enhancement)
+   - Solution: Add `--sanitize-logs` flag (exploratory enhancement)
    - Redact patterns like API keys, passwords
 
 2. **File Paths**: Full paths might expose directory structure
