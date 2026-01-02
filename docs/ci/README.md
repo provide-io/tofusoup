@@ -30,7 +30,7 @@ As of today, `soup stir`:
 
 This suite consists of the following documents:
 
-### 1. [SPEC.md](./SPEC/) - Feature Specifications
+### 1. [SPEC.md](./SPEC.md) - Feature Specifications
 Complete technical specifications for all 15 improvements including:
 - Feature descriptions
 - Acceptance criteria
@@ -39,7 +39,7 @@ Complete technical specifications for all 15 improvements including:
 - Configuration options
 - Priority and effort estimates
 
-### 2. [ARCHITECTURE.md](./ARCHITECTURE/) - Architecture & Design
+### 2. [ARCHITECTURE.md](./ARCHITECTURE.md) - Architecture & Design
 Architectural decisions and design patterns:
 - CI/CD detection mechanism
 - Output format plugin architecture
@@ -47,7 +47,7 @@ Architectural decisions and design patterns:
 - Backwards compatibility strategy
 - Extensibility points
 
-### 3. [OUTPUT_FORMATS.md](./OUTPUT_FORMATS/) - Output Format Specifications
+### 3. [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md) - Output Format Specifications
 Detailed specifications for all output formats:
 - JSON schema and examples
 - JUnit XML schema and examples
@@ -55,7 +55,7 @@ Detailed specifications for all output formats:
 - Plain text format
 - TAP (Test Anything Protocol) format
 
-### 4. [IMPLEMENTATION.md](./IMPLEMENTATION/) - Implementation Guide
+### 4. [IMPLEMENTATION.md](./IMPLEMENTATION.md) - Implementation Guide
 Step-by-step implementation guide:
 - Implementation phases and order
 - Files to modify per improvement
@@ -63,7 +63,7 @@ Step-by-step implementation guide:
 - Testing strategy
 - Rollout plan
 
-### 5. [API_REFERENCE.md](./API_REFERENCE/) - API & CLI Reference
+### 5. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
 Complete reference documentation:
 - All new CLI flags and arguments
 - Environment variable reference
@@ -71,7 +71,7 @@ Complete reference documentation:
 - Exit codes
 - Signal handling
 
-### 6. [EXAMPLES.md](./EXAMPLES/) - Practical Examples
+### 6. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
 Real-world usage examples:
 - GitHub Actions workflows
 - GitLab CI pipelines
@@ -82,31 +82,31 @@ Real-world usage examples:
 ## Quick Reference: Which Improvement to Use When
 
 ### Running in GitHub Actions?
-→ Use `--format=github` for native annotations ([#4](./SPEC/#4-format-flag-with-multiple-output-modes))
+→ Use `--format=github` for native annotations ([#4](./SPEC.md#4-format-flag-with-multiple-output-modes))
 
 ### Need test results in CI dashboard?
-→ Use `--junit-xml=results.xml` ([#3](./SPEC/#3-junit-xml-output))
+→ Use `--junit-xml=results.xml` ([#3](./SPEC.md#3-junit-xml-output))
 
 ### Need to parse results programmatically?
-→ Use `--json` ([#2](./SPEC/#2-json-output-for-standard-mode))
+→ Use `--json` ([#2](./SPEC.md#2-json-output-for-standard-mode))
 
 ### Tests running too long?
-→ Use `--timeout=600 --test-timeout=300` ([#5](./SPEC/#5-timeout-controls))
+→ Use `--timeout=600 --test-timeout=300` ([#5](./SPEC.md#5-timeout-controls))
 
 ### Want cleaner CI logs?
-→ Auto-detects CI and adapts ([#1](./SPEC/#1-auto-detect-cicd-environments))
+→ Auto-detects CI and adapts ([#1](./SPEC.md#1-auto-detect-cicd-environments))
 
 ### Debugging test failures?
-→ Use `--jobs=1 --stream-logs` ([#6](./SPEC/#6-parallelism-control), [#9](./SPEC/#9-log-aggregation-streaming))
+→ Use `--jobs=1 --stream-logs` ([#6](./SPEC.md#6-parallelism-control), [#9](./SPEC.md#9-log-aggregation-streaming))
 
 ### Want minimal noise in CI?
-→ Use `--format=quiet` or `--format=plain` ([#4](./SPEC/#4-format-flag-with-multiple-output-modes))
+→ Use `--format=quiet` or `--format=plain` ([#4](./SPEC.md#4-format-flag-with-multiple-output-modes))
 
 ### Need to know which phase is slow?
-→ Use `--show-phase-timing` ([#11](./SPEC/#11-per-phase-timing-breakdown))
+→ Use `--show-phase-timing` ([#11](./SPEC.md#11-per-phase-timing-breakdown))
 
 ### Stop at first failure?
-→ Use `--fail-fast` ([#15](./SPEC/#15-failure-only-mode))
+→ Use `--fail-fast` ([#15](./SPEC.md#15-failure-only-mode))
 
 ## Priority Matrix
 
@@ -151,17 +151,17 @@ Power user features:
 
 When implementing these improvements:
 
-1. Follow the specifications in [SPEC.md](./SPEC/)
-2. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE/)
-3. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS/)
-4. Follow implementation order in [IMPLEMENTATION.md](./IMPLEMENTATION/)
-5. Add examples to [EXAMPLES.md](./EXAMPLES/)
+1. Follow the specifications in [SPEC.md](./SPEC.md)
+2. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE.md)
+3. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
+4. Follow implementation order in [IMPLEMENTATION.md](./IMPLEMENTATION.md)
+5. Add examples to [EXAMPLES.md](./EXAMPLES.md)
 
 ## Related Documentation
 
-- [soup stir command reference](../commands/stir/) _(if exists)_
-- [Matrix testing documentation](../matrix-testing/) _(if exists)_
-- [TofuSoup configuration](../configuration/) _(if exists)_
+- [soup stir command reference](../reference/cli.md#soup-stir) _(if exists)_
+- [Matrix testing documentation](../guides/cli-usage/matrix-testing.md) _(if exists)_
+- [TofuSoup configuration](../reference/configuration.md) _(if exists)_
 
 ## Feedback & Questions
 

@@ -8,8 +8,8 @@ For now, please refer to:
 
 - **CONTRIBUTING.md** (project root) - Contributing guidelines and development setup
 - **CLAUDE.md** (project root) - Development notes and project structure
-- **[Architecture Documentation](../../architecture/01-overview/)** - System design and architecture
-- **[Test Harness Development](../testing/test-harness-development/)** - Building and testing harnesses
+- **[Architecture Documentation](../../architecture/01-overview.md)** - System design and architecture
+- **[Test Harness Development](../testing/test-harness-development.md)** - Building and testing harnesses
 
 ## Planned Content
 

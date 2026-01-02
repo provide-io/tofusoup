@@ -16,6 +16,66 @@ It provides:
 -   **Go test harnesses:** Reference implementations for CTY, tfwire, and example RPC services.
 -   **A powerful Command-Line Interface (CLI):** For development, testing, data conversion, and interaction with test services.
 
+## Key Features
+- Conformance test suite for Terraform and OpenTofu tooling.
+- CLI workflows for matrix testing and state inspection.
+- Harnesses and fixtures for cross-language compatibility testing.
+
+## Quick Start
+1. Install: `pip install tofusoup`
+2. Read the [Quick Start guide](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/quick-start.md).
+3. Run sample tests from [docs/examples/README.md](https://github.com/provide-io/tofusoup/blob/main/docs/examples/README.md).
+
+## Documentation
+- [Documentation index](https://github.com/provide-io/tofusoup/blob/main/docs/index.md)
+- [Getting started](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/index.md)
+- [CLI reference](https://github.com/provide-io/tofusoup/blob/main/docs/reference/cli.md)
+
+## Development
+--------------
+
+### Quick Start
+
+```bash
+# Set up environment
+uv sync
+
+# Run common tasks
+we test           # Run tests
+we lint           # Check code
+we format         # Format code
+we tasks          # See all available commands
+```
+
+### Available Commands
+
+This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
+
+**Common tasks:**
+- `we test` - Run all tests
+- `we test coverage` - Run tests with coverage
+- `we test parallel` - Run tests in parallel
+- `we lint` - Check code quality
+- `we lint fix` - Auto-fix linting issues
+- `we format` - Format code
+- `we typecheck` - Run type checker
+
+See [CLAUDE.md](https://github.com/provide-io/tofusoup/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
+
+## Contributing
+------------
+
+Contributions are welcome! Please look for a `CONTRIBUTING.md` file (or create one if it doesn't exist) for guidelines. Key areas for contribution:
+
+-   Implementing the placeholder commands and test logic in the new CLI structure.
+-   Adding more test cases for CTY, HCL, RPC, and Wire.
+-   Developing or improving Rust and JavaScript test harnesses and drivers.
+-   Enhancing the CLI with new features or improved usability.
+-   Improving documentation and adding examples.
+
+## License
+See [LICENSE](https://github.com/provide-io/tofusoup/blob/main/LICENSE) for license details.
+
 ## Core Philosophy
 ---------------
 
@@ -217,44 +277,4 @@ Runs Pytest-based conformance test suites located in `conformance/`. Test behavi
         -   `guides/`: Step-by-step usage guides.
     -   **`tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).
 
-## Development
---------------
-
-### Quick Start
-
-```bash
-# Set up environment
-uv sync
-
-# Run common tasks
-we test           # Run tests
-we lint           # Check code
-we format         # Format code
-we tasks          # See all available commands
-```
-
-### Available Commands
-
-This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
-
-**Common tasks:**
-- `we test` - Run all tests
-- `we test coverage` - Run tests with coverage
-- `we test parallel` - Run tests in parallel
-- `we lint` - Check code quality
-- `we lint fix` - Auto-fix linting issues
-- `we format` - Format code
-- `we typecheck` - Run type checker
-
-See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
-
-## Contributing
-------------
-
-Contributions are welcome! Please look for a `CONTRIBUTING.md` file (or create one if it doesn't exist) for guidelines. Key areas for contribution:
-
--   Implementing the placeholder commands and test logic in the new CLI structure.
--   Adding more test cases for CTY, HCL, RPC, and Wire.
--   Developing or improving Rust and JavaScript test harnesses and drivers.
--   Enhancing the CLI with new features or improved usability.
--   Improving documentation and adding examples.
+Copyright (c) Provide.io LLC.

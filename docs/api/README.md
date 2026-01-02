@@ -6,7 +6,7 @@ This directory is reserved for detailed API documentation.
 
 API reference documentation is available at:
 
-- **[API Reference](../reference/api/index/)** - Auto-generated API documentation using mkdocstrings
+- **[API Reference](../reference/api/index.md)** - Auto-generated API documentation using mkdocstrings
 
 ## Using TofuSoup as a Library
 
@@ -19,7 +19,7 @@ from tofusoup.wire.logic import encode_wire, decode_wire
 from tofusoup.common.config import load_tofusoup_config
 ```
 
-See the [API Reference](../reference/api/index/) for complete module documentation.
+See the [API Reference](../reference/api/index.md) for complete module documentation.
 
 ## Planned Content
 

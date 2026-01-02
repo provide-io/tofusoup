@@ -6,7 +6,7 @@ This directory is reserved for future step-by-step tutorials.
 
 While tutorials are being developed, please refer to:
 
-- **[Quick Start Guide](../getting-started/quick-start/)** - Get started with TofuSoup quickly
+- **[Quick Start Guide](../getting-started/quick-start.md)** - Get started with TofuSoup quickly
 - **[CLI Usage Guides](../guides/cli-usage/)** - Detailed command usage guides
 - **[Testing Guides](../guides/testing/)** - How to run and write conformance tests
 
