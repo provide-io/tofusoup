@@ -23,13 +23,13 @@ It provides:
 
 ## Quick Start
 1. Install: `pip install tofusoup`
-2. Read the [Quick Start guide](docs/getting-started/quick-start.md).
-3. Run sample tests from [docs/examples/README.md](docs/examples/README.md).
+2. Read the [Quick Start guide](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/quick-start.md).
+3. Run sample tests from [docs/examples/README.md](https://github.com/provide-io/tofusoup/blob/main/docs/examples/README.md).
 
 ## Documentation
-- [Documentation index](docs/index.md)
-- [Getting started](docs/getting-started/index.md)
-- [CLI reference](docs/reference/cli.md)
+- [Documentation index](https://github.com/provide-io/tofusoup/blob/main/docs/index.md)
+- [Getting started](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/index.md)
+- [CLI reference](https://github.com/provide-io/tofusoup/blob/main/docs/reference/cli.md)
 
 ## Development
 --------------
@@ -60,7 +60,7 @@ This project uses `wrknv` for task automation. Run `we tasks` to see all availab
 - `we format` - Format code
 - `we typecheck` - Run type checker
 
-See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
+See [CLAUDE.md](https://github.com/provide-io/tofusoup/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
 
 ## Contributing
 ------------
@@ -74,7 +74,7 @@ Contributions are welcome! Please look for a `CONTRIBUTING.md` file (or create o
 -   Improving documentation and adding examples.
 
 ## License
-See [LICENSE](LICENSE) for license details.
+See [LICENSE](https://github.com/provide-io/tofusoup/blob/main/LICENSE) for license details.
 
 ## Core Philosophy
 ---------------
@@ -276,3 +276,5 @@ Runs Pytest-based conformance test suites located in `conformance/`. Test behavi
         -   `architecture/`: Architecture and design documents.
         -   `guides/`: Step-by-step usage guides.
     -   **`tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).
+
+Copyright (c) Provide.io LLC.
