@@ -1,6 +1,6 @@
 # Production Guides
 
-This directory is reserved for production deployment and operation guides.
+This directory contains production deployment and operation guides.
 
 ## Current Resources
 
@@ -11,9 +11,9 @@ For production use, refer to:
 - **[Matrix Testing Guide](../cli-usage/matrix-testing.md)** - Testing across multiple versions
 - **[State Inspection](../cli-usage/state-inspection.md)** - Production state management
 
-## Planned Content
+## Additional Topics
 
-We plan to add guides for:
+Suggested additions:
 - Deploying TofuSoup in CI/CD pipelines
 - Production configuration best practices
 - Monitoring and observability

@@ -1,6 +1,6 @@
 # API Documentation
 
-This directory is reserved for detailed API documentation.
+This directory contains API documentation for TofuSoup.
 
 ## Current API Documentation
 
@@ -21,10 +21,10 @@ from tofusoup.common.config import load_tofusoup_config
 
 See the [API Reference](../reference/api/index.md) for complete module documentation.
 
-## Planned Content
+## Additional Topics
 
-We plan to add:
-- Detailed module-by-module API guides
+Suggested additions:
+- Module-by-module API guides
 - Integration patterns and best practices
 - Library usage examples
 - Advanced customization guides
