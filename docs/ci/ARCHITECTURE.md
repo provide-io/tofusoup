@@ -748,7 +748,6 @@ Option 1: Stream JSON to stdout (current plan)
 - ❌ Memory usage for very large suites
 
 Option 2: Streaming JSON (exploratory)
-
 - Use `ijson` or similar
 - Stream results as they complete
 - ✅ Constant memory
@@ -773,7 +772,6 @@ ______________________________________________________________________
 Terraform logs may contain sensitive data. Consider:
 
 1. **Secrets in Errors**: Terraform errors might expose secrets
-
    - Solution: Add `--sanitize-logs` flag (exploratory enhancement)
    - Redact patterns like API keys, passwords
 
