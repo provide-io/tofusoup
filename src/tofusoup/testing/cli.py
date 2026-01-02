@@ -6,6 +6,7 @@
 
 import asyncio
 import sys
+from typing import Any
 
 import click
 from provide.foundation import logger
@@ -19,7 +20,7 @@ from .logic import (
 )
 
 
-def _print_results_report(results: list) -> None:
+def _print_results_report(results: list[Any]) -> None:
     """Prints a summary table and detailed failure report."""
 
 
