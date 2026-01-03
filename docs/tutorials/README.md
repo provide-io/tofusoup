@@ -1,6 +1,6 @@
 # Tutorials
 
-This directory is reserved for future step-by-step tutorials.
+This directory collects step-by-step tutorials for TofuSoup.
 
 ## Current Documentation
 
@@ -10,9 +10,9 @@ While tutorials are being developed, please refer to:
 - **[CLI Usage Guides](../guides/cli-usage/)** - Detailed command usage guides
 - **[Testing Guides](../guides/testing/)** - How to run and write conformance tests
 
-## Planned Tutorials
+## Additional Topics
 
-We plan to add tutorials covering:
+Suggested tutorials for contributors:
 - Building your first conformance test
 - Creating a custom test harness
 - Integrating TofuSoup into CI/CD
