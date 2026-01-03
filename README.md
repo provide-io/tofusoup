@@ -28,7 +28,7 @@ It provides:
 
 ## Documentation
 - [Documentation index](https://github.com/provide-io/tofusoup/blob/main/docs/index.md)
-- [Getting started](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/index.md)
+- [Getting started](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/quick-start.md)
 - [CLI reference](https://github.com/provide-io/tofusoup/blob/main/docs/reference/cli.md)
 
 ## Development
