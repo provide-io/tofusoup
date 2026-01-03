@@ -40,8 +40,8 @@ Common issues and solutions when using TofuSoup.
 cd /path/to/tofusoup
 uv sync
 
-# For pip installations
-pip install --upgrade tofusoup[all]
+# For tool installations
+uv tool install "tofusoup[all]"
 ```
 
 ## Harness Issues
@@ -164,7 +164,7 @@ soup harness verify-cli soup-go --verbose
 **Solution**:
 This is a known issue with unknown values. Update `pyvider-cty`:
 ```bash
-pip install --upgrade pyvider-cty
+uv add pyvider-cty
 ```
 
 ## Performance Issues
@@ -240,11 +240,11 @@ soup config show
 
 **Solution**:
 ```bash
-# Install wrknv from local source (not yet on PyPI)
-pip install -e /path/to/wrknv
+# Install wrknv from local source
+uv tool install /path/to/wrknv
 
-# Or if published to PyPI
-pip install wrknv
+# Or from PyPI
+uv tool install wrknv
 ```
 
 **Note**: Regular `soup stir` (without `--matrix`) works without this dependency.

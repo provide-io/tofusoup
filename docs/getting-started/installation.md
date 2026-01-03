@@ -45,10 +45,10 @@ pipx install "tofusoup[all]"
 **Using pip:**
 ```bash
 # Basic installation
-pip install tofusoup
+uv tool install tofusoup
 
 # With all optional dependencies
-pip install "tofusoup[all]"
+uv tool install tofusoup[all]
 ```
 
 ### As a Library Dependency
@@ -57,10 +57,10 @@ If you're integrating TofuSoup into your project:
 
 **Using uv:**
 ```bash
-uv add tofusoup
+uv tool install tofusoup
 
 # Or with specific extras
-uv add "tofusoup[cty,hcl,rpc]"
+uv tool install tofusoup[cty,hcl,rpc]
 ```
 
 **In your `pyproject.toml`:**
@@ -103,7 +103,7 @@ TofuSoup has several optional dependency groups for specific features:
 ### CTY Support
 
 ```bash
-pip install "tofusoup[cty]"
+uv tool install tofusoup[cty]
 ```
 
 **Includes:**
@@ -120,7 +120,7 @@ soup cty convert input.json output.msgpack
 ### HCL Support
 
 ```bash
-pip install "tofusoup[hcl]"
+uv tool install tofusoup[hcl]
 ```
 
 **Includes:**
@@ -137,7 +137,7 @@ soup hcl to-json config.hcl output.json
 ### RPC Support
 
 ```bash
-pip install "tofusoup[rpc]"
+uv tool install tofusoup[rpc]
 ```
 
 **Includes:**
@@ -157,7 +157,7 @@ soup rpc kv get key
 The interactive Terminal UI (sui command) requires additional dependencies:
 
 ```bash
-pip install "tofusoup[browser]"
+uv tool install tofusoup[browser]
 ```
 
 **Features:**
@@ -176,7 +176,7 @@ Matrix testing across multiple Terraform/OpenTofu versions requires `wrknv`:
 
 ```bash
 # Install from local source (not yet on PyPI)
-pip install -e /path/to/wrknv
+uv pip install -e /path/to/wrknv
 ```
 
 **Features:**
@@ -189,7 +189,7 @@ pip install -e /path/to/wrknv
 Install all optional dependencies at once:
 
 ```bash
-pip install "tofusoup[all]"
+uv tool install tofusoup[all]
 ```
 
 Includes: cty, hcl, rpc, and browser support.
@@ -453,10 +453,10 @@ Install required optional dependencies:
 
 ```bash
 # Install all extras
-pip install "tofusoup[all]"
+uv tool install tofusoup[all]
 
 # Or specific extras
-pip install "tofusoup[cty,hcl,rpc]"
+uv tool install tofusoup[cty,hcl,rpc]
 
 # Verify pyvider packages
 pip list | grep pyvider
