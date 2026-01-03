@@ -29,7 +29,7 @@ This document details the compatibility matrix for cross-language RPC connection
 
 **Related Issues**:
 - pyvider-rpcplugin: Incompatibility with go-plugin server TLS handshake
-- Expected to be resolved in future pyvider releases
+- Expected to be addressed in later pyvider releases; timing may change or be removed
 
 ## Elliptic Curve Support
 
@@ -168,12 +168,12 @@ Supported curves for Python: secp256r1, secp384r1
 Original error: TimeoutError: Connection timeout
 ```
 
-## Future Improvements
+## Exploratory Improvements
 
-Planned enhancements to the compatibility matrix:
+Exploratory enhancements to the compatibility matrix:
 
 1. **Fix Python → Go connection** (pyvider-rpcplugin update needed)
-2. **Add Rust client/server support** (future runtime)
+2. **Add Rust client/server support** (exploratory runtime)
 3. **Add secp521r1 support for Python** (requires grpcio update or alternative)
 4. **Enhanced curve negotiation** (automatic downgrade for compatibility)
 
