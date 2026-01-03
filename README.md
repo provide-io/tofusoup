@@ -22,7 +22,7 @@ It provides:
 - Harnesses and fixtures for cross-language compatibility testing.
 
 ## Quick Start
-1. Install: `pip install tofusoup`
+1. Install: `uv tool install tofusoup`
 2. Read the [Quick Start guide](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/quick-start.md).
 3. Run sample tests from [docs/examples/README.md](https://github.com/provide-io/tofusoup/blob/main/docs/examples/README.md).
 
@@ -277,4 +277,4 @@ Runs Pytest-based conformance test suites located in `conformance/`. Test behavi
         -   `guides/`: Step-by-step usage guides.
     -   **`tests/`**: General Python unit/integration tests for TofuSoup's own CLI and core Python functionalities (distinct from cross-language conformance tests).
 
-Copyright (c) Provide.io LLC.
+Copyright (c) provide.io LLC.
