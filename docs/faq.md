@@ -19,7 +19,7 @@ No. TofuSoup is an independent project by provide.io that helps ensure compatibi
 ### How do I install TofuSoup?
 
 ```bash
-pip install tofusoup
+uv tool install tofusoup
 ```
 
 See [Installation Guide](getting-started/installation/) for details.

@@ -895,7 +895,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
       - name: Install
-        run: pip install -e .
+        run: uv pip install -e .
       - name: Test CI detection
         run: |
           # Should auto-use plain format in CI
