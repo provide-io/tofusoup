@@ -22,7 +22,7 @@ TofuSoup provides CLI tools and testing frameworks for working with Terraform-re
 Install from PyPI:
 
 ```console
-$ pip install tofusoup
+$ uv tool install tofusoup
 ```
 
 Or for development:
@@ -113,7 +113,7 @@ Test providers across multiple Terraform/OpenTofu versions with parallel executi
 
 **Commands**: `soup stir <path>`, `soup stir <path> --matrix`
 
-**Note**: Requires optional `wrknv` package: `pip install -e /path/to/wrknv`
+**Note**: Requires optional `wrknv` package: `uv pip install -e /path/to/wrknv`
 
 ### Registry Operations
 Query and browse Terraform/OpenTofu registries with CLI or interactive TUI.
