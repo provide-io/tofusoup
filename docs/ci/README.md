@@ -116,11 +116,11 @@ Real-world usage examples:
 
 ## Priority Matrix
 
-| Priority      | Count | Improvements                                                                                    |
-| ------------- | ----- | ----------------------------------------------------------------------------------------------- |
-| 🔥 **High**   | 6     | CI Detection, JSON Output, JUnit XML, Format Flag, Timeouts, Parallelism Control                |
-| 🟡 **Medium** | 7     | Timestamps, Error Fields, Log Aggregation, Summary File, Phase Timing, Progress %, Refresh Rate |
-| 🟢 **Low**    | 2     | Color Control, Fail-fast                                                                        |
+| Priority | Count | Improvements |
+|----------|-------|--------------|
+| 🔥 **High** | 6 | CI Detection, JSON Output, JUnit XML, Format Flag, Timeouts, Parallelism Control |
+| 🟡 **Medium** | 7 | Timestamps, Error Fields, Log Aggregation, Summary File, Phase Timing, Progress %, Refresh Rate |
+| 🟢 **Low** | 2 | Color Control, Fail-fast |
 
 ## Contributing
 
