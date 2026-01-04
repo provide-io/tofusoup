@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
+"""Pytest fixtures for TofuSoup conformance."""
 
 import logging
 
