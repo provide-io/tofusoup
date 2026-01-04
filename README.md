@@ -71,7 +71,7 @@ See [CLAUDE.md](https://github.com/provide-io/tofusoup/blob/main/CLAUDE.md) for 
 
 Contributions are welcome! Please look for a `CONTRIBUTING.md` file (or create one if it doesn't exist) for guidelines. Key areas for contribution:
 
--   Implementing the placeholder commands and test logic in the new CLI structure.
+-   Implementing missing commands and test logic in the new CLI structure.
 -   Adding more test cases for CTY, HCL, RPC, and Wire.
 -   Developing or improving Rust and JavaScript test harnesses and drivers.
 -   Enhancing the CLI with new features or improved usability.
