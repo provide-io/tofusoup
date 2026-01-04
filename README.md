@@ -232,7 +232,7 @@ Commands to list, build/setup, verify, and clean test harnesses (e.g., Go execut
         -   `soup harness build --language go --force-rebuild`
 
 -   **`soup harness verify-cli [<harness_names...>] [--language <lang>] [--all]`**
-    -   Verifies basic CLI functionality of primarily Go harnesses using `scripts/verify_harness_cli.py`. Default targets from `soup.toml` or all applicable.
+    -   Verifies basic CLI functionality of primarily Go harnesses via pytest suites under `conformance/cli_verification/`. Default targets from `soup.toml` or all applicable.
 
 -   **`soup harness clean [<harness_names...>] [--language <lang>] [--all]`**
     -   Removes built harness artifacts. Default targets from `soup.toml` or all.
