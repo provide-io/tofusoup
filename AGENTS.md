@@ -25,13 +25,51 @@ The project focuses on ensuring compatibility between Go, Python, and other lang
 uv sync
 ```
 
+## Task Runner
+
+This project uses `wrknv` for task automation. Commands are defined in `wrknv.toml`.
+
+### Quick Reference
+```bash
+we tasks             # List all available tasks
+we run test          # Run tests
+we run lint          # Check code quality
+we run format        # Format code
+we run typecheck     # Type checking
+we run build         # Build package
+```
+
+All tasks can be run with `we run <task>`. Nested tasks use dotted names (e.g., `we run test.coverage`).
+
+### Task Discovery
+
+Run `we tasks` to see the complete task tree for this project. Common task hierarchies:
+
+```bash
+we run test                # Run all tests
+we run test.unit           # Run only unit tests (if configured)
+we run test.coverage       # Run tests with coverage
+we run test.parallel       # Run tests in parallel
+```
+
 ## Common Development Commands
 
 ```bash
 # Environment setup
 uv sync                                 # Set up development environment
 
-# Testing
+# Primary workflow (using we)
+we run test                             # Run all tests
+we run test.coverage                    # Run with coverage report
+we run test.parallel                    # Run tests in parallel
+we run lint                             # Check code quality
+we run lint.fix                         # Auto-fix linting issues
+we run format                           # Format code
+we run format.check                     # Check formatting without changes
+we run typecheck                        # Run type checker
+we run build                            # Build distribution
+
+# Alternative (direct uv commands)
 uv run pytest                           # Direct test execution
 uv run pytest conformance/              # Run conformance tests
 uv run pytest tests/                    # Run unit tests
