@@ -7,7 +7,7 @@ The `soup stir` command is a powerful tool for running parallel integration test
 Matrix testing is an **optional feature** that requires the `wrknv` package:
 
 ```bash
-# Install wrknv from PyPI (when available)
+# Install wrknv from PyPI
 uv tool install wrknv
 
 # Or install from local source (development)
