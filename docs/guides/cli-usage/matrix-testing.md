@@ -14,7 +14,7 @@ uv tool install wrknv
 uv pip install -e /path/to/wrknv
 ```
 
-**Note**: All other TofuSoup features work without `wrknv`. Only the `soup stir --matrix` flag requires this dependency. The `wrknv` package is not yet published to PyPI and must be installed separately.
+**Note**: All other TofuSoup features work without `wrknv`. Only the `soup stir --matrix` flag requires this dependency. Install `wrknv` separately.
 
 ## What is Matrix Testing?
 
