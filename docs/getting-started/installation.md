@@ -194,7 +194,7 @@ uv tool install tofusoup[all]
 
 Includes: cty, hcl, rpc, and browser support.
 
-**Note**: Matrix testing (`wrknv`) requires separate installation as it's not on PyPI yet.
+**Note**: Matrix testing (`wrknv`) requires separate installation.
 
 ## Building Test Harnesses
 
