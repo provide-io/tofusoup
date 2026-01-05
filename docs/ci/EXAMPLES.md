@@ -981,9 +981,9 @@ jq '.tests[] | {name: .name, duration: .duration_seconds}' results-*.json
 
 ## Additional Resources
 
-- [SPEC.md](./SPEC/) - Complete specifications
-- [API_REFERENCE.md](./API_REFERENCE/) - All flags and options
-- [OUTPUT_FORMATS.md](./OUTPUT_FORMATS/) - Output format details
+- [SPEC.md](./SPEC.md) - Complete specifications
+- [API_REFERENCE.md](./API_REFERENCE.md) - All flags and options
+- [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md) - Output format details
 
 ---
 

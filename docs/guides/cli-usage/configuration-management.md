@@ -166,6 +166,6 @@ timeout_seconds = 600
 
 ## See Also
 
-- [Configuration Reference](../../reference/configuration/) - Complete configuration file documentation
-- [Troubleshooting](../../troubleshooting/) - Common configuration issues
-- [Quick Start](../../getting-started/quick-start/) - Basic configuration examples
+- [Configuration Reference](../../reference/configuration.md) - Complete configuration file documentation
+- [Troubleshooting](../../troubleshooting.md) - Common configuration issues
+- [Quick Start](../../getting-started/quick-start.md) - Basic configuration examples
