@@ -13,13 +13,13 @@ Common issues and solutions when using TofuSoup.
 1. Verify installation:
 
    ```bash
-   uv run python -c "import importlib.metadata as m; print(m.version('tofusoup'))"
+   uv pip list | grep tofusoup
    ```
 
 1. Check Python bin is in PATH:
 
    ```bash
-   uv run python -c "import importlib.metadata as m; print(m.version('tofusoup'))"
+   python -m uv pip show tofusoup
    which soup
    ```
 
