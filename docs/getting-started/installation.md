@@ -418,7 +418,7 @@ Ensure the package is installed and your PATH includes Python's bin directory:
 
 ```bash
 # Check installation
-uv run python -c "import importlib.metadata as m; print(m.version('tofusoup'))"
+uv pip list | grep tofusoup
 
 # Find soup executable
 which soup
@@ -461,7 +461,7 @@ uv tool install tofusoup[all]
 uv tool install tofusoup[cty,hcl,rpc]
 
 # Verify pyvider packages
-uv run python -c "import importlib.metadata as m; print(m.version('pyvider'))"
+uv pip list | grep pyvider
 ```
 
 #### Conformance test failures
