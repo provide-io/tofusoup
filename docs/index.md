@@ -75,7 +75,6 @@ Understand how provide-foundation, pyvider, flavorpack, and other projects work 
 
 ## Documentation
 
-- **[Architecture](architecture/01-overview.md)**: System design and architecture
 - **[Guides](guides/testing/01-running-conformance-tests.md)**: Step-by-step tutorials
 - **[CLI Reference](reference/cli.md)**: Complete command reference
 - **[Configuration](reference/configuration.md)**: soup.toml configuration reference
@@ -144,4 +143,4 @@ See the [Configuration Reference](reference/configuration.md) for complete detai
 
 ---
 
-**Ready to get started?** Check out the [Architecture Overview](architecture/01-overview.md) or dive into the [CLI Reference](reference/cli.md).
+**Ready to get started?** Dive into the [CLI Reference](reference/cli.md).
