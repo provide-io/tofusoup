@@ -482,6 +482,5 @@ $ soup test --help
 ```
 
 For more information, see:
-
 - [Testing Guide](../guides/testing/01-running-conformance-tests.md)
 - [Configuration Reference](configuration.md)
