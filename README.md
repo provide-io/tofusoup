@@ -16,12 +16,16 @@ It provides:
 -   **Go test harnesses:** Reference implementations for CTY, tfwire, and example RPC services.
 -   **A powerful Command-Line Interface (CLI):** For development, testing, data conversion, and interaction with test services.
 
-## Key Features
-- Conformance test suite for Terraform and OpenTofu tooling.
-- CLI workflows for matrix testing and state inspection.
-- Harnesses and fixtures for cross-language compatibility testing.
+## ✨ Key Features
+
+- 🧪 **Conformance Testing** - Test suite for Terraform and OpenTofu tooling
+- 🔄 **Matrix Testing** - CLI workflows for multi-version testing and state inspection
+- 🔗 **Cross-Language Compatibility** - Harnesses and fixtures for Python/Go interoperability
 
 ## Quick Start
+
+> **Note**: tofusoup is in pre-release (v0.x.x). APIs and features may change before 1.0 release.
+
 1. Install: `uv tool install tofusoup`
 2. Read the [Quick Start guide](https://github.com/provide-io/tofusoup/blob/main/docs/getting-started/quick-start.md).
 3. Run sample tests from [docs/examples/README.md](https://github.com/provide-io/tofusoup/blob/main/docs/examples/README.md).
@@ -228,7 +232,7 @@ Commands to list, build/setup, verify, and clean test harnesses (e.g., Go execut
         -   `soup harness build --language go --force-rebuild`
 
 -   **`soup harness verify-cli [<harness_names...>] [--language <lang>] [--all]`**
-    -   Verifies basic CLI functionality of primarily Go harnesses using `scripts/verify_harness_cli.py`. Default targets from `soup.toml` or all applicable.
+    -   Verifies basic CLI functionality of primarily Go harnesses via pytest suites under `conformance/cli_verification/`. Default targets from `soup.toml` or all applicable.
 
 -   **`soup harness clean [<harness_names...>] [--language <lang>] [--all]`**
     -   Removes built harness artifacts. Default targets from `soup.toml` or all.
