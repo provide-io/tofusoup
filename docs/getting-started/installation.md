@@ -175,7 +175,7 @@ sui  # Launch interactive browser
 Matrix testing across multiple Terraform/OpenTofu versions requires `wrknv`:
 
 ```bash
-# Install from local source (not yet on PyPI)
+# Install from local source
 uv pip install -e /path/to/wrknv
 ```
 
