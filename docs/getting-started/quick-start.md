@@ -6,7 +6,7 @@ Get up and running with TofuSoup in minutes.
 
 - TofuSoup installed (see [Installation](installation/))
 - Python 3.11+
-- Go 1.21+ (for harness operations)
+- Go 1.24+ (for harness operations)
 
 ## Your First TofuSoup Commands
 

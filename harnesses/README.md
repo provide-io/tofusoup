@@ -57,7 +57,7 @@ The unified Go harness providing:
 
 ## Prerequisites
 
-- **Go 1.21+**: Required to build harnesses
+- **Go 1.24+**: Required to build harnesses
 - **Python 3.11+**: For TofuSoup CLI
 
 ## Troubleshooting
