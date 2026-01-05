@@ -8,7 +8,8 @@ Get started with TofuSoup, a cross-language conformance testing suite and toolin
 
 --8\<-- ".provide/foundry/docs/\_partials/go-requirements.md"
 
-!!! info "Go Required for Test Harnesses" Go 1.24+ is required to build test harnesses for cross-language compatibility testing. If you only need the Python CLI tools without harness building, Go is optional.
+!!! info "Go Required for Test Harnesses"
+    Go 1.24+ is required to build test harnesses for cross-language compatibility testing. If you only need the Python CLI tools without harness building, Go is optional.
 
 --8\<-- ".provide/foundry/docs/\_partials/uv-installation.md"
 
