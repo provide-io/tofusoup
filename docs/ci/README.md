@@ -55,15 +55,7 @@ Detailed specifications for all output formats:
 - Plain text format
 - TAP (Test Anything Protocol) format
 
-### 4. [IMPLEMENTATION.md](./IMPLEMENTATION.md) - Implementation Guide
-Step-by-step implementation guide:
-- Implementation phases and order
-- Files to modify per improvement
-- Dependencies between features
-- Testing strategy
-- Rollout plan
-
-### 5. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
+### 4. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
 Complete reference documentation:
 - All new CLI flags and arguments
 - Environment variable reference
@@ -71,7 +63,7 @@ Complete reference documentation:
 - Exit codes
 - Signal handling
 
-### 6. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
+### 5. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
 Real-world usage examples:
 - GitHub Actions workflows
 - GitLab CI pipelines
@@ -123,8 +115,7 @@ When implementing these improvements:
 1. Follow the specifications in [SPEC.md](./SPEC.md)
 2. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE.md)
 3. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
-4. Follow implementation order in [IMPLEMENTATION.md](./IMPLEMENTATION.md)
-5. Add examples to [EXAMPLES.md](./EXAMPLES.md)
+4. Add examples to [EXAMPLES.md](./EXAMPLES.md)
 
 ## Related Documentation
 
