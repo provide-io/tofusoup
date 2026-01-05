@@ -11,12 +11,12 @@ Common issues and solutions when using TofuSoup.
 **Solutions**:
 1. Verify installation:
    ```bash
-   pip list | grep tofusoup
+   uv pip list | grep tofusoup
    ```
 
 2. Check Python bin is in PATH:
    ```bash
-   python -m pip show tofusoup
+   python -m uv pip show tofusoup
    which soup
    ```
 
