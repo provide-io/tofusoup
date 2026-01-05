@@ -11,7 +11,7 @@ Matrix testing is an **optional feature** that requires the `wrknv` package:
 uv tool install wrknv
 
 # Or install from local source (development)
-uv pip install -e /path/to/wrknv
+uv add --editable /path/to/wrknv
 ```
 
 **Note**: All other TofuSoup features work without `wrknv`. Only the `soup stir --matrix` flag requires this dependency. Install `wrknv` separately.

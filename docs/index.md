@@ -113,7 +113,7 @@ Test providers across multiple Terraform/OpenTofu versions with parallel executi
 
 **Commands**: `soup stir <path>`, `soup stir <path> --matrix`
 
-**Note**: Requires optional `wrknv` package: `uv pip install -e /path/to/wrknv`
+**Note**: Requires optional `wrknv` package: `uv add --editable /path/to/wrknv`
 
 ### Registry Operations
 Query and browse Terraform/OpenTofu registries with CLI or interactive TUI.
