@@ -99,7 +99,7 @@ class VersionMatrix:
             raise ImportError(
                 "Matrix testing requires the 'wrknv' package.\n"
                 "Install with: uv tool install wrknv\n"
-                "Or install from source: uv add --editable /path/to/wrknv"
+                "Or install from source: uv pip install -e /path/to/wrknv"
             )
 
         self.config = config or create_workenv_config_with_soup()
@@ -397,7 +397,7 @@ async def run_matrix_stir_tests(
         raise ImportError(
             "Matrix testing requires the 'wrknv' package.\n"
             "Install with: uv tool install wrknv\n"
-            "Or install from source: uv add --editable /path/to/wrknv"
+            "Or install from source: uv pip install -e /path/to/wrknv"
         )
 
     if config is None:
