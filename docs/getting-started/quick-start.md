@@ -4,7 +4,7 @@ Get up and running with TofuSoup in minutes.
 
 ## Prerequisites
 
-- TofuSoup installed (see [Installation](installation/))
+- TofuSoup installed (see [Installation](installation.md))
 - Python 3.11+
 - Go 1.24+ (for harness operations)
 
@@ -180,28 +180,28 @@ terraform = ["1.6.0"]
 tofu = ["1.8.0"]
 ```
 
-See [Configuration Reference](../reference/configuration/) for all options.
+See [Configuration Reference](../reference/configuration.md) for all options.
 
 ## Next Steps
 
 ### Learn Core Concepts
-- [Architecture](../core-concepts/architecture/)
-- [Conformance Testing](../core-concepts/conformance-testing/)
+- [Architecture](../core-concepts/architecture.md)
+- [Conformance Testing](../core-concepts/conformance-testing.md)
 
 ### Follow Detailed Guides
-- [Using CTY and HCL Tools](../guides/cli-usage/03-using-cty-and-hcl-tools/)
-- [Wire Protocol Operations](../guides/cli-usage/wire-protocol/)
-- [Running Conformance Tests](../guides/testing/01-running-conformance-tests/)
-- [Matrix Testing](../guides/cli-usage/matrix-testing/)
+- [Using CTY and HCL Tools](../guides/cli-usage/03-using-cty-and-hcl-tools.md)
+- [Wire Protocol Operations](../guides/cli-usage/wire-protocol.md)
+- [Running Conformance Tests](../guides/testing/01-running-conformance-tests.md)
+- [Matrix Testing](../guides/cli-usage/matrix-testing.md)
 
 ### Reference Documentation
-- [API Reference](../reference/api/index/)
-- [Configuration](../reference/configuration/)
-- [Compatibility Matrix](../reference/compatibility-matrix/)
+- [API Reference](../reference/api/index.md)
+- [Configuration](../reference/configuration.md)
+- [Compatibility Matrix](../reference/compatibility-matrix.md)
 
 ## Getting Help
 
 - **CLI Help**: `soup <command> --help`
-- **[FAQ](../faq/)**: Frequently asked questions
-- **[Troubleshooting](../troubleshooting/)**: Common issues and solutions
+- **[FAQ](../faq.md)**: Frequently asked questions
+- **[Troubleshooting](../troubleshooting.md)**: Common issues and solutions
 - **[GitHub Issues](https://github.com/provide-io/tofusoup/issues)**: Report bugs or request features

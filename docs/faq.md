@@ -4,7 +4,7 @@
 
 ### What is TofuSoup?
 
-TofuSoup is a cross-language conformance testing suite for the OpenTofu/Terraform ecosystem. See [What is TofuSoup?](getting-started/what-is-tofusoup/) for details.
+TofuSoup is a cross-language conformance testing suite for the OpenTofu/Terraform ecosystem. See [What is TofuSoup?](getting-started/what-is-tofusoup.md) for details.
 
 ### Who should use TofuSoup?
 
@@ -22,7 +22,7 @@ No. TofuSoup is an independent project by provide.io that helps ensure compatibi
 uv tool install tofusoup
 ```
 
-See [Installation Guide](getting-started/installation/) for details.
+See [Installation Guide](getting-started/installation.md) for details.
 
 ### Do I need Go installed?
 
@@ -42,7 +42,7 @@ soup test cty          # Test CTY compatibility
 soup test rpc          # Test RPC compatibility
 ```
 
-See [Running Conformance Tests](guides/testing/01-running-conformance-tests/).
+See [Running Conformance Tests](guides/testing/01-running-conformance-tests.md).
 
 ### How do I test across multiple Terraform versions?
 
@@ -52,7 +52,7 @@ Use the `stir` command with matrix testing:
 soup stir tests/ --matrix
 ```
 
-Configure versions in `soup.toml`. See [Matrix Testing](guides/cli-usage/matrix-testing/).
+Configure versions in `soup.toml`. See [Matrix Testing](guides/cli-usage/matrix-testing.md).
 
 ### Can I use TofuSoup in CI/CD?
 
@@ -67,15 +67,15 @@ This usually means the Go server harness isn't starting properly. Check:
 2. Harnesses are built: `soup harness build --all`
 3. Firewall isn't blocking connections
 
-See [Troubleshooting](troubleshooting/) for more.
+See [Troubleshooting](troubleshooting.md) for more.
 
 ### Binary mismatch errors in wire tests
 
-This indicates Python and Go implementations are producing different binary output. This is a real compatibility issue that needs investigation. See the [Wire Protocol Guide](guides/cli-usage/wire-protocol/).
+This indicates Python and Go implementations are producing different binary output. This is a real compatibility issue that needs investigation. See the [Wire Protocol Guide](guides/cli-usage/wire-protocol.md).
 
 ### Command not found: soup
 
-Ensure Python's bin directory is in your PATH. See [Installation Troubleshooting](getting-started/installation/#troubleshooting).
+Ensure Python's bin directory is in your PATH. See [Installation Troubleshooting](getting-started/installation.md#troubleshooting).
 
 ## Development
 
@@ -107,6 +107,6 @@ TofuSoup's CLI tools work with any language. The conformance tests currently foc
 
 ## More Questions?
 
-- Check [Troubleshooting](troubleshooting/)
+- Check [Troubleshooting](troubleshooting.md)
 - Browse [GitHub Issues](https://github.com/provide-io/tofusoup/issues)
-- Read the [Glossary](glossary/) for term definitions
+- Read the [Glossary](glossary.md) for term definitions

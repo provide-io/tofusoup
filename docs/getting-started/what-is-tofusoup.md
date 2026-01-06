@@ -103,9 +103,9 @@ TofuSoup follows a modular architecture:
 
 ## Next Steps
 
-- **[Installation](installation/)**: Get TofuSoup installed and configured
-- **[Quick Start](quick-start/)**: Run your first conformance test
-- **[Core Concepts](../core-concepts/architecture/)**: Deep dive into the architecture
+- **[Installation](installation.md)**: Get TofuSoup installed and configured
+- **[Quick Start](quick-start.md)**: Run your first conformance test
+- **[Core Concepts](../core-concepts/architecture.md)**: Deep dive into the architecture
 
 ## Related Projects
 

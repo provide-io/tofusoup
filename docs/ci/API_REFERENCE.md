@@ -44,7 +44,7 @@ soup stir --format=github tests/  # In GitHub Actions
 **Conflicts**:
 - Mutually exclusive with `--json` (use `--format=json` instead)
 
-**See Also**: [OUTPUT_FORMATS.md](./OUTPUT_FORMATS/)
+**See Also**: [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
 
 ---
 
@@ -112,7 +112,7 @@ soup stir --junit-xml=/tmp/test-results/soup-stir.xml tests/
 - File is overwritten if it exists
 - Can be used simultaneously with other output formats
 
-**See Also**: [OUTPUT_FORMATS.md#junit-xml-format](./OUTPUT_FORMATS/#junit-xml-format)
+**See Also**: [OUTPUT_FORMATS.md#junit-xml-format](./OUTPUT_FORMATS.md#junit-xml-format)
 
 ---
 

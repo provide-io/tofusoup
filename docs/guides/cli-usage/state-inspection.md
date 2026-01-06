@@ -297,4 +297,4 @@ Use `terraform state` for public attributes and `soup state` for private state d
 
 - [Pyvider Documentation](https://github.com/provide-io/pyvider) - Provider framework with private state support
 - [Terraform State](https://www.terraform.io/docs/language/state/index.html) - Official Terraform state documentation
-- [Troubleshooting](../../troubleshooting/) - Common issues and solutions
+- [Troubleshooting](../../troubleshooting.md) - Common issues and solutions

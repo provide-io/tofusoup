@@ -198,12 +198,12 @@ soup harness build soup-go
 If you encounter issues during migration:
 
 1. Check this migration guide
-2. Review [Troubleshooting](../troubleshooting/)
-3. Check [FAQ](../faq/)
+2. Review [Troubleshooting](../troubleshooting.md)
+3. Check [FAQ](../faq.md)
 4. Open an issue on [GitHub](https://github.com/provide-io/tofusoup/issues)
 
 ## See Also
 
-- [Configuration Reference](../reference/configuration/)
-- [Test Harness Development](testing/test-harness-development/)
-- [Quick Start Guide](../getting-started/quick-start/)
+- [Configuration Reference](../reference/configuration.md)
+- [Test Harness Development](testing/test-harness-development.md)
+- [Quick Start Guide](../getting-started/quick-start.md)

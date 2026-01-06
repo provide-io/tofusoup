@@ -384,7 +384,7 @@ test_dir = "conformance/rpc"
 markers = ["rpc", "cross_language"]
 ```
 
-See [Configuration Reference](../reference/configuration/) for complete details.
+See [Configuration Reference](../reference/configuration.md) for complete details.
 
 ## Troubleshooting
 
@@ -493,21 +493,21 @@ If you encounter issues:
 
 ### Quick Start
 
-1. **[Quick Start Guide](quick-start/)** - Run your first TofuSoup commands
-2. **[What is TofuSoup?](what-is-tofusoup/)** - Learn about capabilities and use cases
-3. **[Configuration Reference](../reference/configuration/)** - Complete configuration guide
+1. **[Quick Start Guide](quick-start.md)** - Run your first TofuSoup commands
+2. **[What is TofuSoup?](what-is-tofusoup.md)** - Learn about capabilities and use cases
+3. **[Configuration Reference](../reference/configuration.md)** - Complete configuration guide
 
 ### Core Features
 
-- **[CTY Operations](../guides/cli-usage/03-using-cty-and-hcl-tools/)** - Working with Terraform's type system
-- **[Wire Protocol](../guides/cli-usage/wire-protocol/)** - Encoding and decoding wire protocol messages
-- **[Matrix Testing](../guides/cli-usage/matrix-testing/)** - Testing across Terraform/OpenTofu versions
-- **[RPC Testing](../guides/testing/01-running-conformance-tests/)** - Cross-language RPC compatibility
+- **[CTY Operations](../guides/cli-usage/03-using-cty-and-hcl-tools.md)** - Working with Terraform's type system
+- **[Wire Protocol](../guides/cli-usage/wire-protocol.md)** - Encoding and decoding wire protocol messages
+- **[Matrix Testing](../guides/cli-usage/matrix-testing.md)** - Testing across Terraform/OpenTofu versions
+- **[RPC Testing](../guides/testing/01-running-conformance-tests.md)** - Cross-language RPC compatibility
 
 ### Advanced Topics
 
-- **[Harness Development](../guides/testing/test-harness-development/)** - Creating custom test harnesses
-- **[Conformance Testing](../core-concepts/conformance-testing/)** - Testing strategy and patterns
-- **[Architecture](../architecture/01-overview/)** - System architecture and design
+- **[Harness Development](../guides/testing/test-harness-development.md)** - Creating custom test harnesses
+- **[Conformance Testing](../core-concepts/conformance-testing.md)** - Testing strategy and patterns
+- **[Architecture](../architecture/01-overview.md)** - System architecture and design
 
-Ready to start testing? Check out the [Quick Start Guide](quick-start/)!
+Ready to start testing? Check out the [Quick Start Guide](quick-start.md)!

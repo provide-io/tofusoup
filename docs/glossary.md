@@ -94,7 +94,7 @@ Definitions of terms used in TofuSoup and the Terraform ecosystem.
 
 ## Related Resources
 
-- [Core Concepts](core-concepts/architecture/)
-- [What is TofuSoup?](getting-started/what-is-tofusoup/)
-- [FAQ](faq/)
+- [Core Concepts](core-concepts/architecture.md)
+- [What is TofuSoup?](getting-started/what-is-tofusoup.md)
+- [FAQ](faq.md)
 - [Terraform Glossary](https://www.terraform.io/docs/glossary)

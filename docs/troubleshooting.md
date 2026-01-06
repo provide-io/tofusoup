@@ -313,7 +313,7 @@ soup/output/cli_verification/
 
 If you can't resolve the issue:
 
-1. Check [FAQ](faq/)
+1. Check [FAQ](faq.md)
 2. Search [GitHub Issues](https://github.com/provide-io/tofusoup/issues)
 3. Create a new issue with:
    - TofuSoup version (`soup --version`)
@@ -324,6 +324,6 @@ If you can't resolve the issue:
 
 ## See Also
 
-- [FAQ](faq/)
-- [Installation Guide](getting-started/installation/)
-- [Configuration Reference](reference/configuration/)
+- [FAQ](faq.md)
+- [Installation Guide](getting-started/installation.md)
+- [Configuration Reference](reference/configuration.md)
