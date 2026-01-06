@@ -55,15 +55,7 @@ Detailed specifications for all output formats:
 - Plain text format
 - TAP (Test Anything Protocol) format
 
-### 4. [IMPLEMENTATION.md](./IMPLEMENTATION.md) - Implementation Guide
-Step-by-step implementation guide:
-- Implementation phases and order
-- Files to modify per improvement
-- Dependencies between features
-- Testing strategy
-- Rollout plan
-
-### 5. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
+### 4. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
 Complete reference documentation:
 - All new CLI flags and arguments
 - Environment variable reference
@@ -71,7 +63,7 @@ Complete reference documentation:
 - Exit codes
 - Signal handling
 
-### 6. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
+### 5. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
 Real-world usage examples:
 - GitHub Actions workflows
 - GitLab CI pipelines
@@ -116,37 +108,6 @@ Real-world usage examples:
 | 🟡 **Medium** | 7 | Timestamps, Error Fields, Log Aggregation, Summary File, Phase Timing, Progress %, Refresh Rate |
 | 🟢 **Low** | 2 | Color Control, Fail-fast |
 
-## Implementation Roadmap
-
-### Phase 1: Quick Wins (1-2 days)
-Priority improvements that provide immediate value with minimal effort:
-- #1 CI/CD Auto-Detection
-- #2 JSON Output
-- #6 Parallelism Control
-- #7 Timestamps
-- #14 Color Control
-
-### Phase 2: Core CI Features (3-5 days)
-Essential CI/CD integrations:
-- #3 JUnit XML
-- #4 Format Flag
-- #5 Timeout Controls
-- #8 Error Field Population
-- #10 Summary File
-
-### Phase 3: Enhanced UX (3-4 days)
-Improved observability and diagnostics:
-- #11 Per-Phase Timing
-- #12 Progress Percentage
-- #15 Fail-fast Mode
-
-### Phase 4: Advanced Features (5-7 days)
-Power user features:
-- #9 Log Aggregation & Streaming
-- #13 Configurable Refresh Rate
-
-**Total Estimated Effort**: 12-18 days
-
 ## Contributing
 
 When implementing these improvements:
@@ -154,8 +115,7 @@ When implementing these improvements:
 1. Follow the specifications in [SPEC.md](./SPEC.md)
 2. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE.md)
 3. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
-4. Follow implementation order in [IMPLEMENTATION.md](./IMPLEMENTATION.md)
-5. Add examples to [EXAMPLES.md](./EXAMPLES.md)
+4. Add examples to [EXAMPLES.md](./EXAMPLES.md)
 
 ## Related Documentation
 

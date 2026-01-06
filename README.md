@@ -45,9 +45,9 @@ It provides:
 uv sync
 
 # Run common tasks
-we test           # Run tests
-we lint           # Check code
-we format         # Format code
+we run test       # Run tests
+we run lint       # Check code
+we run format     # Format code
 we tasks          # See all available commands
 ```
 
@@ -56,12 +56,12 @@ we tasks          # See all available commands
 This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
 
 **Common tasks:**
-- `we test` - Run all tests
-- `we test coverage` - Run tests with coverage
-- `we test parallel` - Run tests in parallel
-- `we lint` - Check code quality
-- `we lint fix` - Auto-fix linting issues
-- `we format` - Format code
+- `we run test` - Run all tests
+- `we run test.coverage` - Run tests with coverage
+- `we run test.parallel` - Run tests in parallel
+- `we run lint` - Check code quality
+- `we run lint.fix` - Auto-fix linting issues
+- `we run format` - Format code
 - `we typecheck` - Run type checker
 
 See [CLAUDE.md](https://github.com/provide-io/tofusoup/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
@@ -71,7 +71,7 @@ See [CLAUDE.md](https://github.com/provide-io/tofusoup/blob/main/CLAUDE.md) for 
 
 Contributions are welcome! Please look for a `CONTRIBUTING.md` file (or create one if it doesn't exist) for guidelines. Key areas for contribution:
 
--   Implementing the placeholder commands and test logic in the new CLI structure.
+-   Implementing missing commands and test logic in the new CLI structure.
 -   Adding more test cases for CTY, HCL, RPC, and Wire.
 -   Developing or improving Rust and JavaScript test harnesses and drivers.
 -   Enhancing the CLI with new features or improved usability.

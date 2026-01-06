@@ -29,7 +29,7 @@ This document details the compatibility matrix for cross-language RPC connection
 
 **Related Issues**:
 - pyvider-rpcplugin: Incompatibility with go-plugin server TLS handshake
-- Expected to be addressed in later pyvider releases; timing may change or be removed
+- Expected to be addressed in later pyvider releases; availability may change or be removed
 
 ## Elliptic Curve Support
 

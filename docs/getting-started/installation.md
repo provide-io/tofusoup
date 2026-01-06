@@ -175,7 +175,7 @@ sui  # Launch interactive browser
 Matrix testing across multiple Terraform/OpenTofu versions requires `wrknv`:
 
 ```bash
-# Install from local source (not yet on PyPI)
+# Install from local source
 uv pip install -e /path/to/wrknv
 ```
 
@@ -194,7 +194,7 @@ uv tool install tofusoup[all]
 
 Includes: cty, hcl, rpc, and browser support.
 
-**Note**: Matrix testing (`wrknv`) requires separate installation as it's not on PyPI yet.
+**Note**: Matrix testing (`wrknv`) requires separate installation.
 
 ## Building Test Harnesses
 
