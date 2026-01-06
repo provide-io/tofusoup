@@ -33,34 +33,16 @@ uv tool install tofusoup
 uv tool install "tofusoup[all]"
 ```
 
-**Using pipx (Alternative):**
-```bash
-# Install as isolated CLI tool
-pipx install tofusoup
-
-# With all features
-pipx install "tofusoup[all]"
-```
-
-**Using pip:**
-```bash
-# Basic installation
-uv tool install tofusoup
-
-# With all optional dependencies
-uv tool install tofusoup[all]
-```
-
 ### As a Library Dependency
 
 If you're integrating TofuSoup into your project:
 
 **Using uv:**
 ```bash
-uv tool install tofusoup
+uv add tofusoup
 
 # Or with specific extras
-uv tool install tofusoup[cty,hcl,rpc]
+uv add "tofusoup[cty,hcl,rpc]"
 ```
 
 **In your `pyproject.toml`:**
@@ -416,7 +398,7 @@ Ensure the package is installed and your PATH includes Python's bin directory:
 
 ```bash
 # Check installation
-pip list | grep tofusoup
+uv pip list | grep tofusoup
 
 # Find soup executable
 which soup
@@ -459,7 +441,7 @@ uv tool install tofusoup[all]
 uv tool install tofusoup[cty,hcl,rpc]
 
 # Verify pyvider packages
-pip list | grep pyvider
+uv pip list | grep pyvider
 ```
 
 #### Conformance test failures
