@@ -158,7 +158,7 @@ Matrix testing across multiple Terraform/OpenTofu versions requires `wrknv`:
 
 ```bash
 # Install from local source
-uv add --editable /path/to/wrknv
+uv pip install -e /path/to/wrknv
 ```
 
 **Features:**
@@ -508,6 +508,5 @@ If you encounter issues:
 
 - **[Harness Development](../guides/testing/test-harness-development.md)** - Creating custom test harnesses
 - **[Conformance Testing](../core-concepts/conformance-testing.md)** - Testing strategy and patterns
-- **[Architecture](../architecture/01-overview.md)** - System architecture and design
 
 Ready to start testing? Check out the [Quick Start Guide](quick-start.md)!
