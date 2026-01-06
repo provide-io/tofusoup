@@ -68,7 +68,7 @@ def skip_integration_if_missing(request: Item) -> None:
         if request.node.get_closest_marker(marker_name) and importlib.util.find_spec(module_name) is None:
             pytest.skip(
                 f"Test requires '{package_name}' integration. "
-                f"Install with: pip install tofusoup[{package_name}]"
+                f"Install with: uv add tofusoup[{package_name}]"
             )
 
 
