@@ -179,7 +179,6 @@ Exploratory enhancements to the compatibility matrix:
 
 ## Related Documentation
 
-- [RPC Matrix Specification](../architecture/03-rpc-matrix-specification.md)
 - [Running Conformance Tests](../guides/testing/01-running-conformance-tests.md)
 - [Cross-Language Compatibility](../testing/cross-language-compatibility.md)
 - [pyvider-rpcplugin Documentation](https://github.com/provide-io/pyvider)

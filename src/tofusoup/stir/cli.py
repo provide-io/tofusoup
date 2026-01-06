@@ -233,7 +233,7 @@ def stir_cli(
                     console.print(
                         "[bold red]Error:[/bold red] Matrix testing requires the 'wrknv' package.\n"
                         "[yellow]Install with:[/yellow] uv tool install wrknv\n"
-                        "[yellow]Or from source:[/yellow] uv add --editable /path/to/wrknv"
+                        "[yellow]Or from source:[/yellow] uv pip install -e /path/to/wrknv"
                     )
                     sys.exit(1)
 
@@ -253,7 +253,7 @@ def stir_cli(
                 console.print(
                     f"[bold red]Error:[/bold red] {e}\n"
                     "[yellow]Matrix testing is an optional feature.[/yellow]\n"
-                    "[yellow]Install with:[/yellow] uv tool install wrknv or uv add --editable /path/to/wrknv"
+                    "[yellow]Install with:[/yellow] uv tool install wrknv or uv pip install -e /path/to/wrknv"
                 )
                 sys.exit(1)
         else:

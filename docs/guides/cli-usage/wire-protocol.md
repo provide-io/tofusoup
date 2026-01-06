@@ -249,7 +249,6 @@ pytest conformance/wire/test_performance.py
 
 ## Reference
 
-- [Wire Protocol Details](../../architecture/05-wire-protocol-details.md)
 - [CTY and HCL Tools](03-using-cty-and-hcl-tools.md)
 - [Conformance Testing](../testing/01-running-conformance-tests.md)
 - [Pyvider Wire Documentation](https://github.com/provide-io/pyvider)
