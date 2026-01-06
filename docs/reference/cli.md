@@ -228,7 +228,7 @@ $ soup stir tests/stir_cases --tools terraform:1.5.0,opentofu:1.6.0
 # Test with specific tool versions
 ```
 
-**Note**: Matrix testing requires the optional `wrknv` package. Install separately: `uv add --editable /path/to/wrknv`
+**Note**: Matrix testing requires the optional `wrknv` package. Install separately: `uv pip install -e /path/to/wrknv`
 
 ## Registry Commands
 
@@ -478,6 +478,5 @@ $ soup test --help
 ```
 
 For more information, see:
-- [Architecture Documentation](../architecture/01-overview.md)
 - [Testing Guide](../guides/testing/01-running-conformance-tests.md)
 - [Configuration Reference](configuration.md)

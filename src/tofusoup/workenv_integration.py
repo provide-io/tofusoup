@@ -67,7 +67,7 @@ def create_workenv_config_with_soup(project_root: Path | None = None) -> Any:
         raise ImportError(
             "wrknv package is not installed. "
             "Matrix testing features require wrknv. "
-            "Install with: uv tool install wrknv (or uv add --editable /path/to/wrknv)"
+            "Install with: uv tool install wrknv (or uv pip install -e /path/to/wrknv)"
         )
 
     # Load soup.toml
