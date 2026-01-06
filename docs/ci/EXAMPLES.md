@@ -292,11 +292,11 @@ test:provider:
 # .gitlab-ci.yml
 
 variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
 
 cache:
   paths:
-    - .cache/pip
+    - .cache/uv
     - .terraform.d/plugin-cache
 
 stages:
@@ -519,9 +519,14 @@ jobs:
     steps:
       - checkout
 
-      - python/install-packages:
-          pkg-manager: pip
-          args: tofusoup
+      - run:
+          name: Install uv
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            export PATH="$HOME/.local/bin:$PATH"
+      - run:
+          name: Install tofusoup
+          command: uv tool install tofusoup
 
       - run:
           name: Run provider tests
@@ -566,9 +571,14 @@ jobs:
     steps:
       - checkout
 
-      - python/install-packages:
-          pkg-manager: pip
-          args: tofusoup
+      - run:
+          name: Install uv
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            export PATH="$HOME/.local/bin:$PATH"
+      - run:
+          name: Install tofusoup
+          command: uv tool install tofusoup
 
       - run:
           name: Run << parameters.suite >> tests
