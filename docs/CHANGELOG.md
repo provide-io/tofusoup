@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 - **Matrix testing is now optional** - `wrknv` package no longer required for basic TofuSoup usage
   - Only `soup stir --matrix` flag requires wrknv installation
   - Graceful degradation with clear error messages if wrknv not installed
-  - Install separately: `uv tool install wrknv` or `uv pip install -e /path/to/wrknv`
+  - Install separately: `uv tool install wrknv` or `uv add --editable /path/to/wrknv`
 - **Updated all package references** from `wrkenv` to `wrknv` throughout codebase
 - **Conformance test documentation** updated to reflect actual directory structure (not aspirational)
 - **Matrix testing documentation** completely rewritten:

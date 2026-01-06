@@ -40,14 +40,14 @@ except ImportError:
 def format_cty_type_friendly_name(ty: CtyType) -> str:
     """Provides a string representation of a CtyType."""
     if not HAS_CTY:
-        raise ImportError("CTY support requires 'pip install tofusoup[cty]'")
+        raise ImportError("CTY support requires 'uv add tofusoup[cty]'")
     return str(ty)
 
 
 def cty_value_to_json_comparable_dict(val: CtyValue) -> dict[str, Any]:
     """Converts a CtyValue to a JSON-comparable dict for Rich tree rendering."""
     if not HAS_CTY:
-        raise ImportError("CTY support requires 'pip install tofusoup[cty]'")
+        raise ImportError("CTY support requires 'uv add tofusoup[cty]'")
     # FIX: Call is_unknown() and is_null() as methods.
     if val.is_unknown():
         return {
@@ -91,11 +91,11 @@ def cty_value_to_json_comparable_dict(val: CtyValue) -> dict[str, Any]:
 def load_cty_file_to_cty_value(filepath: str, file_format: str) -> CtyValue:
     """Loads a data file (JSON, Msgpack, HCL) and converts it to a CtyValue."""
     if not HAS_CTY:
-        raise ImportError("CTY support requires 'pip install tofusoup[cty]'")
+        raise ImportError("CTY support requires 'uv add tofusoup[cty]'")
 
     if file_format == "hcl":
         if not HAS_HCL:
-            raise ImportError("HCL support requires 'pip install tofusoup[hcl]'")
+            raise ImportError("HCL support requires 'uv add tofusoup[hcl]'")
         try:
             hcl_content = pathlib.Path(filepath).read_text(encoding="utf-8")
             return parse_hcl_to_cty(hcl_content)
@@ -121,7 +121,7 @@ def load_cty_file_to_cty_value(filepath: str, file_format: str) -> CtyValue:
 def dump_cty_value_to_json_string(value: CtyValue, pretty: bool = True) -> str:
     """Converts a CtyValue to a JSON string."""
     if not HAS_CTY:
-        raise ImportError("CTY support requires 'pip install tofusoup[cty]'")
+        raise ImportError("CTY support requires 'uv add tofusoup[cty]'")
     native_value = cty_to_native(value)
     return dump_python_to_json_string(native_value, pretty=pretty)
 
@@ -129,7 +129,7 @@ def dump_cty_value_to_json_string(value: CtyValue, pretty: bool = True) -> str:
 def dump_cty_value_to_msgpack_bytes(value: CtyValue) -> bytes:
     """Converts a CtyValue to MessagePack bytes."""
     if not HAS_CTY:
-        raise ImportError("CTY support requires 'pip install tofusoup[cty]'")
+        raise ImportError("CTY support requires 'uv add tofusoup[cty]'")
     native_value = cty_to_native(value)
     return dump_python_to_msgpack_bytes(native_value)
 
