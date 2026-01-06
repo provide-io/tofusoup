@@ -246,6 +246,6 @@ tofu = ["1.6.2", "1.7.0"]
 
 ## See Also
 
-- [Configuration Reference](../../reference/configuration/) - Complete `soup.toml` documentation
-- [Quick Start](../../getting-started/quick-start/) - Basic stir usage
-- [Troubleshooting](../../troubleshooting/) - Common issues and solutions
+- [Configuration Reference](../../reference/configuration.md) - Complete `soup.toml` documentation
+- [Quick Start](../../getting-started/quick-start.md) - Basic stir usage
+- [Troubleshooting](../../troubleshooting.md) - Common issues and solutions
