@@ -259,3 +259,20 @@ exclude_lines = ["pragma: no cover", "raise NotImplementedError", "if __name__ =
 
 [tool.bandit]
 exclude_dirs = [".venv", "tests", "workenv"]
+
+################################################################################
+# Security Scanning Allowlist
+################################################################################
+
+[tool.security]
+# Paths to exclude from secret scanning (TruffleHog, GitGuardian, Gitleaks)
+# Run: we security generate (via wrknv) to regenerate tool configs
+description = "Conformance tests and documentation - intentionally committed"
+allowed_paths = [
+    # Conformance tests with example credentials/tokens
+    "conformance/**",
+    # Documentation with example state data
+    "docs/**",
+    # Test Python files with example crypto keys
+    "test_*.py",
+]
