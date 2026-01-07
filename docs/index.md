@@ -1,7 +1,7 @@
 # TofuSoup Documentation
 
 !!! warning "Pre-release"
-    This documentation covers a pre-release. APIs and features may change, and some documented items are exploratory and may change or be removed.
+    This documentation covers a pre-release. APIs and features may change during the pre-release series.
 
 
 Welcome to TofuSoup - A comprehensive toolkit and conformance testing suite for the OpenTofu/Terraform ecosystem.
@@ -63,7 +63,7 @@ $ soup registry search provider aws
 $ soup harness build --all
 ```
 
-For complete CLI documentation, see the [CLI Reference](reference/cli/).
+For complete CLI documentation, see the [CLI Reference](reference/cli.md).
 
 ## Part of the provide.io Ecosystem
 
@@ -75,11 +75,10 @@ Understand how provide-foundation, pyvider, flavorpack, and other projects work 
 
 ## Documentation
 
-- **[Architecture](architecture/01-overview/)**: System design and architecture
-- **[Guides](guides/testing/01-running-conformance-tests/)**: Step-by-step tutorials
-- **[CLI Reference](reference/cli/)**: Complete command reference
-- **[Configuration](reference/configuration/)**: soup.toml configuration reference
-- **[Testing](testing/conformance-test-status/)**: Testing documentation
+- **[Guides](guides/testing/01-running-conformance-tests.md)**: Step-by-step tutorials
+- **[CLI Reference](reference/cli.md)**: Complete command reference
+- **[Configuration](reference/configuration.md)**: soup.toml configuration reference
+- **[Testing](testing/conformance-test-status.md)**: Testing documentation
 
 ## Core Capabilities
 
@@ -140,8 +139,8 @@ build_flags = ["-v"]
 env_vars = { KV_STORAGE_DIR = "/tmp" }
 ```
 
-See the [Configuration Reference](reference/configuration/) for complete details.
+See the [Configuration Reference](reference/configuration.md) for complete details.
 
 ---
 
-**Ready to get started?** Check out the [Architecture Overview](architecture/01-overview/) or dive into the [CLI Reference](reference/cli/).
+**Ready to get started?** Dive into the [CLI Reference](reference/cli.md).

@@ -37,7 +37,7 @@ def load_hcl_file_as_cty(filepath_str: str) -> CtyValue:
     This is now a wrapper around the centralized CTY logic.
     """
     if not HAS_CTY:
-        raise ImportError("HCL support requires 'pip install tofusoup[hcl]'")
+        raise ImportError("HCL support requires 'uv add tofusoup[hcl]'")
     return load_cty_file_to_cty_value(filepath_str, "hcl")
 
 
@@ -52,7 +52,7 @@ def convert_hcl_file_to_output_format(
     If output_to_stdout is True, returns the content string/bytes, otherwise writes to file.
     """
     if not HAS_CTY:
-        raise ImportError("HCL support requires 'pip install tofusoup[hcl]'")
+        raise ImportError("HCL support requires 'uv add tofusoup[hcl]'")
 
     cty_from_hcl = load_hcl_file_as_cty(input_filepath_str)
     native_python_obj = cty_to_native(cty_from_hcl)

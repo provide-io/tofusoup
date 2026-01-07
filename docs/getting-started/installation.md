@@ -9,7 +9,7 @@ Get started with TofuSoup, a cross-language conformance testing suite and toolin
 --8<-- ".provide/foundry/docs/_partials/go-requirements.md"
 
 !!! info "Go Required for Test Harnesses"
-    Go 1.21+ is required to build test harnesses for cross-language compatibility testing. If you only need the Python CLI tools without harness building, Go is optional.
+    Go 1.24+ is required to build test harnesses for cross-language compatibility testing. If you only need the Python CLI tools without harness building, Go is optional.
 
 --8<-- ".provide/foundry/docs/_partials/uv-installation.md"
 
@@ -33,34 +33,16 @@ uv tool install tofusoup
 uv tool install "tofusoup[all]"
 ```
 
-**Using pipx (Alternative):**
-```bash
-# Install as isolated CLI tool
-pipx install tofusoup
-
-# With all features
-pipx install "tofusoup[all]"
-```
-
-**Using pip:**
-```bash
-# Basic installation
-uv tool install tofusoup
-
-# With all optional dependencies
-uv tool install tofusoup[all]
-```
-
 ### As a Library Dependency
 
 If you're integrating TofuSoup into your project:
 
 **Using uv:**
 ```bash
-uv tool install tofusoup
+uv add tofusoup
 
 # Or with specific extras
-uv tool install tofusoup[cty,hcl,rpc]
+uv add "tofusoup[cty,hcl,rpc]"
 ```
 
 **In your `pyproject.toml`:**
@@ -402,7 +384,7 @@ test_dir = "conformance/rpc"
 markers = ["rpc", "cross_language"]
 ```
 
-See [Configuration Reference](../reference/configuration/) for complete details.
+See [Configuration Reference](../reference/configuration.md) for complete details.
 
 ## Troubleshooting
 
@@ -416,7 +398,7 @@ Ensure the package is installed and your PATH includes Python's bin directory:
 
 ```bash
 # Check installation
-pip list | grep tofusoup
+uv run python -c "import importlib.metadata as m; print(m.version('tofusoup'))"
 
 # Find soup executable
 which soup
@@ -459,7 +441,7 @@ uv tool install tofusoup[all]
 uv tool install tofusoup[cty,hcl,rpc]
 
 # Verify pyvider packages
-pip list | grep pyvider
+uv run python -c "import importlib.metadata as m; print(m.version('pyvider'))"
 ```
 
 #### Conformance test failures
@@ -511,21 +493,20 @@ If you encounter issues:
 
 ### Quick Start
 
-1. **[Quick Start Guide](quick-start/)** - Run your first TofuSoup commands
-2. **[What is TofuSoup?](what-is-tofusoup/)** - Learn about capabilities and use cases
-3. **[Configuration Reference](../reference/configuration/)** - Complete configuration guide
+1. **[Quick Start Guide](quick-start.md)** - Run your first TofuSoup commands
+2. **[What is TofuSoup?](what-is-tofusoup.md)** - Learn about capabilities and use cases
+3. **[Configuration Reference](../reference/configuration.md)** - Complete configuration guide
 
 ### Core Features
 
-- **[CTY Operations](../guides/cli-usage/03-using-cty-and-hcl-tools/)** - Working with Terraform's type system
-- **[Wire Protocol](../guides/cli-usage/wire-protocol/)** - Encoding and decoding wire protocol messages
-- **[Matrix Testing](../guides/cli-usage/matrix-testing/)** - Testing across Terraform/OpenTofu versions
-- **[RPC Testing](../guides/testing/01-running-conformance-tests/)** - Cross-language RPC compatibility
+- **[CTY Operations](../guides/cli-usage/03-using-cty-and-hcl-tools.md)** - Working with Terraform's type system
+- **[Wire Protocol](../guides/cli-usage/wire-protocol.md)** - Encoding and decoding wire protocol messages
+- **[Matrix Testing](../guides/cli-usage/matrix-testing.md)** - Testing across Terraform/OpenTofu versions
+- **[RPC Testing](../guides/testing/01-running-conformance-tests.md)** - Cross-language RPC compatibility
 
 ### Advanced Topics
 
-- **[Harness Development](../guides/testing/test-harness-development/)** - Creating custom test harnesses
-- **[Conformance Testing](../core-concepts/conformance-testing/)** - Testing strategy and patterns
-- **[Architecture](../architecture/01-overview/)** - System architecture and design
+- **[Harness Development](../guides/testing/test-harness-development.md)** - Creating custom test harnesses
+- **[Conformance Testing](../core-concepts/conformance-testing.md)** - Testing strategy and patterns
 
-Ready to start testing? Check out the [Quick Start Guide](quick-start/)!
+Ready to start testing? Check out the [Quick Start Guide](quick-start.md)!
