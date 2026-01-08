@@ -34,8 +34,7 @@ generated/
 # Hypothesis test data
 .hypothesis/
 
-# UV lock file (can be regenerated)
-uv.lock
+# UV lock file (now tracked for CI caching)
 
 # Downloaded scripts
 dotnet-install.sh
