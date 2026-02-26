@@ -16,7 +16,10 @@ jobs:
     uses: provide-io/ci-tooling/.github/workflows/python-ci.yml@v0
     with:
       python-version: '3.11'
+      platform-preset: standard
       coverage-threshold: 0
       run-security: true
       run-secret-scan: true
+      matrix-testing: false
+      parallel-testing: false
     secrets: inherit
