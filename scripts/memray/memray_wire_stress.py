@@ -4,6 +4,7 @@
 Targets: JSON <-> msgpack conversion in tofusoup.wire.logic --
 the data pipeline path used when converting between formats.
 """
+
 import json
 import os
 import tempfile

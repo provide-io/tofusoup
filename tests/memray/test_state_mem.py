@@ -1,4 +1,5 @@
 """Memory profiling tests for Terraform state parsing."""
+
 import pytest
 from wrknv.memray.runner import run_memray_stress
 

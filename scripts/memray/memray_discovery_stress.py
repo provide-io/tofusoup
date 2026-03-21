@@ -4,6 +4,7 @@
 Targets: TestDiscovery.discover_tests and TestFilter.filter_tests --
 invoked on every `soup stir` run to find test directories.
 """
+
 import os
 import tempfile
 from pathlib import Path
