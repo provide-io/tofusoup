@@ -140,7 +140,8 @@ def _determine_output_format(output_format_opt: str | None, cmd_opts: dict, outp
     # Try configuration default
     config_format = cmd_opts.get("default_output_format")
     if config_format:
-        logger.debug(f"Using default output format '{config_format}' from soup.toml for hcl.convert")
+        if logger.is_debug_enabled():
+            logger.debug(f"Using default output format '{config_format}' from soup.toml for hcl.convert")
         return config_format
 
     # Try inference from output file
@@ -171,7 +172,8 @@ def _infer_output_format(output_file: str) -> str:
         )
         sys.exit(1)
 
-    logger.debug(f"Inferred output format for HCL conversion as: {format_name}")
+    if logger.is_debug_enabled():
+        logger.debug(f"Inferred output format for HCL conversion as: {format_name}")
     return format_name
 
 
