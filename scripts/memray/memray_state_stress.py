@@ -5,6 +5,7 @@ Targets: load_terraform_state, find_resources_with_private_state,
 _get_target_resources -- the primary user-facing latency path when
 running `soup state show`.
 """
+
 import json
 import os
 import tempfile
