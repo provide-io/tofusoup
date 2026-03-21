@@ -122,7 +122,7 @@ addopts = [
     "--benchmark-columns=min,max,mean,stddev,median,iqr,ops",
     "--benchmark-sort=mean",
     "--dist=load",
-    "-m", "not integration",
+    "-m", "not integration and not memray",
     "-rFE",
     # Exclude known problematic tests by default
     "-k", "not (test_pyclient_pyserver_with_mtls or test_stir)",
