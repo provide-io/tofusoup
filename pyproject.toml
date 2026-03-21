@@ -69,6 +69,7 @@ all = [
 [dependency-groups]
 dev = [
     "provide-testkit[standard,advanced-testing,build]",
+    "pytest-httpx>=0.35.0",
     "tofusoup[test-rpc]",
     # Note: wrknv has dependency conflicts with plating (rich version)
     # Install separately if needed for matrix testing
