@@ -76,7 +76,8 @@ def decrypt_private_state(encrypted_private: str) -> dict[str, Any] | None:
 
         return private_data
     except Exception as e:
-        logger.debug(f"Failed to decrypt private state: {e}")
+        if logger.is_debug_enabled():
+            logger.debug(f"Failed to decrypt private state: {e}")
         return None
 
 

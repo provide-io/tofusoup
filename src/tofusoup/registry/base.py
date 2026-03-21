@@ -24,7 +24,8 @@ class BaseTfRegistry(ABC):
     def __init__(self, config: RegistryConfig) -> None:
         self.config = config
         self._client: httpx.AsyncClient | None = None
-        logger.debug(f"BaseTfRegistry initialized for {config.base_url}")
+        if logger.is_debug_enabled():
+            logger.debug(f"BaseTfRegistry initialized for {config.base_url}")
 
     async def __aenter__(self) -> "BaseTfRegistry":
         if self._client is None:
