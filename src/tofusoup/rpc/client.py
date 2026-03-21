@@ -281,10 +281,11 @@ class KVClient:
         else:
             logger.info("KVClient: TLS disabled - using insecure connection")
 
-        logger.debug(f"KVClient: Final client_constructor_config for RPCPluginClient: {client_config}")
+        if logger.is_debug_enabled():
+            logger.debug(f"KVClient: Final client_constructor_config for RPCPluginClient: {client_config}")
         return client_config
 
-    async def start(self) -> None:
+    async def start(self) -> None:  # noqa: C901
         """Start the KV server and establish connection.
 
         Raises:
@@ -297,7 +298,8 @@ class KVClient:
         start_time = time.time()
         self.is_started = False
         try:
-            logger.debug(f"KVClient attempting to start server: {self.server_path}")
+            if logger.is_debug_enabled():
+                logger.debug(f"KVClient attempting to start server: {self.server_path}")
 
             # Build server command (validates path and adds TLS args)
             server_command = self._build_server_command()
@@ -314,7 +316,8 @@ class KVClient:
                 config=client_config,
             )
 
-            logger.debug(f"Starting RPCPluginClient (pyvider), timeout={self.connection_timeout}s")
+            if logger.is_debug_enabled():
+                logger.debug(f"Starting RPCPluginClient (pyvider), timeout={self.connection_timeout}s")
             await asyncio.wait_for(self._client.start(), timeout=self.connection_timeout)
 
             # Relay stderr if available
@@ -422,7 +425,7 @@ class KVClient:
                     if not line_bytes:
                         break
                     decoded = line_bytes.decode("utf-8", errors="replace").strip()
-                    if decoded:
+                    if decoded and logger.is_debug_enabled():
                         logger.debug(f"SERVER_STDERR: {decoded}")
                 except ValueError:
                     break
@@ -475,7 +478,8 @@ class KVClient:
         if not isinstance(value, bytes):
             raise TypeError("Value for put must be bytes.")
         try:
-            logger.debug(f"KVClient: Sending Put - key='{key}', value_size={len(value)} bytes.")
+            if logger.is_debug_enabled():
+                logger.debug(f"KVClient: Sending Put - key='{key}', value_size={len(value)} bytes.")
             await asyncio.wait_for(
                 self._stub.Put(kv_pb2.PutRequest(key=key, value=value)), timeout=REQUEST_TIMEOUT
             )
@@ -494,7 +498,8 @@ class KVClient:
         if not self.is_started or not self._stub:
             raise RuntimeError("KVClient not connected to server.")
         try:
-            logger.debug(f"KVClient: Sending Get - key='{key}'.")
+            if logger.is_debug_enabled():
+                logger.debug(f"KVClient: Sending Get - key='{key}'.")
             response = await asyncio.wait_for(
                 self._stub.Get(kv_pb2.GetRequest(key=key)), timeout=REQUEST_TIMEOUT
             )

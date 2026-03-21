@@ -90,7 +90,8 @@ async def _run_pytest_suite(
     current_env = os.environ.copy()
     current_env.update({k: str(v) for k, v in env_vars.items()})
 
-    logger.debug(f"Running pytest with command: {' '.join(command)}", env=current_env)
+    if logger.is_debug_enabled():
+        logger.debug(f"Running pytest with command: {' '.join(command)}", env=current_env)
 
     process = await asyncio.create_subprocess_exec(
         *command, cwd=str(project_root), stdout=None, stderr=None, env=current_env
@@ -147,7 +148,8 @@ async def _run_pytest_suite(
     finally:
         # Keep report files for debugging - they're in a well-organized location
         # and will be cleaned up by project cleanup scripts if needed
-        logger.debug(f"Test report saved to {report_path}")
+        if logger.is_debug_enabled():
+            logger.debug(f"Test report saved to {report_path}")
 
 
 async def run_test_suite(
