@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]>=0.3.21,<0.4",
+    "provide-foundation[all]>=0.3.21",
     "click>=8.3.1",
     "msgpack>=1.0.0",
     "pyyaml>=6.0",
