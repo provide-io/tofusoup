@@ -13,6 +13,24 @@ import re
 import tomllib
 
 
+def _compile_glob(pattern: str) -> re.Pattern[str]:
+    """Compile an fnmatch glob pattern into a reusable regex."""
+    return re.compile(fnmatch.translate(pattern))
+
+
+def _combine_globs(patterns: list[str]) -> re.Pattern[str] | None:
+    """Combine multiple fnmatch glob patterns into a single alternation regex.
+
+    Returns None if patterns is empty.
+    """
+    if not patterns:
+        return None
+    # fnmatch.translate returns e.g. '(?s:\\.terraform)\\Z' —
+    # strip the \\Z so we can join as alternation branches.
+    branches = [fnmatch.translate(p).removesuffix("\\Z") for p in patterns]
+    return re.compile("|".join(branches))
+
+
 class TestDiscovery:
     """Enhanced test discovery with hierarchical and pattern-based detection."""
 
@@ -349,7 +367,7 @@ class TestFilter:
             if is_negated:
                 if compiled.match(test_str):
                     return False
-            elif fnmatch.fnmatch(test_str, f"*{filter_pattern}*"):
+            elif compiled.match(test_str):
                 return True
 
         # If only negative filters, default to include
