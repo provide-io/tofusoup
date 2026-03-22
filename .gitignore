@@ -66,5 +66,11 @@ bf-*
 # Work environment
 workenv/
 
+# Memray profiling output
+memray-output/
+
+# act local CI
+.actrc
+
 # macOS
 .DS_Store
