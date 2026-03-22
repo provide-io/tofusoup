@@ -40,8 +40,7 @@ class SearchResult:
 class SearchEngine:
     def __init__(self, registries: list[BaseTfRegistry]) -> None:
         self.registries: list[BaseTfRegistry] = registries
-        if logger.is_debug_enabled():
-            logger.debug(f"SearchEngine initialized with {len(self.registries)} registries.")
+        logger.debug(f"SearchEngine initialized with {len(self.registries)} registries.")
 
     async def search(self, query: SearchQuery) -> AsyncGenerator[SearchResult]:
         """
@@ -59,8 +58,7 @@ class SearchEngine:
         for task in asyncio.as_completed(search_tasks):
             try:
                 results_from_registry = await task
-                if logger.is_debug_enabled():
-                    logger.debug(f"Received {len(results_from_registry)} results from a registry.")
+                logger.debug(f"Received {len(results_from_registry)} results from a registry.")
                 for result in results_from_registry:
                     yield result
             except Exception as e:
@@ -109,8 +107,7 @@ class SearchEngine:
         if modules is None:
             modules = []
 
-        if logger.is_debug_enabled():
-            logger.debug(f"{registry_id}.list_modules returned {len(modules)} modules.")
+        logger.debug(f"{registry_id}.list_modules returned {len(modules)} modules.")
 
         for mod in modules:
             versions = await registry.list_module_versions(f"{mod.namespace}/{mod.name}/{mod.provider_name}")
@@ -153,8 +150,7 @@ class SearchEngine:
         if providers is None:
             providers = []
 
-        if logger.is_debug_enabled():
-            logger.debug(f"{registry_id}.list_providers returned {len(providers)} providers.")
+        logger.debug(f"{registry_id}.list_providers returned {len(providers)} providers.")
 
         for prov in providers:
             versions = await registry.list_provider_versions(f"{prov.namespace}/{prov.name}")
@@ -206,8 +202,7 @@ class SearchEngine:
 
         try:
             async with registry:
-                if logger.is_debug_enabled():
-                    logger.debug(f"Registry context entered for {registry_identifier}.")
+                logger.debug(f"Registry context entered for {registry_identifier}.")
                 effective_query_term = query.term if query.term else None
 
                 # Process modules and providers
@@ -221,8 +216,7 @@ class SearchEngine:
                 # Combine results
                 registry_results = module_results + provider_results
 
-            if logger.is_debug_enabled():
-                logger.debug(f"Registry context exited for {registry_identifier}.")
+            logger.debug(f"Registry context exited for {registry_identifier}.")
             return registry_results
         except Exception as e:
             logger.error(f"Error searching registry {registry_identifier}: {e}", exc_info=True)
