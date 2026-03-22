@@ -162,6 +162,7 @@ markers = [
     "cty_cli: tests for CTY CLI commands",
     # Environment/dependency markers
     "requires_textual: marks tests that require Textual app context",
+    "memray: memory profiling tests using memray",
     "requires_docker: skip if docker not available",
     "requires_network: skip if offline",
     "skip_in_ci: marks tests to skip in CI environments",
