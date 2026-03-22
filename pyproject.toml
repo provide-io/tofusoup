@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]",
+    "provide-foundation[all]>=0.3.21",
     "click>=8.3.1",
     "msgpack>=1.0.0",
     "pyyaml>=6.0",
@@ -181,6 +181,7 @@ filterwarnings = [
 norecursedirs = [
     ".git", ".hg", ".svn", "*_build", "build", "dist", "*.egg-info",
     ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
+    "tests/memray",
 ]
 
 [tool.ruff]
