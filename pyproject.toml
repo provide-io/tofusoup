@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]",
+    "provide-foundation[all]>=0.3.21",
     "click>=8.3.1",
     "msgpack>=1.0.0",
     "pyyaml>=6.0",
@@ -69,6 +69,7 @@ all = [
 [dependency-groups]
 dev = [
     "provide-testkit[standard,advanced-testing,build]",
+    "pytest-httpx>=0.35.0",
     "tofusoup[test-rpc]",
     # Note: wrknv has dependency conflicts with plating (rich version)
     # Install separately if needed for matrix testing
@@ -122,7 +123,7 @@ addopts = [
     "--benchmark-columns=min,max,mean,stddev,median,iqr,ops",
     "--benchmark-sort=mean",
     "--dist=load",
-    "-m", "not integration",
+    "-m", "not integration and not memray",
     "-rFE",
     # Exclude known problematic tests by default
     "-k", "not (test_pyclient_pyserver_with_mtls or test_stir)",
@@ -162,6 +163,7 @@ markers = [
     "cty_cli: tests for CTY CLI commands",
     # Environment/dependency markers
     "requires_textual: marks tests that require Textual app context",
+    "memray: memory profiling tests using memray",
     "requires_docker: skip if docker not available",
     "requires_network: skip if offline",
     "skip_in_ci: marks tests to skip in CI environments",
@@ -179,6 +181,7 @@ filterwarnings = [
 norecursedirs = [
     ".git", ".hg", ".svn", "*_build", "build", "dist", "*.egg-info",
     ".venv", "venv", "htmlcov", "docs/_build", ".hypothesis", "__pycache__",
+    "tests/memray",
 ]
 
 [tool.ruff]
