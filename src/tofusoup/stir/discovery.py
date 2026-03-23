@@ -13,6 +13,24 @@ import re
 import tomllib
 
 
+def _compile_glob(pattern: str) -> re.Pattern[str]:
+    """Compile an fnmatch glob pattern into a reusable regex."""
+    return re.compile(fnmatch.translate(pattern))
+
+
+def _combine_globs(patterns: list[str]) -> re.Pattern[str] | None:
+    """Combine multiple fnmatch glob patterns into a single alternation regex.
+
+    Returns None if patterns is empty.
+    """
+    if not patterns:
+        return None
+    # fnmatch.translate returns e.g. '(?s:\\.terraform)\\Z' —
+    # strip the \\Z so we can join as alternation branches.
+    branches = [fnmatch.translate(p).removesuffix("\\Z") for p in patterns]
+    return re.compile("|".join(branches))
+
+
 class TestDiscovery:
     """Enhanced test discovery with hierarchical and pattern-based detection."""
 
@@ -61,6 +79,18 @@ class TestDiscovery:
             "venv",
             "node_modules",
         ]
+
+        # Pre-compile exclude patterns into single combined regexes for O(1) matching.
+        # _default_name_re matches any default exclude pattern against the directory name.
+        self._default_name_re = _combine_globs(self.default_excludes)
+        # _default_substr_re matches any default exclude as a substring in the full path.
+        self._default_substr_re: re.Pattern[str] | None = (
+            re.compile("|".join(re.escape(e) for e in self.default_excludes))
+            if self.default_excludes
+            else None
+        )
+        # _user_re matches any user-defined exclude pattern (checked against name AND path).
+        self._user_re = _combine_globs(self.exclude_patterns)
 
     def discover_tests(self, base_path: Path | str) -> list[Path]:
         """Discover test directories from the given base path.
@@ -170,27 +200,33 @@ class TestDiscovery:
     def _should_exclude(self, path: Path) -> bool:
         """Check if a path should be excluded from discovery.
 
+        Uses combined regexes for O(1) matching instead of iterating per-pattern.
+
         Args:
             path: Path to check
 
         Returns:
             True if path should be excluded
         """
-        path_str = str(path)
         name = path.name
 
-        # Check default excludes
-        for exclude in self.default_excludes:
-            if fnmatch.fnmatch(name, exclude) or exclude in path_str:
-                return True
+        # O(1) check: single combined regex matches name against all default globs
+        if self._default_name_re is not None and self._default_name_re.match(name):
+            return True
 
-        # Check user-defined excludes
-        for exclude in self.exclude_patterns:
-            if fnmatch.fnmatch(name, exclude) or fnmatch.fnmatch(path_str, exclude):
-                return True
+        # Lazily compute path_str only when needed (avoid str(path) if name matched above)
+        path_str = str(path)
+
+        # O(1) check: single combined regex searches full path for any default exclude substring
+        if self._default_substr_re is not None and self._default_substr_re.search(path_str):
+            return True
+
+        # O(1) check: single combined regex matches user excludes against name and full path
+        if self._user_re is not None and (self._user_re.match(name) or self._user_re.match(path_str)):
+            return True
 
         # Check for hidden directories (except special ones)
-        return bool(name.startswith(".") and name not in [".plating-tests", ".soup-tests", ".soup"])
+        return bool(name.startswith(".") and name not in {".plating-tests", ".soup-tests", ".soup"})
 
     def _filter_tests(self, tests: list[Path]) -> list[Path]:
         """Apply additional filtering to discovered tests.
@@ -258,6 +294,14 @@ class TestFilter:
         self.types = types or []
         self.regex_pattern = re.compile(regex_pattern) if regex_pattern else None
 
+        # Pre-compile path filter patterns for hot-path performance
+        self._compiled_path_filters: list[tuple[bool, re.Pattern[str]]] = []
+        for pf in self.path_filters:
+            if pf.startswith("!"):
+                self._compiled_path_filters.append((True, _compile_glob(pf[1:])))
+            else:
+                self._compiled_path_filters.append((False, _compile_glob(f"*{pf}*")))
+
         # Map component types to path segments
         self.type_mappings = {
             "data_source": ["data_source", "data-source", "datasource"],
@@ -319,12 +363,11 @@ class TestFilter:
             True if test matches any path filter
         """
         test_str = str(test)
-        for filter_pattern in self.path_filters:
-            # Handle negation
-            if filter_pattern.startswith("!"):
-                if fnmatch.fnmatch(test_str, filter_pattern[1:]):
+        for is_negated, compiled in self._compiled_path_filters:
+            if is_negated:
+                if compiled.match(test_str):
                     return False
-            elif fnmatch.fnmatch(test_str, f"*{filter_pattern}*"):
+            elif compiled.match(test_str):
                 return True
 
         # If only negative filters, default to include

@@ -71,8 +71,7 @@ def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_fi
             logging=LoggingConfig(default_level=final_log_level.upper()),
         )
         hub.initialize_foundation(config=updated_config)
-        if logger.is_debug_enabled():
-            logger.debug(f"Log level set to {final_log_level.upper()} by CLI option.")
+        logger.debug(f"Log level set to {final_log_level.upper()} by CLI option.")
 
     # Start from current working directory to find project root
     project_root_path = pathlib.Path.cwd()
@@ -89,8 +88,7 @@ def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_fi
         loaded_config = load_tofusoup_config(project_root_path, explicit_config_file=config_file)
     except TofuSoupConfigError as e:
         # Config errors are not fatal - some commands don't need config
-        if logger.is_debug_enabled():
-            logger.debug(f"Configuration not loaded: {e}")
+        logger.debug(f"Configuration not loaded: {e}")
         loaded_config = {}
     ctx.obj["TOFUSOUP_CONFIG"] = loaded_config
     ctx.obj["PROJECT_ROOT"] = project_root_path
