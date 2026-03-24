@@ -148,8 +148,7 @@ async def _run_pytest_suite(
     finally:
         # Keep report files for debugging - they're in a well-organized location
         # and will be cleaned up by project cleanup scripts if needed
-        if logger.is_debug_enabled():
-            logger.debug(f"Test report saved to {report_path}")
+        logger.debug(f"Test report saved to {report_path}")
 
 
 async def run_test_suite(
