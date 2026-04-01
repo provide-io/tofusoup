@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]>=0.3.21",
+    "provide-foundation[all]>=0.3.29",
     "click>=8.3.1",
     "msgpack>=1.0.0",
     "pyyaml>=6.0",
@@ -45,22 +45,22 @@ dependencies = [
     "aiosqlite>=0.19.0",
     "semver>=3.0.0",
     "jinja2>=3.1.6",
-    "plating",
-    "pyvider",  # For state inspection encryption (pyvider.common.encryption)
+    "plating>=0.3.22",
+    "pyvider>=0.3.22",  # For state inspection encryption (pyvider.common.encryption)
 ]
 
 [project.optional-dependencies]
 cty = [
-    "pyvider-cty",
+    "pyvider-cty>=0.3.21",
 ]
 hcl = [
-    "pyvider-hcl",
+    "pyvider-hcl>=0.3.21",
 ]
 rpc = [
-    "pyvider-rpcplugin",
+    "pyvider-rpcplugin>=0.3.21",
 ]
 test-rpc = [
-    "pyvider-rpcplugin[test]",
+    "pyvider-rpcplugin[test]>=0.3.21",
 ]
 all = [
     "tofusoup[cty,hcl,rpc]",
