@@ -4,6 +4,14 @@
 #
 
 
+import asyncio
+import sys
+
+# Windows requires ProactorEventLoop for subprocess support (create_subprocess_exec).
+# Must be set before any event loop is created.
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
 from provide.foundation.utils.versioning import get_version
 
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
