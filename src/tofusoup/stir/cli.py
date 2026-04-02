@@ -258,6 +258,9 @@ def stir_cli(
                 sys.exit(1)
         else:
             # Run standard single-version testing with runtime
+            # Windows needs ProactorEventLoop for create_subprocess_exec
+            if sys.platform == "win32":
+                asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
             asyncio.run(
                 main(
                     path,
