@@ -285,7 +285,7 @@ class KVClient:
             logger.debug(f"KVClient: Final client_constructor_config for RPCPluginClient: {client_config}")
         return client_config
 
-    async def start(self) -> None:  # noqa: C901
+    async def start(self) -> None:
         """Start the KV server and establish connection.
 
         Raises:
