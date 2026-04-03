@@ -311,7 +311,12 @@ async def run_terraform_command(
             "Either StirRuntime or override_cache_dir must be provided for terraform command execution"
         )
 
-    command = [TF_COMMAND, *args]
+    # Resolve full path to tofu/terraform binary — needed on Windows where
+    # subprocess.run without shell=True requires an absolute path, and the
+    # custom env dict may not include the PATH entry where tofu was installed.
+    import shutil
+    tf_bin = shutil.which(TF_COMMAND) or TF_COMMAND
+    command = [tf_bin, *args]
 
     if sys.platform == "win32":
         # Windows: use subprocess.run in a thread to avoid SelectorEventLoop
