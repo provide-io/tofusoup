@@ -258,21 +258,27 @@ def stir_cli(
                 sys.exit(1)
         else:
             # Run standard single-version testing with runtime
-            # Windows needs ProactorEventLoop for create_subprocess_exec
-            if sys.platform == "win32":
-                asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-            asyncio.run(
-                main(
-                    path,
-                    runtime,
-                    patterns=list(pattern) if pattern else None,
-                    recursive=recursive,
-                    path_filters=list(path_filters) if path_filters else None,
-                    tags=list(tags) if tags else None,
-                    types=list(types) if types else None,
-                    regex_pattern=regex_pattern,
-                )
+            coro = main(
+                path,
+                runtime,
+                patterns=list(pattern) if pattern else None,
+                recursive=recursive,
+                path_filters=list(path_filters) if path_filters else None,
+                tags=list(tags) if tags else None,
+                types=list(types) if types else None,
+                regex_pattern=regex_pattern,
             )
+            if sys.platform == "win32":
+                # Windows requires ProactorEventLoop for subprocess support.
+                # asyncio.run() may not respect the policy in Python 3.11,
+                # so create the loop explicitly.
+                loop = asyncio.ProactorEventLoop()
+                try:
+                    loop.run_until_complete(coro)
+                finally:
+                    loop.close()
+            else:
+                asyncio.run(coro)
 
     except KeyboardInterrupt:
         console.print("\n[yellow]⚠️ Interrupted by user[/yellow]")
