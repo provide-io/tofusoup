@@ -358,7 +358,7 @@ async def run_terraform_command(
 
     parsed_logs = []
     if tf_log_path.exists():
-        with tf_log_path.open() as f:
+        with tf_log_path.open(encoding="utf-8", errors="replace") as f:
             for line in f:
                 with contextlib.suppress(json.JSONDecodeError):
                     parsed_logs.append(json.loads(line))
