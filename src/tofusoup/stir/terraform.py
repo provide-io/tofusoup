@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
 from typing import Any
 
 from tofusoup.stir.config import ENV_VARS, LOGS_DIR, TF_COMMAND
@@ -312,22 +313,40 @@ async def run_terraform_command(
 
     command = [TF_COMMAND, *args]
 
-    process = await asyncio.create_subprocess_exec(
-        *command,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-        cwd=directory,
-        env=env,
-    )
+    if sys.platform == "win32":
+        # Windows: use subprocess.run in a thread to avoid SelectorEventLoop
+        # issues with asyncio.create_subprocess_exec on Python 3.11
+        import subprocess as _subprocess
 
-    tail_task = None
-    if tail_log:
-        tail_task = asyncio.create_task(_tail_tf_log(tf_log_path, process, dir_name))
+        result = await asyncio.to_thread(
+            _subprocess.run,
+            command,
+            capture_output=True,
+            cwd=directory,
+            env=env,
+        )
+        stdout_data = result.stdout
+        stderr_data = result.stderr
+        returncode = result.returncode
+    else:
+        process = await asyncio.create_subprocess_exec(
+            *command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=directory,
+            env=env,
+        )
 
-    stdout_data, stderr_data = await process.communicate()
+        tail_task = None
+        if tail_log:
+            tail_task = asyncio.create_task(_tail_tf_log(tf_log_path, process, dir_name))
 
-    if tail_task:
-        await tail_task
+        stdout_data, stderr_data = await process.communicate()
+
+        if tail_task:
+            await tail_task
+
+        returncode = process.returncode
 
     stdout_log_path.write_bytes(stdout_data)
     stderr_log_path.write_bytes(stderr_data)
@@ -341,7 +360,7 @@ async def run_terraform_command(
 
     final_stdout = stdout_data.decode("utf-8", errors="ignore") if capture_stdout else ""
     return (
-        process.returncode or 0,  # Ensure returncode is int, not None
+        returncode or 0,  # Ensure returncode is int, not None
         final_stdout,
         stdout_log_path,
         stderr_log_path,
