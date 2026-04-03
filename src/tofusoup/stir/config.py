@@ -16,7 +16,19 @@ from tofusoup.config.defaults import (
 )
 
 # Configuration constants
-TF_COMMAND = shutil.which("tofu") or shutil.which("terraform") or "tofu"
+def _find_tf_command() -> str:
+    """Find the tofu/terraform binary, checking TOFU_CLI_PATH env var first."""
+    # Check TOFU_CLI_PATH (set by setup-opentofu GitHub Action)
+    cli_path = os.environ.get("TOFU_CLI_PATH")
+    if cli_path:
+        for name in ("tofu", "tofu.exe"):
+            candidate = Path(cli_path) / name
+            if candidate.exists():
+                return str(candidate)
+    return shutil.which("tofu") or shutil.which("terraform") or "tofu"
+
+
+TF_COMMAND = _find_tf_command()
 MAX_CONCURRENT_TESTS = os.cpu_count() or 4
 LOGS_DIR = get_cache_dir() / "logs" / "stir"
 
