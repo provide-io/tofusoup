@@ -9,6 +9,11 @@ from pathlib import Path
 import sys
 from time import monotonic
 
+# Windows requires ProactorEventLoop for subprocess support.
+# Ensure it's set before any asyncio.run() calls.
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
 import click
 
 from tofusoup.stir.config import MAX_CONCURRENT_TESTS, STIR_PLUGIN_CACHE_DIR
