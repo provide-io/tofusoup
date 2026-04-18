@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Memray stress test for Terraform state parsing hot paths.
 
 Targets: load_terraform_state, find_resources_with_private_state,
