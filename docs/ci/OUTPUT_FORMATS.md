@@ -11,15 +11,17 @@ This document provides detailed specifications for all output formats supported 
 - [Quiet Format](#quiet-format)
 - [Table Format](#table-format-current)
 
----
+______________________________________________________________________
 
 ## JSON Format
 
 ### Trigger
+
 - `--json` flag
 - `--format=json`
 
 ### Output Destination
+
 - **stdout** (exclusively - no other output on stdout)
 - Errors/warnings go to **stderr**
 
@@ -216,20 +218,23 @@ When `--json-pretty` is used, output is indented with 2 spaces for human readabi
 ### Validation
 
 The JSON output must:
+
 - Be valid JSON (parseable by `json.loads()` or `jq`)
 - Conform to the schema above
 - Use ISO 8601 format for all timestamps (UTC timezone)
 - Include all required fields
 - Use `null` for optional fields when not available
 
----
+______________________________________________________________________
 
 ## JUnit XML Format
 
 ### Trigger
+
 - `--junit-xml=FILE`
 
 ### Output Destination
+
 - **file** specified by flag
 - Parent directories created automatically
 - File overwritten if exists
@@ -303,45 +308,45 @@ Based on the de-facto standard JUnit XML format used by Jenkins, GitHub Actions,
 
 ### Field Mapping
 
-| Element/Attribute | Value | Notes |
-|-------------------|-------|-------|
-| `testsuites/@name` | `--junit-suite-name` or `"soup-stir"` | Top-level suite name |
-| `testsuites/@tests` | Total test count | Sum of all tests |
-| `testsuites/@failures` | Count of failed tests | `status == "failed"` |
-| `testsuites/@errors` | Count of error tests | `failed_stage == "HARNESS"` |
-| `testsuites/@skipped` | Count of skipped tests | `status == "skipped"` |
-| `testsuites/@time` | Total duration (seconds) | Float with 3 decimal places |
-| `testsuites/@timestamp` | Suite start time | ISO 8601 format |
-| `testsuite/@name` | `"terraform-tests"` | Fixed suite name |
-| `testsuite/@tests` | Total test count | Same as testsuites |
-| `testsuite/@failures` | Failed test count | Same as testsuites |
-| `testsuite/@errors` | Error test count | Same as testsuites |
-| `testsuite/@skipped` | Skipped test count | Same as testsuites |
-| `testsuite/@time` | Total duration | Same as testsuites |
-| `testsuite/@timestamp` | Suite start time | Same as testsuites |
-| `testcase/@name` | Test directory name | e.g., `"test-auth"` |
-| `testcase/@classname` | `"terraform." + test name` | e.g., `"terraform.test-auth"` |
-| `testcase/@time` | Test duration (seconds) | Float with 3 decimal places |
-| `testcase/@timestamp` | Test start time | ISO 8601 format |
-| `failure/@message` | First line of error | Truncated to 200 chars |
-| `failure/@type` | Error type from stage | See mapping below |
-| `failure/text()` | Full error details | Multi-line with context |
-| `error/@message` | Exception message | For harness errors |
-| `error/@type` | Exception type | e.g., `"PythonException"` |
-| `error/text()` | Stack trace | Full traceback |
-| `skipped/@message` | Skip reason | e.g., `"No .tf files found"` |
-| `system-out` | Test metadata | Providers, resources, outputs |
-| `system-err` | Error logs | Terraform error output |
+| Element/Attribute       | Value                                 | Notes                         |
+| ----------------------- | ------------------------------------- | ----------------------------- |
+| `testsuites/@name`      | `--junit-suite-name` or `"soup-stir"` | Top-level suite name          |
+| `testsuites/@tests`     | Total test count                      | Sum of all tests              |
+| `testsuites/@failures`  | Count of failed tests                 | `status == "failed"`          |
+| `testsuites/@errors`    | Count of error tests                  | `failed_stage == "HARNESS"`   |
+| `testsuites/@skipped`   | Count of skipped tests                | `status == "skipped"`         |
+| `testsuites/@time`      | Total duration (seconds)              | Float with 3 decimal places   |
+| `testsuites/@timestamp` | Suite start time                      | ISO 8601 format               |
+| `testsuite/@name`       | `"terraform-tests"`                   | Fixed suite name              |
+| `testsuite/@tests`      | Total test count                      | Same as testsuites            |
+| `testsuite/@failures`   | Failed test count                     | Same as testsuites            |
+| `testsuite/@errors`     | Error test count                      | Same as testsuites            |
+| `testsuite/@skipped`    | Skipped test count                    | Same as testsuites            |
+| `testsuite/@time`       | Total duration                        | Same as testsuites            |
+| `testsuite/@timestamp`  | Suite start time                      | Same as testsuites            |
+| `testcase/@name`        | Test directory name                   | e.g., `"test-auth"`           |
+| `testcase/@classname`   | `"terraform." + test name`            | e.g., `"terraform.test-auth"` |
+| `testcase/@time`        | Test duration (seconds)               | Float with 3 decimal places   |
+| `testcase/@timestamp`   | Test start time                       | ISO 8601 format               |
+| `failure/@message`      | First line of error                   | Truncated to 200 chars        |
+| `failure/@type`         | Error type from stage                 | See mapping below             |
+| `failure/text()`        | Full error details                    | Multi-line with context       |
+| `error/@message`        | Exception message                     | For harness errors            |
+| `error/@type`           | Exception type                        | e.g., `"PythonException"`     |
+| `error/text()`          | Stack trace                           | Full traceback                |
+| `skipped/@message`      | Skip reason                           | e.g., `"No .tf files found"`  |
+| `system-out`            | Test metadata                         | Providers, resources, outputs |
+| `system-err`            | Error logs                            | Terraform error output        |
 
 ### Failure Types
 
-| `failed_stage` | `failure/@type` |
-|----------------|-----------------|
-| `"INIT"` | `TerraformInitError` |
-| `"APPLY"` | `TerraformApplyError` |
-| `"DESTROY"` | `TerraformDestroyError` |
-| `"ANALYZING"` | `StateAnalysisError` |
-| `"HARNESS"` | `PythonException` (uses `<error>` instead of `<failure>`) |
+| `failed_stage` | `failure/@type`                                           |
+| -------------- | --------------------------------------------------------- |
+| `"INIT"`       | `TerraformInitError`                                      |
+| `"APPLY"`      | `TerraformApplyError`                                     |
+| `"DESTROY"`    | `TerraformDestroyError`                                   |
+| `"ANALYZING"`  | `StateAnalysisError`                                      |
+| `"HARNESS"`    | `PythonException` (uses `<error>` instead of `<failure>`) |
 
 ### Complete Example
 
@@ -478,6 +483,7 @@ Traceback (most recent call last):
 ### Validation
 
 The XML must:
+
 - Be valid XML (parseable by standard XML parsers)
 - Use CDATA for all multi-line text content
 - Escape special characters (`&`, `<`, `>`) in attributes
@@ -485,15 +491,17 @@ The XML must:
 - Include XML declaration
 - Follow JUnit XML schema conventions
 
----
+______________________________________________________________________
 
 ## Plain Text Format
 
 ### Trigger
+
 - `--format=plain`
 - Auto-enabled in CI mode (non-TTY or CI env var detected)
 
 ### Output Destination
+
 - **stdout** (mixed with stderr for errors)
 
 ### Format
@@ -507,6 +515,7 @@ Line-by-line output with timestamps, emoji, and status updates.
 ```
 
 Components:
+
 - **timestamp**: ISO 8601 or relative time (see SPEC.md #7)
 - **emoji**: Status/phase emoji (💤🔄🚀✅❌ etc.)
 - **phase**: Current phase name (PENDING, INIT, APPLYING, etc.)
@@ -517,6 +526,7 @@ Components:
 ### Examples
 
 **Startup**:
+
 ```
 [2025-11-02T10:30:00.123Z] Running 5 tests with parallelism=4...
 [2025-11-02T10:30:00.234Z]
@@ -528,6 +538,7 @@ Components:
 ```
 
 **Execution**:
+
 ```
 [2025-11-02T10:30:01.123Z] 🧹 CLEANING   1/5  test-auth
 [2025-11-02T10:30:01.456Z] 🔄 INIT       1/5  test-auth
@@ -540,6 +551,7 @@ Components:
 ```
 
 **Completion**:
+
 ```
 [2025-11-02T10:30:12.789Z] ✅ PASS       1/5  test-auth (12.5s) - 2 providers, 5 resources, 3 outputs
 [2025-11-02T10:30:15.123Z] ❌ FAIL       2/5  test-network (11.1s) - APPLY failed
@@ -549,6 +561,7 @@ Components:
 ```
 
 **Summary**:
+
 ```
 [2025-11-02T10:30:45.678Z]
 [2025-11-02T10:30:45.678Z] ================================================================================
@@ -591,14 +604,16 @@ If `--timestamp-format=relative`:
 [+00:45.2s] Done. 3 passed, 1 failed
 ```
 
----
+______________________________________________________________________
 
 ## GitHub Actions Format
 
 ### Trigger
+
 - `--format=github`
 
 ### Output Destination
+
 - **stdout** (workflow commands)
 
 ### GitHub Actions Workflow Commands
@@ -690,6 +705,7 @@ Failed Tests:
 ```
 
 Fields:
+
 - `file`: Path to file (if available from terraform error)
 - `line`: Line number (if available)
 - `col`: Column number (if available)
@@ -701,33 +717,38 @@ Fields:
 
 Same as error, but uses `::warning::` instead of `::error::`.
 
----
+______________________________________________________________________
 
 ## Quiet Format
 
 ### Trigger
+
 - `--format=quiet`
 
 ### Output Destination
+
 - **stdout** (minimal)
 - **stderr** (errors only)
 
 ### Format
 
 Only output:
+
 1. A single line at start
-2. Errors as they occur (stderr)
-3. Final summary
+1. Errors as they occur (stderr)
+1. Final summary
 
 ### Examples
 
 **Successful Run**:
+
 ```
 Running 5 tests...
 Done. 5 passed in 45.2s
 ```
 
 **With Failures**:
+
 ```
 Running 5 tests...
 Error in test-network: Terraform apply failed
@@ -735,26 +756,30 @@ Done. 4 passed, 1 failed in 45.2s
 ```
 
 **With Skipped**:
+
 ```
 Running 5 tests...
 Done. 4 passed, 1 skipped in 23.1s
 ```
 
 **No Progress Updates**
+
 - No live updates
 - No phase changes
 - No log messages
 - Only start and end
 
----
+______________________________________________________________________
 
 ## Table Format (Current)
 
 ### Trigger
+
 - `--format=table` (default in interactive mode)
 - Default when stdout is TTY and no CI detected
 
 ### Output Destination
+
 - **stdout** via Rich Live display
 
 ### Format
@@ -765,20 +790,20 @@ See main codebase `display.py` for implementation.
 
 ### Columns
 
-| Column | Width | Description |
-|--------|-------|-------------|
-| Status | 4 | Status emoji (💤🔄✅❌) |
-| Phase | 4 | Phase emoji (💤🔍🧹🔄🚀💥) |
-| # | 7 | Test progress (1/5, 2/5, etc.) |
-| Test Suite | flex | Test directory name |
-| Elapsed | 10 | Elapsed time (12.5s) |
-| Prov | 5 | Provider count |
-| Res | 5 | Resource count |
-| Data | 5 | Data source count |
-| Func | 5 | Function count |
-| Eph. Func | 9 | Ephemeral function count (conditional) |
-| Outs | 5 | Output count |
-| Last Log | flex | Last significant log message |
+| Column     | Width | Description                            |
+| ---------- | ----- | -------------------------------------- |
+| Status     | 4     | Status emoji (💤🔄✅❌)                |
+| Phase      | 4     | Phase emoji (💤🔍🧹🔄🚀💥)             |
+| #          | 7     | Test progress (1/5, 2/5, etc.)         |
+| Test Suite | flex  | Test directory name                    |
+| Elapsed    | 10    | Elapsed time (12.5s)                   |
+| Prov       | 5     | Provider count                         |
+| Res        | 5     | Resource count                         |
+| Data       | 5     | Data source count                      |
+| Func       | 5     | Function count                         |
+| Eph. Func  | 9     | Ephemeral function count (conditional) |
+| Outs       | 5     | Output count                           |
+| Last Log   | flex  | Last significant log message           |
 
 ### Visual Example
 
@@ -803,30 +828,26 @@ See main codebase `display.py` for implementation.
 - Resource counts
 - Elapsed time
 
----
+______________________________________________________________________
 
 ## Format Comparison Matrix
 
-| Feature | Table | Plain | JSON | GitHub | Quiet |
-|---------|-------|-------|------|--------|-------|
-| **Interactive** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **CI-Friendly** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Live Updates** | ✅ | ✅ | ❌ | ✅ | ❌ |
-| **Machine Readable** | ❌ | ❌ | ✅ | ❌ | ❌ |
-| **Color** | ✅ | ✅* | ❌ | ✅* | ✅* |
-| **Emoji** | ✅ | ✅ | ❌ | ✅ | ✅ |
-| **Timestamps** | ❌** | ✅ | ✅ | ✅ | ❌ |
-| **Progress %** | ❌*** | ✅* | ✅ | ✅ | ❌ |
-| **Log Tail** | ✅ | ✅ | ❌ | ✅ | ❌ |
-| **File Output** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Annotations** | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Feature              | Table    | Plain | JSON | GitHub | Quiet |
+| -------------------- | -------- | ----- | ---- | ------ | ----- |
+| **Interactive**      | ✅       | ❌    | ❌   | ❌     | ❌    |
+| **CI-Friendly**      | ❌       | ✅    | ✅   | ✅     | ✅    |
+| **Live Updates**     | ✅       | ✅    | ❌   | ✅     | ❌    |
+| **Machine Readable** | ❌       | ❌    | ✅   | ❌     | ❌    |
+| **Color**            | ✅       | ✅\*  | ❌   | ✅\*   | ✅\*  |
+| **Emoji**            | ✅       | ✅    | ❌   | ✅     | ✅    |
+| **Timestamps**       | ❌\*\*   | ✅    | ✅   | ✅     | ❌    |
+| **Progress %**       | ❌\*\*\* | ✅\*  | ✅   | ✅     | ❌    |
+| **Log Tail**         | ✅       | ✅    | ❌   | ✅     | ❌    |
+| **File Output**      | ❌       | ✅    | ✅   | ✅     | ✅    |
+| **Annotations**      | ❌       | ❌    | ❌   | ✅     | ❌    |
 
-\* = With flag
-\** = Shows elapsed time, not wall clock time
-\*** = Shows test count (1/5) not percentage
+\* = With flag \*\* = Shows elapsed time, not wall clock time \*\*\* = Shows test count (1/5) not percentage
 
----
+______________________________________________________________________
 
-**Document Version**: 1.0.0
-**Last Updated**: 2025-11-02
-**Status**: Draft Format Specifications
+**Document Version**: 1.0.0 **Last Updated**: 2025-11-02 **Status**: Draft Format Specifications

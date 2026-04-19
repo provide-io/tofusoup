@@ -27,6 +27,7 @@ make test-conformance  # conformance suite against real terraform / opentofu bin
 ```
 
 Requirements:
+
 - **100% branch coverage** on `src/tofusoup/**` (enforced).
 - **mypy strict mode**. No `type: ignore` without an inline justification.
 - **ruff** lint + format must pass.
@@ -43,5 +44,5 @@ Requirements:
 ## Pull Requests
 
 1. Run `make quality` (must pass).
-2. For state-format / registry changes, run `make test-conformance` against both terraform and opentofu.
-3. PR description notes any changes to state schema handling or registry query semantics.
+1. For state-format / registry changes, run `make test-conformance` against both terraform and opentofu.
+1. PR description notes any changes to state schema handling or registry query semantics.

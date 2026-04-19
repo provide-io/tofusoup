@@ -5,8 +5,9 @@ This document outlines the architecture for the TofuSoup conformance testing sui
 ## Testing Philosophy: `souptest` vs. `pytest`
 
 A core distinction in this project is the separation of concerns in testing:
--   **Conformance Tests (`souptest_*.py`)**: These tests, located in `tofusoup/conformance/`, are for verifying **cross-language compatibility**. They compare the behavior of Python implementations against the canonical Go harnesses. They are run via the `soup test` command.
--   **Internal Tests (`test_*.py`)**: These are standard unit and integration tests for the `tofusoup` tool **itself**. They are located in `tofusoup/tests/` and are run using `pytest` directly.
+
+- **Conformance Tests (`souptest_*.py`)**: These tests, located in `tofusoup/conformance/`, are for verifying **cross-language compatibility**. They compare the behavior of Python implementations against the canonical Go harnesses. They are run via the `soup test` command.
+- **Internal Tests (`test_*.py`)**: These are standard unit and integration tests for the `tofusoup` tool **itself**. They are located in `tofusoup/tests/` and are run using `pytest` directly.
 
 ## Architectural Design
 
@@ -14,10 +15,10 @@ The conformance suite is organized into a hierarchical and purpose-driven struct
 
 ### Design Principles
 
-1.  **Hierarchical Organization**: Reflect test complexity and dependencies.
-2.  **Cross-Cutting Separation**: Create dedicated areas for security, performance, and integration.
-3.  **Single Source of Truth**: Eliminate duplication in test scenarios and fixtures.
-4.  **Clear Purpose**: Each directory has an explicit, non-overlapping responsibility.
+1. **Hierarchical Organization**: Reflect test complexity and dependencies.
+1. **Cross-Cutting Separation**: Create dedicated areas for security, performance, and integration.
+1. **Single Source of Truth**: Eliminate duplication in test scenarios and fixtures.
+1. **Clear Purpose**: Each directory has an explicit, non-overlapping responsibility.
 
 ### Directory Structure
 
