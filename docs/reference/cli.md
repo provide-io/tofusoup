@@ -388,20 +388,24 @@ $ soup config validate --file custom.toml
 TofuSoup recognizes these environment variables:
 
 ### Logging
+
 - `LOG_LEVEL` - Set log level (DEBUG, INFO, WARNING, ERROR)
 - `PROVIDE_LOG_LEVEL` - Foundation logging level
 
 ### RPC
+
 - `KV_STORAGE_DIR` - Storage directory for KV server
 - `PLUGIN_AUTO_MTLS` - Enable automatic mTLS (true/false)
 - `PLUGIN_MAGIC_COOKIE_KEY` - Magic cookie key for servers
 - `BASIC_PLUGIN` - Magic cookie value
 
 ### Testing
+
 - `PYTEST_CURRENT_TEST` - Automatically set by pytest
 - `SOUP_TEST_PARALLEL` - Enable parallel test execution
 
 ### Configuration
+
 - `SOUP_CONFIG_FILE` - Path to soup.toml
 - `SOUP_CACHE_DIR` - Cache directory location
 

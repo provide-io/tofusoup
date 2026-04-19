@@ -19,6 +19,7 @@ uv pip install -e /path/to/wrknv
 ## What is Matrix Testing?
 
 Matrix testing executes your test suite across multiple tool versions to ensure broad compatibility. This is essential for:
+
 - Validating provider compatibility across Terraform versions
 - Testing migration paths between OpenTofu and Terraform
 - Ensuring backward compatibility
@@ -61,10 +62,10 @@ tofu = ["1.6.2", "1.7.0", "1.8.0"]
 When you run `soup stir --matrix`, the following happens:
 
 1. **Load Configuration**: Reads matrix versions from `soup.toml` or `wrkenv.toml`
-2. **Tool Management**: Automatically downloads and manages required tool versions
-3. **Parallel Execution**: Runs tests across versions concurrently (respects `parallel_jobs` setting)
-4. **Result Collection**: Aggregates results from all version runs
-5. **Report Generation**: Creates detailed report showing compatibility across versions
+1. **Tool Management**: Automatically downloads and manages required tool versions
+1. **Parallel Execution**: Runs tests across versions concurrently (respects `parallel_jobs` setting)
+1. **Result Collection**: Aggregates results from all version runs
+1. **Report Generation**: Creates detailed report showing compatibility across versions
 
 The stir framework handles all version management automatically - you don't need to manually switch versions or manage tool installations.
 
@@ -86,6 +87,7 @@ tests/stir_cases/
 ```
 
 Each subdirectory represents a test case. Stir will:
+
 - Run `terraform init` in each directory
 - Execute `terraform plan` and `terraform apply`
 - Verify successful execution
@@ -118,6 +120,7 @@ soup stir tests/stir_cases --matrix --matrix-output results.json
 ```
 
 The output includes:
+
 - Pass/fail status for each version
 - Execution times
 - Error messages
@@ -202,6 +205,7 @@ timeout_minutes = 60  # Increase timeout
 ### Tool Download Failures
 
 The framework automatically downloads tool versions. If downloads fail:
+
 - Check internet connectivity
 - Verify version numbers are correct
 - Check disk space
@@ -209,21 +213,23 @@ The framework automatically downloads tool versions. If downloads fail:
 ### Version Not Found
 
 If a specified version doesn't exist:
+
 ```
 Error: Version 'terraform 1.9.9' not found
 ```
 
 Solution: Verify version exists at:
+
 - Terraform: https://releases.hashicorp.com/terraform/
 - OpenTofu: https://github.com/opentofu/opentofu/releases
 
 ## Best Practices
 
 1. **Start Small**: Begin with 2-3 versions, expand as needed
-2. **Include Edge Cases**: Test both oldest and newest supported versions
-3. **Regular Updates**: Update matrix versions quarterly
-4. **CI Integration**: Run matrix tests in pull requests
-5. **Monitor Execution Time**: Adjust `parallel_jobs` based on available resources
+1. **Include Edge Cases**: Test both oldest and newest supported versions
+1. **Regular Updates**: Update matrix versions quarterly
+1. **CI Integration**: Run matrix tests in pull requests
+1. **Monitor Execution Time**: Adjust `parallel_jobs` based on available resources
 
 ## Advanced: Workenv Integration
 

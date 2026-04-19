@@ -7,21 +7,24 @@ The Stock service is a multi-language gRPC service designed to test cross-langua
 ## Motivation
 
 ### Current State
+
 - TofuSoup's RPC tests focus on plugin protocol compatibility (go-plugin framework)
 - The existing kvproto project tests direct gRPC but lives outside TofuSoup
 - Plugin protocol adds complexity when testing basic gRPC interoperability
 
 ### Goals
+
 1. Test pure gRPC compatibility across 10+ languages
-2. Provide a standard service that exercises all gRPC communication patterns
-3. Integrate kvproto's multi-language implementations into TofuSoup
-4. Enable testing of pyvider servers in `--force` mode with non-plugin clients
+1. Provide a standard service that exercises all gRPC communication patterns
+1. Integrate kvproto's multi-language implementations into TofuSoup
+1. Enable testing of pyvider servers in `--force` mode with non-plugin clients
 
 ## Architecture
 
 ### Service Name: Stock
 
 The name "Stock" works on multiple levels:
+
 - **Soup stock**: The base/foundation of soup (fitting TofuSoup theme)
 - **Inventory stock**: Storage metaphor for key-value operations
 - **Stock market**: Streaming updates and trading metaphor for bidirectional streams
@@ -70,16 +73,16 @@ service Stock {
     // Basic KV operations (unary) - backwards compatible
     rpc Get(GetRequest) returns (GetResponse);
     rpc Put(PutRequest) returns (Empty);
-    
+
     // Server streaming - monitor changes
     rpc Monitor(WatchRequest) returns (stream WatchEvent);
-    
+
     // Client streaming - batch operations
     rpc Batch(stream BatchItem) returns (BatchSummary);
-    
+
     // Bidirectional - trading simulation
     rpc Trade(stream TradeOrder) returns (stream TradeFill);
-    
+
     // Status/health check
     rpc Inventory(Empty) returns (InventoryStatus);
 }
@@ -108,35 +111,42 @@ soup stock inventory
 
 ### Why Not Under `soup rpc`?
 
-1. **Clear Separation**: 
+1. **Clear Separation**:
+
    - `soup rpc` = Plugin protocol (handshake, broker, stdio)
    - `soup stock` = Direct gRPC (no handshake)
 
-2. **Different Use Cases**:
+1. **Different Use Cases**:
+
    - `soup rpc` tests Terraform provider compatibility
    - `soup stock` tests language interoperability
 
-3. **Simpler Mental Model**:
+1. **Simpler Mental Model**:
+
    - Stock is a standalone service, not a variant of RPC
 
 ## Implementation Strategy
 
 ### Phase 1: Core Languages (Week 1)
+
 - [ ] Python implementation (base reference)
 - [ ] Go implementation (performance baseline)
 - [ ] Proto compilation setup for all languages
 
 ### Phase 2: Migrate kvproto (Week 2)
+
 - [ ] Move existing kvproto implementations
 - [ ] Update to use Stock proto definition
 - [ ] Standardize CLI interface across languages
 
 ### Phase 3: Testing Infrastructure (Week 3)
+
 - [ ] Matrix test configuration
 - [ ] Performance benchmarks
 - [ ] TLS/mTLS test scenarios
 
 ### Phase 4: Additional Languages (Week 4+)
+
 - [ ] Java, Ruby, C#, Rust implementations
 - [ ] JavaScript/Node.js, C++, PHP
 - [ ] Kotlin, Scala, Swift (stretch goals)
@@ -144,12 +154,14 @@ soup stock inventory
 ## Testing Matrix
 
 ### Dimensions
+
 1. **Client Language**: 10+ implementations
-2. **Server Language**: 10+ implementations  
-3. **TLS Configuration**: none, server-only, mTLS
-4. **Operations**: get/put, streaming, batch, bidirectional
+1. **Server Language**: 10+ implementations
+1. **TLS Configuration**: none, server-only, mTLS
+1. **Operations**: get/put, streaming, batch, bidirectional
 
 ### Example Test Cases
+
 - Python client → Go server (mTLS, streaming)
 - Java client → Ruby server (no TLS, batch operations)
 - Rust client → Python server (server TLS, bidirectional)
@@ -157,6 +169,7 @@ soup stock inventory
 Total potential combinations: 10 × 10 × 3 × 4 = 1,200 tests
 
 ### Optimized Test Subsets
+
 - **Quick**: 3 clients × 3 servers × 1 TLS × 2 ops = 18 tests
 - **Standard**: 5 clients × 5 servers × 2 TLS × 3 ops = 150 tests
 - **Full**: All combinations (weekend run)
@@ -164,6 +177,7 @@ Total potential combinations: 10 × 10 × 3 × 4 = 1,200 tests
 ## Integration with Existing Systems
 
 ### Works With pyvider --force Mode
+
 ```bash
 # Start pyvider server without handshake
 python my_provider.py provide --force --port 50051
@@ -174,35 +188,39 @@ soup stock go client monitor "tf_state/*"
 ```
 
 ### Comparison with Plugin RPC
-| Feature | Plugin RPC (`soup rpc`) | Stock (`soup stock`) |
-|---------|------------------------|-------------------|
-| Handshake | Required | None |
-| Port Negotiation | Dynamic | Fixed |
-| Stdio Forwarding | Yes | No |
-| Language Support | Go + Python | 10+ languages |
-| Use Case | Terraform providers | General gRPC testing |
+
+| Feature          | Plugin RPC (`soup rpc`) | Stock (`soup stock`) |
+| ---------------- | ----------------------- | -------------------- |
+| Handshake        | Required                | None                 |
+| Port Negotiation | Dynamic                 | Fixed                |
+| Stdio Forwarding | Yes                     | No                   |
+| Language Support | Go + Python             | 10+ languages        |
+| Use Case         | Terraform providers     | General gRPC testing |
 
 ## Success Metrics
 
 1. **Coverage**: All 10+ languages have working implementations
-2. **Compatibility**: 95%+ of cross-language tests pass
-3. **Performance**: Benchmark data for each language pair
-4. **Adoption**: Stock becomes the standard for gRPC testing in TofuSoup
+1. **Compatibility**: 95%+ of cross-language tests pass
+1. **Performance**: Benchmark data for each language pair
+1. **Adoption**: Stock becomes the standard for gRPC testing in TofuSoup
 
 ## Exploratory Extensions
 
 1. **Additional Patterns**:
+
    - Request deadlines/timeouts
    - Metadata/header propagation
    - Compression testing
    - Load balancing scenarios
 
-2. **Observability**:
+1. **Observability**:
+
    - OpenTelemetry integration
    - Prometheus metrics
    - Distributed tracing
 
-3. **Chaos Testing**:
+1. **Chaos Testing**:
+
    - Network delays
    - Partial failures
    - Message corruption

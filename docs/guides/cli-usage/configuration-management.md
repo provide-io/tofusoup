@@ -11,6 +11,7 @@ soup config show
 ```
 
 This displays a hierarchical tree view of your active configuration, showing all settings loaded from:
+
 - Your project's `soup.toml` file
 - Default values
 - Environment variables
@@ -38,8 +39,8 @@ This displays a hierarchical tree view of your active configuration, showing all
 TofuSoup searches for `soup.toml` in the following order:
 
 1. Path specified by `--config-file` CLI option
-2. `./soup.toml` (current directory)
-3. Project root (directory containing `pyproject.toml`)
+1. `./soup.toml` (current directory)
+1. Project root (directory containing `pyproject.toml`)
 
 If no configuration file is found, TofuSoup uses built-in defaults.
 
@@ -107,9 +108,9 @@ soup test cty
 Settings are resolved in this order (highest to lowest priority):
 
 1. **Command-line arguments**: `--log-level DEBUG`
-2. **Environment variables**: `TOFUSOUP_LOG_LEVEL=DEBUG`
-3. **Configuration file**: `soup.toml` settings
-4. **Built-in defaults**: Hardcoded application defaults
+1. **Environment variables**: `TOFUSOUP_LOG_LEVEL=DEBUG`
+1. **Configuration file**: `soup.toml` settings
+1. **Built-in defaults**: Hardcoded application defaults
 
 ## Debugging Configuration Issues
 

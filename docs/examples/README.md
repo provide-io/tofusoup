@@ -56,6 +56,7 @@ tofu = ["1.6.2", "1.7.0"]
 ## Example Test Cases
 
 See `conformance/` directory for extensive test examples:
+
 - `conformance/cty/` - CTY conformance tests
 - `conformance/hcl/` - HCL parsing tests
 - `conformance/wire/` - Wire protocol tests
@@ -64,6 +65,7 @@ See `conformance/` directory for extensive test examples:
 ## More Examples
 
 For more examples, see:
+
 - **[Quick Start](../getting-started/quick-start.md)** - Getting started examples
 - **[CLI Reference](../reference/cli.md)** - Command usage examples
 - **[Configuration Reference](../reference/configuration.md)** - Complete configuration examples

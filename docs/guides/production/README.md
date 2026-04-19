@@ -14,6 +14,7 @@ For production use, refer to:
 ## Additional Topics
 
 Suggested additions:
+
 - Deploying TofuSoup in CI/CD pipelines
 - Production configuration best practices
 - Monitoring and observability

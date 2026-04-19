@@ -63,9 +63,10 @@ Yes! TofuSoup is designed for CI/CD integration. All commands support non-intera
 ### Tests are failing with "Connection timeout"
 
 This usually means the Go server harness isn't starting properly. Check:
+
 1. Go is installed and in PATH
-2. Harnesses are built: `soup harness build --all`
-3. Firewall isn't blocking connections
+1. Harnesses are built: `soup harness build --all`
+1. Firewall isn't blocking connections
 
 See [Troubleshooting](troubleshooting.md) for more.
 
