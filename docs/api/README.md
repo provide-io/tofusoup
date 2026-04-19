@@ -24,6 +24,7 @@ See the [API Reference](../reference/api/index.md) for complete module documenta
 ## Additional Topics
 
 Suggested additions:
+
 - Module-by-module API guides
 - Integration patterns and best practices
 - Library usage examples

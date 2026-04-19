@@ -17,6 +17,7 @@ The Go implementation of the TofuSoup CLI will be named `soup-go` and will be bu
 The `soup-go` CLI will mirror the structure of the Python `soup` CLI.
 
 **Hypothetical `soup-go --help` Output:**
+
 ```
 A Go implementation of the TofuSoup conformance and utility toolkit.
 
@@ -39,7 +40,7 @@ Flags:
 
 This strategy transforms the Go harnesses from simple, single-purpose test executables into a full-featured, language-specific implementation of the TofuSoup toolkit. This enables a powerful, symmetric testing model:
 
--   **Python vs. Go**: The `soup test` command can invoke `soup-go` to get canonical outputs for comparison.
--   **Go vs. Python**: A potential Go-based test runner could invoke the Python `soup` CLI to validate Go components.
+- **Python vs. Go**: The `soup test` command can invoke `soup-go` to get canonical outputs for comparison.
+- **Go vs. Python**: A potential Go-based test runner could invoke the Python `soup` CLI to validate Go components.
 
 This ensures that the entire toolchain, not just the underlying libraries, is conformant across languages.
