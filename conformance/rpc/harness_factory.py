@@ -13,7 +13,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 import os
 from pathlib import Path
-import subprocess
+import subprocess  # nosec
 from typing import Any, Never
 
 from provide.foundation import logger

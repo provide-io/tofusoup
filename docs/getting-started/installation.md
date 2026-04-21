@@ -4,15 +4,16 @@ Get started with TofuSoup, a cross-language conformance testing suite and toolin
 
 ## Prerequisites
 
---8\<-- ".provide/foundry/docs/\_partials/python-requirements.md"
+--8<-- ".provide/foundry/docs/_partials/python-requirements.md"
 
---8\<-- ".provide/foundry/docs/\_partials/go-requirements.md"
+--8<-- ".provide/foundry/docs/_partials/go-requirements.md"
 
-!!! info "Go Required for Test Harnesses" Go 1.24+ is required to build test harnesses for cross-language compatibility testing. If you only need the Python CLI tools without harness building, Go is optional.
+!!! info "Go Required for Test Harnesses"
+    Go 1.24+ is required to build test harnesses for cross-language compatibility testing. If you only need the Python CLI tools without harness building, Go is optional.
 
---8\<-- ".provide/foundry/docs/\_partials/uv-installation.md"
+--8<-- ".provide/foundry/docs/_partials/uv-installation.md"
 
---8\<-- ".provide/foundry/docs/\_partials/python-version-setup.md"
+--8<-- ".provide/foundry/docs/_partials/python-version-setup.md"
 
 ## Installation Methods
 
@@ -21,7 +22,6 @@ Get started with TofuSoup, a cross-language conformance testing suite and toolin
 If you want to use the `soup` CLI for CTY, HCL, wire protocol, and RPC operations:
 
 **Using uv (Recommended):**
-
 ```bash
 # Install tofusoup globally with uv
 uvx soup --help
@@ -38,7 +38,6 @@ uv tool install "tofusoup[all]"
 If you're integrating TofuSoup into your project:
 
 **Using uv:**
-
 ```bash
 uv add tofusoup
 
@@ -47,7 +46,6 @@ uv add "tofusoup[cty,hcl,rpc]"
 ```
 
 **In your `pyproject.toml`:**
-
 ```toml
 [project]
 dependencies = [
@@ -76,9 +74,9 @@ soup --version
 
 This creates a `.venv/` virtual environment with all dependencies installed.
 
---8\<-- ".provide/foundry/docs/\_partials/virtual-env-setup.md"
+--8<-- ".provide/foundry/docs/_partials/virtual-env-setup.md"
 
---8\<-- ".provide/foundry/docs/\_partials/platform-specific-macos.md"
+--8<-- ".provide/foundry/docs/_partials/platform-specific-macos.md"
 
 ## Optional Dependencies
 
@@ -91,13 +89,11 @@ uv tool install tofusoup[cty]
 ```
 
 **Includes:**
-
 - `pyvider-cty` - Python implementation of go-cty type system
 - CTY value operations and conversions
 - Type-safe value creation and manipulation
 
 **CLI Commands:**
-
 ```bash
 soup cty view data.json
 soup cty convert input.json output.msgpack
@@ -110,13 +106,11 @@ uv tool install tofusoup[hcl]
 ```
 
 **Includes:**
-
 - `pyvider-hcl` - Python HCL parser
 - HCL to JSON/CTY conversion
 - Configuration parsing
 
 **CLI Commands:**
-
 ```bash
 soup hcl parse config.hcl
 soup hcl to-json config.hcl output.json
@@ -129,13 +123,11 @@ uv tool install tofusoup[rpc]
 ```
 
 **Includes:**
-
 - `pyvider-rpcplugin` - RPC plugin infrastructure
 - gRPC server and client implementations
 - Plugin protocol support
 
 **CLI Commands:**
-
 ```bash
 soup rpc kv server-start
 soup rpc kv put key value
@@ -151,13 +143,11 @@ uv tool install tofusoup[browser]
 ```
 
 **Features:**
-
 - Interactive registry browser
 - Provider and module exploration
 - Rich terminal interface
 
 **CLI Commands:**
-
 ```bash
 sui  # Launch interactive browser
 ```
@@ -172,7 +162,6 @@ uv pip install -e /path/to/wrknv
 ```
 
 **Features:**
-
 - Multi-version testing
 - Parallel test execution
 - Version management integration
@@ -209,7 +198,6 @@ soup harness verify-cli soup-go
 ```
 
 **Build Artifacts:**
-
 - Harness binaries: `harnesses/bin/`
 - Not included in version control
 - Must be built locally
@@ -226,7 +214,6 @@ Once built, harnesses can be used directly:
 ```
 
 **Harness Features:**
-
 - Reference implementations in Go
 - Cross-language compatibility testing
 - MessagePack and wire protocol support
@@ -255,7 +242,6 @@ soup harness clean
 ### Basic Verification
 
 **1. Check Python and Package:**
-
 ```bash
 # Check Python version
 python --version  # Should show 3.11+
@@ -268,7 +254,6 @@ soup --version
 ```
 
 **2. Verify CLI Commands:**
-
 ```bash
 # Display main help
 soup --help
@@ -281,7 +266,6 @@ soup rpc --help
 ```
 
 **3. Test Core Functionality:**
-
 ```bash
 # Test CTY operations (if cty extra installed)
 echo '{"type":"string","value":"hello"}' > test.json
@@ -295,7 +279,6 @@ soup harness list
 ### TofuSoup-Specific Verification
 
 **1. Test Ecosystem Imports:**
-
 ```python
 # Verify pyvider ecosystem integration
 from pyvider.cty import CtyString, CtyNumber
@@ -312,7 +295,6 @@ print("✅ All imports successful")
 ```
 
 **2. Run Conformance Tests:**
-
 ```bash
 # Run CTY conformance tests
 soup test cty
@@ -328,7 +310,6 @@ soup test rpc
 ```
 
 **3. Test Harness Integration:**
-
 ```bash
 # Verify harness is functional
 soup harness verify-cli soup-go
@@ -339,7 +320,7 @@ uv run pytest conformance/cty/ -v
 
 ## Development Workflow
 
---8\<-- ".provide/foundry/docs/\_partials/testing-setup.md"
+--8<-- ".provide/foundry/docs/_partials/testing-setup.md"
 
 **Additional Testing Options:**
 
@@ -360,7 +341,7 @@ soup test cty
 soup test rpc
 ```
 
---8\<-- ".provide/foundry/docs/\_partials/code-quality-setup.md"
+--8<-- ".provide/foundry/docs/_partials/code-quality-setup.md"
 
 ### Pre-commit Hooks
 
@@ -407,7 +388,7 @@ See [Configuration Reference](../reference/configuration.md) for complete detail
 
 ## Troubleshooting
 
---8\<-- ".provide/foundry/docs/\_partials/troubleshooting-common.md"
+--8<-- ".provide/foundry/docs/_partials/troubleshooting-common.md"
 
 ### TofuSoup-Specific Issues
 
@@ -502,19 +483,19 @@ soup rpc kv server-start
 If you encounter issues:
 
 1. **Check logs** - Run with `FOUNDATION_LOG_LEVEL=DEBUG` for detailed output
-1. **Verify Python version** - Ensure you're using Python 3.11+
-1. **Check optional dependencies** - Install required extras for your use case
-1. **Verify harnesses** - Ensure Go harnesses build successfully
-1. **Review configuration** - Check `soup.toml` syntax
-1. **Report issues** - [GitHub Issues](https://github.com/provide-io/tofusoup/issues)
+2. **Verify Python version** - Ensure you're using Python 3.11+
+3. **Check optional dependencies** - Install required extras for your use case
+4. **Verify harnesses** - Ensure Go harnesses build successfully
+5. **Review configuration** - Check `soup.toml` syntax
+6. **Report issues** - [GitHub Issues](https://github.com/provide-io/tofusoup/issues)
 
 ## Next Steps
 
 ### Quick Start
 
 1. **[Quick Start Guide](quick-start.md)** - Run your first TofuSoup commands
-1. **[What is TofuSoup?](what-is-tofusoup.md)** - Learn about capabilities and use cases
-1. **[Configuration Reference](../reference/configuration.md)** - Complete configuration guide
+2. **[What is TofuSoup?](what-is-tofusoup.md)** - Learn about capabilities and use cases
+3. **[Configuration Reference](../reference/configuration.md)** - Complete configuration guide
 
 ### Core Features
 

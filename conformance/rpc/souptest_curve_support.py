@@ -17,15 +17,12 @@ import pytest
 
 from tofusoup.rpc.client import KVClient
 
-WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
-SOUP_SERVER_PATH = WORKSPACE_ROOT / "pyvider" / ".venv" / "bin" / "soup"
-
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
 async def test_python_server_supported_curves(curve: str) -> None:
     """Test that Python server accepts supported curves."""
-    server_path = SOUP_SERVER_PATH
+    server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
     if not server_path.exists():
         pytest.skip(f"Python server not found: {server_path}")
@@ -58,7 +55,7 @@ async def test_python_server_rejects_secp521r1() -> None:
     Previous behavior: Raised an exception or timed out
     Current behavior: Logs a warning and continues (more graceful)
     """
-    server_path = SOUP_SERVER_PATH
+    server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
     if not server_path.exists():
         pytest.skip(f"Python server not found: {server_path}")
@@ -84,7 +81,7 @@ async def test_curve_consistency(curve: str) -> None:
 
     This verifies the curve is being used correctly for encryption/decryption.
     """
-    server_path = SOUP_SERVER_PATH
+    server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
 
     if not server_path.exists():
         pytest.skip(f"Python server not found: {server_path}")

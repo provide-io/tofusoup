@@ -13,12 +13,11 @@ TofuSoup's `soup state` commands can decrypt and display this private state data
 To decrypt private state, you need:
 
 1. **Shared Secret**: Set via environment variable
-
    ```bash
    export PYVIDER_PRIVATE_STATE_SHARED_SECRET="your-secret-key"
    ```
 
-1. **State File**: A Terraform state file (typically `terraform.tfstate`)
+2. **State File**: A Terraform state file (typically `terraform.tfstate`)
 
 ## Commands
 
@@ -94,7 +93,6 @@ soup state validate path/to/terraform.tfstate
 ```
 
 This command:
-
 - Scans all resources in the state file
 - Attempts to decrypt any private state data
 - Reports any decryption failures
@@ -115,7 +113,6 @@ soup state show
 ```
 
 Output:
-
 ```
 📋 Terraform State: terraform.tfstate
 
@@ -135,7 +132,6 @@ soup state show --resource pyvider_timed_token.api_token
 ```
 
 Output:
-
 ```
 🔍 Resource: pyvider_timed_token.api_token
 
@@ -159,7 +155,6 @@ soup state validate
 ```
 
 Output:
-
 ```
 ✅ All private state validated successfully
 - pyvider_timed_token.api_token: OK
@@ -232,7 +227,6 @@ soup state decrypt "eyJhbGciOiJkaXIi..." --format raw > decrypted.txt
 **Error**: `PYVIDER_PRIVATE_STATE_SHARED_SECRET not set`
 
 **Solution**:
-
 ```bash
 export PYVIDER_PRIVATE_STATE_SHARED_SECRET="your-key"
 ```
@@ -242,13 +236,11 @@ export PYVIDER_PRIVATE_STATE_SHARED_SECRET="your-key"
 **Error**: `Failed to decrypt private state`
 
 **Possible causes**:
-
 1. Wrong shared secret
-1. Corrupted encrypted data
-1. Incompatible encryption version
+2. Corrupted encrypted data
+3. Incompatible encryption version
 
 **Debug steps**:
-
 ```bash
 # Try showing encrypted data
 soup state show --show-encrypted
@@ -265,7 +257,6 @@ terraform plan
 **Error**: `State file not found: terraform.tfstate`
 
 **Solution**:
-
 ```bash
 # Specify full path
 soup state show /path/to/terraform.tfstate
@@ -279,13 +270,13 @@ soup state show
 
 1. **Protect Your Shared Secret**: Never commit `PYVIDER_PRIVATE_STATE_SHARED_SECRET` to version control
 
-1. **Secure State Files**: Terraform state files contain sensitive data, even without private state
+2. **Secure State Files**: Terraform state files contain sensitive data, even without private state
 
-1. **Use Remote State**: Consider using remote state backends with encryption at rest
+3. **Use Remote State**: Consider using remote state backends with encryption at rest
 
-1. **Rotate Keys Regularly**: Periodically rotate your private state encryption keys
+4. **Rotate Keys Regularly**: Periodically rotate your private state encryption keys
 
-1. **Limit Access**: Restrict who can decrypt private state in production environments
+5. **Limit Access**: Restrict who can decrypt private state in production environments
 
 ## Integration with Terraform
 

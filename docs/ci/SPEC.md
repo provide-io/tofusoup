@@ -23,32 +23,30 @@ This document provides complete technical specifications for all 15 proposed imp
   - [#14 Colored Output Control](#14-colored-output-control)
   - [#15 Failure-Only Mode](#15-failure-only-mode)
 
-______________________________________________________________________
+---
 
 ## High Priority Improvements
 
 ### #1: Auto-Detect CI/CD Environments
 
-**Priority**: 🔥 High **Effort**: Medium **Files to Modify**: `cli.py`, `display.py`
+**Priority**: 🔥 High
+**Effort**: Medium
+**Files to Modify**: `cli.py`, `display.py`
 
 #### Description
-
 Automatically detect when `soup stir` is running in a CI/CD environment and adapt the output format to be more suitable for non-interactive contexts.
 
 #### Problem Statement
-
 The current Rich Live display generates ANSI control codes and frequent updates that clutter CI logs and don't render properly in non-TTY environments. CI build logs become difficult to read and parse.
 
 #### Solution
-
 Detect CI environment and automatically switch to line-by-line output mode instead of live table updates.
 
 #### CI Environment Detection
 
 Detect CI by checking (in order):
-
 1. TTY detection: `not sys.stdout.isatty()`
-1. Environment variables (any of):
+2. Environment variables (any of):
    - `CI=true` (generic)
    - `GITHUB_ACTIONS=true` (GitHub Actions)
    - `GITLAB_CI=true` (GitLab CI)
@@ -62,7 +60,6 @@ Detect CI by checking (in order):
 #### Behavior Changes in CI Mode
 
 When CI is detected:
-
 - **Disable live table updates** - Don't use `rich.Live()`
 - **Use line-by-line output** - Each status change prints a new line
 - **Reduce refresh rate** - Only output on actual status changes
@@ -84,15 +81,15 @@ When CI is detected:
 
 #### CLI Flags
 
-| Flag      | Type    | Default     | Description                       |
-| --------- | ------- | ----------- | --------------------------------- |
-| `--ci`    | boolean | auto-detect | Force CI mode even in TTY         |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--ci` | boolean | auto-detect | Force CI mode even in TTY |
 | `--no-ci` | boolean | auto-detect | Force interactive mode even in CI |
 
 #### Environment Variables
 
-| Variable            | Values                | Description           |
-| ------------------- | --------------------- | --------------------- |
+| Variable | Values | Description |
+|----------|--------|-------------|
 | `SOUP_STIR_CI_MODE` | `true`/`false`/`auto` | Override CI detection |
 
 #### Acceptance Criteria
@@ -105,30 +102,29 @@ When CI is detected:
 - [ ] Status changes are printed immediately (not buffered)
 - [ ] All emoji and color are preserved (unless `--no-color` is used)
 
-______________________________________________________________________
+---
 
 ### #2: JSON Output for Standard Mode
 
-**Priority**: 🔥 High **Effort**: Low **Files to Modify**: `cli.py`, `models.py`, `reporting.py`
+**Priority**: 🔥 High
+**Effort**: Low
+**Files to Modify**: `cli.py`, `models.py`, `reporting.py`
 
 #### Description
-
 Add `--json` flag to output test results in JSON format for standard (non-matrix) mode.
 
 #### Problem Statement
-
 Currently `--json` only works with `--matrix` mode. Standard test runs have no machine-readable output format, making it difficult to parse results programmatically or integrate with custom tooling.
 
 #### Solution
-
 Add `--json` flag that outputs structured JSON to stdout after tests complete.
 
 #### CLI Flags
 
-| Flag            | Type    | Default | Description              |
-| --------------- | ------- | ------- | ------------------------ |
-| `--json`        | boolean | false   | Output results as JSON   |
-| `--json-pretty` | boolean | false   | Pretty-print JSON output |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--json` | boolean | false | Output results as JSON |
+| `--json-pretty` | boolean | false | Pretty-print JSON output |
 
 #### JSON Output Schema
 
@@ -202,7 +198,6 @@ Add `--json` flag that outputs structured JSON to stdout after tests complete.
 #### Behavior
 
 - When `--json` is used:
-
   - Suppress all Rich display output (no live table, no summary panel)
   - Suppress all console output except JSON
   - Write JSON to stdout after all tests complete
@@ -210,7 +205,6 @@ Add `--json` flag that outputs structured JSON to stdout after tests complete.
   - Exit with appropriate code (0 for success, non-zero for failure)
 
 - When `--json-pretty` is used:
-
   - Same as `--json` but with indentation (2 spaces)
   - Useful for human review
 
@@ -231,35 +225,33 @@ Add `--json` flag that outputs structured JSON to stdout after tests complete.
 - [ ] JSON is parseable by `jq` and other tools
 - [ ] Exit code reflects test results (0=all passed, non-zero=failures)
 
-______________________________________________________________________
+---
 
 ### #3: JUnit XML Output
 
-**Priority**: 🔥 High **Effort**: Medium **Files to Modify**: `cli.py`, `reporting.py`
+**Priority**: 🔥 High
+**Effort**: Medium
+**Files to Modify**: `cli.py`, `reporting.py`
 
 #### Description
-
 Generate JUnit XML test reports for integration with CI/CD systems.
 
 #### Problem Statement
-
 Most CI/CD systems (Jenkins, GitHub Actions, GitLab CI, CircleCI, etc.) have native support for displaying JUnit XML test results. This enables:
-
 - Visual test result dashboards
 - Historical trending
 - Flaky test detection
 - Test failure notifications
 
 #### Solution
-
 Add `--junit-xml` flag to generate JUnit XML compatible test reports.
 
 #### CLI Flags
 
-| Flag                      | Type   | Default       | Description             |
-| ------------------------- | ------ | ------------- | ----------------------- |
-| `--junit-xml=FILE`        | path   | none          | Write JUnit XML to FILE |
-| `--junit-suite-name=NAME` | string | `"soup-stir"` | Test suite name in XML  |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--junit-xml=FILE` | path | none | Write JUnit XML to FILE |
+| `--junit-suite-name=NAME` | string | `"soup-stir"` | Test suite name in XML |
 
 #### JUnit XML Format
 
@@ -309,22 +301,22 @@ Error: aws_instance.example: InvalidAMI: The image id '[ami-12345]' does not exi
 
 #### Field Mapping
 
-| JUnit Field                 | Source                                      | Notes                                             |
-| --------------------------- | ------------------------------------------- | ------------------------------------------------- |
-| `testsuite/@name`           | `--junit-suite-name` or `"terraform-tests"` | Suite name                                        |
-| `testsuite/@tests`          | Count of all tests                          | Total tests run                                   |
-| `testsuite/@failures`       | Count of failed tests                       | Tests with `status="failed"`                      |
-| `testsuite/@errors`         | Count of error tests                        | Tests with `ERROR` state (exception in harness)   |
-| `testsuite/@skipped`        | Count of skipped tests                      | Tests with `status="skipped"`                     |
-| `testsuite/@time`           | Total duration in seconds                   | Sum of all test times                             |
-| `testcase/@name`            | Test directory name                         | e.g., `test-auth`                                 |
-| `testcase/@classname`       | `"terraform." + test name`                  | Namespacing for CI systems                        |
-| `testcase/@time`            | Test duration in seconds                    | From `TestResult.duration`                        |
-| `testcase/failure/@message` | `error_message` field                       | First line of error                               |
-| `testcase/failure/@type`    | Derived from `failed_stage`                 | e.g., `TerraformInitError`, `TerraformApplyError` |
-| `testcase/failure/text()`   | Full error with context                     | Error message + logs paths                        |
-| `testcase/system-out`       | Test metadata                               | Providers, resources, outputs counts              |
-| `testcase/system-err`       | Error logs                                  | Terraform error output                            |
+| JUnit Field | Source | Notes |
+|-------------|--------|-------|
+| `testsuite/@name` | `--junit-suite-name` or `"terraform-tests"` | Suite name |
+| `testsuite/@tests` | Count of all tests | Total tests run |
+| `testsuite/@failures` | Count of failed tests | Tests with `status="failed"` |
+| `testsuite/@errors` | Count of error tests | Tests with `ERROR` state (exception in harness) |
+| `testsuite/@skipped` | Count of skipped tests | Tests with `status="skipped"` |
+| `testsuite/@time` | Total duration in seconds | Sum of all test times |
+| `testcase/@name` | Test directory name | e.g., `test-auth` |
+| `testcase/@classname` | `"terraform." + test name` | Namespacing for CI systems |
+| `testcase/@time` | Test duration in seconds | From `TestResult.duration` |
+| `testcase/failure/@message` | `error_message` field | First line of error |
+| `testcase/failure/@type` | Derived from `failed_stage` | e.g., `TerraformInitError`, `TerraformApplyError` |
+| `testcase/failure/text()` | Full error with context | Error message + logs paths |
+| `testcase/system-out` | Test metadata | Providers, resources, outputs counts |
+| `testcase/system-err` | Error logs | Terraform error output |
 
 #### Behavior
 
@@ -347,41 +339,38 @@ Error: aws_instance.example: InvalidAMI: The image id '[ami-12345]' does not exi
 - [ ] Parent directories are created automatically
 - [ ] Existing file is overwritten
 
-______________________________________________________________________
+---
 
 ### #4: Format Flag with Multiple Output Modes
 
-**Priority**: 🔥 High **Effort**: Medium **Files to Modify**: `cli.py`, `display.py`, `reporting.py`
+**Priority**: 🔥 High
+**Effort**: Medium
+**Files to Modify**: `cli.py`, `display.py`, `reporting.py`
 
 #### Description
-
 Unified `--format` flag to control output style for different use cases.
 
 #### Problem Statement
-
 Different contexts require different output styles. A single flag to control output format is more intuitive than multiple boolean flags.
 
 #### Solution
-
 Add `--format` flag with multiple predefined output modes.
 
 #### CLI Flags
 
-| Flag       | Type   | Values                                      | Default                             | Description   |
-| ---------- | ------ | ------------------------------------------- | ----------------------------------- | ------------- |
+| Flag | Type | Values | Default | Description |
+|------|------|--------|---------|-------------|
 | `--format` | choice | `table`, `plain`, `json`, `github`, `quiet` | `table` (or `plain` if CI detected) | Output format |
 
 #### Format Modes
 
 ##### 1. `table` - Rich Live Table (Default Interactive)
-
 - Current behavior: Rich live table with colors and emoji
 - Auto-refresh at configured rate
 - Full visual display with all columns
 - Best for: Interactive terminal use
 
 ##### 2. `plain` - Plain Text Line-by-Line (Default CI)
-
 - Line-by-line status updates
 - Timestamps on each line
 - Emoji preserved, colors preserved
@@ -389,7 +378,6 @@ Add `--format` flag with multiple predefined output modes.
 - Best for: CI/CD logs, file output
 
 Example:
-
 ```
 [2025-11-02T10:30:00Z] 💤 PENDING    1/5  test-auth
 [2025-11-02T10:30:01Z] 🔄 INIT       1/5  test-auth
@@ -398,14 +386,12 @@ Example:
 ```
 
 ##### 3. `json` - JSON Output
-
 - Same as `--json` flag
 - Outputs structured JSON to stdout
 - Suppresses all other output
 - Best for: Programmatic consumption, custom tooling
 
 ##### 4. `github` - GitHub Actions Annotations
-
 - Outputs GitHub Actions workflow commands
 - Groups tests with `::group::` / `::endgroup::`
 - Errors use `::error::` annotations
@@ -413,7 +399,6 @@ Example:
 - Best for: GitHub Actions workflows
 
 Example:
-
 ```
 ::group::Test: test-auth
 🔄 Running test-auth...
@@ -429,7 +414,6 @@ Example:
 ```
 
 ##### 5. `quiet` - Minimal Output
-
 - Only print summary at end
 - No progress updates
 - No live display
@@ -437,7 +421,6 @@ Example:
 - Best for: Scripts, when you only care about final result
 
 Example:
-
 ```
 Running 5 tests...
 Done. 4 passed, 1 failed in 45.2s
@@ -451,8 +434,8 @@ Done. 4 passed, 1 failed in 45.2s
 
 #### Environment Variables
 
-| Variable           | Values                                  | Description    |
-| ------------------ | --------------------------------------- | -------------- |
+| Variable | Values | Description |
+|----------|--------|-------------|
 | `SOUP_STIR_FORMAT` | `table`/`plain`/`json`/`github`/`quiet` | Default format |
 
 #### Acceptance Criteria
@@ -466,42 +449,40 @@ Done. 4 passed, 1 failed in 45.2s
 - [ ] `SOUP_STIR_FORMAT` environment variable works
 - [ ] Each format is properly tested
 
-______________________________________________________________________
+---
 
 ### #5: Timeout Controls
 
-**Priority**: 🔥 High **Effort**: Medium **Files to Modify**: `cli.py`, `executor.py`, `runtime.py`
+**Priority**: 🔥 High
+**Effort**: Medium
+**Files to Modify**: `cli.py`, `executor.py`, `runtime.py`
 
 #### Description
-
 Add timeout controls for tests to prevent hanging in CI/CD environments.
 
 #### Problem Statement
-
 Currently, standard tests have no timeout mechanism. A misbehaving test can run indefinitely, blocking CI pipelines and wasting resources. Matrix testing has timeouts, but standard mode does not.
 
 #### Solution
-
 Add global and per-test timeout controls.
 
 #### CLI Flags
 
-| Flag                     | Type | Default   | Description                                    |
-| ------------------------ | ---- | --------- | ---------------------------------------------- |
-| `--timeout=SECONDS`      | int  | unlimited | Global timeout for entire test suite (seconds) |
-| `--test-timeout=SECONDS` | int  | unlimited | Timeout per individual test (seconds)          |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--timeout=SECONDS` | int | unlimited | Global timeout for entire test suite (seconds) |
+| `--test-timeout=SECONDS` | int | unlimited | Timeout per individual test (seconds) |
 
 #### Environment Variables
 
-| Variable                 | Type | Description                        |
-| ------------------------ | ---- | ---------------------------------- |
-| `SOUP_STIR_TIMEOUT`      | int  | Default global timeout (seconds)   |
-| `SOUP_STIR_TEST_TIMEOUT` | int  | Default per-test timeout (seconds) |
+| Variable | Type | Description |
+|----------|------|-------------|
+| `SOUP_STIR_TIMEOUT` | int | Default global timeout (seconds) |
+| `SOUP_STIR_TEST_TIMEOUT` | int | Default per-test timeout (seconds) |
 
 #### Timeout Behavior
 
 ##### Per-Test Timeout (`--test-timeout`)
-
 - Applies to each individual test
 - Timer starts when test begins execution (CLEANING phase)
 - Timer stops when test completes (PASS/FAIL/SKIP)
@@ -512,7 +493,6 @@ Add global and per-test timeout controls.
   - Remaining tests continue
 
 ##### Global Timeout (`--timeout`)
-
 - Applies to entire test suite
 - Timer starts when first test begins
 - Timer stops when all tests complete or timeout is hit
@@ -523,7 +503,6 @@ Add global and per-test timeout controls.
   - Exit with timeout-specific exit code (124)
 
 ##### Timeout Grace Period
-
 - When timeout is hit, send SIGTERM to subprocess
 - Wait 5 seconds for graceful termination
 - If still running, send SIGKILL
@@ -532,13 +511,11 @@ Add global and per-test timeout controls.
 #### Output Examples
 
 **Test Timeout**:
-
 ```
 ⏱️  TIMEOUT   3/5  test-slow (300.0s) - Exceeded --test-timeout=300
 ```
 
 **Global Timeout**:
-
 ```
 ⏱️  Suite timed out after 600s (--timeout=600)
    Completed: 3/5 tests
@@ -548,12 +525,12 @@ Add global and per-test timeout controls.
 
 #### Exit Codes
 
-| Code | Meaning                                                  |
-| ---- | -------------------------------------------------------- |
-| 0    | All tests passed                                         |
-| 1    | One or more tests failed                                 |
-| 124  | Global timeout exceeded (follows GNU timeout convention) |
-| 125  | Test timeout exceeded                                    |
+| Code | Meaning |
+|------|---------|
+| 0 | All tests passed |
+| 1 | One or more tests failed |
+| 124 | Global timeout exceeded (follows GNU timeout convention) |
+| 125 | Test timeout exceeded |
 
 #### JSON Output with Timeouts
 
@@ -593,45 +570,42 @@ Add global and per-test timeout controls.
 - [ ] JUnit XML marks timeout tests appropriately
 - [ ] Environment variables work as defaults
 
-______________________________________________________________________
+---
 
 ### #6: Parallelism Control
 
-**Priority**: 🔥 High **Effort**: Low **Files to Modify**: `cli.py`, `executor.py`, `config.py`
+**Priority**: 🔥 High
+**Effort**: Low
+**Files to Modify**: `cli.py`, `executor.py`, `config.py`
 
 #### Description
-
 Add control over test parallelism to allow serial execution or custom concurrency limits.
 
 #### Problem Statement
-
 Currently, parallelism is hardcoded to `os.cpu_count()`. This is not always optimal:
-
 - In CI with limited resources, may want to reduce parallelism
 - For debugging, serial execution (`-j 1`) is often necessary
 - Some CI environments have quotas that limit concurrent operations
 
 #### Solution
-
 Add `--jobs` flag to control parallelism, similar to `make -j`.
 
 #### CLI Flags
 
-| Flag               | Type | Default | Description                        |
-| ------------------ | ---- | ------- | ---------------------------------- |
-| `--jobs=N`, `-j N` | int  | `auto`  | Number of tests to run in parallel |
-| `-j` (no value)    | flag | `auto`  | Use auto-detection (all CPUs)      |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--jobs=N`, `-j N` | int | `auto` | Number of tests to run in parallel |
+| `-j` (no value) | flag | `auto` | Use auto-detection (all CPUs) |
 
 Special values:
-
 - `--jobs=1` or `-j 1`: Serial execution (one test at a time)
 - `--jobs=0` or `--jobs=auto`: Auto-detect (current behavior: `os.cpu_count()`)
 - `--jobs=N`: Run up to N tests in parallel
 
 #### Environment Variables
 
-| Variable         | Type       | Description               |
-| ---------------- | ---------- | ------------------------- |
+| Variable | Type | Description |
+|----------|------|-------------|
 | `SOUP_STIR_JOBS` | int/`auto` | Default parallelism level |
 
 #### Examples
@@ -691,55 +665,52 @@ Running 5 tests with parallelism=12 (auto-detected CPUs)...
 - [ ] Serial mode runs tests in deterministic order
 - [ ] Parallelism is reflected in live display (number of active tests)
 
-______________________________________________________________________
+---
 
 ## Medium Priority Improvements
 
 ### #7: Timestamps in CI Mode
 
-**Priority**: 🟡 Medium **Effort**: Low **Files to Modify**: `display.py`
+**Priority**: 🟡 Medium
+**Effort**: Low
+**Files to Modify**: `display.py`
 
 #### Description
-
 Add timestamps to each output line when running in CI/CD mode.
 
 #### Problem Statement
-
 In CI logs, it's difficult to correlate events or understand when things happened without timestamps. This is especially problematic for long-running tests or when debugging timing issues.
 
 #### Solution
-
 Automatically add timestamps when in CI mode or when explicitly requested.
 
 #### CLI Flags
 
-| Flag                 | Type    | Default           | Description                   |
-| -------------------- | ------- | ----------------- | ----------------------------- |
-| `--timestamps`       | boolean | auto (true in CI) | Show timestamps on each line  |
-| `--no-timestamps`    | boolean | false             | Disable timestamps even in CI |
-| `--timestamp-format` | choice  | `iso8601`         | Timestamp format              |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--timestamps` | boolean | auto (true in CI) | Show timestamps on each line |
+| `--no-timestamps` | boolean | false | Disable timestamps even in CI |
+| `--timestamp-format` | choice | `iso8601` | Timestamp format |
 
 #### Timestamp Formats
 
-| Format           | Example                       | Description                           |
-| ---------------- | ----------------------------- | ------------------------------------- |
-| `iso8601`        | `2025-11-02T10:30:15.123456Z` | ISO 8601 with microseconds (default)  |
-| `iso8601-simple` | `2025-11-02T10:30:15Z`        | ISO 8601 without microseconds         |
-| `relative`       | `[+00:15.2s]`                 | Relative to test suite start          |
-| `elapsed`        | `[00:15.2]`                   | Same as relative but different format |
-| `unix`           | `1699012215.123456`           | Unix timestamp with microseconds      |
+| Format | Example | Description |
+|--------|---------|-------------|
+| `iso8601` | `2025-11-02T10:30:15.123456Z` | ISO 8601 with microseconds (default) |
+| `iso8601-simple` | `2025-11-02T10:30:15Z` | ISO 8601 without microseconds |
+| `relative` | `[+00:15.2s]` | Relative to test suite start |
+| `elapsed` | `[00:15.2]` | Same as relative but different format |
+| `unix` | `1699012215.123456` | Unix timestamp with microseconds |
 
 #### Output Examples
 
 **ISO 8601** (default):
-
 ```
 [2025-11-02T10:30:00.123456Z] 💤 PENDING    1/5  test-auth
 [2025-11-02T10:30:01.234567Z] 🔄 INIT       1/5  test-auth
 ```
 
 **Relative**:
-
 ```
 [+00:00.0s] 💤 PENDING    1/5  test-auth
 [+00:01.1s] 🔄 INIT       1/5  test-auth
@@ -756,10 +727,10 @@ Automatically add timestamps when in CI mode or when explicitly requested.
 
 #### Environment Variables
 
-| Variable                     | Values                | Description       |
-| ---------------------------- | --------------------- | ----------------- |
-| `SOUP_STIR_TIMESTAMPS`       | `true`/`false`/`auto` | Enable timestamps |
-| `SOUP_STIR_TIMESTAMP_FORMAT` | Format name           | Timestamp format  |
+| Variable | Values | Description |
+|----------|--------|-------------|
+| `SOUP_STIR_TIMESTAMPS` | `true`/`false`/`auto` | Enable timestamps |
+| `SOUP_STIR_TIMESTAMP_FORMAT` | Format name | Timestamp format |
 
 #### Acceptance Criteria
 
@@ -770,49 +741,46 @@ Automatically add timestamps when in CI mode or when explicitly requested.
 - [ ] Timestamps are aligned and don't break formatting
 - [ ] Timestamps use UTC timezone
 
-______________________________________________________________________
+---
 
 ### #8: Populate `failed_stage` and `error_message` Fields
 
-**Priority**: 🟡 Medium **Effort**: Low **Files to Modify**: `executor.py`, `models.py`
+**Priority**: 🟡 Medium
+**Effort**: Low
+**Files to Modify**: `executor.py`, `models.py`
 
 #### Description
-
 Populate the currently-empty `failed_stage` and `error_message` fields in `TestResult`.
 
 #### Problem Statement
-
 The `TestResult` data structure has `failed_stage` and `error_message` fields, but they are never populated. This makes it harder to analyze failures programmatically.
 
 #### Solution
-
 Track which stage failed and extract the error message.
 
 #### Failed Stage Values
 
-| Stage         | When Set                   | Description                        |
-| ------------- | -------------------------- | ---------------------------------- |
-| `null`        | Test passed                | No failure                         |
-| `"INIT"`      | `terraform init` failed    | Initialization failure             |
-| `"APPLY"`     | `terraform apply` failed   | Apply failure                      |
-| `"DESTROY"`   | `terraform destroy` failed | Destroy failure (rare)             |
-| `"ANALYZING"` | JSON parsing failed        | State analysis failure             |
-| `"HARNESS"`   | Python exception           | Test harness error (not terraform) |
+| Stage | When Set | Description |
+|-------|----------|-------------|
+| `null` | Test passed | No failure |
+| `"INIT"` | `terraform init` failed | Initialization failure |
+| `"APPLY"` | `terraform apply` failed | Apply failure |
+| `"DESTROY"` | `terraform destroy` failed | Destroy failure (rare) |
+| `"ANALYZING"` | JSON parsing failed | State analysis failure |
+| `"HARNESS"` | Python exception | Test harness error (not terraform) |
 
 #### Error Message Extraction
 
 Extract error message from parsed Terraform logs:
-
 1. Find first log entry with `@level == "error"`
-1. Extract `@message` field
-1. If error is structured, extract relevant fields
-1. Truncate to reasonable length (e.g., 500 chars)
-1. Store in `error_message` field
+2. Extract `@message` field
+3. If error is structured, extract relevant fields
+4. Truncate to reasonable length (e.g., 500 chars)
+5. Store in `error_message` field
 
 #### Example
 
 **Before** (current):
-
 ```python
 TestResult(
     directory="test-network",
@@ -824,7 +792,6 @@ TestResult(
 ```
 
 **After** (improved):
-
 ```python
 TestResult(
     directory="test-network",
@@ -867,31 +834,30 @@ TestResult(
 - [ ] JUnit XML uses these fields
 - [ ] Passed tests have `null` for both fields
 
-______________________________________________________________________
+---
 
 ### #9: Log Aggregation & Streaming
 
-**Priority**: 🟡 Medium **Effort**: High **Files to Modify**: `terraform.py`, `cli.py`, `executor.py`
+**Priority**: 🟡 Medium
+**Effort**: High
+**Files to Modify**: `terraform.py`, `cli.py`, `executor.py`
 
 #### Description
-
 Provide options to aggregate logs or stream them to stdout for better CI integration.
 
 #### Problem Statement
-
 Logs are scattered across multiple directories, making them hard to access in CI environments. Developers need to download artifacts and navigate directory structures to find relevant logs.
 
 #### Solution
-
 Add options to stream logs in real-time or aggregate them into a single file.
 
 #### CLI Flags
 
-| Flag                    | Type    | Default | Description                         |
-| ----------------------- | ------- | ------- | ----------------------------------- |
-| `--stream-logs`         | boolean | false   | Stream all terraform logs to stdout |
-| `--aggregate-logs=FILE` | path    | none    | Aggregate all logs into single file |
-| `--logs-dir=DIR`        | path    | auto    | Custom directory for log files      |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--stream-logs` | boolean | false | Stream all terraform logs to stdout |
+| `--aggregate-logs=FILE` | path | none | Aggregate all logs into single file |
+| `--logs-dir=DIR` | path | auto | Custom directory for log files |
 
 #### Stream Logs Mode (`--stream-logs`)
 
@@ -906,7 +872,6 @@ Stream all Terraform output to stdout in real-time:
 ```
 
 Features:
-
 - Prefix each line with test name and phase
 - Color-code by test (if colors enabled)
 - Interleave logs from parallel tests
@@ -921,7 +886,6 @@ soup stir --aggregate-logs=all-tests.log
 ```
 
 File format:
-
 ```
 ========================================
 Test: test-auth
@@ -955,10 +919,10 @@ soup stir --logs-dir=/tmp/stir-logs
 
 #### Environment Variables
 
-| Variable                | Description                           |
-| ----------------------- | ------------------------------------- |
+| Variable | Description |
+|----------|-------------|
 | `SOUP_STIR_STREAM_LOGS` | `true`/`false` - Enable log streaming |
-| `SOUP_STIR_LOGS_DIR`    | Path - Default logs directory         |
+| `SOUP_STIR_LOGS_DIR` | Path - Default logs directory |
 
 #### Acceptance Criteria
 
@@ -971,39 +935,36 @@ soup stir --logs-dir=/tmp/stir-logs
 - [ ] Directory is created if it doesn't exist
 - [ ] Compatible with other output formats
 
-______________________________________________________________________
+---
 
 ### #10: Summary File Output
 
-**Priority**: 🟡 Medium **Effort**: Low **Files to Modify**: `cli.py`, `reporting.py`
+**Priority**: 🟡 Medium
+**Effort**: Low
+**Files to Modify**: `cli.py`, `reporting.py`
 
 #### Description
-
 Save test summary to a file for later analysis or CI artifact collection.
 
 #### Problem Statement
-
 Test summary is only printed to terminal and is not persisted. In CI, it's useful to have a summary file that can be:
-
 - Uploaded as an artifact
 - Parsed by other tools
 - Used for notifications or reports
 
 #### Solution
-
 Add `--summary-file` flag to save summary in various formats.
 
 #### CLI Flags
 
-| Flag                  | Type   | Default | Description                                    |
-| --------------------- | ------ | ------- | ---------------------------------------------- |
-| `--summary-file=FILE` | path   | none    | Save summary to file                           |
-| `--summary-format`    | choice | `json`  | Summary file format (`json`/`text`/`markdown`) |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--summary-file=FILE` | path | none | Save summary to file |
+| `--summary-format` | choice | `json` | Summary file format (`json`/`text`/`markdown`) |
 
 #### Summary Formats
 
 ##### JSON Format
-
 ```json
 {
   "summary": {
@@ -1024,7 +985,6 @@ Add `--summary-file` flag to save summary in various formats.
 ```
 
 ##### Text Format
-
 ```
 TofuSoup Test Summary
 =====================
@@ -1047,7 +1007,6 @@ Generated: 2025-11-02T10:30:45Z
 ```
 
 ##### Markdown Format
-
 ```markdown
 # TofuSoup Test Summary
 
@@ -1092,28 +1051,26 @@ Generated: 2025-11-02T10:30:45Z
 - [ ] Parent directories are created automatically
 - [ ] File is created even if tests fail
 
-______________________________________________________________________
+---
 
 ### #11: Per-Phase Timing Breakdown
 
-**Priority**: 🟡 Medium **Effort**: Medium **Files to Modify**: `executor.py`, `display.py`, `models.py`
+**Priority**: 🟡 Medium
+**Effort**: Medium
+**Files to Modify**: `executor.py`, `display.py`, `models.py`
 
 #### Description
-
 Track and display timing for each phase of test execution.
 
 #### Problem Statement
-
 Currently only total test time is shown. When optimizing tests or diagnosing slow CI builds, it's helpful to know which phase is slow (INIT, APPLY, DESTROY, etc.).
 
 #### Solution
-
 Track timestamp at each phase transition and calculate phase durations.
 
 #### Implementation
 
 Add phase timing to `TestResult`:
-
 ```python
 class TestResult(NamedTuple):
     # ... existing fields ...
@@ -1121,7 +1078,6 @@ class TestResult(NamedTuple):
 ```
 
 Example:
-
 ```python
 {
     "CLEANING": 0.5,
@@ -1134,14 +1090,13 @@ Example:
 
 #### CLI Flags
 
-| Flag                  | Type    | Default | Description                     |
-| --------------------- | ------- | ------- | ------------------------------- |
-| `--show-phase-timing` | boolean | false   | Show per-phase timing in output |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--show-phase-timing` | boolean | false | Show per-phase timing in output |
 
 #### Output Examples
 
 **Terminal Output** (with `--show-phase-timing`):
-
 ```
 ✅ test-auth - PASS (12.5s total)
    CLEANING:   0.5s (  4%)
@@ -1152,7 +1107,6 @@ Example:
 ```
 
 **JSON Output**:
-
 ```json
 {
   "name": "test-auth",
@@ -1176,22 +1130,21 @@ Example:
 - [ ] Works with all output formats
 - [ ] Timing is accurate (uses monotonic clock)
 
-______________________________________________________________________
+---
 
 ### #12: Progress Percentage Indicator
 
-**Priority**: 🟡 Medium **Effort**: Low **Files to Modify**: `display.py`
+**Priority**: 🟡 Medium
+**Effort**: Low
+**Files to Modify**: `display.py`
 
 #### Description
-
 Show overall progress as a percentage.
 
 #### Problem Statement
-
 In CI logs or when running many tests, it's hard to gauge overall progress. A simple percentage helps set expectations.
 
 #### Solution
-
 Calculate and display progress percentage.
 
 #### Formula
@@ -1205,7 +1158,6 @@ Where `completed_tests` = passed + failed + skipped + timeout
 #### Output Examples
 
 **Plain Format**:
-
 ```
 [20%] (1/5) ✅ test-auth - PASS
 [40%] (2/5) ✅ test-network - PASS
@@ -1215,7 +1167,6 @@ Where `completed_tests` = passed + failed + skipped + timeout
 ```
 
 **With Estimated Time Remaining**:
-
 ```
 [20%] (1/5) ✅ test-auth - PASS - est. 60s remaining
 [40%] (2/5) ✅ test-network - PASS - est. 45s remaining
@@ -1223,19 +1174,18 @@ Where `completed_tests` = passed + failed + skipped + timeout
 
 #### CLI Flags
 
-| Flag              | Type    | Default           | Description                   |
-| ----------------- | ------- | ----------------- | ----------------------------- |
-| `--show-progress` | boolean | auto (true in CI) | Show progress percentage      |
-| `--show-eta`      | boolean | false             | Show estimated time remaining |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--show-progress` | boolean | auto (true in CI) | Show progress percentage |
+| `--show-eta` | boolean | false | Show estimated time remaining |
 
 #### Estimation Algorithm
 
 For time remaining estimation:
-
 1. Calculate average time per completed test
-1. Multiply by remaining tests
-1. Display as `est. Xs remaining`
-1. Update after each test completes
+2. Multiply by remaining tests
+3. Display as `est. Xs remaining`
+4. Update after each test completes
 
 #### Acceptance Criteria
 
@@ -1245,34 +1195,32 @@ For time remaining estimation:
 - [ ] `--show-eta` shows time estimate
 - [ ] Estimation becomes more accurate as tests complete
 
-______________________________________________________________________
+---
 
 ### #13: Configurable Refresh Rate
 
-**Priority**: 🟡 Medium **Effort**: Low **Files to Modify**: `cli.py`, `display.py`
+**Priority**: 🟡 Medium
+**Effort**: Low
+**Files to Modify**: `cli.py`, `display.py`
 
 #### Description
-
 Allow customization of live display refresh rate.
 
 #### Problem Statement
-
 Current refresh rate (0.77 Hz ≈ 1.3 seconds) is hardcoded. Different scenarios benefit from different rates:
-
 - Fast refresh for local development (smoother UX)
 - Slow refresh for CI (less log spam)
 - No refresh for file output or very long tests
 
 #### Solution
-
 Add `--refresh-rate` flag and `--no-refresh` mode.
 
 #### CLI Flags
 
-| Flag                  | Type    | Default | Description                                      |
-| --------------------- | ------- | ------- | ------------------------------------------------ |
-| `--refresh-rate=RATE` | float   | `0.77`  | Refresh rate in Hz (updates/second)              |
-| `--no-refresh`        | boolean | false   | Disable periodic refresh, update only on changes |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--refresh-rate=RATE` | float | `0.77` | Refresh rate in Hz (updates/second) |
+| `--no-refresh` | boolean | false | Disable periodic refresh, update only on changes |
 
 #### Examples
 
@@ -1290,14 +1238,13 @@ soup stir --no-refresh
 #### Auto-Adjustment
 
 In CI mode:
-
 - Default to `--no-refresh` (only output on changes)
 - If refresh rate is specified, honor it
 
 #### Environment Variables
 
-| Variable                 | Type  | Description          |
-| ------------------------ | ----- | -------------------- |
+| Variable | Type | Description |
+|----------|------|-------------|
 | `SOUP_STIR_REFRESH_RATE` | float | Default refresh rate |
 
 #### Acceptance Criteria
@@ -1308,32 +1255,31 @@ In CI mode:
 - [ ] Refresh rate is accurate (not drifting)
 - [ ] Very high refresh rates don't cause performance issues
 
-______________________________________________________________________
+---
 
 ## Low Priority Improvements
 
 ### #14: Colored Output Control
 
-**Priority**: 🟢 Low **Effort**: Low **Files to Modify**: `cli.py`, `display.py`
+**Priority**: 🟢 Low
+**Effort**: Low
+**Files to Modify**: `cli.py`, `display.py`
 
 #### Description
-
 Add control over ANSI color output.
 
 #### Problem Statement
-
 Some CI systems don't render ANSI colors well. Users should be able to disable colors or force them on.
 
 #### Solution
-
 Add `--color` flag and respect `NO_COLOR` environment variable.
 
 #### CLI Flags
 
-| Flag           | Type    | Default | Description                                   |
-| -------------- | ------- | ------- | --------------------------------------------- |
-| `--color=WHEN` | choice  | `auto`  | When to use colors: `auto`, `always`, `never` |
-| `--no-color`   | boolean | false   | Shorthand for `--color=never`                 |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--color=WHEN` | choice | `auto` | When to use colors: `auto`, `always`, `never` |
+| `--no-color` | boolean | false | Shorthand for `--color=never` |
 
 #### Color Detection (auto mode)
 
@@ -1350,11 +1296,11 @@ else:
 
 #### Environment Variables
 
-| Variable          | Effect                               |
-| ----------------- | ------------------------------------ |
-| `NO_COLOR`        | Disable colors (standard convention) |
-| `FORCE_COLOR`     | Force colors even in non-TTY         |
-| `SOUP_STIR_COLOR` | `auto`/`always`/`never`              |
+| Variable | Effect |
+|----------|--------|
+| `NO_COLOR` | Disable colors (standard convention) |
+| `FORCE_COLOR` | Force colors even in non-TTY |
+| `SOUP_STIR_COLOR` | `auto`/`always`/`never` |
 
 #### Examples
 
@@ -1378,42 +1324,39 @@ FORCE_COLOR=1 soup stir
 - [ ] `FORCE_COLOR` environment variable works
 - [ ] Emoji are preserved even when colors are disabled
 
-______________________________________________________________________
+---
 
 ### #15: Failure-Only Mode
 
-**Priority**: 🟢 Low **Effort**: Low **Files to Modify**: `executor.py`, `cli.py`
+**Priority**: 🟢 Low
+**Effort**: Low
+**Files to Modify**: `executor.py`, `cli.py`
 
 #### Description
-
 Stop test execution after first failure or after N failures.
 
 #### Problem Statement
-
 In CI, sometimes you want fast feedback and don't need to run all tests if one fails. Stopping early saves time and resources.
 
 #### Solution
-
 Add `--fail-fast` and `--fail-threshold` flags.
 
 #### CLI Flags
 
-| Flag                 | Type    | Default   | Description              |
-| -------------------- | ------- | --------- | ------------------------ |
-| `--fail-fast`        | boolean | false     | Stop after first failure |
-| `--fail-threshold=N` | int     | unlimited | Stop after N failures    |
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--fail-fast` | boolean | false | Stop after first failure |
+| `--fail-threshold=N` | int | unlimited | Stop after N failures |
 
 #### Behavior
 
 ##### Fail Fast (`--fail-fast`)
-
 - Stop immediately when any test fails
 - Running tests are allowed to complete
 - Pending tests are marked as `SKIPPED`
 - Summary shows incomplete status
 
 ##### Fail Threshold (`--fail-threshold=N`)
-
 - Stop after N tests have failed
 - Useful for "stop after a few failures" scenarios
 - More flexible than `--fail-fast`
@@ -1442,10 +1385,10 @@ Completed: 2/5 tests
 
 #### Exit Codes
 
-| Code                             | Meaning                                 |
-| -------------------------------- | --------------------------------------- |
-| 1                                | Tests failed (normal failure exit code) |
-| Exit early, but still use code 1 | Fail-fast doesn't change exit code      |
+| Code | Meaning |
+|------|---------|
+| 1 | Tests failed (normal failure exit code) |
+| Exit early, but still use code 1 | Fail-fast doesn't change exit code |
 
 #### Acceptance Criteria
 
@@ -1457,28 +1400,30 @@ Completed: 2/5 tests
 - [ ] Exit code is still 1 (failure)
 - [ ] JSON output shows which tests were skipped due to fail-fast
 
-______________________________________________________________________
+---
 
 ## Summary Table
 
-| #   | Improvement       | Priority  | Effort | Files                              | Key Features                         |
-| --- | ----------------- | --------- | ------ | ---------------------------------- | ------------------------------------ |
-| 1   | CI Auto-Detection | 🔥 High   | Medium | cli.py, display.py                 | Auto-detect CI, line-by-line output  |
-| 2   | JSON Output       | 🔥 High   | Low    | cli.py, models.py, reporting.py    | `--json` flag, structured output     |
-| 3   | JUnit XML         | 🔥 High   | Medium | cli.py, reporting.py               | `--junit-xml`, CI integration        |
-| 4   | Format Flag       | 🔥 High   | Medium | cli.py, display.py, reporting.py   | table/plain/json/github/quiet        |
-| 5   | Timeouts          | 🔥 High   | Medium | cli.py, executor.py, runtime.py    | `--timeout`, `--test-timeout`        |
-| 6   | Parallelism       | 🔥 High   | Low    | cli.py, executor.py, config.py     | `--jobs=N`, `-j 1` for serial        |
-| 7   | Timestamps        | 🟡 Medium | Low    | display.py                         | Auto in CI, ISO 8601 / relative      |
-| 8   | Error Fields      | 🟡 Medium | Low    | executor.py, models.py             | Populate failed_stage, error_message |
-| 9   | Log Aggregation   | 🟡 Medium | High   | terraform.py, cli.py, executor.py  | `--stream-logs`, `--aggregate-logs`  |
-| 10  | Summary File      | 🟡 Medium | Low    | cli.py, reporting.py               | `--summary-file`, json/text/markdown |
-| 11  | Phase Timing      | 🟡 Medium | Medium | executor.py, display.py, models.py | Per-phase duration tracking          |
-| 12  | Progress %        | 🟡 Medium | Low    | display.py                         | Percentage complete, ETA             |
-| 13  | Refresh Rate      | 🟡 Medium | Low    | cli.py, display.py                 | `--refresh-rate`, `--no-refresh`     |
-| 14  | Color Control     | 🟢 Low    | Low    | cli.py, display.py                 | `--color`, respect NO_COLOR          |
-| 15  | Fail Fast         | 🟢 Low    | Low    | executor.py, cli.py                | `--fail-fast`, `--fail-threshold`    |
+| # | Improvement | Priority | Effort | Files | Key Features |
+|---|-------------|----------|--------|-------|--------------|
+| 1 | CI Auto-Detection | 🔥 High | Medium | cli.py, display.py | Auto-detect CI, line-by-line output |
+| 2 | JSON Output | 🔥 High | Low | cli.py, models.py, reporting.py | `--json` flag, structured output |
+| 3 | JUnit XML | 🔥 High | Medium | cli.py, reporting.py | `--junit-xml`, CI integration |
+| 4 | Format Flag | 🔥 High | Medium | cli.py, display.py, reporting.py | table/plain/json/github/quiet |
+| 5 | Timeouts | 🔥 High | Medium | cli.py, executor.py, runtime.py | `--timeout`, `--test-timeout` |
+| 6 | Parallelism | 🔥 High | Low | cli.py, executor.py, config.py | `--jobs=N`, `-j 1` for serial |
+| 7 | Timestamps | 🟡 Medium | Low | display.py | Auto in CI, ISO 8601 / relative |
+| 8 | Error Fields | 🟡 Medium | Low | executor.py, models.py | Populate failed_stage, error_message |
+| 9 | Log Aggregation | 🟡 Medium | High | terraform.py, cli.py, executor.py | `--stream-logs`, `--aggregate-logs` |
+| 10 | Summary File | 🟡 Medium | Low | cli.py, reporting.py | `--summary-file`, json/text/markdown |
+| 11 | Phase Timing | 🟡 Medium | Medium | executor.py, display.py, models.py | Per-phase duration tracking |
+| 12 | Progress % | 🟡 Medium | Low | display.py | Percentage complete, ETA |
+| 13 | Refresh Rate | 🟡 Medium | Low | cli.py, display.py | `--refresh-rate`, `--no-refresh` |
+| 14 | Color Control | 🟢 Low | Low | cli.py, display.py | `--color`, respect NO_COLOR |
+| 15 | Fail Fast | 🟢 Low | Low | executor.py, cli.py | `--fail-fast`, `--fail-threshold` |
 
-______________________________________________________________________
+---
 
-**Document Version**: 1.0.0 **Last Updated**: 2025-11-02 **Status**: Draft Specification
+**Document Version**: 1.0.0
+**Last Updated**: 2025-11-02
+**Status**: Draft Specification

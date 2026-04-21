@@ -18,7 +18,7 @@ import contextlib
 import os
 from pathlib import Path
 import shutil
-import subprocess
+import subprocess  # nosec
 import time
 
 from provide.foundation import logger
@@ -172,7 +172,12 @@ async def test_go_to_python(
         line = server_process.stdout.readline()
         if line:
             # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
-            if line.startswith(("1|1|tcp|", "1|1|unix|")) or "|tcp|" in line or "|unix|" in line:
+            if (
+                line.startswith("1|1|tcp|")
+                or line.startswith("1|1|unix|")
+                or "|tcp|" in line
+                or "|unix|" in line
+            ):
                 handshake_line = line.strip()
                 break
         else:
@@ -287,7 +292,7 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
     Workaround: Use single-connection scenarios or fix Go server to have --persistent flag.
     """
     import os
-    import subprocess
+    import subprocess  # nosec
     import time
 
     if soup_go_path is None:
@@ -319,7 +324,9 @@ async def test_go_to_go(soup_go_path: Path | None, test_artifacts_dir: Path) -> 
     start_time = time.time()
     while time.time() - start_time < timeout_seconds:
         line = server_process.stdout.readline()
-        if line and (line.startswith(("1|1|tcp|", "1|1|unix|")) or "|tcp|" in line or "|unix|" in line):
+        if line and (
+            line.startswith("1|1|tcp|") or line.startswith("1|1|unix|") or "|tcp|" in line or "|unix|" in line
+        ):
             handshake_line = line.strip()
             break
         await asyncio.sleep(0.1)

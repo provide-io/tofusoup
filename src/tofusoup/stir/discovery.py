@@ -427,7 +427,7 @@ class TestFilter:
                 return list(data["metadata"]["tags"])
             if "test" in data and "tags" in data["test"]:
                 return list(data["test"]["tags"])
-        except Exception:  # noqa: S110 - malformed metadata is optional; silently ignore
+        except Exception:
             pass
         return []
 
@@ -442,7 +442,7 @@ class TestFilter:
                 if line.strip().startswith("# @tags:"):
                     tag_str = line.split(":", 1)[1].strip()
                     return [t.strip() for t in tag_str.split(",") if t.strip()]
-        except Exception:  # noqa: S110 - malformed metadata is optional; silently ignore
+        except Exception:
             pass
         return []
 

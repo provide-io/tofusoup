@@ -13,7 +13,6 @@ For now, please refer to:
 ## Additional Topics
 
 Suggested additions:
-
 - Setting up a development environment
 - Understanding the codebase architecture
 - Extending TofuSoup with new components
