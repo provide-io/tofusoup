@@ -7,7 +7,6 @@ This guide covers TofuSoup's wire protocol utilities for encoding and decoding T
 The Terraform wire protocol is the binary format used for communication between Terraform and providers. It uses MessagePack encoding with Base64 wrapping for transmission.
 
 TofuSoup provides tools to:
-
 - Encode JSON values to wire format
 - Decode wire format back to JSON
 - Validate cross-language compatibility
@@ -16,10 +15,9 @@ TofuSoup provides tools to:
 ## Wire Protocol Format
 
 The wire format consists of:
-
 1. **MessagePack encoding**: Binary serialization of CTY values
-1. **Base64 encoding**: ASCII-safe transport encoding
-1. **Type information**: Preserved through encoding/decoding
+2. **Base64 encoding**: ASCII-safe transport encoding
+3. **Type information**: Preserved through encoding/decoding
 
 ## Basic Usage
 
@@ -128,7 +126,6 @@ soup test wire -v
 ```
 
 The tests validate:
-
 - ✅ Encoding produces identical binary output
 - ✅ Decoding recovers exact original values
 - ✅ Type information is preserved
@@ -166,9 +163,9 @@ diff python.tfw.b64 go.tfw.b64
 If you see "Binary mismatch" in conformance tests:
 
 1. Check input format is valid
-1. Verify type specifications are correct
-1. Review MessagePack encoding differences
-1. Check for float precision issues
+2. Verify type specifications are correct
+3. Review MessagePack encoding differences
+4. Check for float precision issues
 
 ### Type Preservation
 
@@ -186,7 +183,6 @@ Without type info, encoding may fail or produce incorrect results.
 ### Null vs Unknown
 
 CTY distinguishes between:
-
 - **Null**: Explicitly null value
 - **Unknown**: Value not yet known (during plan)
 

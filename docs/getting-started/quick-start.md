@@ -17,7 +17,6 @@ soup --version
 ```
 
 Expected output:
-
 ```
 soup, version 0.0.11
 ```
@@ -29,7 +28,6 @@ soup --help
 ```
 
 You'll see commands organized by functionality:
-
 - `cty` - CTY operations
 - `hcl` - HCL operations
 - `wire` - Wire protocol operations
@@ -187,19 +185,16 @@ See [Configuration Reference](../reference/configuration.md) for all options.
 ## Next Steps
 
 ### Learn Core Concepts
-
 - [Architecture](../core-concepts/architecture.md)
 - [Conformance Testing](../core-concepts/conformance-testing.md)
 
 ### Follow Detailed Guides
-
 - [Using CTY and HCL Tools](../guides/cli-usage/03-using-cty-and-hcl-tools.md)
 - [Wire Protocol Operations](../guides/cli-usage/wire-protocol.md)
 - [Running Conformance Tests](../guides/testing/01-running-conformance-tests.md)
 - [Matrix Testing](../guides/cli-usage/matrix-testing.md)
 
 ### Reference Documentation
-
 - [API Reference](../reference/api/index.md)
 - [Configuration](../reference/configuration.md)
 - [Compatibility Matrix](../reference/compatibility-matrix.md)

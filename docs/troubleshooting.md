@@ -9,28 +9,23 @@ Common issues and solutions when using TofuSoup.
 **Symptom**: `soup: command not found` after installation
 
 **Solutions**:
-
 1. Verify installation:
-
    ```bash
    uv run python -c "import importlib.metadata as m; print(m.version('tofusoup'))"
    ```
 
-1. Check Python bin is in PATH:
-
+2. Check Python bin is in PATH:
    ```bash
    uv run python -c "import importlib.metadata as m; print(m.version('tofusoup'))"
    which soup
    ```
 
-1. Try running via Python module:
-
+3. Try running via Python module:
    ```bash
    python -m tofusoup.cli --help
    ```
 
-1. Add Python bin to PATH (macOS/Linux):
-
+4. Add Python bin to PATH (macOS/Linux):
    ```bash
    export PATH="$HOME/.local/bin:$PATH"
    ```
@@ -40,7 +35,6 @@ Common issues and solutions when using TofuSoup.
 **Symptom**: `ModuleNotFoundError` when running soup
 
 **Solution**:
-
 ```bash
 # For development installations
 cd /path/to/tofusoup
@@ -57,28 +51,23 @@ uv tool install "tofusoup[all]"
 **Symptom**: `soup harness build` fails
 
 **Solutions**:
-
 1. Check Go installation:
-
    ```bash
    go version  # Should be 1.21+
    ```
 
-1. Check GOPATH:
-
+2. Check GOPATH:
    ```bash
    go env GOPATH
    ```
 
-1. Try building manually:
-
+3. Try building manually:
    ```bash
    cd src/tofusoup/harness/go/soup-go
    go build -o ../../../../harnesses/bin/soup-go
    ```
 
-1. Check for Go module issues:
-
+4. Check for Go module issues:
    ```bash
    go mod tidy
    go mod verify
@@ -91,7 +80,6 @@ uv tool install "tofusoup[all]"
 **Cause**: The `harnesses/bin/` directory is a build artifact and not included in version control.
 
 **Solution**:
-
 ```bash
 # Build harnesses (this creates the directory)
 soup harness build --all
@@ -108,7 +96,6 @@ ls harnesses/bin/
 **Symptom**: `soup harness verify-cli` fails
 
 **Solution**:
-
 ```bash
 # Rebuild the harness
 soup harness build soup-go
@@ -129,7 +116,6 @@ soup harness verify-cli soup-go --verbose
 **Causes & Solutions**:
 
 1. **Go server not starting**:
-
    ```bash
    # Check server logs
    cat /tmp/tofusoup_plugin_debug.log
@@ -138,14 +124,12 @@ soup harness verify-cli soup-go --verbose
    soup rpc server-start
    ```
 
-1. **Firewall blocking**:
-
+2. **Firewall blocking**:
    - Check firewall settings
    - Allow Python and Go executables
    - Test on localhost without firewall
 
-1. **Port already in use**:
-
+3. **Port already in use**:
    ```bash
    # Check for processes using gRPC ports
    lsof -i :50051
@@ -158,15 +142,12 @@ soup harness verify-cli soup-go --verbose
 **This is a real compatibility issue!** It means Python and Go are producing different binary output.
 
 **Debug steps**:
-
 1. View the specific test:
-
    ```bash
    pytest conformance/wire/souptest_wire_python_vs_go.py::test_X -vv
    ```
 
-1. Compare binary outputs:
-
+2. Compare binary outputs:
    ```bash
    # See wire protocol guide for debugging
    soup wire encode input.json python.out
@@ -174,14 +155,14 @@ soup harness verify-cli soup-go --verbose
    diff <(xxd python.out) <(xxd go.out)
    ```
 
-1. Report the issue on GitHub with test details
+3. Report the issue on GitHub with test details
 
 ### CTY type errors
 
 **Symptom**: `'UnrefinedUnknownValue' object is not subscriptable`
 
-**Solution**: This is a known issue with unknown values. Update `pyvider-cty`:
-
+**Solution**:
+This is a known issue with unknown values. Update `pyvider-cty`:
 ```bash
 uv add pyvider-cty
 ```
@@ -191,21 +172,17 @@ uv add pyvider-cty
 ### Tests running slowly
 
 **Solutions**:
-
 1. Run tests in parallel:
-
    ```bash
    pytest -n auto
    ```
 
-1. Run specific test suites:
-
+2. Run specific test suites:
    ```bash
    soup test cty  # Instead of 'soup test all'
    ```
 
-1. Skip slow tests:
-
+3. Skip slow tests:
    ```bash
    pytest -m "not slow"
    ```
@@ -213,7 +190,6 @@ uv add pyvider-cty
 ### Harness build taking too long
 
 **Solution**:
-
 ```bash
 # Use cached builds
 soup harness build --cache
@@ -228,13 +204,12 @@ soup harness build soup-go  # Instead of --all
 
 **Symptom**: "Configuration not loaded" warnings
 
-**Solution**: TofuSoup searches for `soup.toml` in:
-
+**Solution**:
+TofuSoup searches for `soup.toml` in:
 1. Path specified by `--config-file`
-1. Current directory (`./soup.toml`)
+2. Current directory (`./soup.toml`)
 
 Create one if needed:
-
 ```bash
 cat > soup.toml <<EOF
 [global_settings]
@@ -247,7 +222,6 @@ EOF
 **Symptom**: `TofuSoupConfigError`
 
 **Solution**:
-
 ```bash
 # Validate syntax
 python -c "import tomllib; tomllib.load(open('soup.toml', 'rb'))"
@@ -265,7 +239,6 @@ soup config show
 **Cause**: Matrix testing is an optional feature that requires `wrknv`.
 
 **Solution**:
-
 ```bash
 # Install wrknv from local source
 uv tool install /path/to/wrknv
@@ -281,21 +254,17 @@ uv tool install wrknv
 **Symptom**: "No tests found"
 
 **Solutions**:
-
 1. Check directory structure:
-
    ```bash
    ls -la tests/
    ```
 
-1. Verify test files have `main.tf`:
-
+2. Verify test files have `main.tf`:
    ```bash
    find tests/ -name "main.tf"
    ```
 
-1. Use correct path:
-
+3. Use correct path:
    ```bash
    soup stir tests/  # Not just 'tests'
    ```
@@ -304,8 +273,8 @@ uv tool install wrknv
 
 **Symptom**: Tests only run against one version
 
-**Solution**: Configure matrix in `soup.toml`:
-
+**Solution**:
+Configure matrix in `soup.toml`:
 ```toml
 [workenv.matrix.versions]
 terraform = ["1.5.7", "1.6.0"]
@@ -313,7 +282,6 @@ tofu = ["1.8.0"]
 ```
 
 Then use `--matrix` flag:
-
 ```bash
 soup stir tests/ --matrix
 ```
@@ -346,8 +314,8 @@ soup/output/cli_verification/
 If you can't resolve the issue:
 
 1. Check [FAQ](faq.md)
-1. Search [GitHub Issues](https://github.com/provide-io/tofusoup/issues)
-1. Create a new issue with:
+2. Search [GitHub Issues](https://github.com/provide-io/tofusoup/issues)
+3. Create a new issue with:
    - TofuSoup version (`soup --version`)
    - Python version (`python --version`)
    - Go version (`go version`)

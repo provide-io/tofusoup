@@ -1,48 +1,87 @@
-# Contributing to tofusoup
+# Contributing to TofuSoup
 
-Thanks for contributing to tofusoup — the OpenTofu/Terraform state + registry inspection toolkit. This guide covers day-to-day development, quality gates, and PR expectations.
+We love your input! We want to make contributing to TofuSoup as easy and transparent as possible, whether it's:
 
-## Prerequisites
+- Reporting a bug
+- Discussing the current state of the code
+- Submitting a fix
+- Proposing new features
+- Becoming a maintainer
 
-- Python 3.11+
-- `uv` (`curl -LsSf https://astral.sh/uv/install.sh | sh`)
-- Terraform 1.5+ or OpenTofu 1.6+ (for conformance tests against real binaries)
+## We Develop with Github
+We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
 
-## Development Setup
+## We Use [Github Flow](https://guides.github.com/introduction/flow/index.html)
+Pull requests are the best way to propose changes to the codebase:
 
+1. Fork the repo and create your branch from `main`.
+2. If you've added code that should be tested, add tests.
+3. If you've changed APIs, update the documentation.
+4. Ensure the test suite passes.
+5. Make sure your code lints.
+6. Issue that pull request!
+
+## Any contributions you make will be under the Apache 2.0 Software License
+In short, when you submit code changes, your submissions are understood to be under the same [Apache 2.0 License](LICENSE) that covers the project.
+
+## Report bugs using Github's [issues](https://github.com/provide-io/tofusoup/issues)
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/provide-io/tofusoup/issues/new).
+
+## Write bug reports with detail, background, and sample code
+
+**Great Bug Reports** tend to have:
+
+- A quick summary and/or background
+- Steps to reproduce
+  - Be specific!
+  - Give sample code if you can
+- What you expected would happen
+- What actually happens
+- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+
+## Development Process
+
+1. Clone the repository
 ```bash
-git clone https://github.com/provide-io/tofusoup
+git clone https://github.com/provide-io/tofusoup.git
 cd tofusoup
-uv sync
 ```
 
-## Quality Gates
-
-Before opening a PR:
-
+2. Set up your development environment
 ```bash
-make quality         # ruff lint + format, mypy strict, pytest with coverage gate
-make test            # unit + integration
-make test-conformance  # conformance suite against real terraform / opentofu binaries
+uv sync  # This sets up the virtual environment
 ```
 
-Requirements:
+3. Run tests to ensure everything works
+```bash
+uv run pytest
+```
 
-- **100% branch coverage** on `src/tofusoup/**` (enforced).
-- **mypy strict mode**. No `type: ignore` without an inline justification.
-- **ruff** lint + format must pass.
-- Files ≤ 500 lines.
-- SPDX headers on every source/config file (`Apache-2.0`).
+4. Make your changes and add tests
 
-## Commits
+5. Run the test suite
+```bash
+uv run pytest -v
+```
 
-- Conventional prefixes: `feat(registry): …`, `fix(state): …`, `refactor(hcl): …`, `test(conformance): …`, `docs: …`, `chore: …`.
-- Subject ≤ 72 chars.
-- Do not mention AI assistance. No `Co-Authored-By:` trailers.
-- Canonical email: `code@tim.life` or `code@provide.io`.
+6. Check code style
+```bash
+uv run ruff check .
+uv run ruff format .
+uv run mypy src/
+```
 
-## Pull Requests
+## Testing Philosophy
 
-1. Run `make quality` (must pass).
-1. For state-format / registry changes, run `make test-conformance` against both terraform and opentofu.
-1. PR description notes any changes to state schema handling or registry query semantics.
+TofuSoup is a conformance testing suite, so testing is especially important:
+
+- Write tests for all new functionality
+- Ensure cross-language compatibility tests pass
+- Test harness generation should work for all supported languages
+- Document any language-specific behavior
+
+## License
+By contributing, you agree that your contributions will be licensed under its Apache 2.0 License.
+
+## References
+This document was adapted from the open-source contribution guidelines for [Facebook's Draft](https://github.com/facebook/draft-js/blob/master/CONTRIBUTING.md)

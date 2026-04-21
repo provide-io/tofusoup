@@ -15,7 +15,6 @@ This documentation suite specifies **15 improvements** categorized by priority:
 ## Current State
 
 As of today, `soup stir`:
-
 - ✅ Provides beautiful interactive table display using Rich
 - ✅ Tracks test progress in real-time with emoji indicators
 - ✅ Displays provider/resource/output counts
@@ -32,9 +31,7 @@ As of today, `soup stir`:
 This suite consists of the following documents:
 
 ### 1. [SPEC.md](./SPEC.md) - Feature Specifications
-
 Complete technical specifications for all 15 improvements including:
-
 - Feature descriptions
 - Acceptance criteria
 - CLI flag definitions
@@ -43,9 +40,7 @@ Complete technical specifications for all 15 improvements including:
 - Priority and effort estimates
 
 ### 2. [ARCHITECTURE.md](./ARCHITECTURE.md) - Architecture & Design
-
 Architectural decisions and design patterns:
-
 - CI/CD detection mechanism
 - Output format plugin architecture
 - Display system refactoring
@@ -53,39 +48,23 @@ Architectural decisions and design patterns:
 - Extensibility points
 
 ### 3. [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md) - Output Format Specifications
-
 Detailed specifications for all output formats:
-
 - JSON schema and examples
 - JUnit XML schema and examples
 - GitHub Actions annotations format
 - Plain text format
 - TAP (Test Anything Protocol) format
 
-### 4. [IMPLEMENTATION.md](./IMPLEMENTATION.md) - Implementation Guide
-
-Step-by-step implementation guide:
-
-- Implementation phases and order
-- Files to modify per improvement
-- Dependencies between features
-- Testing strategy
-- Rollout plan
-
-### 5. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
-
+### 4. [API_REFERENCE.md](./API_REFERENCE.md) - API & CLI Reference
 Complete reference documentation:
-
 - All new CLI flags and arguments
 - Environment variable reference
 - Configuration file options
 - Exit codes
 - Signal handling
 
-### 6. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
-
+### 5. [EXAMPLES.md](./EXAMPLES.md) - Practical Examples
 Real-world usage examples:
-
 - GitHub Actions workflows
 - GitLab CI pipelines
 - Jenkins pipelines
@@ -95,58 +74,48 @@ Real-world usage examples:
 ## Quick Reference: Which Improvement to Use When
 
 ### Running in GitHub Actions?
-
 → Use `--format=github` for native annotations ([#4](./SPEC.md#4-format-flag-with-multiple-output-modes))
 
 ### Need test results in CI dashboard?
-
 → Use `--junit-xml=results.xml` ([#3](./SPEC.md#3-junit-xml-output))
 
 ### Need to parse results programmatically?
-
 → Use `--json` ([#2](./SPEC.md#2-json-output-for-standard-mode))
 
 ### Tests running too long?
-
 → Use `--timeout=600 --test-timeout=300` ([#5](./SPEC.md#5-timeout-controls))
 
 ### Want cleaner CI logs?
-
 → Auto-detects CI and adapts ([#1](./SPEC.md#1-auto-detect-cicd-environments))
 
 ### Debugging test failures?
-
 → Use `--jobs=1 --stream-logs` ([#6](./SPEC.md#6-parallelism-control), [#9](./SPEC.md#9-log-aggregation-streaming))
 
 ### Want minimal noise in CI?
-
 → Use `--format=quiet` or `--format=plain` ([#4](./SPEC.md#4-format-flag-with-multiple-output-modes))
 
 ### Need to know which phase is slow?
-
 → Use `--show-phase-timing` ([#11](./SPEC.md#11-per-phase-timing-breakdown))
 
 ### Stop at first failure?
-
 → Use `--fail-fast` ([#15](./SPEC.md#15-failure-only-mode))
 
 ## Priority Matrix
 
-| Priority      | Count | Improvements                                                                                    |
-| ------------- | ----- | ----------------------------------------------------------------------------------------------- |
-| 🔥 **High**   | 6     | CI Detection, JSON Output, JUnit XML, Format Flag, Timeouts, Parallelism Control                |
-| 🟡 **Medium** | 7     | Timestamps, Error Fields, Log Aggregation, Summary File, Phase Timing, Progress %, Refresh Rate |
-| 🟢 **Low**    | 2     | Color Control, Fail-fast                                                                        |
+| Priority | Count | Improvements |
+|----------|-------|--------------|
+| 🔥 **High** | 6 | CI Detection, JSON Output, JUnit XML, Format Flag, Timeouts, Parallelism Control |
+| 🟡 **Medium** | 7 | Timestamps, Error Fields, Log Aggregation, Summary File, Phase Timing, Progress %, Refresh Rate |
+| 🟢 **Low** | 2 | Color Control, Fail-fast |
 
 ## Contributing
 
 When implementing these improvements:
 
 1. Follow the specifications in [SPEC.md](./SPEC.md)
-1. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE.md)
-1. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
-1. Follow implementation order in [IMPLEMENTATION.md](./IMPLEMENTATION.md)
-1. Add examples to [EXAMPLES.md](./EXAMPLES.md)
+2. Adhere to architecture decisions in [ARCHITECTURE.md](./ARCHITECTURE.md)
+3. Ensure output formats match [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md)
+4. Add examples to [EXAMPLES.md](./EXAMPLES.md)
 
 ## Related Documentation
 
@@ -157,11 +126,12 @@ When implementing these improvements:
 ## Feedback & Questions
 
 For questions or feedback on these improvements, please:
-
 - Open an issue on GitHub
 - Discuss in team channels
 - Update these docs with learnings from implementation
 
-______________________________________________________________________
+---
 
-**Last Updated**: 2025-11-02 **Status**: Specification Phase **Version**: 1.0.0
+**Last Updated**: 2025-11-02
+**Status**: Specification Phase
+**Version**: 1.0.0

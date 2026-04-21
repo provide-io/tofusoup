@@ -5,7 +5,7 @@
 
 
 from pathlib import Path
-import subprocess
+import subprocess  # nosec
 
 from provide.testkit.mocking import MagicMock, patch
 import pytest

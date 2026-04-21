@@ -13,7 +13,6 @@ While tutorials are being developed, please refer to:
 ## Additional Topics
 
 Suggested tutorials for contributors:
-
 - Building your first conformance test
 - Creating a custom test harness
 - Integrating TofuSoup into CI/CD

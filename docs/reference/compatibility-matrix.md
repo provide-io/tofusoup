@@ -4,12 +4,12 @@ This document details the compatibility matrix for cross-language RPC connection
 
 ## Language Pair Compatibility
 
-| Client → Server | Status               | Notes                                    |
-| --------------- | -------------------- | ---------------------------------------- |
-| Python → Python | ✅ Supported         | Full support with all features           |
-| Go → Python     | ✅ Supported         | Recommended for cross-language scenarios |
-| Go → Go         | ✅ Supported         | Full support with all features           |
-| **Python → Go** | ❌ **Not Supported** | **Known bug in pyvider-rpcplugin**       |
+| Client → Server | Status | Notes |
+|----------------|--------|-------|
+| Python → Python | ✅ Supported | Full support with all features |
+| Go → Python | ✅ Supported | Recommended for cross-language scenarios |
+| Go → Go | ✅ Supported | Full support with all features |
+| **Python → Go** | ❌ **Not Supported** | **Known bug in pyvider-rpcplugin** |
 
 ### Known Issues
 
@@ -18,19 +18,16 @@ This document details the compatibility matrix for cross-language RPC connection
 **Problem**: Python clients cannot connect to Go servers due to a TLS handshake incompatibility in pyvider-rpcplugin.
 
 **Symptoms**:
-
 - Connection timeout after 10-30 seconds
 - TLS handshake failure errors
 - Server process starts but client cannot establish channel
 
 **Workarounds**:
-
 1. **Use Go client → Python server** (recommended for cross-language scenarios)
-1. Use Python client → Python server (pure Python)
-1. Use Go client → Go server (pure Go)
+2. Use Python client → Python server (pure Python)
+3. Use Go client → Go server (pure Go)
 
 **Related Issues**:
-
 - pyvider-rpcplugin: Incompatibility with go-plugin server TLS handshake
 - Expected to be addressed in later pyvider releases; availability may change or be removed
 
@@ -38,19 +35,19 @@ This document details the compatibility matrix for cross-language RPC connection
 
 ### Python Runtime (grpcio)
 
-| Curve             | Status               | Notes                          |
-| ----------------- | -------------------- | ------------------------------ |
-| secp256r1 (P-256) | ✅ Supported         | Recommended, widely compatible |
-| secp384r1 (P-384) | ✅ Supported         | Higher security margin         |
-| secp521r1 (P-521) | ❌ **Not Supported** | **grpcio limitation**          |
+| Curve | Status | Notes |
+|-------|--------|-------|
+| secp256r1 (P-256) | ✅ Supported | Recommended, widely compatible |
+| secp384r1 (P-384) | ✅ Supported | Higher security margin |
+| secp521r1 (P-521) | ❌ **Not Supported** | **grpcio limitation** |
 
 ### Go Runtime (crypto/tls)
 
-| Curve             | Status       | Notes                          |
-| ----------------- | ------------ | ------------------------------ |
+| Curve | Status | Notes |
+|-------|--------|-------|
 | secp256r1 (P-256) | ✅ Supported | Recommended, widely compatible |
-| secp384r1 (P-384) | ✅ Supported | Higher security margin         |
-| secp521r1 (P-521) | ✅ Supported | Highest security, Go only      |
+| secp384r1 (P-384) | ✅ Supported | Higher security margin |
+| secp521r1 (P-521) | ✅ Supported | Highest security, Go only |
 
 ### Curve Compatibility Notes
 
@@ -63,23 +60,21 @@ This document details the compatibility matrix for cross-language RPC connection
 
 ### Supported TLS Modes
 
-| Mode       | Description                         | Compatibility      |
-| ---------- | ----------------------------------- | ------------------ |
-| `disabled` | No encryption                       | Both Python and Go |
-| `auto`     | Automatic mTLS with generated certs | Both Python and Go |
-| `manual`   | User-provided certificates          | Both Python and Go |
+| Mode | Description | Compatibility |
+|------|-------------|---------------|
+| `disabled` | No encryption | Both Python and Go |
+| `auto` | Automatic mTLS with generated certs | Both Python and Go |
+| `manual` | User-provided certificates | Both Python and Go |
 
 ### TLS Mode Requirements
 
 **Auto Mode**:
-
 - Server and client must both use `auto` mode
 - Specify `tls_key_type` (default: `"ec"`)
 - Specify `tls_curve` for EC keys (default: `"secp256r1"`)
 - Certificates generated automatically
 
 **Manual Mode**:
-
 - Provide `cert_file` and `key_file` parameters
 - Certificates must be compatible (matching key types and curves)
 - Both client and server need matching CA certificates
@@ -104,14 +99,14 @@ pytest tests/integration/test_error_scenarios.py          # Error handling
 
 The following combinations are tested automatically:
 
-| Test Scenario | Client | Server | Curve     | Expected Result        |
-| ------------- | ------ | ------ | --------- | ---------------------- |
-| Python basic  | Python | Python | secp256r1 | ✅ Pass                |
-| Python P-384  | Python | Python | secp384r1 | ✅ Pass                |
-| Go → Python   | Go     | Python | auto      | ✅ Pass                |
-| Go → Go       | Go     | Go     | secp384r1 | ✅ Pass                |
-| Python P-521  | Python | Python | secp521r1 | ❌ Expected Fail       |
-| Python → Go   | Python | Go     | any       | ⏭️ Skipped (known bug) |
+| Test Scenario | Client | Server | Curve | Expected Result |
+|---------------|--------|--------|-------|-----------------|
+| Python basic | Python | Python | secp256r1 | ✅ Pass |
+| Python P-384 | Python | Python | secp384r1 | ✅ Pass |
+| Go → Python | Go | Python | auto | ✅ Pass |
+| Go → Go | Go | Go | secp384r1 | ✅ Pass |
+| Python P-521 | Python | Python | secp521r1 | ❌ Expected Fail |
+| Python → Go | Python | Go | any | ⏭️ Skipped (known bug) |
 
 ## CLI Validation
 
@@ -134,16 +129,16 @@ soup rpc validate-connection --client python --server harnesses/bin/soup-go
 ### For Production Use
 
 1. **Use Go → Python** for cross-language scenarios (most reliable)
-1. **Use secp256r1 or secp384r1** for Python servers
-1. **Use auto TLS mode** unless you have specific cert requirements
-1. **Test your configuration** with `soup rpc validate-connection` before deployment
+2. **Use secp256r1 or secp384r1** for Python servers
+3. **Use auto TLS mode** unless you have specific cert requirements
+4. **Test your configuration** with `soup rpc validate-connection` before deployment
 
 ### For Development
 
 1. **Use Python → Python** for quick iteration on Python code
-1. **Use Go → Go** for quick iteration on Go code
-1. **Avoid Python → Go** until the bug is fixed
-1. **Run integration tests** to verify your setup: `pytest tests/integration/`
+2. **Use Go → Go** for quick iteration on Go code
+3. **Avoid Python → Go** until the bug is fixed
+4. **Run integration tests** to verify your setup: `pytest tests/integration/`
 
 ## Error Messages
 
@@ -178,9 +173,9 @@ Original error: TimeoutError: Connection timeout
 Exploratory enhancements to the compatibility matrix:
 
 1. **Fix Python → Go connection** (pyvider-rpcplugin update needed)
-1. **Add Rust client/server support** (exploratory runtime)
-1. **Add secp521r1 support for Python** (requires grpcio update or alternative)
-1. **Enhanced curve negotiation** (automatic downgrade for compatibility)
+2. **Add Rust client/server support** (exploratory runtime)
+3. **Add secp521r1 support for Python** (requires grpcio update or alternative)
+4. **Enhanced curve negotiation** (automatic downgrade for compatibility)
 
 ## Related Documentation
 
@@ -188,6 +183,6 @@ Exploratory enhancements to the compatibility matrix:
 - [Cross-Language Compatibility](../testing/cross-language-compatibility.md)
 - [pyvider-rpcplugin Documentation](https://github.com/provide-io/pyvider)
 
-______________________________________________________________________
+---
 
 Last Updated: 2025-10-11

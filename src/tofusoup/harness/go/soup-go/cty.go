@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-// SPDX-License-Identifier: Apache-2.0
-
 package main
 
 import (
@@ -101,13 +98,13 @@ func initCtyConvertCmd() *cobra.Command {
 			return nil
 		},
 	}
-
+	
 	// Add flags
 	cmd.Flags().StringVar(&ctyInputFormat, "input-format", "json", "Input format (json, msgpack)")
 	cmd.Flags().StringVar(&ctyOutputFormat, "output-format", "json", "Output format (json, msgpack)")
 	cmd.Flags().StringVar(&ctyTypeJSON, "type", "", "CTY type specification as JSON")
 	cmd.MarkFlagRequired("type")
-
+	
 	return cmd
 }
 
@@ -136,11 +133,11 @@ func initCtyValidateCmd() *cobra.Command {
 			return nil
 		},
 	}
-
+	
 	// Add flags
 	cmd.Flags().StringVar(&ctyTypeJSON, "type", "", "CTY type specification as JSON")
 	cmd.MarkFlagRequired("type")
-
+	
 	return cmd
 }
 

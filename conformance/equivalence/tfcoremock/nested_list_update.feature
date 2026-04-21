@@ -1,0 +1,11 @@
+
+Feature: nested_list_update
+
+  Scenario: tests updating a nested list attribute within a resource
+    Given a resource of type "tfcoremock_nested_list" named "nested_list"
+    And the resource has the following attributes:
+      | id | "DA051126-BAD6-4EB2-92E5-F0250DAF0B92" |
+      | lists | [["44E1C623-7B70-4D78-B4D3-D9CFE8A6D982"], ["8B031CD1-01F7-422C-BBE6-FF8A0E18CDFD"], ["13E3B154-7B85-4EAA-B3D0-E295E7D71D7F"]] |
+    When the resource is created
+    Then the resource should exist in the state
+    And its attributes in the state should match the provided values
