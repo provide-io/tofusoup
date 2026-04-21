@@ -38,7 +38,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]>=0.3.29",
+    "provide-foundation[all]>=0.4.0",
     "click>=8.3.1",
     "msgpack>=1.0.0",
     "pyyaml>=6.0",
@@ -48,35 +48,35 @@ dependencies = [
     "aiosqlite>=0.19.0",
     "semver>=3.0.0",
     "jinja2>=3.1.6",
-    "plating>=0.3.22",
-    "pyvider>=0.3.22",  # For state inspection encryption (pyvider.common.encryption)
+    "plating>=0.4.0",
+    "pyvider>=0.4.0",  # For state inspection encryption (pyvider.common.encryption)
 ]
 
 [project.optional-dependencies]
 cty = [
-    "pyvider-cty>=0.3.21",
+    "pyvider-cty>=0.4.0",
 ]
 hcl = [
-    "pyvider-hcl>=0.3.21",
+    "pyvider-hcl>=0.4.0",
 ]
 rpc = [
-    "pyvider-rpcplugin>=0.3.21",
+    "pyvider-rpcplugin>=0.4.0",
 ]
 test-rpc = [
-    "pyvider-rpcplugin[test]>=0.3.21",
+    "pyvider-rpcplugin[test]>=0.4.0",
 ]
 all = [
-    "tofusoup[cty,hcl,rpc]",
+    "tofusoup[cty,hcl,rpc]>=0.4.0",
 ]
 
 [dependency-groups]
 dev = [
-    "provide-testkit[standard,advanced-testing,build]",
+    "provide-testkit[standard,advanced-testing,build]>=0.4.0",
     "pytest-httpx>=0.35.0",
-    "tofusoup[test-rpc]",
+    "tofusoup[test-rpc]>=0.4.0",
 ]
 docs = [
-    "provide-testkit[docs]",
+    "provide-testkit[docs]>=0.4.0",
     "mkdocs-material>=9.7.1",
 ]
 
@@ -105,7 +105,7 @@ tofusoup = ["py.typed"]
 version = {file = "VERSION"}
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "7.0"
 log_cli = true
 log_cli_level = "DEBUG"
 asyncio_mode = "auto"
@@ -210,7 +210,9 @@ ignore = [
     "PLR0912",  # too-many-branches (refactor later)
     "PLR0913",  # too-many-arguments (common in config classes)
     "PLR0915",  # too-many-statements (refactor later)
-    "PLR2004",  # magic-value-comparison (too noisy)
+    "PLR2004",  # magic-value-comparison (too noisy),
+    "S105",  # hardcoded-password-string (env var names, not values)
+    "S110",  # try-except-pass (defensive cleanup)
 ]
 
 [tool.ruff.lint.per-file-ignores]

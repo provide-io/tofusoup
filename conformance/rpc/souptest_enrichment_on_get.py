@@ -14,7 +14,7 @@ Verifies that RPC K/V storage behaves correctly:
 
 import os
 from pathlib import Path
-import subprocess
+import subprocess  # nosec
 import time
 import uuid
 

@@ -79,7 +79,7 @@ def main() -> None:
 
     # Stress: parse + extract resources across sizes
     cycles = 200
-    for _i in range(cycles):
+    for i in range(cycles):
         for label in ("small", "medium", "large"):
             state = load_terraform_state(paths[label])
             find_resources_with_private_state(state)

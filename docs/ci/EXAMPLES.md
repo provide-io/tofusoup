@@ -12,7 +12,7 @@ Real-world usage examples for `soup stir` CI/CD features across different platfo
 - [Common Patterns](#common-patterns)
 - [Troubleshooting](#troubleshooting)
 
-______________________________________________________________________
+---
 
 ## GitHub Actions
 
@@ -232,7 +232,7 @@ jobs:
         run: exit 1
 ```
 
-______________________________________________________________________
+---
 
 ## GitLab CI
 
@@ -370,7 +370,7 @@ test:storage:
     TEST_SUITE: "storage"
 ```
 
-______________________________________________________________________
+---
 
 ## Jenkins
 
@@ -497,7 +497,7 @@ node {
 }
 ```
 
-______________________________________________________________________
+---
 
 ## CircleCI
 
@@ -604,7 +604,7 @@ workflows:
               suite: ["auth", "network", "storage", "compute"]
 ```
 
-______________________________________________________________________
+---
 
 ## Local Development
 
@@ -673,7 +673,7 @@ soup stir \
 soup stir --test-timeout=5 tests/slow-test/
 ```
 
-______________________________________________________________________
+---
 
 ## Common Patterns
 
@@ -694,14 +694,13 @@ soup stir \
 ```
 
 **Use Case**: Production CI pipeline that needs:
-
 - JUnit XML for test reporting
 - JSON for custom processing
 - Markdown summary for artifact review
 - Timeouts to prevent hanging
 - Phase timing for performance analysis
 
-______________________________________________________________________
+---
 
 ### Pattern 2: Fast Feedback Development
 
@@ -716,12 +715,11 @@ soup stir \
 ```
 
 **Use Case**: Local development when:
-
 - Want to stop at first failure
 - Running serially to avoid resource conflicts
 - Need progress indicator
 
-______________________________________________________________________
+---
 
 ### Pattern 3: Comprehensive Debugging
 
@@ -739,14 +737,13 @@ soup stir \
 ```
 
 **Use Case**: Investigating test failures:
-
 - Serial execution (deterministic order)
 - All logs streamed to see real-time issues
 - Aggregated logs for complete record
 - Phase timing to find bottlenecks
 - Relative timestamps to understand timing
 
-______________________________________________________________________
+---
 
 ### Pattern 4: Performance Testing
 
@@ -764,12 +761,11 @@ jq '.tests[] | {name: .name, duration: .duration_seconds, phases: .phase_timings
 ```
 
 **Use Case**: Performance optimization:
-
 - JSON for programmatic analysis
 - Phase timing to identify slow phases
 - Serial to eliminate parallelism effects
 
-______________________________________________________________________
+---
 
 ### Pattern 5: CI with Notifications
 
@@ -795,7 +791,7 @@ fi
 exit $EXIT_CODE
 ```
 
-______________________________________________________________________
+---
 
 ### Pattern 6: Multi-Environment Matrix
 
@@ -828,14 +824,13 @@ done
 echo "All versions passed!"
 ```
 
-______________________________________________________________________
+---
 
 ## Troubleshooting
 
 ### Issue: Tests Timeout in CI
 
 **Symptoms**:
-
 - Tests exceed global timeout
 - Exit code 124
 
@@ -852,12 +847,11 @@ soup stir --jobs=2 --timeout=1800 tests/
 soup stir --json tests/ | jq '.tests | sort_by(.duration_seconds) | reverse | .[0:5]'
 ```
 
-______________________________________________________________________
+---
 
 ### Issue: CI Logs are Cluttered
 
 **Symptoms**:
-
 - Too much output in CI logs
 - Hard to find relevant information
 
@@ -874,12 +868,11 @@ soup stir --format=plain --no-refresh tests/
 soup stir --format=plain tests/ 2>&1 | grep -E '(FAIL|ERROR|❌)'
 ```
 
-______________________________________________________________________
+---
 
 ### Issue: Can't Parse Test Results
 
 **Symptoms**:
-
 - Need to process results programmatically
 - Current output not machine-readable
 
@@ -896,17 +889,15 @@ soup stir --junit-xml=results.xml tests/
 soup stir --json --junit-xml=results.xml tests/ > results.json
 ```
 
-______________________________________________________________________
+---
 
 ### Issue: Parallel Tests Fail, Serial Passes
 
 **Symptoms**:
-
 - Tests pass with `-j 1`
 - Tests fail with parallel execution
 
 **Root Causes**:
-
 - Resource conflicts (ports, files, etc.)
 - Rate limiting
 - Race conditions
@@ -925,12 +916,11 @@ soup stir -j 1 tests/problematic-test/
 soup stir --jobs=4 tests/ --exclude tests/problematic-test/
 ```
 
-______________________________________________________________________
+---
 
 ### Issue: Need to Debug Test Failures
 
 **Symptoms**:
-
 - Test fails but error unclear
 - Need more information
 
@@ -950,12 +940,11 @@ soup stir --show-phase-timing tests/failing-test/
 TF_LOG=DEBUG soup stir tests/failing-test/
 ```
 
-______________________________________________________________________
+---
 
 ### Issue: GitHub Actions Not Showing Test Results
 
 **Symptoms**:
-
 - Tests run but no test reporter integration
 
 **Solution**:
@@ -971,7 +960,7 @@ ______________________________________________________________________
     files: results.xml
 ```
 
-______________________________________________________________________
+---
 
 ### Issue: Want to Track Test Performance Over Time
 
@@ -988,7 +977,7 @@ soup stir --json --show-phase-timing tests/ > results-$(date +%Y%m%d).json
 jq '.tests[] | {name: .name, duration: .duration_seconds}' results-*.json
 ```
 
-______________________________________________________________________
+---
 
 ## Additional Resources
 
@@ -996,6 +985,8 @@ ______________________________________________________________________
 - [API_REFERENCE.md](./API_REFERENCE.md) - All flags and options
 - [OUTPUT_FORMATS.md](./OUTPUT_FORMATS.md) - Output format details
 
-______________________________________________________________________
+---
 
-**Document Version**: 1.0.0 **Last Updated**: 2025-11-02 **Status**: Practical Examples Guide
+**Document Version**: 1.0.0
+**Last Updated**: 2025-11-02
+**Status**: Practical Examples Guide

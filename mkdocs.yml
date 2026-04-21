@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 INHERIT: .provide/foundry/base-mkdocs.yml
 site_name: tofusoup
 site_description: Cross-language conformance testing framework
@@ -10,9 +7,10 @@ repo_url: https://github.com/provide-io/tofusoup
 repo_name: provide-io/tofusoup
 edit_uri: edit/main/docs/
 copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
-dev_addr: 127.0.0.1:11025
+dev_addr: 127.0.0.1:11014
 docs_dir: docs
 hooks:
+- .provide/foundry/theme/hooks/global_partials_hook.py
 - .provide/foundry/theme/hooks/terraform_provider.py
 exclude_docs: 'historical/
 

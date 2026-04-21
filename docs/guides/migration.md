@@ -7,7 +7,6 @@ This guide helps users migrate from older TofuSoup versions to the current unifi
 ### What Changed
 
 Previously, TofuSoup used separate Go harnesses for each component:
-
 - `go-cty` - CTY operations
 - `go-hcl` - HCL parsing
 - `go-rpc` - RPC server/client
@@ -18,7 +17,6 @@ Previously, TofuSoup used separate Go harnesses for each component:
 ### Command Migration
 
 **Old harness commands:**
-
 ```bash
 # OLD - separate binaries
 ./bin/go-cty validate-value ...
@@ -28,7 +26,6 @@ Previously, TofuSoup used separate Go harnesses for each component:
 ```
 
 **New harness commands:**
-
 ```bash
 # NEW - unified soup-go with subcommands
 ./harnesses/bin/soup-go cty validate-value ...
@@ -40,7 +37,6 @@ Previously, TofuSoup used separate Go harnesses for each component:
 ### Harness Management
 
 **Old commands:**
-
 ```bash
 # OLD
 soup harness build go-cty
@@ -49,7 +45,6 @@ soup harness verify-cli go-cty
 ```
 
 **New commands:**
-
 ```bash
 # NEW
 soup harness build soup-go
@@ -60,7 +55,6 @@ soup harness verify-cli soup-go
 ### Binary Paths
 
 **Old paths:**
-
 ```
 tofusoup/src/tofusoup/harness/go/bin/go-cty
 tofusoup/src/tofusoup/harness/go/bin/go-hcl
@@ -69,7 +63,6 @@ tofusoup/src/tofusoup/harness/go/bin/go-wire
 ```
 
 **New paths:**
-
 ```
 harnesses/bin/soup-go
 ```
@@ -79,7 +72,6 @@ harnesses/bin/soup-go
 If you have `soup.toml` configurations referencing old harnesses:
 
 **Before:**
-
 ```toml
 [harness.go.cty]
 build_flags = ["-v"]
@@ -89,7 +81,6 @@ timeout_seconds = 60
 ```
 
 **After:**
-
 ```toml
 [harness.go.soup-go]
 build_flags = ["-v"]
@@ -101,7 +92,6 @@ timeout_seconds = 60
 If you have test scripts or CI/CD pipelines using the old harnesses:
 
 **Before:**
-
 ```bash
 # In test scripts
 GO_CTY_BIN="./bin/go-cty"
@@ -112,7 +102,6 @@ harness_path = Path("bin/go-cty")
 ```
 
 **After:**
-
 ```bash
 # In test scripts
 SOUP_GO_BIN="./harnesses/bin/soup-go"
@@ -130,7 +119,6 @@ harness_path = Path("harnesses/bin/soup-go")
 The following test commands have been removed in favor of the unified `soup test` command:
 
 **Old (Deprecated):**
-
 ```bash
 soup cty test compat
 soup rpc test all
@@ -138,7 +126,6 @@ soup wire test compat
 ```
 
 **New (Current):**
-
 ```bash
 soup test cty
 soup test rpc
@@ -149,7 +136,6 @@ soup test all  # Run all suites
 ### Why This Change?
 
 The unified `soup test` command:
-
 - Provides consistent interface across all test suites
 - Supports better configuration via `soup.toml`
 - Enables easier CI/CD integration
@@ -158,19 +144,17 @@ The unified `soup test` command:
 ### Migration Steps
 
 1. **Update harness builds:**
-
    ```bash
    soup harness build soup-go
    ```
 
-1. **Update scripts** to use new harness paths
+2. **Update scripts** to use new harness paths
 
-1. **Update test commands** to use `soup test <suite>`
+3. **Update test commands** to use `soup test <suite>`
 
-1. **Update `soup.toml`** if you have harness-specific configurations
+4. **Update `soup.toml`** if you have harness-specific configurations
 
-1. **Verify** everything works:
-
+5. **Verify** everything works:
    ```bash
    soup harness verify-cli soup-go
    soup test all
@@ -183,7 +167,6 @@ The unified `soup test` command:
 **Error:** `harness 'go-cty' not found`
 
 **Solution:**
-
 ```bash
 # Remove old references, build new harness
 soup harness clean --all
@@ -205,19 +188,19 @@ soup harness build soup-go
 ## Benefits of Migration
 
 1. **Simpler Builds**: One harness to build instead of four
-1. **Consistent Interface**: All functionality accessible via subcommands
-1. **Smaller Footprint**: Single binary vs multiple binaries
-1. **Easier Maintenance**: One codebase for all harness functionality
-1. **Better Documentation**: Unified documentation and help system
+2. **Consistent Interface**: All functionality accessible via subcommands
+3. **Smaller Footprint**: Single binary vs multiple binaries
+4. **Easier Maintenance**: One codebase for all harness functionality
+5. **Better Documentation**: Unified documentation and help system
 
 ## Getting Help
 
 If you encounter issues during migration:
 
 1. Check this migration guide
-1. Review [Troubleshooting](../troubleshooting.md)
-1. Check [FAQ](../faq.md)
-1. Open an issue on [GitHub](https://github.com/provide-io/tofusoup/issues)
+2. Review [Troubleshooting](../troubleshooting.md)
+3. Check [FAQ](../faq.md)
+4. Open an issue on [GitHub](https://github.com/provide-io/tofusoup/issues)
 
 ## See Also
 

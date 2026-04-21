@@ -34,7 +34,6 @@ soup harness list
 ### soup-go
 
 The unified Go harness providing:
-
 - CTY operations (`soup-go cty ...`)
 - HCL parsing (`soup-go hcl ...`)
 - Wire protocol (`soup-go wire ...`)
@@ -94,7 +93,6 @@ go build -o ../../../../../harnesses/bin/soup-go
 ## Source Code
 
 Harness source code is located in:
-
 - `src/tofusoup/harness/go/soup-go/` - Unified Go harness source
 
 ## See Also

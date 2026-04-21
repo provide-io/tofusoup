@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 # Example soup.toml with profile-based matrix testing
 
 [workenv]
@@ -47,7 +44,7 @@ terraform_flavor = "opentofu"
 # Which profiles to test in matrix mode
 profiles = [
     "tf-stable",
-    "tf-previous",
+    "tf-previous", 
     "tf-legacy",
     "tofu-latest",
     "tofu-stable"

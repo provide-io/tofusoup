@@ -20,6 +20,8 @@ The project focuses on ensuring compatibility between Go, Python, and other lang
 
 **IMPORTANT**: Use `uv sync` to set up the development environment. This creates a virtual environment at `.venv/`.
 
+> **Note on "workenv"**: The project uses `.venv/` for the Python virtual environment. The `[workenv]` sections in `soup.toml` configure the `wrknv` tool for matrix testing across Terraform/OpenTofu versions - this is unrelated to the virtual environment directory.
+
 ```bash
 # Install uv if needed: https://github.com/astral-sh/uv
 uv sync
@@ -30,7 +32,6 @@ uv sync
 This project uses `wrknv` for task automation. Commands are defined in `wrknv.toml`.
 
 ### Quick Reference
-
 ```bash
 we tasks             # List all available tasks
 we run test          # Run tests
@@ -76,11 +77,9 @@ uv run pytest conformance/              # Run conformance tests
 uv run pytest tests/                    # Run unit tests
 uv run pytest -n auto                   # Run tests in parallel
 uv run pytest -k "test_name"            # Run tests matching pattern
-
-# Code quality
-uv run ruff check .                     # Linting
-uv run ruff format .                    # Formatting
-uv run mypy src/                        # Type checking
+uv run ruff check .                     # Direct linting
+uv run ruff format .                    # Direct formatting
+uv run mypy src/                        # Direct type checking
 
 # CLI operations (command is 'soup', not 'tofusoup')
 soup --help                            # Main CLI help
@@ -103,6 +102,8 @@ uv build                               # Build package
 uv publish                             # Publish to PyPI
 ```
 
+For complete task documentation, see [wrknv.toml](wrknv.toml) or run `we tasks`.
+
 ## Architecture & Code Structure
 
 ### Core Components
@@ -110,89 +111,76 @@ uv publish                             # Publish to PyPI
 The codebase is organized into functional modules under `src/tofusoup/`:
 
 1. **`cty/`** - CTY value operations
-
    - CLI commands for viewing, converting CTY data
    - Integration with `pyvider-cty` for Python implementation
    - Cross-language compatibility testing against Go harnesses
 
-1. **`hcl/`** - HCL operations
-
+2. **`hcl/`** - HCL operations
    - HCL parsing and conversion
    - Integration with `pyvider-hcl`
    - CTY representation of HCL structures
 
-1. **`wire/`** - Terraform wire protocol
-
+3. **`wire/`** - Terraform wire protocol
    - Encoding/decoding wire protocol messages
    - MessagePack and Base64 handling
    - Integration with `pyvider.wire` library
 
-1. **`rpc/`** - RPC and plugin system
-
+4. **`rpc/`** - RPC and plugin system
    - gRPC service implementations (KV store example)
    - Plugin server capabilities (go-plugin compatible)
    - Cross-language RPC testing (Python ↔ Go)
    - Certificate and mTLS management
 
-1. **`harness/`** - Test harness management
-
+5. **`harness/`** - Test harness management
    - Building and managing Go test harnesses
    - CLI for harness lifecycle (build, verify, clean)
    - Proto definitions and generated code
 
-1. **`testing/`** - Conformance test execution
-
+6. **`testing/`** - Conformance test execution
    - Unified CLI for running pytest-based conformance suites
    - Test discovery and execution orchestration
    - Configuration via `soup.toml`
 
-1. **`stir/`** - Matrix testing framework
-
+7. **`stir/`** - Matrix testing framework
    - Multi-version Terraform/OpenTofu testing
    - Parallel test execution across tool versions
    - Integration with workenv for version management
 
-1. **`registry/`** - Registry operations
-
+8. **`registry/`** - Registry operations
    - Querying Terraform and OpenTofu registries
    - Provider and module search
    - Caching and API clients
 
-1. **`browser/` (sui)** - Terminal UI
-
+9. **`browser/` (sui)** - Terminal UI
    - Textual-based TUI for browsing registries
    - Interactive provider/module exploration
 
-1. **`provider/`** - Provider development tools
+10. **`provider/`** - Provider development tools
+    - Provider project scaffolding
+    - Development utilities
 
-   - Provider project scaffolding
-   - Development utilities
+11. **`state/`** - State inspection
+    - Terraform state file analysis
+    - Private state attributes access
 
-1. **`state/`** - State inspection
+12. **`common/`** - Shared utilities
+    - Configuration loading (`config.py`)
+    - Rich terminal output helpers
+    - Exception classes
+    - Lazy loading for CLI performance
 
-   - Terraform state file analysis
-   - Private state attributes access
-
-1. **`common/`** - Shared utilities
-
-   - Configuration loading (`config.py`)
-   - Rich terminal output helpers
-   - Exception classes
-   - Lazy loading for CLI performance
-
-1. **`scaffolding/`** - Project scaffolding
-
-   - Generate new project structures
-   - Template-based code generation
+13. **`scaffolding/`** - Project scaffolding
+    - Generate new project structures
+    - Template-based code generation
 
 ### Key Design Patterns
 
 1. **Lazy Loading CLI**: Uses `LazyGroup` for fast CLI startup - subcommands load only when invoked
-1. **Foundation Integration**: Uses `provide-foundation` for structured logging and telemetry
-1. **Rich Terminal Output**: Extensive use of `rich` library for beautiful CLI output
-1. **Plugin Compatibility**: RPC server can run as go-plugin compatible plugin
-1. **Configuration-Driven**: `soup.toml` for configuring harnesses, tests, and commands
-1. **Cross-Language Testing**: Conformance tests validate Python ↔ Go compatibility
+2. **Foundation Integration**: Uses `provide-foundation` for structured logging and telemetry
+3. **Rich Terminal Output**: Extensive use of `rich` library for beautiful CLI output
+4. **Plugin Compatibility**: RPC server can run as go-plugin compatible plugin
+5. **Configuration-Driven**: `soup.toml` for configuring harnesses, tests, and commands
+6. **Cross-Language Testing**: Conformance tests validate Python ↔ Go compatibility
 
 ### Directory Structure
 
@@ -285,10 +273,10 @@ uv run pytest tests/ -k test_name
 ## Common Issues & Solutions
 
 1. **ModuleNotFoundError for dependencies**: Run `uv sync` to ensure proper environment setup
-1. **Harness build failures**: Ensure Go is installed and `GOPATH` is configured
-1. **Plugin connection timeouts**: Check certificate generation and mTLS configuration
-1. **Test execution timeouts**: Increase timeout settings in pytest configuration
-1. **Import errors**: Ensure PYTHONPATH includes `src/` (configured in `pyproject.toml`)
+2. **Harness build failures**: Ensure Go is installed and `GOPATH` is configured
+3. **Plugin connection timeouts**: Check certificate generation and mTLS configuration
+4. **Test execution timeouts**: Increase timeout settings in pytest configuration
+5. **Import errors**: Ensure PYTHONPATH includes `src/` (configured in `pyproject.toml`)
 
 ## Development Guidelines
 
@@ -350,7 +338,6 @@ soup harness list
 - **Test Results**: Use pytest's output mechanisms
 
 Example:
-
 ```python
 from provide.foundation import logger
 from rich import print as rich_print

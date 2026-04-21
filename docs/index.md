@@ -1,8 +1,4 @@
-# TofuSoup Documentation
-
-!!! warning "Pre-release" This documentation covers a pre-release. APIs and features may change, and some documented items are exploratory and may change or be removed.
-
-Welcome to TofuSoup - A comprehensive toolkit and conformance testing suite for the OpenTofu/Terraform ecosystem.
+# TofuSoup DocumentationWelcome to TofuSoup - A comprehensive toolkit and conformance testing suite for the OpenTofu/Terraform ecosystem.
 
 ## What is TofuSoup?
 
@@ -81,37 +77,31 @@ Understand how provide-foundation, pyvider, flavorpack, and other projects work 
 ## Core Capabilities
 
 ### CTY (Configuration Type System)
-
 Work with Terraform's type system: view structures, convert formats, validate values.
 
 **Commands**: `soup cty view`, `soup cty convert`, `soup cty benchmark`
 
 ### HCL (HashiCorp Configuration Language)
-
 Parse and process HCL files: display structure, convert to JSON/MessagePack.
 
 **Commands**: `soup hcl view`, `soup hcl convert`
 
 ### Wire Protocol
-
 Terraform wire protocol utilities: encode/decode MessagePack and Base64.
 
 **Commands**: `soup wire encode`, `soup wire decode`
 
 ### RPC and Plugin System
-
 Cross-language RPC testing with Python and Go implementations, mTLS support.
 
 **Commands**: `soup rpc kv server`, `soup rpc kv client`, `soup rpc kv test`
 
 ### Conformance Testing
-
 Pytest-based test suites for CTY, HCL, wire protocol, and RPC compatibility.
 
 **Commands**: `soup test all`, `soup test cty`, `soup test hcl`, `soup test wire`, `soup test rpc`
 
 ### Matrix Testing (Stir)
-
 Test providers across multiple Terraform/OpenTofu versions with parallel execution.
 
 **Commands**: `soup stir <path>`, `soup stir <path> --matrix`
@@ -119,13 +109,11 @@ Test providers across multiple Terraform/OpenTofu versions with parallel executi
 **Note**: Requires optional `wrknv` package: `uv pip install -e /path/to/wrknv`
 
 ### Registry Operations
-
 Query and browse Terraform/OpenTofu registries with CLI or interactive TUI.
 
 **Commands**: `soup registry search`, `soup registry info`, `soup sui`
 
 ### Test Harnesses
-
 Build and manage Go test harnesses for cross-language compatibility testing.
 
 **Commands**: `soup harness list`, `soup harness build`, `soup harness verify-cli`
@@ -147,6 +135,6 @@ env_vars = { KV_STORAGE_DIR = "/tmp" }
 
 See the [Configuration Reference](reference/configuration.md) for complete details.
 
-______________________________________________________________________
+---
 
 **Ready to get started?** Dive into the [CLI Reference](reference/cli.md).

@@ -6,7 +6,7 @@
 """TofuSoup conformance test module."""
 
 from pathlib import Path
-import subprocess
+import subprocess  # nosec
 
 import pytest
 

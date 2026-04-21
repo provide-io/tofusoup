@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-// SPDX-License-Identifier: Apache-2.0
-
 package main
 
 import (
@@ -126,3 +123,4 @@ func startRPCServer(logger hclog.Logger, port int, tlsMode, tlsKeyType, tlsCurve
 	logger.Info("🗄️✅ server exited")
 	return nil
 }
+

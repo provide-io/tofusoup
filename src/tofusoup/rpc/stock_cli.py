@@ -7,7 +7,7 @@
 Supports multiple language implementations without plugin handshake."""
 
 from pathlib import Path
-import subprocess
+import subprocess  # nosec
 import sys
 
 import click

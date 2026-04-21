@@ -13,42 +13,34 @@ This document describes the architectural decisions and design patterns for impl
 - [Extensibility Points](#extensibility-points)
 - [Performance Considerations](#performance-considerations)
 
-______________________________________________________________________
+---
 
 ## Design Principles
 
 All improvements follow these core principles:
 
 ### 1. **Auto-Adaptive Behavior**
-
 The tool should automatically adapt to its environment without requiring user configuration:
-
 - Detect CI/CD environments and adjust output accordingly
 - Detect TTY vs non-TTY and choose appropriate display mode
 - Respect standard environment variables (`NO_COLOR`, `CI`, etc.)
 
 ### 2. **Backwards Compatibility**
-
 All changes must maintain backwards compatibility:
-
 - Default behavior remains unchanged for interactive use
 - New features are opt-in unless auto-detected
 - Existing scripts and workflows continue to work
 - Exit codes remain consistent
 
 ### 3. **Progressive Enhancement**
-
 Features build on each other:
-
 - Basic functionality works without advanced features
 - Advanced features can be layered on
 - Flags can be combined meaningfully
 - No feature should break another
 
 ### 4. **Unix Philosophy**
-
 Follow Unix conventions:
-
 - Do one thing well (test execution)
 - Compose with other tools (pipes, redirects)
 - Use standard formats (JSON, XML)
@@ -56,15 +48,13 @@ Follow Unix conventions:
 - Follow exit code conventions
 
 ### 5. **Fail-Safe Defaults**
-
 When in doubt, choose the safer option:
-
 - Disable fancy features in CI (prefer simple output)
 - Show more rather than less (verbose > terse)
 - Preserve data (don't truncate errors)
 - Timeout rather than hang forever
 
-______________________________________________________________________
+---
 
 ## CI Detection Architecture
 
@@ -111,11 +101,9 @@ ______________________________________________________________________
 The system checks for these variables (in order of preference):
 
 1. **Generic CI Indicators**:
-
    - `CI=true` - Standard CI indicator
 
-1. **Specific CI Systems** (alphabetical):
-
+2. **Specific CI Systems** (alphabetical):
    - `BUILDKITE=true` - Buildkite
    - `CIRCLECI=true` - CircleCI
    - `GITHUB_ACTIONS=true` - GitHub Actions
@@ -125,8 +113,7 @@ The system checks for these variables (in order of preference):
    - `TF_BUILD=true` - Azure Pipelines
    - `TRAVIS=true` - Travis CI
 
-1. **TofuSoup Overrides**:
-
+3. **TofuSoup Overrides**:
    - `SOUP_STIR_CI_MODE=true|false|auto` - Explicit override
    - `SOUP_STIR_FORMAT=table|plain|json|github|quiet` - Format override
 
@@ -216,7 +203,7 @@ def detect_display_mode(
     return DisplayMode.TABLE
 ```
 
-______________________________________________________________________
+---
 
 ## Output Format Plugin System
 
@@ -341,7 +328,7 @@ def run_tests(...):
     renderer.complete(results=results)
 ```
 
-______________________________________________________________________
+---
 
 ## Display System Refactoring
 
@@ -368,7 +355,6 @@ ______________________________________________________________________
 ```
 
 **Issues**:
-
 - Global mutable state (`test_statuses` dict)
 - Tight coupling between executor and display
 - Hard to add alternative output formats
@@ -402,7 +388,6 @@ ______________________________________________________________________
 ```
 
 **Benefits**:
-
 - Clean separation of concerns
 - Event-driven updates (not polling)
 - Easy to add new formats
@@ -463,7 +448,7 @@ def on_event(self, event: Event):
         self.update_display(event.test_name, event.data)
 ```
 
-______________________________________________________________________
+---
 
 ## Timeout Implementation
 
@@ -472,7 +457,7 @@ ______________________________________________________________________
 Timeouts are implemented using `asyncio.wait_for()` at two levels:
 
 1. **Per-Test Timeout**: Wraps individual test execution
-1. **Global Timeout**: Wraps entire test suite
+2. **Global Timeout**: Wraps entire test suite
 
 ### Per-Test Timeout
 
@@ -552,41 +537,38 @@ async def terminate_test_gracefully(process: asyncio.subprocess.Process):
         await process.wait()
 ```
 
-______________________________________________________________________
+---
 
 ## Backwards Compatibility
 
 ### Compatibility Matrix
 
-| Feature      | Default Behavior                                | Change from Current                                 |
-| ------------ | ----------------------------------------------- | --------------------------------------------------- |
-| Display Mode | Auto-detect (table if interactive, plain if CI) | ✅ Same for interactive, improves CI                |
-| Output       | Terminal display                                | ✅ No change                                        |
-| Exit Codes   | 0=success, 1=failure                            | ✅ No change (added: 124=timeout, 125=test timeout) |
-| Log Files    | Per-test logs in cache                          | ✅ No change                                        |
-| Parallelism  | Auto (all CPUs)                                 | ✅ No change                                        |
-| Refresh Rate | 0.77 Hz                                         | ✅ No change                                        |
-| Colors       | Auto-detect TTY                                 | ✅ No change                                        |
+| Feature | Default Behavior | Change from Current |
+|---------|------------------|---------------------|
+| Display Mode | Auto-detect (table if interactive, plain if CI) | ✅ Same for interactive, improves CI |
+| Output | Terminal display | ✅ No change |
+| Exit Codes | 0=success, 1=failure | ✅ No change (added: 124=timeout, 125=test timeout) |
+| Log Files | Per-test logs in cache | ✅ No change |
+| Parallelism | Auto (all CPUs) | ✅ No change |
+| Refresh Rate | 0.77 Hz | ✅ No change |
+| Colors | Auto-detect TTY | ✅ No change |
 
 ### Migration Path
 
 Users don't need to change anything unless they want new features:
 
 **Phase 1: Passive Improvements** (no action needed)
-
 - CI auto-detection improves CI logs automatically
 - All existing commands work unchanged
 - Better error messages (failed_stage, error_message populated)
 
 **Phase 2: Opt-In Features** (use new flags)
-
 - `--json` for programmatic output
 - `--junit-xml` for CI integration
 - `--timeout` for safety
 - `--jobs` for control
 
 **Phase 3: Advanced** (power users)
-
 - `--format=github` for GitHub Actions
 - `--stream-logs` for debugging
 - `--show-phase-timing` for optimization
@@ -596,11 +578,11 @@ Users don't need to change anything unless they want new features:
 No existing features are deprecated. If later versions need to change behavior:
 
 1. **Announce**: Document in CHANGELOG
-1. **Warn**: Add deprecation warning (at least one major version)
-1. **Migrate**: Provide automatic migration or compatibility flags
-1. **Remove**: Only after sufficient warning period
+2. **Warn**: Add deprecation warning (at least one major version)
+3. **Migrate**: Provide automatic migration or compatibility flags
+4. **Remove**: Only after sufficient warning period
 
-______________________________________________________________________
+---
 
 ## Extensibility Points
 
@@ -689,20 +671,18 @@ exporter = SlackExporter()
 exporter.export(results)
 ```
 
-______________________________________________________________________
+---
 
 ## Performance Considerations
 
 ### Live Display Updates
 
 **Current**: Polling every 1.3 seconds (0.77 Hz)
-
 - ❌ Wastes CPU checking for changes
 - ❌ Fixed update rate regardless of activity
 - ✅ Simple implementation
 
 **Improved**: Event-driven updates
-
 - ✅ Only update when state changes
 - ✅ Reduced CPU usage
 - ✅ Faster updates on actual changes
@@ -711,13 +691,11 @@ ______________________________________________________________________
 ### Log Tailing
 
 **Current**: Async log tailing per test
-
 - ✅ Real-time updates
 - ✅ Non-blocking
 - ❌ File I/O overhead
 
 **Optimization**: Log debouncing
-
 - Group log updates (current: 0.5s debounce)
 - Batch file writes
 - Consider memory buffer for very chatty tests
@@ -725,13 +703,11 @@ ______________________________________________________________________
 ### Parallel Execution
 
 **Current**: `asyncio.Semaphore` with `os.cpu_count()` limit
-
 - ✅ Good CPU utilization
 - ✅ Prevents overload
 - ❌ No I/O vs CPU awareness
 
 **Exploratory Enhancement**: Adaptive parallelism
-
 - Detect I/O-bound vs CPU-bound tests
 - Adjust parallelism dynamically
 - Monitor system load
@@ -741,14 +717,12 @@ ______________________________________________________________________
 **Trade-off**: Structured logging vs memory
 
 Option 1: Stream JSON to stdout (current plan)
-
 - Build entire result structure in memory
 - Generate JSON at end
 - ✅ Simple, works for most cases
 - ❌ Memory usage for very large suites
 
 Option 2: Streaming JSON (exploratory)
-
 - Use `ijson` or similar
 - Stream results as they complete
 - ✅ Constant memory
@@ -759,12 +733,11 @@ Option 2: Streaming JSON (exploratory)
 ### CI Detection
 
 **Performance**: Detection is O(1), happens once at startup
-
 - Check ~10 environment variables: negligible
 - TTY check: single syscall
 - **Total overhead**: < 1ms
 
-______________________________________________________________________
+---
 
 ## Security Considerations
 
@@ -773,22 +746,18 @@ ______________________________________________________________________
 Terraform logs may contain sensitive data. Consider:
 
 1. **Secrets in Errors**: Terraform errors might expose secrets
-
    - Solution: Add `--sanitize-logs` flag (exploratory enhancement)
    - Redact patterns like API keys, passwords
 
-1. **File Paths**: Full paths might expose directory structure
-
+2. **File Paths**: Full paths might expose directory structure
    - Solution: Allow relative path display with `--relative-paths`
 
-1. **State Files**: Never log state file contents
-
+3. **State Files**: Never log state file contents
    - Already handled: state is only analyzed, not logged
 
 ### Artifact Upload
 
 If implementing artifact upload (#9):
-
 - Use secure protocols (HTTPS, S3 with proper auth)
 - Respect `.terraformignore` or similar
 - Allow opt-out for sensitive environments
@@ -796,12 +765,11 @@ If implementing artifact upload (#9):
 ### Exit Codes
 
 Exit codes should not leak information:
-
 - ✅ 0 = success, 1 = failure (standard)
 - ✅ 124 = timeout (GNU timeout convention)
 - ❌ Don't use exit codes to encode test counts or error types
 
-______________________________________________________________________
+---
 
 ## Testing Strategy
 
@@ -838,12 +806,11 @@ def test_json_output():
 ### End-to-End Tests
 
 Test in actual CI environment:
-
 - GitHub Actions workflow
 - GitLab CI pipeline
 - Docker container (non-TTY)
 
-______________________________________________________________________
+---
 
 ## File Organization
 
@@ -874,6 +841,8 @@ src/tofusoup/stir/
     └── quiet.py            # Minimal output
 ```
 
-______________________________________________________________________
+---
 
-**Document Version**: 1.0.0 **Last Updated**: 2025-11-02 **Status**: Draft Architecture
+**Document Version**: 1.0.0
+**Last Updated**: 2025-11-02
+**Status**: Draft Architecture

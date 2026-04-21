@@ -6,7 +6,7 @@
 
 import os
 import pathlib
-import subprocess
+import subprocess  # nosec
 from typing import Any
 
 from provide.foundation import logger

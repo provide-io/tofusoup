@@ -22,7 +22,7 @@ instead of manually managing processes and handshakes.
 import os
 from pathlib import Path
 import shutil
-import subprocess
+import subprocess  # nosec
 import uuid
 
 from provide.foundation import logger
