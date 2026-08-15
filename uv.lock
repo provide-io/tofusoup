@@ -2231,7 +2231,7 @@ wheels = [
 
 [[package]]
 name = "plating"
-version = "0.3.31"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jinja2" },
@@ -2241,9 +2241,9 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1f/88/3b4d6ffe3f668dba7901c488ced31f448adb5e9aa2fde1b43e3cc84248cd/plating-0.3.31.tar.gz", hash = "sha256:af8f87bdd7859c31d60709cf99f2f251645a10bfba3cf6d60f75511d578c55ac", size = 105273, upload-time = "2026-04-01T19:48:25.744Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/52/d1/90833770497c204ed0fe6ed05e58bddcaa095fc0684313f36c996f7a62c4/plating-0.4.0.tar.gz", hash = "sha256:536e12e8f508cdaa9034c91373c8efc46ffc3023ef4da31c7df6ccd7bc121892", size = 105276, upload-time = "2026-04-21T02:06:27.176Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/84/88234357eade3094e6f88494e45d0e9783a9304c241f80204c205dc18626/plating-0.3.31-py3-none-any.whl", hash = "sha256:2ff645aadef95af4c261473ed6bf552543a008f84cbe6920b353ef8f346e8a9b", size = 103421, upload-time = "2026-04-01T19:48:24.331Z" },
+    { url = "https://files.pythonhosted.org/packages/65/83/a3a62141e43e87867130d2819fe4709a2e64e67a047181771770d3d54cab/plating-0.4.0-py3-none-any.whl", hash = "sha256:3978fccc56f25d42f65ec1653b9a243d0a8c5f606cdba198dc2619771eba43b2", size = 103414, upload-time = "2026-04-21T02:06:25.82Z" },
 ]
 
 [[package]]
@@ -2311,16 +2311,16 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-version = "0.3.31.post3"
+version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "structlog" },
     { name = "tomli-w" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/27/fc/1968fcab4bb91acadddb57848c836dd5b1a26eb3fae947cca3e413491dcf/provide_foundation-0.3.31.post3.tar.gz", hash = "sha256:26b5ed7f91392babccf53240270e46345b82090c455ace8a5299f6494afe8965", size = 417987, upload-time = "2026-04-02T04:14:22.085Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/57/9e/36e5076f1103565ab9b5623452ed826bcd467be786c75c6ead901f84da96/provide_foundation-0.4.1.tar.gz", hash = "sha256:294255d6754bf4aad0dde9fe775a296f5da09510142eee4efc9e12fc7074ca5d", size = 417992, upload-time = "2026-05-04T20:09:05.388Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e2/74/1dc445d44821408f8b34e4c605b0713057c6e3af43221bca2dc2dd9af54b/provide_foundation-0.3.31.post3-py3-none-any.whl", hash = "sha256:12e71b27ab8ec0273a09de7f5a06f9b462142afb4f80e7442a62f90e01d52a11", size = 616010, upload-time = "2026-04-02T04:14:20.3Z" },
+    { url = "https://files.pythonhosted.org/packages/13/37/515c0489ee3048dcad5204bae38619a0b6380166c37a99e9862a71bb5d71/provide_foundation-0.4.1-py3-none-any.whl", hash = "sha256:cdc1bf2aa5e7c132f3259bd0eb28bb997a80dcce6b2f3d42a9ec16e48ecf2b25", size = 616102, upload-time = "2026-05-04T20:09:03.761Z" },
 ]
 
 [package.optional-dependencies]
@@ -2340,7 +2340,7 @@ all = [
 
 [[package]]
 name = "provide-testkit"
-version = "0.3.31"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2353,9 +2353,9 @@ dependencies = [
     { name = "pytest-mock" },
     { name = "pytest-xdist" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ca/c3/1a51a7f2e3f7a8231e4a2c4eab328e8774588a2d11ce0b226be8a797c62d/provide_testkit-0.3.31.tar.gz", hash = "sha256:44468d980f3bc61ad1ab3183c8d1fa988ae0313c4ed49e443becec6dee22547b", size = 133935, upload-time = "2026-04-01T19:48:12.363Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/4e/bea7ab0635d111a841f0710344be50fedf617d3ed73a331270eb18178c05/provide_testkit-0.4.0.tar.gz", hash = "sha256:020d109e74997ef8dd73f1a54397f8ae51c0ebc6d62f5841ab842dca1bf5364c", size = 134087, upload-time = "2026-04-21T01:23:59.101Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/37/d1/78fb68e44821adf642da2d7b06f27c1a9866d689fe126d6abb5aa185b0d7/provide_testkit-0.3.31-py3-none-any.whl", hash = "sha256:40e8d1cc82f1ce39ec73e950672103d3516fbe4ef360d1321f05e90fd6e8e5ab", size = 183032, upload-time = "2026-04-01T19:48:10.817Z" },
+    { url = "https://files.pythonhosted.org/packages/99/57/73ed450a8beefffcc6b9afd0dd7dd4986a78c2a778e37fb258a99f4274f2/provide_testkit-0.4.0-py3-none-any.whl", hash = "sha256:acf431696f9e697f277a7b0d141f08348ec5de215e13616bb4c9ce030b7fb338", size = 182980, upload-time = "2026-04-21T01:23:57.408Z" },
 ]
 
 [package.optional-dependencies]
@@ -2829,7 +2829,7 @@ wheels = [
 
 [[package]]
 name = "pyvider"
-version = "0.3.33"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2842,28 +2842,28 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "pyvider-rpcplugin" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/11/87/9e3746cc49bd45335871fc0f5f7ff7b46a1cf5fdf04a8e8ae924f0145174/pyvider-0.3.33.tar.gz", hash = "sha256:1b273ae004c2eea782ed5186acf3d2b68996dfbd775b1003e0659fa567f2e70f", size = 127147, upload-time = "2026-04-13T03:56:32.261Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/25/eedaa4c070e793b6c98d6049cfdd231acef03d31aa57db2a636122e131df/pyvider-0.4.0.tar.gz", hash = "sha256:2efb67aa6b7e5975a95b8bf2443b8d439d73daa0e40dce3b70c6a01e9dae1171", size = 127507, upload-time = "2026-04-22T02:41:50.723Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/78/13ca7d4e0f97dc6a2fbe815265b62a27e77e6747146fe2e6f6e06ee22c6a/pyvider-0.3.33-py3-none-any.whl", hash = "sha256:1294a13e82fe5daa9261b3d2b103688c59f01992d323401378fc06a55123818d", size = 179815, upload-time = "2026-04-13T03:56:30.965Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/07/01e84c4269a4218b28c4adc598bdeb3070361cb32e8994766dcb84fb9f1e/pyvider-0.4.0-py3-none-any.whl", hash = "sha256:9fe8e87b7257f297070dc8259932d54d2566557f7b57cefb83accbec5728d437", size = 179793, upload-time = "2026-04-22T02:41:48.996Z" },
 ]
 
 [[package]]
 name = "pyvider-cty"
-version = "0.3.31.post2"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "msgpack" },
     { name = "provide-foundation" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/be/865b3be3fd0e55be452b8ee482a5210ccbaa723e6460a2e846c8d368d681/pyvider_cty-0.3.31.post2.tar.gz", hash = "sha256:adef2a44671dc542f6114509e4a0c243f17b01c6c0335cff4dadbf9717d20629", size = 66801, upload-time = "2026-04-01T20:27:29.574Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/00/5df6a760a92fad30d1026764d4810bba6b91565dbc0126f498ca24723a1b/pyvider_cty-0.4.0.tar.gz", hash = "sha256:381bee0c1a770b7dcd6f35bd1128311adeb56ae7d887a7ccfaf3b3d510c90da4", size = 66912, upload-time = "2026-04-22T02:41:48.917Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f2/dc/4a22c597322905cc8167cfeb08d225162d98c20c6d2898e3390b14aff43b/pyvider_cty-0.3.31.post2-py3-none-any.whl", hash = "sha256:9ae6d9f1d408f38f07fc5a13d02d09435a1e5599347324d27f81bc0b5f265cac", size = 88974, upload-time = "2026-04-01T20:27:27.973Z" },
+    { url = "https://files.pythonhosted.org/packages/34/30/f6ae378393c19fe03e4e9d2fc453b6cb0d77f6cbe20957295f91edd98bfe/pyvider_cty-0.4.0-py3-none-any.whl", hash = "sha256:ba1d4a5d0dff449e7990e30e52e470c951a47b5526e73ad41c695c2cff10dc60", size = 88886, upload-time = "2026-04-22T02:41:49.781Z" },
 ]
 
 [[package]]
 name = "pyvider-hcl"
-version = "0.3.31"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2873,14 +2873,14 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "regex" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c6/84/de03fa7070a96e83d1c826cc0c19c6459d4b1b32b5240b75d89899b9340b/pyvider_hcl-0.3.31.tar.gz", hash = "sha256:af1839e1431dac042888196cad443de713834744b1f79fb0817e1c48d57da9f9", size = 24738, upload-time = "2026-04-01T19:09:31.117Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/aa/b2/6974d716a3bca58868bd1ed9338e99ce96b92e6d4df200d67ffef5f21006/pyvider_hcl-0.4.0.tar.gz", hash = "sha256:d17040b2626ab6e631b36c1ef63ca31061919d57be1d03d22e369002d6dd326b", size = 25017, upload-time = "2026-04-22T02:44:51.139Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d4/56/b8fc5abaa6a3a970582791b2e0c7f1bc48a44f944f5d6b42d9e4d35c05dd/pyvider_hcl-0.3.31-py3-none-any.whl", hash = "sha256:cdb9f2c897b4b81939a8d1e5831bad58fbcb55d1efeed67f5e7a752d8f675ab9", size = 22347, upload-time = "2026-04-01T19:09:29.862Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/cb/a17c95e7054ed08b51ad4d6ea23a4216c4a01b64ec6f6b2efdf302fb07f9/pyvider_hcl-0.4.0-py3-none-any.whl", hash = "sha256:f898def26cc626ef8d9d35dfefbf59bb66617ecb2863ca7da15e63b4313006a6", size = 22559, upload-time = "2026-04-22T02:44:49.843Z" },
 ]
 
 [[package]]
 name = "pyvider-rpcplugin"
-version = "0.3.31.post2"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2891,9 +2891,9 @@ dependencies = [
     { name = "protobuf" },
     { name = "provide-foundation" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/28/01/b5c33469f406c81b4b66e72ec75855159e96151905fda6119355f032a2ce/pyvider_rpcplugin-0.3.31.post2.tar.gz", hash = "sha256:f8326da43bc179564325b8a5623d8b3db99a2be4b3371cc1fe07fa99d259b5e3", size = 78189, upload-time = "2026-04-01T22:53:22.93Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/24/48/b88a3dab3dda08ea11b2543846ecaed02079e6c05c30521b724066195b3c/pyvider_rpcplugin-0.4.0.tar.gz", hash = "sha256:5496ff75e4ede03d70c5481161ed3b62e3718d8bd840fac081b5b0a8db8511a4", size = 78439, upload-time = "2026-04-22T02:44:23.229Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/e5/502f2e65439acfbf2e097481ab383c35270a21e6d9a992f9be411f77f313/pyvider_rpcplugin-0.3.31.post2-py3-none-any.whl", hash = "sha256:7e82f5327f9475f3a2629fcf1c0eede69643451e6e937fe716e351b97ad0c764", size = 99848, upload-time = "2026-04-01T22:53:21.108Z" },
+    { url = "https://files.pythonhosted.org/packages/86/5b/5d6e87b112e357e187fc5bb89b895404ea98d551d80319e10c643050770d/pyvider_rpcplugin-0.4.0-py3-none-any.whl", hash = "sha256:e52a8f40aa02f9c7ca115dbffd627398da453b81a7963b3ab07c8d508d8e5d97", size = 99767, upload-time = "2026-04-22T02:44:24.628Z" },
 ]
 
 [package.optional-dependencies]
@@ -3497,30 +3497,30 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "msgpack", specifier = ">=1.0.0" },
-    { name = "plating", specifier = ">=0.3.22" },
-    { name = "provide-foundation", extras = ["all"], specifier = ">=0.3.29" },
-    { name = "pyvider", specifier = ">=0.3.22" },
-    { name = "pyvider-cty", marker = "extra == 'cty'", specifier = ">=0.3.21" },
-    { name = "pyvider-hcl", marker = "extra == 'hcl'", specifier = ">=0.3.21" },
-    { name = "pyvider-rpcplugin", marker = "extra == 'rpc'", specifier = ">=0.3.21" },
-    { name = "pyvider-rpcplugin", extras = ["test"], marker = "extra == 'test-rpc'", specifier = ">=0.3.21" },
+    { name = "plating", specifier = ">=0.4.0" },
+    { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.0" },
+    { name = "pyvider", specifier = ">=0.4.0" },
+    { name = "pyvider-cty", marker = "extra == 'cty'", specifier = ">=0.4.0" },
+    { name = "pyvider-hcl", marker = "extra == 'hcl'", specifier = ">=0.4.0" },
+    { name = "pyvider-rpcplugin", marker = "extra == 'rpc'", specifier = ">=0.4.0" },
+    { name = "pyvider-rpcplugin", extras = ["test"], marker = "extra == 'test-rpc'", specifier = ">=0.4.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "respx", specifier = ">=0.20.0" },
     { name = "semver", specifier = ">=3.0.0" },
     { name = "textual", specifier = ">=3.2.0" },
-    { name = "tofusoup", extras = ["cty", "hcl", "rpc"], marker = "extra == 'all'" },
+    { name = "tofusoup", extras = ["cty", "hcl", "rpc"], marker = "extra == 'all'", specifier = ">=0.4.0" },
 ]
 provides-extras = ["cty", "hcl", "rpc", "test-rpc", "all"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "provide-testkit", extras = ["standard", "advanced-testing", "build"] },
+    { name = "provide-testkit", extras = ["standard", "advanced-testing", "build"], specifier = ">=0.4.0" },
     { name = "pytest-httpx", specifier = ">=0.35.0" },
-    { name = "tofusoup", extras = ["test-rpc"] },
+    { name = "tofusoup", extras = ["test-rpc"], specifier = ">=0.4.0" },
 ]
 docs = [
     { name = "mkdocs-material", specifier = ">=9.7.1" },
-    { name = "provide-testkit", extras = ["docs"] },
+    { name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.0" },
 ]
 
 [[package]]

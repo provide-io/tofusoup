@@ -74,3 +74,6 @@ memray-output/
 
 # macOS
 .DS_Store
+
+# Compiled soup-go harness binary (build artifact)
+/src/tofusoup/harness/go/soup-go/soup-go
