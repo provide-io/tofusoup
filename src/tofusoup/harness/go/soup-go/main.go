@@ -47,6 +47,7 @@ var ctyValidateCmd *cobra.Command
 var ctyConvertCmd *cobra.Command
 var ctyCallCmd *cobra.Command
 var ctyFunctionsCmd *cobra.Command
+var ctyUnifyCmd *cobra.Command
 
 // HCL command
 var hclCmd = &cobra.Command{
@@ -249,6 +250,7 @@ func init() {
 	ctyConvertCmd = initCtyConvertCmd()
 	ctyCallCmd = initCtyCallCmd()
 	ctyFunctionsCmd = initCtyFunctionsCmd()
+	ctyUnifyCmd = initCtyUnifyCmd()
 	hclViewCmd = initHclViewCmd()
 	hclValidateCmd = initHclValidateCmd()
 	hclConvertCmd = initHclConvertCmd()
@@ -289,6 +291,7 @@ func init() {
 	ctyCmd.AddCommand(ctyConvertCmd)
 	ctyCmd.AddCommand(ctyCallCmd)
 	ctyCmd.AddCommand(ctyFunctionsCmd)
+	ctyCmd.AddCommand(ctyUnifyCmd)
 
 	// HCL subcommands
 	hclCmd.AddCommand(hclViewCmd)
