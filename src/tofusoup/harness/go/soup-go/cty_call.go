@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -19,6 +20,7 @@ import (
 // place to extend when a new function needs comparing.
 var stdlibFunctions = map[string]function.Function{
 	// strings
+	"strlen":       stdlib.StrlenFunc,
 	"upper":        stdlib.UpperFunc,
 	"lower":        stdlib.LowerFunc,
 	"title":        stdlib.TitleFunc,
@@ -63,9 +65,23 @@ var stdlibFunctions = map[string]function.Function{
 	"hasindex":     stdlib.HasIndexFunc,
 
 	// sets
-	"setunion":        stdlib.SetUnionFunc,
-	"setintersection": stdlib.SetIntersectionFunc,
-	"setsubtract":     stdlib.SetSubtractFunc,
+	"setunion":               stdlib.SetUnionFunc,
+	"setintersection":        stdlib.SetIntersectionFunc,
+	"setsubtract":            stdlib.SetSubtractFunc,
+	"setsymmetricdifference": stdlib.SetSymmetricDifferenceFunc,
+	"sethaselement":          stdlib.SetHasElementFunc,
+
+	// bytes. The argument and result of these two are a capsule type, which is
+	// why they were the last of the stdlib to become reachable from here.
+	"byteslen":   stdlib.BytesLenFunc,
+	"bytesslice": stdlib.BytesSliceFunc,
+
+	// conversion. go-cty builds these from a common factory rather than
+	// declaring them as vars, so there is nothing to reference by name.
+	"tostring":      stdlib.MakeToFunc(cty.String),
+	"tonumber":      stdlib.MakeToFunc(cty.Number),
+	"tobool":        stdlib.MakeToFunc(cty.Bool),
+	"assertnotnull": stdlib.AssertNotNullFunc,
 
 	// numbers
 	"abs":      stdlib.AbsoluteFunc,
@@ -162,6 +178,36 @@ func decodeCallArg(raw json.RawMessage) (cty.Value, error) {
 	return val, nil
 }
 
+// marshalResultType renders a result type as JSON.
+//
+// ctyjson.MarshalType refuses capsule types -- there is no way to recover the
+// pointer -- so stdlib.Bytes gets the same "bytes" spelling parseCtyType
+// accepts on the way in. Without this a `bytesslice` result came back as
+// `{"ok":true}` with no type and no value, which is the worst answer an oracle
+// can give: agreement by saying nothing.
+func marshalResultType(ty cty.Type) (json.RawMessage, error) {
+	if ty.Equals(stdlib.Bytes) {
+		return json.RawMessage(`"bytes"`), nil
+	}
+	return ctyjson.MarshalType(ty)
+}
+
+// marshalResultValue renders a known result value as JSON, base64-encoding a
+// Bytes buffer for the same reason.
+func marshalResultValue(val cty.Value) (json.RawMessage, error) {
+	if !val.Type().Equals(stdlib.Bytes) {
+		return ctyjson.Marshal(val, val.Type())
+	}
+	if val.IsNull() {
+		return json.RawMessage(`null`), nil
+	}
+	bufPtr, ok := val.EncapsulatedValue().(*[]byte)
+	if !ok {
+		return nil, fmt.Errorf("bytes value does not encapsulate a *[]byte")
+	}
+	return json.Marshal(base64.StdEncoding.EncodeToString(*bufPtr))
+}
+
 func describeResult(name string, result cty.Value, callErr error) callResult {
 	out := callResult{Function: name}
 	if callErr != nil {
@@ -184,20 +230,37 @@ func describeResult(name string, result cty.Value, callErr error) callResult {
 	if out.Unknown {
 		// A null check on an unknown value panics, and the type is still the
 		// useful part of the answer.
-		if tyJSON, err := ctyjson.MarshalType(unmarked.Type()); err == nil {
+		if tyJSON, err := marshalResultType(unmarked.Type()); err == nil {
 			out.Type = tyJSON
+		} else {
+			return unrepresentable(name, err)
 		}
 		return out
 	}
 
 	out.Null = unmarked.IsNull()
-	if tyJSON, err := ctyjson.MarshalType(unmarked.Type()); err == nil {
-		out.Type = tyJSON
+	tyJSON, err := marshalResultType(unmarked.Type())
+	if err != nil {
+		return unrepresentable(name, err)
 	}
-	if valJSON, err := ctyjson.Marshal(unmarked, unmarked.Type()); err == nil {
-		out.Value = valJSON
+	out.Type = tyJSON
+
+	valJSON, err := marshalResultValue(unmarked)
+	if err != nil {
+		return unrepresentable(name, err)
 	}
+	out.Value = valJSON
 	return out
+}
+
+// unrepresentable reports a result go-cty computed but this harness cannot
+// express. Silently omitting the type or the value would let a comparison run
+// read "no disagreement" off an answer that was never transmitted.
+func unrepresentable(name string, err error) callResult {
+	return callResult{
+		Function: name,
+		Error:    fmt.Sprintf("result is not representable as JSON: %s", err),
+	}
 }
 
 func initCtyCallCmd() *cobra.Command {

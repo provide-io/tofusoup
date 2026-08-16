@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/function/stdlib"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 	"github.com/zclconf/go-cty/cty/msgpack"
 )
@@ -155,6 +157,13 @@ func parseCtyType(data json.RawMessage) (cty.Type, error) {
 			return cty.Bool, nil
 		case "dynamic":
 			return cty.DynamicPseudoType, nil
+		case "bytes":
+			// stdlib.Bytes is a capsule type, so it has no JSON spelling of its
+			// own -- cty.Type.MarshalJSON refuses capsules outright, because a
+			// pointer cannot be recovered from JSON. Naming it here is what
+			// makes `byteslen` and `bytesslice` reachable at all; the value
+			// itself travels as base64.
+			return stdlib.Bytes, nil
 		default:
 			return cty.NilType, fmt.Errorf("unknown primitive type string: %s", typeStr)
 		}
@@ -263,6 +272,23 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 	// Attempting to marshal an unknown value to JSON will result in an error:
 	// "value is not known"
 	// This matches Terraform's behavior exactly
+
+	// A Bytes buffer arrives as base64, since JSON has no byte-string literal.
+	if ty.Equals(stdlib.Bytes) {
+		encoded, ok := val.(string)
+		if !ok {
+			return cty.NilVal, fmt.Errorf("expected base64 string for bytes at %s", strings.Join(path, "."))
+		}
+		buf, err := base64.StdEncoding.DecodeString(encoded)
+		if err != nil {
+			return cty.NilVal, fmt.Errorf("invalid base64 for bytes at %s: %w", strings.Join(path, "."), err)
+		}
+		if buf == nil {
+			// BytesVal panics on a nil slice, and decoding "" can produce one.
+			buf = []byte{}
+		}
+		return stdlib.BytesVal(buf), nil
+	}
 
 	// Handle primitive types
 	switch ty {
