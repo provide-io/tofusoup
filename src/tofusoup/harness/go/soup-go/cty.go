@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -98,13 +99,13 @@ func initCtyConvertCmd() *cobra.Command {
 			return nil
 		},
 	}
-	
+
 	// Add flags
 	cmd.Flags().StringVar(&ctyInputFormat, "input-format", "json", "Input format (json, msgpack)")
 	cmd.Flags().StringVar(&ctyOutputFormat, "output-format", "json", "Output format (json, msgpack)")
 	cmd.Flags().StringVar(&ctyTypeJSON, "type", "", "CTY type specification as JSON")
 	cmd.MarkFlagRequired("type")
-	
+
 	return cmd
 }
 
@@ -133,11 +134,11 @@ func initCtyValidateCmd() *cobra.Command {
 			return nil
 		},
 	}
-	
+
 	// Add flags
 	cmd.Flags().StringVar(&ctyTypeJSON, "type", "", "CTY type specification as JSON")
 	cmd.MarkFlagRequired("type")
-	
+
 	return cmd
 }
 
@@ -236,9 +237,15 @@ func buildCtyValueFromJSON(ty cty.Type, data []byte) (cty.Value, error) {
 		return ctyjson.Unmarshal(data, inferredType)
 	}
 
-	// Parse the JSON to handle special cases
+	// Decoded with UseNumber so numeric literals arrive as their original
+	// digits rather than as float64. Plain json.Unmarshal rounds every number
+	// through a float64, which silently lost precision above 2^53:
+	// 9007199254740993 became ...992 on the way in. A harness that exists to
+	// be an oracle must not quietly disagree with its own input.
 	var rawValue interface{}
-	if err := json.Unmarshal(data, &rawValue); err != nil {
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.UseNumber()
+	if err := dec.Decode(&rawValue); err != nil {
 		return cty.NilVal, err
 	}
 
@@ -266,6 +273,12 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 		return cty.NilVal, fmt.Errorf("expected string at %s", strings.Join(path, "."))
 	case cty.Number:
 		switch v := val.(type) {
+		case json.Number:
+			bf, _, err := big.ParseFloat(v.String(), 10, 512, big.ToNearestEven)
+			if err != nil {
+				return cty.NilVal, fmt.Errorf("invalid number at %s: %w", strings.Join(path, "."), err)
+			}
+			return cty.NumberVal(bf), nil
 		case float64:
 			return cty.NumberFloatVal(v), nil
 		case int:
