@@ -51,6 +51,29 @@ def _get_effective_go_harness_settings(harness_name: str, loaded_config: dict[st
     return settings
 
 
+def _newest_source_mtime(harness_source_path: pathlib.Path) -> float:
+    """The most recent modification time under a harness's source tree."""
+    return max(
+        (entry.stat().st_mtime for entry in harness_source_path.rglob("*") if entry.is_file()),
+        default=0.0,
+    )
+
+
+def _is_cached_build_current(output_path: pathlib.Path, harness_source_path: pathlib.Path) -> bool:
+    """Whether a cached binary was built from the sources that are on disk now.
+
+    A cache with no invalidation is worse than no cache. This harness is the
+    differential oracle another implementation is compared against, so a binary
+    that predates the commands under test does not merely go stale -- it reports
+    "unknown command" or an older answer, and the run reads that as a fault in
+    the code being tested. The cached binary on one machine was nine months
+    older than the cty commands it was being asked to run.
+    """
+    if not output_path.exists():
+        return False
+    return _newest_source_mtime(harness_source_path) <= output_path.stat().st_mtime
+
+
 def ensure_go_harness_build(
     harness_name: str,
     project_root: pathlib.Path,
@@ -66,9 +89,12 @@ def ensure_go_harness_build(
     output_bin_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_bin_dir / config["output_name"]
 
-    if not force_rebuild and output_path.exists():
+    if not force_rebuild and _is_cached_build_current(output_path, harness_source_path):
         logger.info(f"Go harness '{harness_name}' already built at {output_path}. Skipping build.")
         return output_path
+
+    if not force_rebuild and output_path.exists():
+        logger.info(f"Go harness '{harness_name}' at {output_path} is older than its sources. Rebuilding.")
 
     logger.info(f"Building Go harness '{harness_name}' from {harness_source_path}...")
 
