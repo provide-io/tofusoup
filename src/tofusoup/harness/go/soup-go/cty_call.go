@@ -12,6 +12,7 @@ import (
 	"github.com/zclconf/go-cty/cty/function"
 	"github.com/zclconf/go-cty/cty/function/stdlib"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
+	ctymsgpack "github.com/zclconf/go-cty/cty/msgpack"
 )
 
 // stdlibFunctions is the oracle surface: go-cty's own standard library, keyed
@@ -143,6 +144,18 @@ type callResult struct {
 	Unknown  bool            `json:"unknown"`
 	Null     bool            `json:"null"`
 	Marks    []string        `json:"marks,omitempty"`
+	// What is known about an unknown answer. Without this every unknown result
+	// compares equal to every other, so a sweep reporting agreement is only
+	// claiming both sides declined to answer -- not that they declined for the
+	// same reasons. go-cty's refinements are load-bearing: `length` of a set
+	// holding an unknown element answers with bounds [1,n], not a bare unknown.
+	Refine map[string]any `json:"refine,omitempty"`
+	// The wire encoding, for a result the JSON codec cannot express. A result
+	// that is a *container holding an unknown element* is the ordinary
+	// plan-time shape, and ctyjson.Marshal refuses it outright -- so without
+	// this the harness could not report the answer at all, and every such case
+	// looked like go-cty erroring when it had answered perfectly well.
+	Msgpack string `json:"msgpack,omitempty"`
 }
 
 func decodeCallArg(raw json.RawMessage) (cty.Value, error) {
@@ -241,6 +254,9 @@ func describeResult(name string, result cty.Value, callErr error) callResult {
 		} else {
 			return unrepresentable(name, err)
 		}
+		if refinements, err := encodeRefinements(unmarked); err == nil && len(refinements) > 0 {
+			out.Refine = refinements
+		}
 		return out
 	}
 
@@ -253,7 +269,14 @@ func describeResult(name string, result cty.Value, callErr error) callResult {
 
 	valJSON, err := marshalResultValue(unmarked)
 	if err != nil {
-		return unrepresentable(name, err)
+		// Fall back to the wire encoding rather than calling this a failure.
+		// The value is representable, just not as JSON.
+		packed, packErr := ctymsgpack.Marshal(unmarked, unmarked.Type())
+		if packErr != nil {
+			return unrepresentable(name, err)
+		}
+		out.Msgpack = base64.StdEncoding.EncodeToString(packed)
+		return out
 	}
 	out.Value = valJSON
 	return out
