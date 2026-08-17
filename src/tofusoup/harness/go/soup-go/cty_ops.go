@@ -16,6 +16,7 @@ package main
 //	cty range             Value.Range, Value.Refine and ValueRange.Includes
 //	cty safe-known-prefix ctystrings.SafeKnownPrefix
 //	cty rich              the value dialect itself, round-tripped
+//	cty convert-value     convert.Convert, and the safe/unsafe distinction
 //
 // Every command reports go-cty's refusals and panics as data rather than
 // exiting, because "go-cty will not do this" is one of the answers a parity run
@@ -29,6 +30,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/convert"
 	"github.com/zclconf/go-cty/cty/ctystrings"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
@@ -480,4 +482,86 @@ the last cluster could still grow.
 			return emit(cmd, map[string]any{"ok": true, "prefix": prefix})
 		},
 	}
+}
+
+func initCtyConvertValueCmd() *cobra.Command {
+	var fromJSON, toJSON string
+	cmd := &cobra.Command{
+		Use:   "convert-value [value-json]",
+		Short: "Report convert.Convert, and whether the conversion is safe",
+		Long: `Convert a value to another type, the way go-cty's convert package does.
+
+Distinct from ` + "`cty convert`" + `, which converts between *serialization formats*.
+This is type conversion: the thing Terraform does when a practitioner writes a
+number where a string is wanted.
+
+Three answers, because they are three different questions. GetConversion finds
+only the safe conversions -- ones that cannot lose information -- while
+GetConversionUnsafe also allows those that can fail at runtime, and Convert
+itself uses the unsafe set. MismatchMessage is the sentence a practitioner sees
+when none of them applies.
+
+  soup-go cty convert-value --from '"number"' --to '"string"' '5'`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			from, err := parseCtyType(json.RawMessage(fromJSON))
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": fmt.Sprintf("from: %s", err)})
+			}
+			to, err := parseCtyType(json.RawMessage(toJSON))
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": fmt.Sprintf("to: %s", err)})
+			}
+			val, err := decodeRich(from, json.RawMessage(args[0]))
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+
+			// Identical types are convertible without a *conversion*: go-cty
+			// returns nil there because nothing needs doing, and `Convert`
+			// short-circuits before ever asking. Reporting the bare nil as
+			// "not convertible" made string-to-string look like a divergence.
+			identical := from.Equals(to.WithoutOptionalAttributesDeep())
+			out := map[string]any{
+				"safe":             identical || convert.GetConversion(from, to) != nil,
+				"unsafe":           identical || convert.GetConversionUnsafe(from, to) != nil,
+				"mismatch_message": convert.MismatchMessage(from, to),
+			}
+
+			var converted cty.Value
+			var convertErr error
+			if panicked := recovered(func() { converted, convertErr = convert.Convert(val, to) }); panicked != "" {
+				out["ok"] = false
+				out["panic"] = panicked
+				return emit(cmd, out)
+			}
+			if convertErr != nil {
+				out["ok"] = false
+				out["error"] = convertErr.Error()
+				return emit(cmd, out)
+			}
+
+			encoded, err := encodeRich(converted)
+			if err != nil {
+				out["ok"] = false
+				out["error"] = err.Error()
+				return emit(cmd, out)
+			}
+			resultType, err := marshalResultType(converted.Type())
+			if err != nil {
+				out["ok"] = false
+				out["error"] = err.Error()
+				return emit(cmd, out)
+			}
+			out["ok"] = true
+			out["value"] = encoded
+			out["type"] = resultType
+			return emit(cmd, out)
+		},
+	}
+	cmd.Flags().StringVar(&fromJSON, "from", "", "the value's type, as JSON")
+	cmd.Flags().StringVar(&toJSON, "to", "", "the target type, as JSON")
+	_ = cmd.MarkFlagRequired("from")
+	_ = cmd.MarkFlagRequired("to")
+	return cmd
 }

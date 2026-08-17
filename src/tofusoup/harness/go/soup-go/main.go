@@ -57,6 +57,7 @@ var ctyConformanceCmd *cobra.Command
 var ctyJSONCmd *cobra.Command
 var ctyRangeCmd *cobra.Command
 var ctySafeKnownPrefixCmd *cobra.Command
+var ctyConvertValueCmd *cobra.Command
 
 // HCL command
 var hclCmd = &cobra.Command{
@@ -152,17 +153,17 @@ a standalone gRPC server on a specific port for manual testing.`,
 				GRPCServer: plugin.DefaultGRPCServer,
 			}
 
-		// Configure TLS: only use custom TLSProvider for specific curves
-		// If rpcTLSMode is "auto" with curve "auto", go-plugin will use native AutoMTLS (P-521)
-		if rpcTLSMode != "" && rpcTLSMode != "disabled" && rpcTLSCurve != "auto" {
-			// Use custom TLSProvider for specific curves (secp256r1, secp384r1)
-			logger.Info("Configuring go-plugin TLSProvider for custom curve support", "curve", rpcTLSCurve)
-			provider := createTLSProvider(logger.Named("tls"), rpcTLSCurve)
-			serveConfig.TLSProvider = provider
-		} else if rpcTLSMode == "auto" {
-			// No TLSProvider = go-plugin uses native AutoMTLS (P-521)
-			logger.Info("Using go-plugin native AutoMTLS (P-521 - no custom TLSProvider)")
-		}
+			// Configure TLS: only use custom TLSProvider for specific curves
+			// If rpcTLSMode is "auto" with curve "auto", go-plugin will use native AutoMTLS (P-521)
+			if rpcTLSMode != "" && rpcTLSMode != "disabled" && rpcTLSCurve != "auto" {
+				// Use custom TLSProvider for specific curves (secp256r1, secp384r1)
+				logger.Info("Configuring go-plugin TLSProvider for custom curve support", "curve", rpcTLSCurve)
+				provider := createTLSProvider(logger.Named("tls"), rpcTLSCurve)
+				serveConfig.TLSProvider = provider
+			} else if rpcTLSMode == "auto" {
+				// No TLSProvider = go-plugin uses native AutoMTLS (P-521)
+				logger.Info("Using go-plugin native AutoMTLS (P-521 - no custom TLSProvider)")
+			}
 
 			plugin.Serve(serveConfig)
 		}
@@ -172,8 +173,6 @@ a standalone gRPC server on a specific port for manual testing.`,
 var getCmd *cobra.Command
 var putCmd *cobra.Command
 var connectionCmd *cobra.Command
-
-
 
 // Harness command (for compatibility testing)
 var harnessCmd = &cobra.Command{
@@ -267,6 +266,7 @@ func init() {
 	ctyJSONCmd = initCtyJSONCmd()
 	ctyRangeCmd = initCtyRangeCmd()
 	ctySafeKnownPrefixCmd = initCtySafeKnownPrefixCmd()
+	ctyConvertValueCmd = initCtyConvertValueCmd()
 	hclViewCmd = initHclViewCmd()
 	hclValidateCmd = initHclValidateCmd()
 	hclConvertCmd = initHclConvertCmd()
@@ -315,6 +315,7 @@ func init() {
 	ctyCmd.AddCommand(ctyJSONCmd)
 	ctyCmd.AddCommand(ctyRangeCmd)
 	ctyCmd.AddCommand(ctySafeKnownPrefixCmd)
+	ctyCmd.AddCommand(ctyConvertValueCmd)
 
 	// HCL subcommands
 	hclCmd.AddCommand(hclViewCmd)
@@ -328,7 +329,6 @@ func init() {
 	// RPC subcommands
 	rpcCmd.AddCommand(kvCmd)
 	rpcCmd.AddCommand(validateCmd)
-
 
 	// KV subcommands
 	kvCmd.AddCommand(getCmd)
