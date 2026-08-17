@@ -17,6 +17,8 @@ package main
 //	cty safe-known-prefix ctystrings.SafeKnownPrefix
 //	cty rich              the value dialect itself, round-tripped
 //	cty convert-value     convert.Convert, and the safe/unsafe distinction
+//	cty walk              cty.Walk's visit order, paths and pruning
+//	cty transform         cty.Transform, applying a rewrite named by both sides
 //
 // Every command reports go-cty's refusals and panics as data rather than
 // exiting, because "go-cty will not do this" is one of the answers a parity run
@@ -27,6 +29,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"sort"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/zclconf/go-cty/cty"
@@ -563,5 +567,164 @@ when none of them applies.
 	cmd.Flags().StringVar(&toJSON, "to", "", "the target type, as JSON")
 	_ = cmd.MarkFlagRequired("from")
 	_ = cmd.MarkFlagRequired("to")
+	return cmd
+}
+
+// visitRecord is one (path, value) pair seen by a walk.
+func visitRecord(path cty.Path, val cty.Value) (map[string]any, error) {
+	steps, err := encodePath(path)
+	if err != nil {
+		return nil, err
+	}
+	encoded, err := encodeRich(val)
+	if err != nil {
+		return nil, err
+	}
+	unmarked, _ := val.Unmark()
+	ty, err := marshalResultType(unmarked.Type())
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"path": steps, "value": encoded, "type": ty}, nil
+}
+
+func initCtyWalkCmd() *cobra.Command {
+	var typeJSON string
+	var pruneDepth int
+	cmd := &cobra.Command{
+		Use:   "walk [value-json]",
+		Short: "Report the (path, value) pairs cty.Walk visits, in order",
+		Long: `Walk a value and report every visit: the path, the value, and its type.
+
+Order is the contract. Walk sees a container before its children, an object's
+attributes come from an iterator, and a set element's path holds the element
+itself -- none of which a second implementation can check against a reading of
+the source.
+
+--prune-depth exercises the callback's other answer. Returning false declines to
+descend, and a walk that ignores it visits values the caller asked not to see.
+
+  soup-go cty walk --type '["list","string"]' '["a","b"]'
+  soup-go cty walk --type '["list","string"]' '["a"]' --prune-depth 0`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			val, err := decodeTypedArg(typeJSON, args[0])
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+
+			visits := make([]any, 0, 8)
+			var recordErr error
+			walkErr := cty.Walk(val, func(path cty.Path, v cty.Value) (bool, error) {
+				record, err := visitRecord(path, v)
+				if err != nil {
+					recordErr = err
+					return false, err
+				}
+				visits = append(visits, record)
+				if pruneDepth >= 0 && len(path) >= pruneDepth {
+					return false, nil
+				}
+				return true, nil
+			})
+			if recordErr != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": recordErr.Error()})
+			}
+			if walkErr != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": walkErr.Error()})
+			}
+			return emit(cmd, map[string]any{"ok": true, "visits": visits})
+		},
+	}
+	typeFlag(cmd, &typeJSON)
+	cmd.Flags().IntVar(&pruneDepth, "prune-depth", -1, "decline to descend once the path is this long (-1 never prunes)")
+	return cmd
+}
+
+// transformOps are the named rewrites `cty transform` can apply.
+//
+// A transformation is a function, and a function does not travel over a command
+// line, so both implementations agree on a small set of rewrites by name
+// instead. Each is written to be exact about marks and about which values it
+// touches, because "the same transformation" is the premise of the comparison.
+var transformOps = map[string]func(cty.Value) (cty.Value, error){
+	// Uppercase every known, non-null string, keeping its marks.
+	"upper": func(val cty.Value) (cty.Value, error) {
+		unmarked, marks := val.Unmark()
+		if unmarked.Type() != cty.String || unmarked.IsNull() || !unmarked.IsKnown() {
+			return val, nil
+		}
+		return cty.StringVal(strings.ToUpper(unmarked.AsString())).WithMarks(marks), nil
+	},
+	// Rewrite every unknown as a null of the same type. The same answer
+	// cty.UnknownAsNull gives, reached the other way, which is worth having as
+	// a cross-check on both.
+	"unknown-to-null": func(val cty.Value) (cty.Value, error) {
+		unmarked, marks := val.Unmark()
+		if unmarked.IsKnown() {
+			return val, nil
+		}
+		return cty.NullVal(unmarked.Type()).WithMarks(marks), nil
+	},
+}
+
+func initCtyTransformCmd() *cobra.Command {
+	var typeJSON, op string
+	cmd := &cobra.Command{
+		Use:   "transform [value-json]",
+		Short: "Apply a named rewrite with cty.Transform and report the result",
+		Long: `Rebuild a value bottom-up, applying one of a small set of named rewrites.
+
+Transform visits children first, so a container is rebuilt from values that have
+already been rewritten -- which is where the result's *type* comes from, and the
+part a second implementation is most likely to get wrong.
+
+Known rewrites: upper, unknown-to-null.
+
+  soup-go cty transform --type '["list","string"]' --op upper '["a","b"]'`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			rewrite, ok := transformOps[op]
+			if !ok {
+				names := make([]string, 0, len(transformOps))
+				for name := range transformOps {
+					names = append(names, name)
+				}
+				sort.Strings(names)
+				return fmt.Errorf("unknown op %q; known: %s", op, strings.Join(names, ", "))
+			}
+			val, err := decodeTypedArg(typeJSON, args[0])
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+
+			var result cty.Value
+			var transformErr error
+			if panicked := recovered(func() {
+				result, transformErr = cty.Transform(val, func(_ cty.Path, v cty.Value) (cty.Value, error) {
+					return rewrite(v)
+				})
+			}); panicked != "" {
+				return emit(cmd, map[string]any{"ok": false, "panic": panicked})
+			}
+			if transformErr != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": transformErr.Error()})
+			}
+
+			encoded, err := encodeRich(result)
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+			unmarked, _ := result.Unmark()
+			resultType, err := marshalResultType(unmarked.Type())
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+			return emit(cmd, map[string]any{"ok": true, "value": encoded, "type": resultType})
+		},
+	}
+	typeFlag(cmd, &typeJSON)
+	cmd.Flags().StringVar(&op, "op", "", "the rewrite to apply: upper, unknown-to-null")
+	_ = cmd.MarkFlagRequired("op")
 	return cmd
 }

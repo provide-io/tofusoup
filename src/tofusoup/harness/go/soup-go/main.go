@@ -58,6 +58,8 @@ var ctyJSONCmd *cobra.Command
 var ctyRangeCmd *cobra.Command
 var ctySafeKnownPrefixCmd *cobra.Command
 var ctyConvertValueCmd *cobra.Command
+var ctyWalkCmd *cobra.Command
+var ctyTransformCmd *cobra.Command
 
 // HCL command
 var hclCmd = &cobra.Command{
@@ -267,6 +269,8 @@ func init() {
 	ctyRangeCmd = initCtyRangeCmd()
 	ctySafeKnownPrefixCmd = initCtySafeKnownPrefixCmd()
 	ctyConvertValueCmd = initCtyConvertValueCmd()
+	ctyWalkCmd = initCtyWalkCmd()
+	ctyTransformCmd = initCtyTransformCmd()
 	hclViewCmd = initHclViewCmd()
 	hclValidateCmd = initHclValidateCmd()
 	hclConvertCmd = initHclConvertCmd()
@@ -316,6 +320,8 @@ func init() {
 	ctyCmd.AddCommand(ctyRangeCmd)
 	ctyCmd.AddCommand(ctySafeKnownPrefixCmd)
 	ctyCmd.AddCommand(ctyConvertValueCmd)
+	ctyCmd.AddCommand(ctyWalkCmd)
+	ctyCmd.AddCommand(ctyTransformCmd)
 
 	// HCL subcommands
 	hclCmd.AddCommand(hclViewCmd)
