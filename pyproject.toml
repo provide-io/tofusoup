@@ -103,6 +103,7 @@ plating = { path = "../plating", editable = true }
 provide-foundation = { path = "../provide-foundation", editable = true }
 provide-testkit = { path = "../provide-testkit", editable = true }
 pyvider = { path = "../pyvider", editable = true }
+pyvider-rpcplugin = { path = "../pyvider-rpcplugin", editable = true }
 
 [tool.setuptools.packages.find]
 where = ["src"]
