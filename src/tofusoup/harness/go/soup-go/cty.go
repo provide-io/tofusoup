@@ -415,7 +415,13 @@ func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, e
 	}
 
 	if prefix, ok := refinements["string_prefix"].(string); ok {
-		builder = builder.StringPrefix(prefix)
+		// StringPrefixFull, not StringPrefix: the prefix arriving here has
+		// already been through whatever trimming its sender applies, and
+		// StringPrefix trims again. That double trim made the harness report a
+		// shorter prefix than either implementation holds -- "hello" came back
+		// as "hel" -- which reads as a divergence in the caller rather than a
+		// mistake here, and is exactly the way an oracle does real damage.
+		builder = builder.StringPrefixFull(prefix)
 	}
 
 	if lowerBound, ok := refinements["number_lower_bound"].([]interface{}); ok && len(lowerBound) >= 2 {

@@ -49,6 +49,15 @@ var ctyCallCmd *cobra.Command
 var ctyFunctionsCmd *cobra.Command
 var ctyUnifyCmd *cobra.Command
 
+// The cty-package operations, which no stdlib function exposes. See cty_ops.go.
+var ctyRichCmd *cobra.Command
+var ctyUnknownAsNullCmd *cobra.Command
+var ctyMarksCmd *cobra.Command
+var ctyConformanceCmd *cobra.Command
+var ctyJSONCmd *cobra.Command
+var ctyRangeCmd *cobra.Command
+var ctySafeKnownPrefixCmd *cobra.Command
+
 // HCL command
 var hclCmd = &cobra.Command{
 	Use:   "hcl",
@@ -251,6 +260,13 @@ func init() {
 	ctyCallCmd = initCtyCallCmd()
 	ctyFunctionsCmd = initCtyFunctionsCmd()
 	ctyUnifyCmd = initCtyUnifyCmd()
+	ctyRichCmd = initCtyRichCmd()
+	ctyUnknownAsNullCmd = initCtyUnknownAsNullCmd()
+	ctyMarksCmd = initCtyMarksCmd()
+	ctyConformanceCmd = initCtyConformanceCmd()
+	ctyJSONCmd = initCtyJSONCmd()
+	ctyRangeCmd = initCtyRangeCmd()
+	ctySafeKnownPrefixCmd = initCtySafeKnownPrefixCmd()
 	hclViewCmd = initHclViewCmd()
 	hclValidateCmd = initHclValidateCmd()
 	hclConvertCmd = initHclConvertCmd()
@@ -292,6 +308,13 @@ func init() {
 	ctyCmd.AddCommand(ctyCallCmd)
 	ctyCmd.AddCommand(ctyFunctionsCmd)
 	ctyCmd.AddCommand(ctyUnifyCmd)
+	ctyCmd.AddCommand(ctyRichCmd)
+	ctyCmd.AddCommand(ctyUnknownAsNullCmd)
+	ctyCmd.AddCommand(ctyMarksCmd)
+	ctyCmd.AddCommand(ctyConformanceCmd)
+	ctyCmd.AddCommand(ctyJSONCmd)
+	ctyCmd.AddCommand(ctyRangeCmd)
+	ctyCmd.AddCommand(ctySafeKnownPrefixCmd)
 
 	// HCL subcommands
 	hclCmd.AddCommand(hclViewCmd)
