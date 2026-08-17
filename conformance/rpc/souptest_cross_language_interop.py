@@ -195,12 +195,7 @@ class TestCrossLanguageInterop:
             line = server_process.stdout.readline()
             if line:
                 # Look for the go-plugin handshake pattern: starts with "1|1|tcp|" or "1|1|unix|"
-                if (
-                    line.startswith("1|1|tcp|")
-                    or line.startswith("1|1|unix|")
-                    or "|tcp|" in line
-                    or "|unix|" in line
-                ):
+                if line.startswith(("1|1|tcp|", "1|1|unix|")) or "|tcp|" in line or "|unix|" in line:
                     handshake_line = line.strip()
                     break
             else:
