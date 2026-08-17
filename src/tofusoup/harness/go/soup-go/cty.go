@@ -8,6 +8,8 @@ import (
 	"io"
 	"math/big"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -300,7 +302,7 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 	case cty.Number:
 		switch v := val.(type) {
 		case json.Number:
-			bf, _, err := big.ParseFloat(v.String(), 10, 512, big.ToNearestEven)
+			bf, err := parseExactNumber(v.String())
 			if err != nil {
 				return cty.NilVal, fmt.Errorf("invalid number at %s: %w", strings.Join(path, "."), err)
 			}
@@ -312,11 +314,11 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 		case int64:
 			return cty.NumberIntVal(v), nil
 		case string:
-			bf := new(big.Float)
-			if _, ok := bf.SetString(v); ok {
-				return cty.NumberVal(bf), nil
+			bf, err := parseExactNumber(v)
+			if err != nil {
+				return cty.NilVal, fmt.Errorf("invalid number string at %s: %w", strings.Join(path, "."), err)
 			}
-			return cty.NilVal, fmt.Errorf("invalid number string at %s", strings.Join(path, "."))
+			return cty.NumberVal(bf), nil
 		}
 		return cty.NilVal, fmt.Errorf("expected number at %s", strings.Join(path, "."))
 	case cty.Bool:
@@ -397,16 +399,39 @@ func buildValueFromInterface(ty cty.Type, val interface{}, path []string) (cty.V
 	return cty.NilVal, fmt.Errorf("cannot build value for type %s at %s", ty.FriendlyName(), strings.Join(path, "."))
 }
 
-// buildRefinedUnknown builds a refined unknown value from refinement data
-func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, error) {
-	refinements, ok := refinementsData.(map[string]interface{})
-	if !ok {
+// buildRefinedUnknown builds a refined unknown value from a `$refine` object.
+//
+// Every key has to be recognised, and every value has to have the shape its key
+// implies. Both used to be read with a comma-ok assertion and skipped when they
+// did not match, which meant a typo (`typo_prefix`) and a mis-spelled bound
+// (`"number_lower_bound": "10"` rather than a pair) both produced a *bare*
+// unknown and reported `ok: true`. The caller then compared its own carefully
+// refined unknown against an unrefined one and read the difference as its own
+// fault. An oracle asked a question it does not understand has to say so.
+func buildRefinedUnknown(ty cty.Type, raw json.RawMessage) (cty.Value, error) {
+	var refinements map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &refinements); err != nil {
+		return cty.NilVal, fmt.Errorf("refinements must be an object: %w", err)
+	}
+	if refinements == nil {
 		return cty.NilVal, fmt.Errorf("refinements must be an object")
 	}
 
 	builder := cty.UnknownVal(ty).Refine()
+	seen := make(map[string]struct{}, len(refinements))
+	take := func(key string) (json.RawMessage, bool) {
+		field, ok := refinements[key]
+		if ok {
+			seen[key] = struct{}{}
+		}
+		return field, ok
+	}
 
-	if isNull, ok := refinements["is_known_null"].(bool); ok {
+	if field, ok := take("is_known_null"); ok {
+		var isNull bool
+		if err := json.Unmarshal(field, &isNull); err != nil {
+			return cty.NilVal, fmt.Errorf("is_known_null must be a bool: %w", err)
+		}
 		if isNull {
 			builder = builder.Null()
 		} else {
@@ -414,7 +439,11 @@ func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, e
 		}
 	}
 
-	if prefix, ok := refinements["string_prefix"].(string); ok {
+	if field, ok := take("string_prefix"); ok {
+		var prefix string
+		if err := json.Unmarshal(field, &prefix); err != nil {
+			return cty.NilVal, fmt.Errorf("string_prefix must be a string: %w", err)
+		}
 		// StringPrefixFull, not StringPrefix: the prefix arriving here has
 		// already been through whatever trimming its sender applies, and
 		// StringPrefix trims again. That double trim made the harness report a
@@ -424,35 +453,102 @@ func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, e
 		builder = builder.StringPrefixFull(prefix)
 	}
 
-	if lowerBound, ok := refinements["number_lower_bound"].([]interface{}); ok && len(lowerBound) >= 2 {
-		numStr, _ := lowerBound[0].(string)
-		inclusive, _ := lowerBound[1].(bool)
-		bf, err := parseBound(numStr)
+	if field, ok := take("number_lower_bound"); ok {
+		bound, inclusive, err := parseNumberBound("number_lower_bound", field)
 		if err != nil {
 			return cty.NilVal, err
 		}
-		builder = builder.NumberRangeLowerBound(cty.NumberVal(bf), inclusive)
+		builder = builder.NumberRangeLowerBound(bound, inclusive)
 	}
 
-	if upperBound, ok := refinements["number_upper_bound"].([]interface{}); ok && len(upperBound) >= 2 {
-		numStr, _ := upperBound[0].(string)
-		inclusive, _ := upperBound[1].(bool)
-		bf, err := parseBound(numStr)
+	if field, ok := take("number_upper_bound"); ok {
+		bound, inclusive, err := parseNumberBound("number_upper_bound", field)
 		if err != nil {
 			return cty.NilVal, err
 		}
-		builder = builder.NumberRangeUpperBound(cty.NumberVal(bf), inclusive)
+		builder = builder.NumberRangeUpperBound(bound, inclusive)
 	}
 
-	if lower, ok := refinements["collection_length_lower_bound"].(float64); ok {
-		builder = builder.CollectionLengthLowerBound(int(lower))
+	if field, ok := take("collection_length_lower_bound"); ok {
+		length, err := parseLengthBound("collection_length_lower_bound", field)
+		if err != nil {
+			return cty.NilVal, err
+		}
+		builder = builder.CollectionLengthLowerBound(length)
 	}
 
-	if upper, ok := refinements["collection_length_upper_bound"].(float64); ok {
-		builder = builder.CollectionLengthUpperBound(int(upper))
+	if field, ok := take("collection_length_upper_bound"); ok {
+		length, err := parseLengthBound("collection_length_upper_bound", field)
+		if err != nil {
+			return cty.NilVal, err
+		}
+		builder = builder.CollectionLengthUpperBound(length)
+	}
+
+	unread := make([]string, 0, len(refinements))
+	for key := range refinements {
+		if _, ok := seen[key]; !ok {
+			unread = append(unread, key)
+		}
+	}
+	if len(unread) > 0 {
+		sort.Strings(unread)
+		return cty.NilVal, fmt.Errorf("unknown refinement %s", strings.Join(unread, ", "))
 	}
 
 	return builder.NewValue(), nil
+}
+
+// parseNumberBound reads a `[digits, inclusive]` pair.
+func parseNumberBound(key string, raw json.RawMessage) (cty.Value, bool, error) {
+	var pair []json.RawMessage
+	if err := json.Unmarshal(raw, &pair); err != nil {
+		return cty.NilVal, false, fmt.Errorf("%s must be a [digits, inclusive] pair, got %s", key, raw)
+	}
+	if len(pair) != 2 {
+		return cty.NilVal, false, fmt.Errorf("%s must have exactly 2 elements, got %d", key, len(pair))
+	}
+	var text string
+	if err := json.Unmarshal(pair[0], &text); err != nil {
+		return cty.NilVal, false, fmt.Errorf("%s bound must be a string of digits, got %s", key, pair[0])
+	}
+	var inclusive bool
+	if err := json.Unmarshal(pair[1], &inclusive); err != nil {
+		return cty.NilVal, false, fmt.Errorf("%s inclusiveness must be a bool, got %s", key, pair[1])
+	}
+	bf, err := parseBound(text)
+	if err != nil {
+		return cty.NilVal, false, err
+	}
+	return cty.NumberVal(bf), inclusive, nil
+}
+
+// parseLengthBound reads a collection length bound as an exact integer.
+//
+// Not through a float64, which is what `.(float64)` on a plainly-unmarshalled
+// document gave it: `math.MaxInt` overflowed the conversion to int and the
+// bound was dropped outright, and 2^53+1 arrived as 2^53. A length bound is
+// exactly the kind of fact a differential run exists to compare, so a bound
+// this harness cannot represent has to be refused rather than approximated.
+func parseLengthBound(key string, raw json.RawMessage) (int, error) {
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.UseNumber()
+	var decoded any
+	if err := dec.Decode(&decoded); err != nil {
+		return 0, fmt.Errorf("%s must be a number: %w", key, err)
+	}
+	num, ok := decoded.(json.Number)
+	if !ok {
+		return 0, fmt.Errorf("%s must be a number, got %s", key, raw)
+	}
+	length, err := strconv.Atoi(num.String())
+	if err != nil {
+		return 0, fmt.Errorf("%s must be an integer this build can hold, got %s", key, num.String())
+	}
+	if length < 0 {
+		return 0, fmt.Errorf("%s must not be negative, got %d", key, length)
+	}
+	return length, nil
 }
 
 // parseBound reads a refinement bound at the same precision as every other
@@ -464,9 +560,27 @@ func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, e
 // value path already used ParseFloat with 512 bits for exactly this reason;
 // this is the same rule, applied where refinements are built.
 func parseBound(text string) (*big.Float, error) {
-	bf, _, err := big.ParseFloat(text, 10, 512, big.ToNearestEven)
+	bf, err := parseExactNumber(text)
 	if err != nil {
 		return nil, fmt.Errorf("invalid number bound %q: %w", text, err)
+	}
+	return bf, nil
+}
+
+// parseExactNumber reads a number written as text, at go-cty's own precision.
+//
+// The single rule for every number this harness accepts as digits, whether it
+// arrives as a JSON number token, as a string in a value position, or as a
+// refinement bound. `new(big.Float).SetString` starts at 64 bits of mantissa,
+// so the string-spelled path used to round: 2^64+1 came back as 2^64 while
+// go-cty's own `cty json unmarshal` answered exactly, and a caller with an
+// exact-decimal implementation read the harness's rounding as its own. 512 bits
+// and round-to-nearest-even is what `cty.ParseNumberVal` uses, and is the same
+// rule the bound path already adopted for the same reason.
+func parseExactNumber(text string) (*big.Float, error) {
+	bf, _, err := big.ParseFloat(text, 10, 512, big.ToNearestEven)
+	if err != nil {
+		return nil, fmt.Errorf("%q is not a number: %w", text, err)
 	}
 	return bf, nil
 }

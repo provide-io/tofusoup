@@ -254,7 +254,16 @@ func describeResult(name string, result cty.Value, callErr error) callResult {
 		} else {
 			return unrepresentable(name, err)
 		}
-		if refinements, err := encodeRefinements(unmarked); err == nil && len(refinements) > 0 {
+		// Reported rather than dropped, for the same reason the type above is:
+		// refinements are the whole content of an unknown answer, so an error
+		// swallowed here would hand the caller a bare `{"unknown":true}` that
+		// compares equal to every other unknown -- agreement read out of
+		// silence, which is what `unrepresentable` exists to prevent.
+		refinements, err := encodeRefinements(unmarked)
+		if err != nil {
+			return unrepresentable(name, err)
+		}
+		if len(refinements) > 0 {
 			out.Refine = refinements
 		}
 		return out

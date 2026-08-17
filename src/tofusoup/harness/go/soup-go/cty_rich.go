@@ -31,7 +31,9 @@ package main
 // The one thing the dialect cannot express is a map key or object attribute
 // beginning with "$". Encoding such a value is an error rather than a silent
 // mis-spelling: an oracle that quietly renders a value as something else is
-// worse than one that refuses, because the comparison still passes.
+// worse than one that refuses, because the comparison still passes. Decoding
+// mirrors that -- see decodeSentinel -- so the refusal is symmetric and no
+// document decodes to anything other than what it spells.
 
 import (
 	"bytes"
@@ -47,9 +49,28 @@ import (
 	"github.com/zclconf/go-cty/cty/function/stdlib"
 )
 
-// sentinelKeys are the keys that make a JSON object mean something other than
-// a cty map or object value.
-var sentinelKeys = []string{"$null", "$unknown", "$marks", "$bytes", "$number", "$dynamic"}
+// sentinelSpec describes one of the keys that make a JSON object mean something
+// other than a cty map or object value, and -- just as importantly -- what that
+// key's own value has to look like for the object to be that thing.
+//
+// The shape is what keeps the dialect honest; see decodeSentinel.
+type sentinelSpec struct {
+	key   string
+	shape func(json.RawMessage) error
+	// companion is the one other key this sentinel may be written with, and
+	// required says whether it must be.
+	companion string
+	required  bool
+}
+
+var sentinelSpecs = []sentinelSpec{
+	{key: "$null", shape: mustBeTrue},
+	{key: "$unknown", shape: mustBeTrue, companion: "$refine"},
+	{key: "$marks", shape: mustBeStringList, companion: "$value", required: true},
+	{key: "$bytes", shape: mustBeString},
+	{key: "$number", shape: mustBeString},
+	{key: "$dynamic", shape: mustBeObject},
+}
 
 func markNames(marks cty.ValueMarks) []string {
 	names := make([]string, 0, len(marks))
@@ -243,20 +264,46 @@ func decodeRich(ty cty.Type, raw json.RawMessage) (cty.Value, error) {
 // decodeSentinel handles the dialect's special objects. The second result
 // distinguishes "this was a sentinel" from "this was a map that happens to
 // decode to the zero value".
+//
+// The rule, and the reason for it: an object is a sentinel only when the
+// sentinel key's *value* has the shape that key implies, and when the object
+// carries nothing besides that key and its one permitted companion. Anything
+// else is an error.
+//
+// It used to be enough for the key to be present. So `{"$null": "x"}` at a
+// map(string) became a null map -- the "x" never looked at -- and `{"$unknown":
+// "x", "k": "y"}` became a wholly unknown map with "k" silently discarded. Both
+// reported ok. That is the worst failure mode an oracle has: it answered a
+// question the caller did not ask, and the caller has no way to tell.
+//
+// Erring is the right answer rather than falling back to reading the object as
+// a map, because encodeRichMapping already refuses to *write* a key colliding
+// with a sentinel. The dialect simply cannot spell such a map, in either
+// direction, and saying so is honest where guessing is not. What is guaranteed
+// here is the only property that matters: anything that decodes decodes to the
+// value it spells, and nothing is ever dropped.
 func decodeSentinel(ty cty.Type, fields map[string]json.RawMessage) (cty.Value, bool, error) {
-	which := ""
-	for _, key := range sentinelKeys {
-		if _, ok := fields[key]; ok {
-			if which != "" {
-				return cty.NilVal, false, fmt.Errorf("both %s and %s given", which, key)
-			}
-			which = key
+	var spec *sentinelSpec
+	for i := range sentinelSpecs {
+		if _, ok := fields[sentinelSpecs[i].key]; !ok {
+			continue
 		}
+		if spec != nil {
+			return cty.NilVal, false, fmt.Errorf("both %s and %s given", spec.key, sentinelSpecs[i].key)
+		}
+		spec = &sentinelSpecs[i]
+	}
+	if spec == nil {
+		return cty.NilVal, false, nil
+	}
+	if err := spec.shape(fields[spec.key]); err != nil {
+		return cty.NilVal, false, fmt.Errorf("%s %w", spec.key, err)
+	}
+	if err := spec.checkCompanions(fields); err != nil {
+		return cty.NilVal, false, err
 	}
 
-	switch which {
-	case "":
-		return cty.NilVal, false, nil
+	switch spec.key {
 	case "$null":
 		return cty.NullVal(ty), true, nil
 	case "$unknown":
@@ -275,7 +322,60 @@ func decodeSentinel(ty cty.Type, fields map[string]json.RawMessage) (cty.Value, 
 		val, err := decodeDynamic(fields["$dynamic"])
 		return val, true, err
 	}
-	return cty.NilVal, false, fmt.Errorf("unhandled sentinel %s", which)
+	return cty.NilVal, false, fmt.Errorf("unhandled sentinel %s", spec.key)
+}
+
+// checkCompanions refuses any key the sentinel does not account for.
+func (s sentinelSpec) checkCompanions(fields map[string]json.RawMessage) error {
+	if s.required {
+		if _, ok := fields[s.companion]; !ok {
+			return fmt.Errorf("%s given without %s", s.key, s.companion)
+		}
+	}
+	unread := make([]string, 0, len(fields))
+	for name := range fields {
+		if name == s.key || (s.companion != "" && name == s.companion) {
+			continue
+		}
+		unread = append(unread, name)
+	}
+	if len(unread) > 0 {
+		sort.Strings(unread)
+		return fmt.Errorf("%s cannot be written alongside %s", s.key, strings.Join(unread, ", "))
+	}
+	return nil
+}
+
+func mustBeTrue(raw json.RawMessage) error {
+	var flag bool
+	if err := json.Unmarshal(raw, &flag); err != nil || !flag {
+		return fmt.Errorf("must be written as true, got %s", raw)
+	}
+	return nil
+}
+
+func mustBeString(raw json.RawMessage) error {
+	var text string
+	if err := json.Unmarshal(raw, &text); err != nil {
+		return fmt.Errorf("must be a string, got %s", raw)
+	}
+	return nil
+}
+
+func mustBeStringList(raw json.RawMessage) error {
+	var names []string
+	if err := json.Unmarshal(raw, &names); err != nil {
+		return fmt.Errorf("must be a list of strings, got %s", raw)
+	}
+	return nil
+}
+
+func mustBeObject(raw json.RawMessage) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &fields); err != nil || fields == nil {
+		return fmt.Errorf("must be an object, got %s", raw)
+	}
+	return nil
 }
 
 func decodeUnknown(ty cty.Type, fields map[string]json.RawMessage) (cty.Value, error) {
@@ -283,23 +383,17 @@ func decodeUnknown(ty cty.Type, fields map[string]json.RawMessage) (cty.Value, e
 	if !refined {
 		return cty.UnknownVal(ty), nil
 	}
-	var data any
-	if err := json.Unmarshal(raw, &data); err != nil {
-		return cty.NilVal, fmt.Errorf("$refine is not an object: %w", err)
-	}
-	return buildRefinedUnknown(ty, data)
+	return buildRefinedUnknown(ty, raw)
 }
 
+// decodeMarked reads a marked value. $value is guaranteed present: it is
+// $marks's required companion, and decodeSentinel checks that before dispatch.
 func decodeMarked(ty cty.Type, fields map[string]json.RawMessage) (cty.Value, error) {
 	var names []string
 	if err := json.Unmarshal(fields["$marks"], &names); err != nil {
 		return cty.NilVal, fmt.Errorf("$marks is not a list of strings: %w", err)
 	}
-	inner, ok := fields["$value"]
-	if !ok {
-		return cty.NilVal, fmt.Errorf("$marks given without $value")
-	}
-	val, err := decodeRich(ty, inner)
+	val, err := decodeRich(ty, fields["$value"])
 	if err != nil {
 		return cty.NilVal, err
 	}
