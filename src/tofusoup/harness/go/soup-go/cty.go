@@ -427,16 +427,20 @@ func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, e
 	if lowerBound, ok := refinements["number_lower_bound"].([]interface{}); ok && len(lowerBound) >= 2 {
 		numStr, _ := lowerBound[0].(string)
 		inclusive, _ := lowerBound[1].(bool)
-		bf := new(big.Float)
-		bf.SetString(numStr)
+		bf, err := parseBound(numStr)
+		if err != nil {
+			return cty.NilVal, err
+		}
 		builder = builder.NumberRangeLowerBound(cty.NumberVal(bf), inclusive)
 	}
 
 	if upperBound, ok := refinements["number_upper_bound"].([]interface{}); ok && len(upperBound) >= 2 {
 		numStr, _ := upperBound[0].(string)
 		inclusive, _ := upperBound[1].(bool)
-		bf := new(big.Float)
-		bf.SetString(numStr)
+		bf, err := parseBound(numStr)
+		if err != nil {
+			return cty.NilVal, err
+		}
 		builder = builder.NumberRangeUpperBound(cty.NumberVal(bf), inclusive)
 	}
 
@@ -449,4 +453,20 @@ func buildRefinedUnknown(ty cty.Type, refinementsData interface{}) (cty.Value, e
 	}
 
 	return builder.NewValue(), nil
+}
+
+// parseBound reads a refinement bound at the same precision as every other
+// number the harness accepts.
+//
+// `new(big.Float).SetString` starts at the default 64-bit precision, so a bound
+// past 2^64 came back rounded -- 2^70 arrived as ...3400 where the caller sent
+// ...3424 -- and the caller read that as its own encoder losing precision. The
+// value path already used ParseFloat with 512 bits for exactly this reason;
+// this is the same rule, applied where refinements are built.
+func parseBound(text string) (*big.Float, error) {
+	bf, _, err := big.ParseFloat(text, 10, 512, big.ToNearestEven)
+	if err != nil {
+		return nil, fmt.Errorf("invalid number bound %q: %w", text, err)
+	}
+	return bf, nil
 }

@@ -19,6 +19,7 @@ package main
 //	cty convert-value     convert.Convert, and the safe/unsafe distinction
 //	cty walk              cty.Walk's visit order, paths and pruning
 //	cty transform         cty.Transform, applying a rewrite named by both sides
+//	cty msgpack           the wire codec, with unknowns and refinements
 //
 // Every command reports go-cty's refusals and panics as data rather than
 // exiting, because "go-cty will not do this" is one of the answers a parity run
@@ -26,6 +27,8 @@ package main
 // caller's comparison stop at the first interesting case.
 
 import (
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -37,6 +40,7 @@ import (
 	"github.com/zclconf/go-cty/cty/convert"
 	"github.com/zclconf/go-cty/cty/ctystrings"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
+	ctymsgpack "github.com/zclconf/go-cty/cty/msgpack"
 )
 
 // emit writes one JSON object per invocation, so callers can parse without
@@ -726,5 +730,91 @@ Known rewrites: upper, unknown-to-null.
 	typeFlag(cmd, &typeJSON)
 	cmd.Flags().StringVar(&op, "op", "", "the rewrite to apply: upper, unknown-to-null")
 	_ = cmd.MarkFlagRequired("op")
+	return cmd
+}
+
+func initCtyMsgpackCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "msgpack",
+		Short: "The cty/msgpack codec, including unknowns and refinements",
+		Long: `Encode and decode values with cty/msgpack, as the Terraform wire protocol does.
+
+` + "`wire encode`" + ` already round-trips values through this codec, but it builds
+them from plain JSON and so cannot express an unknown -- which is exactly what
+Terraform puts on the wire for an attribute it has not decided yet, refinements
+and all. These take the rich dialect instead.`,
+	}
+	cmd.AddCommand(initCtyMsgpackEncodeCmd(), initCtyMsgpackDecodeCmd())
+	return cmd
+}
+
+func initCtyMsgpackEncodeCmd() *cobra.Command {
+	var typeJSON string
+	cmd := &cobra.Command{
+		Use:   "encode [value-json]",
+		Short: "msgpack.Marshal a value, reported as base64",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ty, err := parseCtyType(json.RawMessage(typeJSON))
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+			val, err := decodeRich(ty, json.RawMessage(args[0]))
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+
+			var encoded []byte
+			var marshalErr error
+			if panicked := recovered(func() { encoded, marshalErr = ctymsgpack.Marshal(val, ty) }); panicked != "" {
+				return emit(cmd, map[string]any{"ok": false, "panic": panicked})
+			}
+			if marshalErr != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": marshalErr.Error()})
+			}
+			return emit(cmd, map[string]any{
+				"ok":     true,
+				"base64": base64.StdEncoding.EncodeToString(encoded),
+				"hex":    hex.EncodeToString(encoded),
+			})
+		},
+	}
+	typeFlag(cmd, &typeJSON)
+	return cmd
+}
+
+func initCtyMsgpackDecodeCmd() *cobra.Command {
+	var typeJSON string
+	cmd := &cobra.Command{
+		Use:   "decode [base64]",
+		Short: "msgpack.Unmarshal into a type, reported as a rich value",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ty, err := parseCtyType(json.RawMessage(typeJSON))
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+			raw, err := base64.StdEncoding.DecodeString(args[0])
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": fmt.Sprintf("not base64: %s", err)})
+			}
+
+			var val cty.Value
+			var unmarshalErr error
+			if panicked := recovered(func() { val, unmarshalErr = ctymsgpack.Unmarshal(raw, ty) }); panicked != "" {
+				return emit(cmd, map[string]any{"ok": false, "panic": panicked})
+			}
+			if unmarshalErr != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": unmarshalErr.Error()})
+			}
+
+			encoded, err := encodeRich(val)
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": err.Error()})
+			}
+			return emit(cmd, map[string]any{"ok": true, "value": encoded})
+		},
+	}
+	typeFlag(cmd, &typeJSON)
 	return cmd
 }
