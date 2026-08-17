@@ -20,6 +20,7 @@ package main
 //	cty walk              cty.Walk's visit order, paths and pruning
 //	cty transform         cty.Transform, applying a rewrite named by both sides
 //	cty msgpack           the wire codec, with unknowns and refinements
+//	cty equals            Value.Equals and Value.RawEquals, not the stdlib's
 //
 // Every command reports go-cty's refusals and panics as data rather than
 // exiting, because "go-cty will not do this" is one of the answers a parity run
@@ -816,5 +817,61 @@ func initCtyMsgpackDecodeCmd() *cobra.Command {
 		},
 	}
 	typeFlag(cmd, &typeJSON)
+	return cmd
+}
+
+func initCtyEqualsCmd() *cobra.Command {
+	var leftTypeJSON, rightTypeJSON string
+	cmd := &cobra.Command{
+		Use:   "equals [left-json] [right-json]",
+		Short: "Report Value.Equals and Value.RawEquals",
+		Long: `Compare two values the way cty itself does, not the way the stdlib does.
+
+` + "`cty call equal`" + ` reaches stdlib.EqualFunc, which unifies its arguments
+first. This is Value.Equals: three-valued, mark-propagating, and willing to say
+"not yet decided" -- the comparison a provider does when it asks whether planned
+state matches prior state.
+
+RawEquals comes along because the two answer different questions. Equals is
+about the values; RawEquals is about the representations, and it is the one that
+distinguishes an unknown from a null of the same type.
+
+  soup-go cty equals --left-type '"string"' --right-type '"string"' '"a"' '{"$unknown":true}'`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			left, err := decodeTypedArg(leftTypeJSON, args[0])
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": fmt.Sprintf("left: %s", err)})
+			}
+			right, err := decodeTypedArg(rightTypeJSON, args[1])
+			if err != nil {
+				return emit(cmd, map[string]any{"ok": false, "error": fmt.Sprintf("right: %s", err)})
+			}
+
+			var answer cty.Value
+			if panicked := recovered(func() { answer = left.Equals(right) }); panicked != "" {
+				return emit(cmd, map[string]any{"ok": false, "panic": panicked})
+			}
+
+			unmarked, marks := answer.Unmark()
+			described := map[string]any{"known": unmarked.IsKnown()}
+			if unmarked.IsKnown() {
+				described["value"] = unmarked.True()
+			}
+			if len(marks) > 0 {
+				described["marks"] = markNames(marks)
+			}
+
+			var raw bool
+			if panicked := recovered(func() { raw = left.RawEquals(right) }); panicked != "" {
+				return emit(cmd, map[string]any{"ok": false, "panic": panicked})
+			}
+			return emit(cmd, map[string]any{"ok": true, "equals": described, "raw_equals": raw})
+		},
+	}
+	cmd.Flags().StringVar(&leftTypeJSON, "left-type", "", "the left value's type, as JSON")
+	cmd.Flags().StringVar(&rightTypeJSON, "right-type", "", "the right value's type, as JSON")
+	_ = cmd.MarkFlagRequired("left-type")
+	_ = cmd.MarkFlagRequired("right-type")
 	return cmd
 }

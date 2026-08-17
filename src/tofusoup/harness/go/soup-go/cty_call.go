@@ -166,7 +166,13 @@ func decodeCallArg(raw json.RawMessage) (cty.Value, error) {
 	case arg.Null:
 		val = cty.NullVal(ty)
 	default:
-		val, err = buildCtyValueFromJSON(ty, arg.Value)
+		// decodeRich, not buildCtyValueFromJSON: the flat "unknown" and "marks"
+		// flags above can only speak about the whole argument, so a list with
+		// one unknown element -- the ordinary shape of a plan-time value -- was
+		// not expressible and the functions were only ever driven with wholly
+		// known arguments. The rich dialect falls back to the same JSON builder
+		// for leaves, so nothing that worked before changes.
+		val, err = decodeRich(ty, arg.Value)
 		if err != nil {
 			return cty.NilVal, fmt.Errorf("failed to build argument value: %w", err)
 		}

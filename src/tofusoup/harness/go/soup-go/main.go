@@ -61,6 +61,7 @@ var ctyConvertValueCmd *cobra.Command
 var ctyWalkCmd *cobra.Command
 var ctyTransformCmd *cobra.Command
 var ctyMsgpackCmd *cobra.Command
+var ctyEqualsCmd *cobra.Command
 
 // HCL command
 var hclCmd = &cobra.Command{
@@ -273,6 +274,7 @@ func init() {
 	ctyWalkCmd = initCtyWalkCmd()
 	ctyTransformCmd = initCtyTransformCmd()
 	ctyMsgpackCmd = initCtyMsgpackCmd()
+	ctyEqualsCmd = initCtyEqualsCmd()
 	hclViewCmd = initHclViewCmd()
 	hclValidateCmd = initHclValidateCmd()
 	hclConvertCmd = initHclConvertCmd()
@@ -325,6 +327,7 @@ func init() {
 	ctyCmd.AddCommand(ctyWalkCmd)
 	ctyCmd.AddCommand(ctyTransformCmd)
 	ctyCmd.AddCommand(ctyMsgpackCmd)
+	ctyCmd.AddCommand(ctyEqualsCmd)
 
 	// HCL subcommands
 	hclCmd.AddCommand(hclViewCmd)

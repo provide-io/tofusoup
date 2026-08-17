@@ -34,6 +34,7 @@ package main
 // worse than one that refuses, because the comparison still passes.
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -204,8 +205,16 @@ func encodeRefinements(val cty.Value) (map[string]any, error) {
 
 // decodeRich builds a cty value of the given type from the rich dialect.
 func decodeRich(ty cty.Type, raw json.RawMessage) (cty.Value, error) {
+	// A literal JSON null, before anything else. Unmarshalling `null` into a map
+	// *succeeds* and leaves the map nil, so without this a null element read as
+	// an object with no sentinel keys and was refused -- and plain JSON nulls
+	// are how every caller that predates this dialect writes one.
+	if string(bytes.TrimSpace(raw)) == "null" {
+		return cty.NullVal(ty), nil
+	}
+
 	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &fields); err == nil {
+	if err := json.Unmarshal(raw, &fields); err == nil && fields != nil {
 		if val, handled, err := decodeSentinel(ty, fields); err != nil {
 			return cty.NilVal, err
 		} else if handled {
