@@ -2705,8 +2705,8 @@ requires-dist = [
     { name = "opentelemetry-exporter-otlp-proto-grpc", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
     { name = "opentelemetry-exporter-otlp-proto-http", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
     { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
-    { name = "provide-foundation", extras = ["cli", "compression", "crypto", "extended", "opentelemetry", "transport"], marker = "extra == 'all'", specifier = ">=0.4.0" },
-    { name = "provide-foundation", extras = ["platform", "process"], marker = "extra == 'extended'", specifier = ">=0.4.0" },
+    { name = "provide-foundation", extras = ["cli", "compression", "crypto", "extended", "opentelemetry", "transport"], marker = "extra == 'all'", specifier = ">=0.5.0" },
+    { name = "provide-foundation", extras = ["platform", "process"], marker = "extra == 'extended'", specifier = ">=0.5.0" },
     { name = "psutil", marker = "extra == 'platform'", specifier = ">=7.0.0" },
     { name = "psutil", marker = "extra == 'process'", specifier = ">=7.0.0" },
     { name = "py-cpuinfo", marker = "extra == 'platform'", specifier = ">=9.0.0" },
@@ -2720,9 +2720,9 @@ provides-extras = ["cli", "compression", "crypto", "transport", "opentelemetry",
 [package.metadata.requires-dev]
 dev = [
     { name = "memray", specifier = ">=1.0" },
-    { name = "provide-testkit", extras = ["advanced-testing", "build", "standard", "typecheck", "utils"], specifier = ">=0.4.0" },
+    { name = "provide-testkit", extras = ["advanced-testing", "build", "standard", "typecheck", "utils"], editable = "../provide-testkit" },
 ]
-docs = [{ name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.0" }]
+docs = [{ name = "provide-testkit", extras = ["docs"], editable = "../provide-testkit" }]
 protobuf = [{ name = "protobuf", specifier = ">=6.32.0" }]
 
 [[package]]
@@ -2847,12 +2847,12 @@ requires-dist = [
     { name = "pip-audit", marker = "extra == 'security'" },
     { name = "pre-commit", marker = "extra == 'build'" },
     { name = "provide-foundation", editable = "../provide-foundation" },
-    { name = "provide-testkit", extras = ["advanced-testing", "build", "crypto", "docs", "fuzzing", "grpc", "process", "profiling", "quality", "security", "transport", "typecheck", "utils"], marker = "extra == 'all'", specifier = ">=0.4.0" },
-    { name = "provide-testkit", extras = ["advanced-testing", "build", "grpc", "profiling", "security", "standard", "typecheck"], marker = "extra == 'pyvider-dev'", specifier = ">=0.4.0" },
-    { name = "provide-testkit", extras = ["advanced-testing", "quality"], marker = "extra == 'dev'", specifier = ">=0.4.0" },
-    { name = "provide-testkit", extras = ["crypto", "process", "quality", "transport"], marker = "extra == 'standard'", specifier = ">=0.4.0" },
-    { name = "provide-testkit", extras = ["docs"], marker = "extra == 'docs-standalone'", specifier = ">=0.4.0" },
-    { name = "provide-testkit", extras = ["grpc", "standard", "typecheck"], marker = "extra == 'grpc-dev'", specifier = ">=0.4.0" },
+    { name = "provide-testkit", extras = ["advanced-testing", "build", "crypto", "docs", "fuzzing", "grpc", "process", "profiling", "quality", "security", "transport", "typecheck", "utils"], marker = "extra == 'all'", specifier = ">=0.5.0" },
+    { name = "provide-testkit", extras = ["advanced-testing", "build", "grpc", "profiling", "security", "standard", "typecheck"], marker = "extra == 'pyvider-dev'", specifier = ">=0.5.0" },
+    { name = "provide-testkit", extras = ["advanced-testing", "quality"], marker = "extra == 'dev'", specifier = ">=0.5.0" },
+    { name = "provide-testkit", extras = ["crypto", "process", "quality", "transport"], marker = "extra == 'standard'", specifier = ">=0.5.0" },
+    { name = "provide-testkit", extras = ["docs"], marker = "extra == 'docs-standalone'", specifier = ">=0.5.0" },
+    { name = "provide-testkit", extras = ["grpc", "standard", "typecheck"], marker = "extra == 'grpc-dev'", specifier = ">=0.5.0" },
     { name = "psutil", marker = "extra == 'process'", specifier = ">=7.0.0" },
     { name = "pygments", marker = "extra == 'docs'" },
     { name = "pymdown-extensions", marker = "extra == 'docs'" },
@@ -2901,7 +2901,7 @@ dev = [
     { name = "mkdocs-macros-plugin" },
     { name = "mkdocstrings" },
     { name = "mkdocstrings-python" },
-    { name = "provide-testkit", extras = ["quality", "advanced-testing"], specifier = ">=0.4.0" },
+    { name = "provide-testkit", extras = ["quality", "advanced-testing"], specifier = ">=0.5.0" },
 ]
 docs = []
 
@@ -3397,8 +3397,7 @@ docs = [{ name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.0" }]
 
 [[package]]
 name = "pyvider-hcl"
-version = "0.4.0"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../pyvider-hcl" }
 dependencies = [
     { name = "attrs" },
     { name = "provide-foundation" },
@@ -3407,10 +3406,23 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "regex" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/b2/6974d716a3bca58868bd1ed9338e99ce96b92e6d4df200d67ffef5f21006/pyvider_hcl-0.4.0.tar.gz", hash = "sha256:d17040b2626ab6e631b36c1ef63ca31061919d57be1d03d22e369002d6dd326b", size = 25017, upload-time = "2026-04-22T02:44:51.139Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b4/cb/a17c95e7054ed08b51ad4d6ea23a4216c4a01b64ec6f6b2efdf302fb07f9/pyvider_hcl-0.4.0-py3-none-any.whl", hash = "sha256:f898def26cc626ef8d9d35dfefbf59bb66617ecb2863ca7da15e63b4313006a6", size = 22559, upload-time = "2026-04-22T02:44:49.843Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "attrs", specifier = ">=25.4.0" },
+    { name = "provide-foundation", editable = "../provide-foundation" },
+    { name = "python-hcl2", specifier = ">=7.2.1" },
+    { name = "pyvider", editable = "../pyvider" },
+    { name = "pyvider-cty", editable = "../pyvider-cty" },
+    { name = "regex", specifier = ">=2024.11.6" },
 ]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "hypothesis", specifier = ">=6.148.8" },
+    { name = "provide-testkit", extras = ["standard"], editable = "../provide-testkit" },
+]
+docs = [{ name = "provide-testkit", extras = ["docs"], editable = "../provide-testkit" }]
 
 [[package]]
 name = "pyvider-rpcplugin"
@@ -4057,15 +4069,15 @@ requires-dist = [
     { name = "plating", editable = "../plating" },
     { name = "provide-foundation", extras = ["all"], editable = "../provide-foundation" },
     { name = "pyvider", editable = "../pyvider" },
-    { name = "pyvider-cty", marker = "extra == 'cty'", specifier = ">=0.4.0" },
-    { name = "pyvider-hcl", marker = "extra == 'hcl'", specifier = ">=0.4.0" },
+    { name = "pyvider-cty", marker = "extra == 'cty'", editable = "../pyvider-cty" },
+    { name = "pyvider-hcl", marker = "extra == 'hcl'", editable = "../pyvider-hcl" },
     { name = "pyvider-rpcplugin", marker = "extra == 'rpc'", editable = "../pyvider-rpcplugin" },
     { name = "pyvider-rpcplugin", extras = ["test"], marker = "extra == 'test-rpc'", editable = "../pyvider-rpcplugin" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "respx", specifier = ">=0.20.0" },
     { name = "semver", specifier = ">=3.0.0" },
     { name = "textual", specifier = ">=3.2.0" },
-    { name = "tofusoup", extras = ["cty", "hcl", "rpc"], marker = "extra == 'all'", specifier = ">=0.4.0" },
+    { name = "tofusoup", extras = ["cty", "hcl", "rpc"], marker = "extra == 'all'", specifier = ">=0.5.0" },
 ]
 provides-extras = ["cty", "hcl", "rpc", "test-rpc", "all"]
 
@@ -4073,7 +4085,7 @@ provides-extras = ["cty", "hcl", "rpc", "test-rpc", "all"]
 dev = [
     { name = "provide-testkit", extras = ["standard", "advanced-testing", "build"], editable = "../provide-testkit" },
     { name = "pytest-httpx", specifier = ">=0.35.0" },
-    { name = "tofusoup", extras = ["test-rpc"], specifier = ">=0.4.0" },
+    { name = "tofusoup", extras = ["test-rpc"], specifier = ">=0.5.0" },
 ]
 docs = [
     { name = "mkdocs-material", specifier = ">=9.7.1" },
