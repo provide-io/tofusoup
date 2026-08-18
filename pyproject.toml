@@ -38,7 +38,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]>=0.5.0",
+    "provide-foundation[all]>=0.4.0",
     "click>=8.3.1",
     "msgpack>=1.0.0",
     "pyyaml>=6.0",
@@ -48,35 +48,35 @@ dependencies = [
     "aiosqlite>=0.19.0",
     "semver>=3.0.0",
     "jinja2>=3.1.6",
-    "plating>=0.5.0",
-    "pyvider>=0.5.0",  # For state inspection encryption (pyvider.common.encryption)
+    "plating>=0.4.0",
+    "pyvider>=0.4.0",  # For state inspection encryption (pyvider.common.encryption)
 ]
 
 [project.optional-dependencies]
 cty = [
-    "pyvider-cty>=0.5.0",
+    "pyvider-cty>=0.4.0",
 ]
 hcl = [
-    "pyvider-hcl>=0.5.0",
+    "pyvider-hcl>=0.4.0",
 ]
 rpc = [
-    "pyvider-rpcplugin>=0.5.0",
+    "pyvider-rpcplugin>=0.4.0",
 ]
 test-rpc = [
-    "pyvider-rpcplugin[test]>=0.5.0",
+    "pyvider-rpcplugin[test]>=0.4.0",
 ]
 all = [
-    "tofusoup[cty,hcl,rpc]>=0.5.0",
+    "tofusoup[cty,hcl,rpc]>=0.4.0",
 ]
 
 [dependency-groups]
 dev = [
-    "provide-testkit[standard,advanced-testing,build]>=0.5.0",
+    "provide-testkit[standard,advanced-testing,build]>=0.4.0",
     "pytest-httpx>=0.35.0",
-    "tofusoup[test-rpc]>=0.5.0",
+    "tofusoup[test-rpc]>=0.4.0",
 ]
 docs = [
-    "provide-testkit[docs]>=0.5.0",
+    "provide-testkit[docs]>=0.4.0",
     "mkdocs-material>=9.7.1",
 ]
 
