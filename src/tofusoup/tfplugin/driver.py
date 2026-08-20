@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import tempfile
 from typing import Any
 
 from attrs import define, field
@@ -54,7 +55,11 @@ def base_env(extra: dict[str, str] | None = None) -> dict[str, str]:
     env = {
         "PATH": SYSTEM_PATH,
         "HOME": os.environ.get("HOME", ""),
-        "TMPDIR": os.environ.get("TMPDIR", "/tmp"),
+        # `gettempdir` rather than a literal: it already consults TMPDIR, and
+        # falls back to the platform's own answer instead of assuming a POSIX
+        # layout -- which is also what stops bandit reading this as a hardcoded
+        # temp path (B108).
+        "TMPDIR": tempfile.gettempdir(),
         "PLUGIN_PROTOCOL_VERSIONS": DEFAULT_PROTOCOL_VERSIONS,
     }
     if extra:
