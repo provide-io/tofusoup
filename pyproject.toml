@@ -93,19 +93,16 @@ Issues = "https://github.com/provide-io/tofusoup/issues"
 [tool.uv]
 package = true
 
-# Local development resolves sibling suite packages from source, so a change in
-# one repo is exercised by its consumers immediately rather than at release. uv
-# does not propagate a dependency's sources into published metadata, so this is
-# invisible to consumers of the built wheel. CI passes --no-sources to verify the
-# published story instead.
-[tool.uv.sources]
-plating = { path = "../plating", editable = true }
-provide-foundation = { path = "../provide-foundation", editable = true }
-provide-testkit = { path = "../provide-testkit", editable = true }
-pyvider = { path = "../pyvider", editable = true }
-pyvider-cty = { path = "../pyvider-cty", editable = true }
-pyvider-hcl = { path = "../pyvider-hcl", editable = true }
-pyvider-rpcplugin = { path = "../pyvider-rpcplugin", editable = true }
+# No `[tool.uv.sources]`. Local sibling checkouts are installed with
+# `uv pip install -e ../pyvider-cty` rather than pinned as a path source here,
+# so this file describes only what a published install resolves -- which is the
+# same thing pyvider-cty's pyproject says, and for the same reason.
+#
+# It is not only a preference. The release workflow calls ci-tooling's
+# `python-release.yml`, which has no `no-sources` input to pass, so a path
+# source here fails the release outright: "Failed to generate package metadata
+# for `plating @ editable+../plating`". That is what failed the first v0.5.0
+# attempt.
 
 [tool.setuptools.packages.find]
 where = ["src"]
