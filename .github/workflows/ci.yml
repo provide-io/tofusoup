@@ -22,4 +22,12 @@ jobs:
       run-secret-scan: true
       matrix-testing: false
       parallel-testing: false
+      # This repository points its siblings at ../<repo> as editable path
+      # dependencies so a change in one is exercised by its consumers
+      # immediately. CI checks out a single repository, so those paths do not
+      # exist here and `uv sync` cannot resolve them -- it fails with "Failed to
+      # generate package metadata for `plating @ editable+../plating`" before a
+      # single test runs. The published metadata is also what CI should be
+      # verifying. Same flag, same reason, as pyvider-cty's.
+      no-sources: true
     secrets: inherit
