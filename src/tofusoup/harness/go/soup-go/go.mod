@@ -1,6 +1,6 @@
 module github.com/provide-io/tofusoup/harness/soup-go
 
-go 1.24.0
+go 1.25
 
 require (
 	github.com/gofrs/flock v0.13.0
@@ -10,13 +10,14 @@ require (
 	github.com/provide-io/tofusoup/proto/kv v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.10.1
 	github.com/vmihailenco/msgpack/v5 v5.4.1
-	github.com/zclconf/go-cty v1.14.1
+	github.com/zclconf/go-cty v1.19.0
 	google.golang.org/grpc v1.61.0
 )
 
 require (
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/apparentlymart/go-textseg/v17 v17.0.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/hashicorp/yamux v0.1.2 // indirect
@@ -36,5 +37,3 @@ require (
 )
 
 replace github.com/provide-io/tofusoup/proto/kv => ../../proto/kv
-
-replace github.com/hashicorp/go-plugin => /Users/tim/code/gh/hashicorp/go-plugin

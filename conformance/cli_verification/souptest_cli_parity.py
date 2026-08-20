@@ -74,12 +74,12 @@ def extract_subcommands(help_text: str) -> set[str]:
     for line in lines:
         line = line.strip()
 
-        if line.startswith("Commands:") or line.startswith("Available Commands:"):
+        if line.startswith(("Commands:", "Available Commands:")):
             in_commands_section = True
             continue
 
         if in_commands_section:
-            if line == "" or line.startswith("Options:") or line.startswith("Flags:"):
+            if line == "" or line.startswith(("Options:", "Flags:")):
                 break
 
             # Extract command name (first word on line)

@@ -45,6 +45,23 @@ var ctyCmd = &cobra.Command{
 // These will be initialized with real implementations
 var ctyValidateCmd *cobra.Command
 var ctyConvertCmd *cobra.Command
+var ctyCallCmd *cobra.Command
+var ctyFunctionsCmd *cobra.Command
+var ctyUnifyCmd *cobra.Command
+
+// The cty-package operations, which no stdlib function exposes. See cty_ops.go.
+var ctyRichCmd *cobra.Command
+var ctyUnknownAsNullCmd *cobra.Command
+var ctyMarksCmd *cobra.Command
+var ctyConformanceCmd *cobra.Command
+var ctyJSONCmd *cobra.Command
+var ctyRangeCmd *cobra.Command
+var ctySafeKnownPrefixCmd *cobra.Command
+var ctyConvertValueCmd *cobra.Command
+var ctyWalkCmd *cobra.Command
+var ctyTransformCmd *cobra.Command
+var ctyMsgpackCmd *cobra.Command
+var ctyEqualsCmd *cobra.Command
 
 // HCL command
 var hclCmd = &cobra.Command{
@@ -140,17 +157,17 @@ a standalone gRPC server on a specific port for manual testing.`,
 				GRPCServer: plugin.DefaultGRPCServer,
 			}
 
-		// Configure TLS: only use custom TLSProvider for specific curves
-		// If rpcTLSMode is "auto" with curve "auto", go-plugin will use native AutoMTLS (P-521)
-		if rpcTLSMode != "" && rpcTLSMode != "disabled" && rpcTLSCurve != "auto" {
-			// Use custom TLSProvider for specific curves (secp256r1, secp384r1)
-			logger.Info("Configuring go-plugin TLSProvider for custom curve support", "curve", rpcTLSCurve)
-			provider := createTLSProvider(logger.Named("tls"), rpcTLSCurve)
-			serveConfig.TLSProvider = provider
-		} else if rpcTLSMode == "auto" {
-			// No TLSProvider = go-plugin uses native AutoMTLS (P-521)
-			logger.Info("Using go-plugin native AutoMTLS (P-521 - no custom TLSProvider)")
-		}
+			// Configure TLS: only use custom TLSProvider for specific curves
+			// If rpcTLSMode is "auto" with curve "auto", go-plugin will use native AutoMTLS (P-521)
+			if rpcTLSMode != "" && rpcTLSMode != "disabled" && rpcTLSCurve != "auto" {
+				// Use custom TLSProvider for specific curves (secp256r1, secp384r1)
+				logger.Info("Configuring go-plugin TLSProvider for custom curve support", "curve", rpcTLSCurve)
+				provider := createTLSProvider(logger.Named("tls"), rpcTLSCurve)
+				serveConfig.TLSProvider = provider
+			} else if rpcTLSMode == "auto" {
+				// No TLSProvider = go-plugin uses native AutoMTLS (P-521)
+				logger.Info("Using go-plugin native AutoMTLS (P-521 - no custom TLSProvider)")
+			}
 
 			plugin.Serve(serveConfig)
 		}
@@ -160,8 +177,6 @@ a standalone gRPC server on a specific port for manual testing.`,
 var getCmd *cobra.Command
 var putCmd *cobra.Command
 var connectionCmd *cobra.Command
-
-
 
 // Harness command (for compatibility testing)
 var harnessCmd = &cobra.Command{
@@ -177,7 +192,7 @@ var harnessListCmd = &cobra.Command{
 		harnesses := []map[string]string{
 			{"name": "soup-go", "status": "active", "version": version},
 		}
-		
+
 		if outputJSON, _ := cmd.Flags().GetBool("json"); outputJSON {
 			logger.Debug("outputting harness list as JSON")
 			json.NewEncoder(os.Stdout).Encode(harnesses)
@@ -221,7 +236,7 @@ var configShowCmd = &cobra.Command{
 			"log_level": logLevel,
 			"verbose":   verbose,
 		}
-		
+
 		if outputJSON, _ := cmd.Flags().GetBool("json"); outputJSON {
 			json.NewEncoder(os.Stdout).Encode(config)
 		} else {
@@ -245,6 +260,21 @@ func init() {
 	// Initialize commands with real implementations
 	ctyValidateCmd = initCtyValidateCmd()
 	ctyConvertCmd = initCtyConvertCmd()
+	ctyCallCmd = initCtyCallCmd()
+	ctyFunctionsCmd = initCtyFunctionsCmd()
+	ctyUnifyCmd = initCtyUnifyCmd()
+	ctyRichCmd = initCtyRichCmd()
+	ctyUnknownAsNullCmd = initCtyUnknownAsNullCmd()
+	ctyMarksCmd = initCtyMarksCmd()
+	ctyConformanceCmd = initCtyConformanceCmd()
+	ctyJSONCmd = initCtyJSONCmd()
+	ctyRangeCmd = initCtyRangeCmd()
+	ctySafeKnownPrefixCmd = initCtySafeKnownPrefixCmd()
+	ctyConvertValueCmd = initCtyConvertValueCmd()
+	ctyWalkCmd = initCtyWalkCmd()
+	ctyTransformCmd = initCtyTransformCmd()
+	ctyMsgpackCmd = initCtyMsgpackCmd()
+	ctyEqualsCmd = initCtyEqualsCmd()
 	hclViewCmd = initHclViewCmd()
 	hclValidateCmd = initHclValidateCmd()
 	hclConvertCmd = initHclConvertCmd()
@@ -253,15 +283,15 @@ func init() {
 	getCmd = initKVGetCmd()
 	putCmd = initKVPutCmd()
 	connectionCmd = initValidateConnectionCmd()
-	
+
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "info", "Set log level (trace, debug, info, warn, error)")
-	
+
 	// Add JSON output flag to relevant commands
 	harnessListCmd.Flags().Bool("json", false, "Output in JSON format")
 	configShowCmd.Flags().Bool("json", false, "Output in JSON format")
-	
+
 	// RPC server flags
 	serverCmd.Flags().BoolVar(&rpcStandalone, "standalone", false, "Run in standalone mode instead of plugin mode")
 	serverCmd.Flags().IntVar(&rpcPort, "port", 50051, "The server port (only used in standalone mode)")
@@ -270,7 +300,7 @@ func init() {
 	serverCmd.Flags().StringVar(&rpcTLSCurve, "tls-curve", "secp384r1", "Elliptic curve for EC key type: 'secp256r1', 'secp384r1', 'secp521r1', or 'auto' (AutoMTLS P-521) - default secp384r1 for Python compatibility")
 	serverCmd.Flags().StringVar(&rpcCertFile, "cert-file", "", "Path to certificate file (required for manual TLS, only used in standalone mode)")
 	serverCmd.Flags().StringVar(&rpcKeyFile, "key-file", "", "Path to private key file (required for manual TLS, only used in standalone mode)")
-	
+
 	// Build command tree
 	rootCmd.AddCommand(ctyCmd)
 	rootCmd.AddCommand(hclCmd)
@@ -279,24 +309,38 @@ func init() {
 	rootCmd.AddCommand(harnessCmd)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(generateCmd)
-	
+
 	// CTY subcommands
 	ctyCmd.AddCommand(ctyValidateCmd)
 	ctyCmd.AddCommand(ctyConvertCmd)
-	
+	ctyCmd.AddCommand(ctyCallCmd)
+	ctyCmd.AddCommand(ctyFunctionsCmd)
+	ctyCmd.AddCommand(ctyUnifyCmd)
+	ctyCmd.AddCommand(ctyRichCmd)
+	ctyCmd.AddCommand(ctyUnknownAsNullCmd)
+	ctyCmd.AddCommand(ctyMarksCmd)
+	ctyCmd.AddCommand(ctyConformanceCmd)
+	ctyCmd.AddCommand(ctyJSONCmd)
+	ctyCmd.AddCommand(ctyRangeCmd)
+	ctyCmd.AddCommand(ctySafeKnownPrefixCmd)
+	ctyCmd.AddCommand(ctyConvertValueCmd)
+	ctyCmd.AddCommand(ctyWalkCmd)
+	ctyCmd.AddCommand(ctyTransformCmd)
+	ctyCmd.AddCommand(ctyMsgpackCmd)
+	ctyCmd.AddCommand(ctyEqualsCmd)
+
 	// HCL subcommands
 	hclCmd.AddCommand(hclViewCmd)
 	hclCmd.AddCommand(hclValidateCmd)
 	hclCmd.AddCommand(hclConvertCmd)
-	
+
 	// Wire subcommands
 	wireCmd.AddCommand(wireEncodeCmd)
 	wireCmd.AddCommand(wireDecodeCmd)
-	
+
 	// RPC subcommands
 	rpcCmd.AddCommand(kvCmd)
 	rpcCmd.AddCommand(validateCmd)
-
 
 	// KV subcommands
 	kvCmd.AddCommand(getCmd)
@@ -305,11 +349,11 @@ func init() {
 
 	// Validate subcommands
 	validateCmd.AddCommand(connectionCmd)
-	
+
 	// Harness subcommands
 	harnessCmd.AddCommand(harnessListCmd)
 	harnessCmd.AddCommand(harnessTestCmd)
-	
+
 	// Config subcommands
 	configCmd.AddCommand(configShowCmd)
 }
@@ -317,7 +361,7 @@ func init() {
 func main() {
 	// Initialize logger early
 	initLogger()
-	
+
 	if err := rootCmd.Execute(); err != nil {
 		logger.Error("command execution failed", "error", err)
 		fmt.Fprintln(os.Stderr, err)
@@ -331,7 +375,7 @@ func initLogger() {
 	if envLevel := os.Getenv("LOG_LEVEL"); envLevel != "" {
 		logLevel = envLevel
 	}
-	
+
 	switch logLevel {
 	case "trace":
 		level = hclog.Trace
@@ -344,7 +388,7 @@ func initLogger() {
 	case "error":
 		level = hclog.Error
 	}
-	
+
 	// Create logger with nice formatting
 	logger = hclog.New(&hclog.LoggerOptions{
 		Name:       "soup-go",

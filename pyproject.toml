@@ -93,6 +93,20 @@ Issues = "https://github.com/provide-io/tofusoup/issues"
 [tool.uv]
 package = true
 
+# Local development resolves sibling suite packages from source, so a change in
+# one repo is exercised by its consumers immediately rather than at release. uv
+# does not propagate a dependency's sources into published metadata, so this is
+# invisible to consumers of the built wheel. CI passes --no-sources to verify the
+# published story instead.
+[tool.uv.sources]
+plating = { path = "../plating", editable = true }
+provide-foundation = { path = "../provide-foundation", editable = true }
+provide-testkit = { path = "../provide-testkit", editable = true }
+pyvider = { path = "../pyvider", editable = true }
+pyvider-cty = { path = "../pyvider-cty", editable = true }
+pyvider-hcl = { path = "../pyvider-hcl", editable = true }
+pyvider-rpcplugin = { path = "../pyvider-rpcplugin", editable = true }
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["tofusoup*"]
@@ -192,6 +206,9 @@ target-version = "py311"
 exclude = [
     "**/*_pb2.py",
     "**/*_pb2_grpc.py",
+    # ruff >=0.16 formats Python code blocks embedded in Markdown; docs prose
+    # is not the formatter's to restyle, so Markdown files are excluded.
+    "**/*.md",
 ]
 
 [tool.ruff.lint]
@@ -209,6 +226,7 @@ ignore = [
     "PLR0911",  # too-many-return-statements (refactor later)
     "PLR0912",  # too-many-branches (refactor later)
     "PLR0913",  # too-many-arguments (common in config classes)
+    "PLR0917",  # too-many-positional-arguments (same rationale as PLR0913)
     "PLR0915",  # too-many-statements (refactor later)
     "PLR2004",  # magic-value-comparison (too noisy),
     "S105",  # hardcoded-password-string (env var names, not values)
