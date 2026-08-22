@@ -112,16 +112,42 @@ class StirRuntime:
         providers = set()
 
         for test_dir in test_dirs:
-            tf_files = list(test_dir.glob("*.tf"))
-            for tf_file in tf_files:
+            # Join the directory's files before extracting. Terraform merges every
+            # .tf in a directory into one configuration, so a `required_providers`
+            # block in provider.tf governs the sources named in its siblings. Reading
+            # each file alone hid that and sent the legacy-syntax fallback below
+            # looking for `hashicorp/<name>` for providers already declared local.
+            chunks = []
+            for tf_file in sorted(test_dir.glob("*.tf")):
                 try:
-                    content = tf_file.read_text(encoding="utf-8")
-                    dir_providers = self._extract_providers_from_content(content)
-                    providers.update(dir_providers)
+                    chunks.append(tf_file.read_text(encoding="utf-8"))
                 except Exception as e:
                     console.log(f"[{test_dir.name}] Warning: Could not read {tf_file.name}: {e}")
+            if chunks:
+                providers.update(self._extract_providers_from_content("\n".join(chunks)))
 
         return providers
+
+    @staticmethod
+    def _balanced_block(content: str, keyword: str) -> list[str]:
+        """Return the body of each `<keyword> {...}` block, matching braces properly.
+
+        A regex cannot do this: the previous pattern stopped at the first inner `}`,
+        so a `required_providers` block declaring two providers yielded only the
+        first, and the second was never pre-downloaded.
+        """
+        bodies: list[str] = []
+        for m in re.finditer(rf"{keyword}\s*\{{", content):
+            depth = 0
+            for i in range(m.end() - 1, len(content)):
+                if content[i] == "{":
+                    depth += 1
+                elif content[i] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        bodies.append(content[m.end() : i])
+                        break
+        return bodies
 
     def _extract_providers_from_content(self, content: str) -> set[tuple[str, str]]:
         """
@@ -135,42 +161,31 @@ class StirRuntime:
         """
         providers = set()
 
-        # Match required_providers block content
-        terraform_block_pattern = r"required_providers\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}"
-        terraform_matches = re.findall(terraform_block_pattern, content, re.DOTALL | re.MULTILINE)
+        for body in self._balanced_block(content, "required_providers"):
+            # Every `name = { ... }` entry, not just the first.
+            for entry in re.finditer(r"(\w+)\s*=\s*\{(.*?)\}", body, re.DOTALL):
+                provider_content = entry.group(2)
 
-        for match in terraform_matches:
-            # Find provider name and extract everything between braces
-            # Handle compact format like: pyvider = { source = "...", version = "..." }
-            provider_pattern = r"(\w+)\s*=\s*\{\s*(.+?)\s*(?:\}|$)"
-            provider_match = re.search(provider_pattern, match.strip(), re.DOTALL)
-
-            if provider_match:
-                provider_name = provider_match.group(1)
-                provider_content = provider_match.group(2)
-
-                # Extract source
                 source_match = re.search(r'source\s*=\s*"([^"]+)"', provider_content)
-                if source_match:
-                    source = source_match.group(1)
+                if not source_match:
+                    continue
+                source = source_match.group(1)
 
-                    # Skip local providers - they can't be downloaded from registries
-                    if source.startswith("local/"):
-                        continue
+                # Skip local providers - they come from the filesystem mirror and
+                # no registry has a matching name.
+                if source.startswith("local/"):
+                    continue
 
-                    # Extract version (optional)
-                    version_match = re.search(r'version\s*=\s*"([^"]+)"', provider_content)
-                    version = version_match.group(1) if version_match else ">= 0.0.0"
+                version_match = re.search(r'version\s*=\s*"([^"]+)"', provider_content)
+                providers.add((source, version_match.group(1) if version_match else ">= 0.0.0"))
 
-                    providers.add((source, version))
-
-        # Only look for legacy provider syntax if we didn't find any in required_providers
-        # AND if we're scanning files that don't have terraform blocks with required_providers
+        # Only look for legacy provider syntax if nothing in this directory declared
+        # a source. Anchored to column 0 so only a top-level block matches -- a
+        # `state_store` block nests `provider "name" {}` inside it, which is PSS
+        # configuration and not a declaration of anything to download.
         if not providers and "required_providers" not in content:
-            legacy_pattern = r'provider\s+"([^"]+)"\s*\{'
-            legacy_matches = re.findall(legacy_pattern, content)
+            legacy_matches = re.findall(r'^provider\s+"([^"]+)"\s*\{', content, re.MULTILINE)
             for provider_name in legacy_matches:
-                # For legacy syntax, assume hashicorp namespace if no explicit source
                 source = f"hashicorp/{provider_name}" if "/" not in provider_name else provider_name
                 providers.add((source, ">= 0.0.0"))
 
