@@ -180,6 +180,19 @@ func parseCtyType(data json.RawMessage) (cty.Type, error) {
 		if err := json.Unmarshal(typeList[0], &typeKind); err != nil {
 			return cty.NilType, err
 		}
+		// go-cty's own cty.Type.UnmarshalJSON requires the closing bracket right
+		// after the element type for list/set/map/tuple ("unexpected extra data in
+		// type description") and reads a third element -- the optional attribute
+		// names -- for object only. This parser used to read the first two
+		// elements and return, so a probe of a malformed type description got an
+		// answer from the oracle that go-cty itself would refuse.
+		maxLen := 2
+		if typeKind == "object" {
+			maxLen = 3
+		}
+		if len(typeList) > maxLen {
+			return cty.NilType, fmt.Errorf("unexpected extra data in %s type description: %d elements", typeKind, len(typeList))
+		}
 
 		switch typeKind {
 		case "list", "set", "map":
