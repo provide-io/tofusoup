@@ -13,7 +13,7 @@ cd src/tofusoup/harness/go/soup-go
 go build -o $TOFUSOUP_ROOT/bin/soup-go .
 ```
 
-The binary will be placed in `/Users/tim/code/gh/provide-io/tofusoup/bin/soup-go`.
+The binary will be placed in `$TOFUSOUP_ROOT/bin/soup-go`, matching the `go build` line above.
 
 ### 2. Python Environment
 
@@ -30,11 +30,13 @@ uv sync  # Sets up .venv with all dependencies
 The primary cross-language compatibility tests are in `conformance/cty/souptest_cty_interop.py`.
 
 #### Run all CTY compatibility tests:
+
 ```bash
 pytest conformance/cty/souptest_cty_interop.py -v
 ```
 
 #### Run specific test cases:
+
 ```bash
 # Test a specific case (e.g., string handling)
 pytest conformance/cty/souptest_cty_interop.py -k "string_simple" -v
@@ -50,11 +52,12 @@ pytest conformance/cty/souptest_cty_interop.py -k "unknown" -v
 The cross-language tests verify bidirectional compatibility:
 
 1. **Python → Go → Python**: Python creates fixtures, Go processes them, Python validates
-2. **Go → Python → Go**: Go creates fixtures, Python processes them, Go validates
+1. **Go → Python → Go**: Go creates fixtures, Python processes them, Go validates
 
 ### Test Cases
 
 The test suite covers:
+
 - **Basic types**: strings, numbers, booleans
 - **Null values**: Proper null handling across languages
 - **Unknown values**: MessagePack-only (JSON not supported by go-cty)
@@ -80,6 +83,7 @@ Tests involving unknown values through JSON are automatically skipped.
 ### CTY Operations
 
 #### Test basic conversion:
+
 ```bash
 # JSON to MessagePack
 echo '"hello"' | soup-go cty convert - - \
@@ -99,6 +103,7 @@ soup-go cty convert - - \
 ```
 
 #### Test validation:
+
 ```bash
 # Validate a value
 soup-go cty validate-value '"hello"' --type '"string"'
@@ -109,6 +114,7 @@ soup-go cty validate-value '"hello"' --type '"string"'
 ### HCL Parsing
 
 #### Create a test HCL file:
+
 ```bash
 cat > /tmp/test.hcl << 'EOF'
 resource "example" "test" {
@@ -119,11 +125,13 @@ EOF
 ```
 
 #### Parse with soup-go:
+
 ```bash
 soup-go hcl parse /tmp/test.hcl | python3 -m json.tool
 ```
 
 Expected output:
+
 ```json
 {
     "body": {
@@ -143,6 +151,7 @@ Expected output:
 ```
 
 #### Validate HCL syntax:
+
 ```bash
 soup-go hcl validate /tmp/test.hcl
 ```
@@ -150,6 +159,7 @@ soup-go hcl validate /tmp/test.hcl
 ### Wire Protocol
 
 #### Test encoding/decoding:
+
 ```bash
 # JSON to MessagePack wire format
 echo '{"key": "value"}' | soup-go wire encode - - \
@@ -168,6 +178,7 @@ echo '"hello"' | soup-go wire encode - - \
 ### 1. Check Binary Version
 
 Ensure soup-go is up to date:
+
 ```bash
 soup-go --version
 # Should show: 0.1.0 or later
@@ -176,6 +187,7 @@ soup-go --version
 ### 2. Verbose Logging
 
 Run soup-go with verbose logging:
+
 ```bash
 soup-go --log-level debug cty convert - - \
   --input-format json \
@@ -186,6 +198,7 @@ soup-go --log-level debug cty convert - - \
 ### 3. Check MessagePack Formats
 
 Python and Go use slightly different MessagePack extension formats for unknown values:
+
 - Python: `c70000` (fixext2)
 - Go: `d40000` (fixext1)
 
@@ -194,10 +207,13 @@ Both formats are interoperable and correctly handled by both implementations.
 ### 4. Common Issues
 
 #### "value is not known" Error
+
 This occurs when trying to convert unknown values through JSON. This is expected behavior matching Terraform. Use MessagePack for unknown values.
 
 #### "unknown flag" Error
+
 The soup-go binary is outdated. Rebuild it:
+
 ```bash
 cd src/tofusoup/harness/go/soup-go
 go build -o $TOFUSOUP_ROOT/bin/soup-go .
@@ -208,11 +224,11 @@ go build -o $TOFUSOUP_ROOT/bin/soup-go .
 For CI/CD pipelines, ensure:
 
 1. Go is installed (version 1.21+)
-2. Build soup-go before running tests:
+1. Build soup-go before running tests:
    ```bash
    make -C src/tofusoup/harness/go/soup-go build
    ```
-3. Run the test suite:
+1. Run the test suite:
    ```bash
    pytest conformance/cty/souptest_cty_interop.py --tb=short
    ```

@@ -11,6 +11,7 @@ Validates:
 - Go servers support all curves (when using TLSProvider)"""
 
 from pathlib import Path
+import shutil
 
 from provide.foundation import logger
 import pytest
@@ -18,14 +19,27 @@ import pytest
 from tofusoup.rpc.client import KVClient
 
 
+def _python_server() -> Path | None:
+    """The `soup` server on PATH, or None.
+
+    Resolved rather than hardcoded: this used to name one developer's
+    `.venv/bin/soup` by absolute path, so the three tests below skipped on every
+    other machine -- including CI -- and reported as passing while checking
+    nothing. `shutil.which` is what the rest of the conformance suite already
+    uses to find `soup` and `soup-go`.
+    """
+    found = shutil.which("soup")
+    return Path(found) if found else None
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("curve", ["secp256r1", "secp384r1"])
 async def test_python_server_supported_curves(curve: str) -> None:
     """Test that Python server accepts supported curves."""
-    server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
+    server_path = _python_server()
 
-    if not server_path.exists():
-        pytest.skip(f"Python server not found: {server_path}")
+    if server_path is None:
+        pytest.skip("Python server `soup` not found on PATH")
 
     client = KVClient(server_path=str(server_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
     client.connection_timeout = 10
@@ -55,10 +69,10 @@ async def test_python_server_rejects_secp521r1() -> None:
     Previous behavior: Raised an exception or timed out
     Current behavior: Logs a warning and continues (more graceful)
     """
-    server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
+    server_path = _python_server()
 
-    if not server_path.exists():
-        pytest.skip(f"Python server not found: {server_path}")
+    if server_path is None:
+        pytest.skip("Python server `soup` not found on PATH")
 
     client = KVClient(server_path=str(server_path), tls_mode="auto", tls_key_type="ec", tls_curve="secp521r1")
     client.connection_timeout = 10
@@ -81,10 +95,10 @@ async def test_curve_consistency(curve: str) -> None:
 
     This verifies the curve is being used correctly for encryption/decryption.
     """
-    server_path = Path("/Users/tim/code/gh/provide-io/pyvider/.venv/bin/soup")
+    server_path = _python_server()
 
-    if not server_path.exists():
-        pytest.skip(f"Python server not found: {server_path}")
+    if server_path is None:
+        pytest.skip("Python server `soup` not found on PATH")
 
     # Write with curve
     client1 = KVClient(server_path=str(server_path), tls_mode="auto", tls_key_type="ec", tls_curve=curve)
