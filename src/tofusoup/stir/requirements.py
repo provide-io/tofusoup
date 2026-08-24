@@ -20,8 +20,11 @@ and the 44 that ever passed.
 
 from __future__ import annotations
 
+from functools import lru_cache
+import json
 import os
 from pathlib import Path
+import subprocess
 import tomllib
 
 from attrs import define, field
@@ -41,6 +44,10 @@ class Requirements:
 
     #: False when the configuration uses a block OpenTofu has no concept of.
     opentofu: bool = True
+    #: Lowest OpenTofu that can run this, e.g. "1.11.0" for write-only attributes.
+    opentofu_min: str = ""
+    #: Lowest Terraform that can run this.
+    terraform_min: str = ""
     #: Extra flags this directory needs at `init`, e.g. an experiment opt-in.
     init_flags: tuple[str, ...] = ()
     #: Environment variables that must be set for the example to work.
@@ -56,8 +63,17 @@ class Requirements:
         A skip is a statement about the runner, not about the configuration --
         so it carries the declared reason rather than a generic message.
         """
-        if not self.opentofu and _is_opentofu(tf_command):
+        is_tofu = _is_opentofu(tf_command)
+        if not self.opentofu and is_tofu:
             return self.reason or "not supported by OpenTofu"
+
+        floor = self.opentofu_min if is_tofu else self.terraform_min
+        if floor:
+            found = binary_version(tf_command)
+            name = "OpenTofu" if is_tofu else "Terraform"
+            if found and _parse(found) < _parse(floor):
+                detail = self.reason or "unsupported by this version"
+                return f"needs {name} >= {floor}, found {found}: {detail}"
 
         missing = [name for name in self.env if not os.environ.get(name)]
         if missing:
@@ -70,6 +86,40 @@ class Requirements:
             return f"needs network access to {', '.join(self.network)}"
 
         return None
+
+
+def _parse(version: str) -> tuple[int, ...]:
+    """A version as comparable integers, ignoring any pre-release suffix."""
+    core = version.strip().lstrip("v").split("-")[0]
+    parts: list[int] = []
+    for chunk in core.split("."):
+        digits = "".join(c for c in chunk if c.isdigit())
+        parts.append(int(digits) if digits else 0)
+    return tuple(parts)
+
+
+@lru_cache(maxsize=8)
+def binary_version(tf_command: str) -> str:
+    """The version the binary reports, or "" if it will not say.
+
+    Cached: a stir run asks once per binary, not once per directory. An
+    unanswerable version returns "" and every floor check passes, because
+    refusing to run a directory over a version we could not read would turn a
+    diagnostic aid into an obstacle.
+    """
+    try:
+        out = subprocess.run(
+            [tf_command, "version", "-json"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+        if out.returncode == 0:
+            return str(json.loads(out.stdout).get("terraform_version", ""))
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return ""
+    return ""
 
 
 def _truthy(value: str | None) -> bool:
@@ -99,6 +149,8 @@ class _Merge:
     """Accumulator for the union of a directory's sidecars."""
 
     opentofu: bool = True
+    opentofu_min: str = ""
+    terraform_min: str = ""
     init_flags: list[str] = field(factory=list)
     env: list[str] = field(factory=list)
     network: list[str] = field(factory=list)
@@ -107,6 +159,14 @@ class _Merge:
     def absorb(self, block: dict[str, object]) -> None:
         if block.get("opentofu") is False:
             self.opentofu = False
+        for key in ("opentofu_min", "terraform_min"):
+            value = block.get(key)
+            if isinstance(value, str) and value:
+                current = getattr(self, key)
+                # Highest floor wins: a directory runs only where every example in
+                # it can.
+                if not current or _parse(value) > _parse(current):
+                    setattr(self, key, value)
         for key, target in (
             ("init_flags", self.init_flags),
             ("env", self.env),
@@ -152,6 +212,8 @@ def load_requirements(directory: Path) -> Requirements:
 
     return Requirements(
         opentofu=merged.opentofu,
+        opentofu_min=merged.opentofu_min,
+        terraform_min=merged.terraform_min,
         init_flags=tuple(merged.init_flags),
         env=tuple(merged.env),
         network=tuple(merged.network),

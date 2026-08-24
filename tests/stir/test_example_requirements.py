@@ -162,3 +162,80 @@ def test_an_explicit_allow_network_overrides_the_environment(
     monkeypatch.setenv("TOFUSOUP_OFFLINE", "1")
 
     assert load_requirements(tmp_path).skip_reason("terraform", allow_network=True) is None
+
+
+WRITE_ONLY = """[requirements]
+opentofu_min = "1.11.0"
+reason = "write-only attributes are not understood before OpenTofu 1.11"
+"""
+
+
+@pytest.mark.unit
+def test_a_version_floor_skips_an_older_binary(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The case this exists for: pyvider_secret_note on OpenTofu 1.10.6.
+
+    The provider nulls a write-only attribute, which is correct, but 1.10.6 has
+    no concept of one and enforces the ordinary rule that a planned value must
+    equal its config value -- so it reports "Provider produced invalid plan" and
+    blames the provider for behaving properly.
+    """
+    from tofusoup.stir import requirements as mod
+
+    (tmp_path / "example.meta.toml").write_text(WRITE_ONLY)
+    mod.binary_version.cache_clear()
+    monkeypatch.setattr(mod, "binary_version", lambda _cmd: "1.10.6")
+
+    reason = load_requirements(tmp_path).skip_reason("tofu")
+
+    assert reason is not None
+    assert "1.11.0" in reason and "1.10.6" in reason
+
+
+@pytest.mark.unit
+def test_a_version_floor_permits_a_newer_binary(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from tofusoup.stir import requirements as mod
+
+    (tmp_path / "example.meta.toml").write_text(WRITE_ONLY)
+    monkeypatch.setattr(mod, "binary_version", lambda _cmd: "1.12.5")
+
+    assert load_requirements(tmp_path).skip_reason("tofu") is None
+
+
+@pytest.mark.unit
+def test_an_opentofu_floor_does_not_gate_terraform(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The two implementations version independently."""
+    from tofusoup.stir import requirements as mod
+
+    (tmp_path / "example.meta.toml").write_text(WRITE_ONLY)
+    monkeypatch.setattr(mod, "binary_version", lambda _cmd: "1.5.0")
+
+    assert load_requirements(tmp_path).skip_reason("/usr/bin/terraform") is None
+
+
+@pytest.mark.unit
+def test_an_unreadable_version_never_blocks(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Refusing to run over a version we could not read would be an obstacle."""
+    from tofusoup.stir import requirements as mod
+
+    (tmp_path / "example.meta.toml").write_text(WRITE_ONLY)
+    monkeypatch.setattr(mod, "binary_version", lambda _cmd: "")
+
+    assert load_requirements(tmp_path).skip_reason("tofu") is None
+
+
+@pytest.mark.unit
+def test_the_highest_floor_in_a_directory_wins(tmp_path: Path) -> None:
+    (tmp_path / "a.meta.toml").write_text('[requirements]\nopentofu_min = "1.11.0"\n')
+    (tmp_path / "b.meta.toml").write_text('[requirements]\nopentofu_min = "1.9.0"\n')
+
+    assert load_requirements(tmp_path).opentofu_min == "1.11.0"
+
+
+@pytest.mark.unit
+def test_version_comparison_is_numeric_not_lexical(tmp_path: Path) -> None:
+    """ "1.9.0" must not sort above "1.11.0"."""
+    from tofusoup.stir.requirements import _parse
+
+    assert _parse("1.9.0") < _parse("1.11.0")
+    assert _parse("v1.11.0") == _parse("1.11.0")
+    assert _parse("1.11.0-beta1") == _parse("1.11.0")
