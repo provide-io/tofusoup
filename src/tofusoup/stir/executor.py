@@ -39,11 +39,46 @@ from pathlib import Path
 import shutil
 from time import monotonic
 
-from tofusoup.stir.config import LOGS_DIR, MAX_CONCURRENT_TESTS
+from provide.foundation import logger
+
+from tofusoup.stir.config import LOGS_DIR, MAX_CONCURRENT_TESTS, TF_COMMAND
 from tofusoup.stir.display import console, test_statuses
 from tofusoup.stir.models import TestResult
+from tofusoup.stir.requirements import load_requirements
 from tofusoup.stir.runtime import StirRuntime
 from tofusoup.stir.terraform import run_terraform_command
+
+
+def _skipped(dir_name: str, start_time: float, reason: str) -> TestResult:
+    """Record a directory as skipped, with why.
+
+    A directory that cannot run on this machine is skipped rather than failed:
+    running it anyway produces an error indistinguishable from a real defect,
+    which is how the examples OpenTofu cannot parse became the silent difference
+    between the 48 directories and the 44 that passed. A skip nobody can explain
+    is indistinguishable from a directory nobody bothered to write, so the reason
+    travels with the result.
+    """
+    logger.info(f"⏭️ Skipping {dir_name}: {reason}")
+    end_time = monotonic()
+    test_statuses[dir_name].update(
+        text="SKIPPED",
+        style="dim",
+        active=False,
+        success=True,
+        skipped=True,
+        last_log=reason,
+        start_time=start_time,
+        end_time=end_time,
+    )
+    return TestResult(
+        directory=dir_name,
+        success=True,
+        skipped=True,
+        start_time=start_time,
+        end_time=end_time,
+        skip_reason=reason,
+    )
 
 
 async def run_test_lifecycle(
@@ -55,23 +90,12 @@ async def run_test_lifecycle(
 
     async with semaphore:
         try:
-            if not any(directory.glob("*.tf")):
-                test_statuses[dir_name].update(
-                    text="SKIPPED",
-                    style="dim",
-                    active=False,
-                    success=True,
-                    skipped=True,
-                    start_time=start_time,
-                    end_time=monotonic(),
-                )
-                return TestResult(
-                    directory=dir_name,
-                    success=True,
-                    skipped=True,
-                    start_time=start_time,
-                    end_time=monotonic(),
-                )
+            requirements = load_requirements(directory)
+            skip_reason = requirements.skip_reason(TF_COMMAND) or (
+                None if any(directory.glob("*.tf")) else "no .tf files"
+            )
+            if skip_reason:
+                return _skipped(dir_name, start_time, skip_reason)
 
             test_statuses[dir_name].update(
                 text="CLEANING",
@@ -92,9 +116,11 @@ async def run_test_lifecycle(
             # Use providers that were pre-downloaded by runtime
             runtime.validate_ready()
 
-            init_rc, _, _, _, _, _ = await run_terraform_command(
-                directory, ["init", "-no-color", "-input=false"], runtime=runtime
-            )
+            # Declared init flags -- an experiment opt-in, say -- come from the
+            # directory's own sidecar, because they are a property of the example
+            # rather than of the run.
+            init_args = ["init", "-no-color", "-input=false", *requirements.init_flags]
+            init_rc, _, _, _, _, _ = await run_terraform_command(directory, init_args, runtime=runtime)
             if init_rc != 0:
                 end_time = monotonic()
                 test_statuses[dir_name].update(

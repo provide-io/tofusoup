@@ -28,6 +28,9 @@ class StirTestResult(NamedTuple):
     functions: int = 0
     ephemeral_functions: int = 0
     failed_stage: str | None = None
+    #: Why the directory was skipped, when it was. A skip without a reason
+    #: is indistinguishable from a directory nobody bothered to write.
+    skip_reason: str | None = None
     error_message: str | None = None
 
 
