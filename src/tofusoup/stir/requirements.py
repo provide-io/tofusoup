@@ -26,6 +26,8 @@ import tomllib
 
 from attrs import define, field
 
+from tofusoup.config.defaults import ENV_TOFUSOUP_OFFLINE
+
 #
 # tofusoup/stir/requirements.py
 #
@@ -48,7 +50,7 @@ class Requirements:
     #: Human-readable explanation, surfaced when a directory is skipped.
     reason: str = ""
 
-    def skip_reason(self, tf_command: str, *, allow_network: bool = True) -> str | None:
+    def skip_reason(self, tf_command: str, *, allow_network: bool | None = None) -> str | None:
         """Why this directory cannot run here, or None if it can.
 
         A skip is a statement about the runner, not about the configuration --
@@ -62,10 +64,16 @@ class Requirements:
             detail = ", ".join(missing)
             return f"{self.reason or 'missing required environment'}: {detail}"
 
+        if allow_network is None:
+            allow_network = not _truthy(os.environ.get(ENV_TOFUSOUP_OFFLINE))
         if self.network and not allow_network:
             return f"needs network access to {', '.join(self.network)}"
 
         return None
+
+
+def _truthy(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _is_opentofu(tf_command: str) -> bool:

@@ -41,6 +41,11 @@ DEFAULT_CLIENT_LANGUAGE = "python"
 # Environment variables
 ENV_TOFUSOUP_LOG_LEVEL = "TOFUSOUP_LOG_LEVEL"
 ENV_TOFUSOUP_TEST_TIMEOUT = "TOFUSOUP_TEST_TIMEOUT"
+# Set truthy to skip examples that declare `network` in their requirements.
+# An example reaching a third-party service fails closed on an air-gapped
+# runner and is hostage to that service's uptime, so a failure there says
+# nothing about the provider.
+ENV_TOFUSOUP_OFFLINE = "TOFUSOUP_OFFLINE"
 ENV_TF_LOG = "TF_LOG"
 ENV_TF_DATA_DIR = "TF_DATA_DIR"
 ENV_WORKENV_PROFILE = "WORKENV_PROFILE"

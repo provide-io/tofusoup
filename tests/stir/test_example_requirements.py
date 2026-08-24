@@ -114,3 +114,51 @@ def test_terraform_aliased_to_tofu_is_detected_by_binary_name(tmp_path: Path) ->
 
     assert requirements.skip_reason("/opt/homebrew/bin/tofu") is not None
     assert requirements.skip_reason("tofu.exe") is not None
+
+
+NETWORK = """[requirements]
+network = ["httpbin.org"]
+reason = "the examples call the live httpbin.org service"
+"""
+
+
+@pytest.mark.unit
+def test_network_examples_run_by_default(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    (tmp_path / "example.meta.toml").write_text(NETWORK)
+    monkeypatch.delenv("TOFUSOUP_OFFLINE", raising=False)
+
+    assert load_requirements(tmp_path).skip_reason("terraform") is None
+
+
+@pytest.mark.unit
+def test_offline_skips_examples_that_reach_the_network(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A third party's downtime is not a defect in the provider."""
+    (tmp_path / "example.meta.toml").write_text(NETWORK)
+    monkeypatch.setenv("TOFUSOUP_OFFLINE", "1")
+
+    reason = load_requirements(tmp_path).skip_reason("terraform")
+
+    assert reason is not None
+    assert "httpbin.org" in reason
+
+
+@pytest.mark.unit
+def test_offline_does_not_skip_examples_that_need_no_network(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "example.tf").write_text('resource "x" "y" {}')
+    monkeypatch.setenv("TOFUSOUP_OFFLINE", "true")
+
+    assert load_requirements(tmp_path).skip_reason("terraform") is None
+
+
+@pytest.mark.unit
+def test_an_explicit_allow_network_overrides_the_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "example.meta.toml").write_text(NETWORK)
+    monkeypatch.setenv("TOFUSOUP_OFFLINE", "1")
+
+    assert load_requirements(tmp_path).skip_reason("terraform", allow_network=True) is None
