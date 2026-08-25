@@ -111,8 +111,7 @@ jobs:
           name: release-artifacts
           path: dist
       - name: 🧾 Generate Python SBOM
-        # Script policy: keep this a one-liner; the logic lives in ci/.
-        run: ci/generate-sbom.sh dist sbom-python.cdx.json
+        run: scripts/sbom_from_wheel.sh dist sbom-python.cdx.json
 
       - name: 🔏 Sigstore sign artifacts
         # UV_PYTHON is cleared for this step only. setup-uv exports UV_PYTHON=3.11
