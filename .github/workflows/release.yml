@@ -111,7 +111,9 @@ jobs:
           name: release-artifacts
           path: dist
       - name: 🧾 Generate Python SBOM
-        run: uvx cyclonedx-py environment --output-format json -o sbom-python.cdx.json
+        # Script policy: keep this a one-liner; the logic lives in ci/.
+        run: ci/generate-sbom.sh dist sbom-python.cdx.json
+
       - name: 🔏 Sigstore sign artifacts
         # UV_PYTHON is cleared for this step only. setup-uv exports UV_PYTHON=3.11
         # process-wide, and this action builds its own virtualenv on whatever
