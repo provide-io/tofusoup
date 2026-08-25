@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-08-25
+
+### Added
+
+- **An example can declare the version floor it needs.** `opentofu_min` and `terraform_min` sit alongside the existing `opentofu` flag, so an example that needs a recent runtime no longer has to exclude OpenTofu wholesale and lose the versions that do work.
+
+  The case that forced it: terraform-provider-pyvider's `pyvider_secret_note` failed on OpenTofu 1.10.6 with `planned an invalid value for ...secret_value: planned value cty.NullVal(cty.String) does not match config value`, which reads as a provider bug and is not one. The provider nulls a write-only attribute, which is correct; 1.10.6 has no concept of write-only and enforces the ordinary rule that a planned value must equal its config value. Measured rather than assumed -- 1.10.6 fails, 1.11.0 and 1.12.5 both plan cleanly -- so the floor is 1.11.0.
+
+  The two floors are separate because the implementations version independently, and a directory takes the highest floor its examples declare. The binary's version is read once per run and cached rather than once per directory, and a binary that will not report one blocks nothing: refusing to run over a version we could not read turns a diagnostic aid into an obstacle. Comparison is numeric, so `1.9.0` does not sort above `1.11.0`.
+
+- **`TOFUSOUP_OFFLINE` skips examples that reach the network.** Requirements could already declare `network`, and `skip_reason` accepted an `allow_network` argument, but nothing ever passed it, so the declaration was inert. An example failing because a third party is unreachable says nothing about the provider. An explicit `allow_network=` still overrides the environment.
+
+### Fixed
+
+- The sigstore action pin was `v3.0.0`, whose bundled TUF trust root no longer verifies -- signing failed with `root was signed by 0/3 keys`. Now `v3.5.0`, with dependabot configured to keep the pins moving so a pin cannot rot unnoticed again.
+
 ## [0.6.0] - 2026-08-24
 
 ### Added
