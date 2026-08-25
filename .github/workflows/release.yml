@@ -113,6 +113,15 @@ jobs:
       - name: 🧾 Generate Python SBOM
         run: uvx cyclonedx-py environment --output-format json -o sbom-python.cdx.json
       - name: 🔏 Sigstore sign artifacts
+        # UV_PYTHON is cleared for this step only. setup-uv exports UV_PYTHON=3.11
+        # process-wide, and this action builds its own virtualenv on whatever
+        # CPython uv resolves -- 3.14 at time of writing -- then installs into it
+        # with uv, which honours the stray UV_PYTHON, looks for a 3.11 environment
+        # that was never created, and fails with "No virtual environment found for
+        # Python 3.11". The action's environment is its own business, so the export
+        # should not reach it.
+        env:
+          UV_PYTHON: ""
         uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9  # v3.5.0
         with:
           inputs: dist/*.whl dist/*.tar.gz
