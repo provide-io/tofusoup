@@ -90,17 +90,23 @@ jobs:
         with:
           skip-existing: true
 
-  # Generate SBOM, sign artifacts, attach everything to the GH release.
-  sign-and-upload:
-    needs: [publish-pypi]
-    if: github.event_name == 'release'
+  # SBOM for the built wheel and its dependencies. Its own job, with a
+  # read-only token and no OIDC, because it installs the wheel's dependency
+  # closure and the (pinned) cyclonedx-bom from PyPI and runs them: that must
+  # not happen in the job that holds the sigstore signing identity and a
+  # writable repository token, as it did before this job existed. Not gated
+  # on the release event, so a dispatch dry run exercises it.
+  sbom:
+    needs: release
     runs-on: ubuntu-24.04
     permissions:
-      contents: write
-      id-token: write
+      contents: read
     steps:
+      # Only the script is needed from the checkout; no token is left behind.
       - name: 📥 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
       - name: 🐍 Setup uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
         with:
@@ -110,19 +116,40 @@ jobs:
         with:
           name: release-artifacts
           path: dist
+      # Describes the built wheel and its dependencies, installed into a fresh
+      # venv. `uvx cyclonedx-py environment` on its own described the uvx tool
+      # venv -- cyclonedx-bom and friends, not this package.
       - name: 🧾 Generate Python SBOM
         run: scripts/sbom_from_wheel.sh dist sbom-python.cdx.json
+      - name: ⬆️ Upload SBOM
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
+        with:
+          name: sbom
+          path: sbom-python.cdx.json
+          if-no-files-found: error
 
+  # Sign artifacts and attach everything, SBOM included, to the GH release.
+  # No checkout and no package installs here: this job runs nothing but the
+  # pinned actions and `gh`, so nothing fetched from a registry executes next
+  # to the signing identity.
+  sign-and-upload:
+    needs: [publish-pypi, sbom]
+    if: github.event_name == 'release'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: 📦 Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: release-artifacts
+          path: dist
+      - name: 📦 Download SBOM
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: sbom
       - name: 🔏 Sigstore sign artifacts
-        # UV_PYTHON is cleared for this step only. setup-uv exports UV_PYTHON=3.11
-        # process-wide, and this action builds its own virtualenv on whatever
-        # CPython uv resolves -- 3.14 at time of writing -- then installs into it
-        # with uv, which honours the stray UV_PYTHON, looks for a 3.11 environment
-        # that was never created, and fails with "No virtual environment found for
-        # Python 3.11". The action's environment is its own business, so the export
-        # should not reach it.
-        env:
-          UV_PYTHON: ""
         uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9  # v3.5.0
         with:
           inputs: dist/*.whl dist/*.tar.gz
