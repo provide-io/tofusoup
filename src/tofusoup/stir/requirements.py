@@ -54,6 +54,9 @@ class Requirements:
     env: tuple[str, ...] = ()
     #: Hosts the example reaches. Present so an air-gapped runner can opt out.
     network: tuple[str, ...] = ()
+    #: False when re-planning after a successful apply legitimately shows changes,
+    #: e.g. a remote that stamps a new value on every read.
+    converges: bool = True
     #: Human-readable explanation, surfaced when a directory is skipped.
     reason: str = ""
 
@@ -151,6 +154,7 @@ class _Merge:
     opentofu: bool = True
     opentofu_min: str = ""
     terraform_min: str = ""
+    converges: bool = True
     init_flags: list[str] = field(factory=list)
     env: list[str] = field(factory=list)
     network: list[str] = field(factory=list)
@@ -159,6 +163,10 @@ class _Merge:
     def absorb(self, block: dict[str, object]) -> None:
         if block.get("opentofu") is False:
             self.opentofu = False
+        if block.get("converges") is False:
+            # One example that cannot converge opts out the directory, which is
+            # what actually gets planned.
+            self.converges = False
         for key in ("opentofu_min", "terraform_min"):
             value = block.get(key)
             if isinstance(value, str) and value:
@@ -217,6 +225,7 @@ def load_requirements(directory: Path) -> Requirements:
         init_flags=tuple(merged.init_flags),
         env=tuple(merged.env),
         network=tuple(merged.network),
+        converges=merged.converges,
         reason="; ".join(merged.reasons),
     )
 

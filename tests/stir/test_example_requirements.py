@@ -34,6 +34,33 @@ reason = "encrypted private state needs a configured shared secret"
 """
 
 
+NON_CONVERGING = """[requirements]
+converges = false
+reason = "the API stamps a new timestamp on every read"
+"""
+
+
+@pytest.mark.unit
+def test_convergence_is_expected_unless_a_sidecar_opts_out(tmp_path: Path) -> None:
+    """Re-planning after apply should be empty; a directory says so when it is not."""
+    (tmp_path / "example.tf").write_text('resource "x" "y" {}')
+
+    assert load_requirements(tmp_path).converges is True
+
+    (tmp_path / "example.meta.toml").write_text(NON_CONVERGING)
+
+    assert load_requirements(tmp_path).converges is False
+
+
+@pytest.mark.unit
+def test_one_non_converging_example_opts_out_the_whole_directory(tmp_path: Path) -> None:
+    """Sidecars merge, and the directory is planned as a whole."""
+    (tmp_path / "a.meta.toml").write_text(NON_CONVERGING)
+    (tmp_path / "b.meta.toml").write_text('[requirements]\nreason = "nothing special"\n')
+
+    assert load_requirements(tmp_path).converges is False
+
+
 @pytest.mark.unit
 def test_a_directory_without_sidecars_requires_nothing(tmp_path: Path) -> None:
     (tmp_path / "example.tf").write_text('resource "x" "y" {}')

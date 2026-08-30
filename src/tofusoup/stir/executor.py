@@ -81,6 +81,32 @@ def _skipped(dir_name: str, start_time: float, reason: str) -> TestResult:
     )
 
 
+async def _convergence_rc(directory: Path, dir_name: str, runtime: StirRuntime, *, converges: bool) -> int:
+    """Re-plan a just-applied directory and report whether anything is still pending.
+
+    A successful apply proves the plan could be carried out. It does not prove
+    the provider planned everything it then wrote: a value the apply invented,
+    or one the plan promised and the state never received, leaves a diff that
+    never empties -- which a practitioner sees as a resource perpetually about
+    to change, and which `apply` alone reports as success.
+
+    Returns terraform's own `-detailed-exitcode`: 0 nothing pending, 1 the plan
+    itself errored, 2 changes remain. A directory that legitimately cannot
+    converge -- a remote stamping a new value on every read -- declares
+    `converges = false` in its sidecar and is reported as 0 here.
+    """
+    if not converges:
+        return 0
+
+    test_statuses[dir_name].update(text="CONVERGING", style="cyan")
+    converge_rc, _, _, _, _, _ = await run_terraform_command(
+        directory,
+        ["plan", "-detailed-exitcode", "-input=false", "-no-color"],
+        runtime=runtime,
+    )
+    return int(converge_rc)
+
+
 async def run_test_lifecycle(
     directory: Path, semaphore: asyncio.Semaphore, runtime: StirRuntime
 ) -> TestResult:
@@ -150,7 +176,11 @@ async def run_test_lifecycle(
                 directory, ["apply", "-input=false", "-auto-approve"], runtime=runtime, tail_log=True
             )
 
-            if apply_rc == 0:
+            lifecycle_rc = apply_rc or await _convergence_rc(
+                directory, dir_name, runtime, converges=requirements.converges
+            )
+
+            if lifecycle_rc == 0:
                 test_statuses[dir_name].update(text="ANALYZING", style="magenta")
                 show_rc, show_stdout, _, _, _, _ = await run_terraform_command(
                     directory, ["show", "-json"], runtime=runtime, capture_stdout=True

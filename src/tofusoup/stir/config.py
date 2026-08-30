@@ -54,6 +54,7 @@ PHASE_EMOJI = {
     "CLEANING": "🧹",  # Removing old .terraform directories
     "INIT": "🔄",  # Running terraform init
     "APPLYING": "🚀",  # Running terraform apply
+    "CONVERGING": "🔁",  # Re-planning to prove the plan and the state agree
     "DESTROYING": "💥",  # Running terraform destroy
     "FAIL": "❌",  # Test failed (terraform command returned non-zero)
     "ERROR": "🔥",  # Critical error/exception in test harness
