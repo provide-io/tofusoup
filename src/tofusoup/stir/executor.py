@@ -107,6 +107,24 @@ async def _convergence_rc(directory: Path, dir_name: str, runtime: StirRuntime, 
     return int(converge_rc)
 
 
+async def _destroy_rc(directory: Path, dir_name: str, runtime: StirRuntime, *, style: str) -> int:
+    """Tear the directory down, returning terraform's exit code.
+
+    A teardown that fails is a real failure rather than cleanup noise: it
+    leaves infrastructure behind, and the next run starts from a state this one
+    was supposed to have emptied. The code was previously discarded, so a
+    directory that could not be destroyed still reported PASS.
+    """
+    test_statuses[dir_name].update(text="DESTROYING", style=style)
+    destroy_rc, _, _, _, _, _ = await run_terraform_command(
+        directory,
+        ["destroy", "-auto-approve", "-input=false"],
+        runtime=runtime,
+        tail_log=True,
+    )
+    return int(destroy_rc)
+
+
 async def run_test_lifecycle(
     directory: Path, semaphore: asyncio.Semaphore, runtime: StirRuntime
 ) -> TestResult:
@@ -199,26 +217,20 @@ async def run_test_lifecycle(
                     except json.JSONDecodeError:
                         pass
 
-                test_statuses[dir_name].update(text="DESTROYING", style="dim green")
-                await run_terraform_command(
-                    directory,
-                    ["destroy", "-auto-approve", "-input=false"],
-                    runtime=runtime,
-                    tail_log=True,
-                )
+                torn_down = await _destroy_rc(directory, dir_name, runtime, style="dim green") == 0
                 end_time = monotonic()
                 test_statuses[dir_name].update(
-                    text="PASS",
-                    style="bold green",
+                    text="PASS" if torn_down else "FAIL",
+                    style="bold green" if torn_down else "bold red",
                     active=False,
-                    success=True,
+                    success=torn_down,
                     end_time=end_time,
                 )
 
                 status = test_statuses[dir_name]
                 return TestResult(
                     directory=dir_name,
-                    success=True,
+                    success=torn_down,
                     skipped=False,
                     start_time=start_time,
                     end_time=end_time,
@@ -235,13 +247,9 @@ async def run_test_lifecycle(
                     ephemeral_functions=status.get("ephemeral_functions", 0),
                 )
             else:
-                test_statuses[dir_name].update(text="DESTROYING", style="dim red")
-                await run_terraform_command(
-                    directory,
-                    ["destroy", "-auto-approve", "-input=false"],
-                    runtime=runtime,
-                    tail_log=True,
-                )
+                # Best-effort cleanup: the test has already failed, so this
+                # code cannot change the verdict, only leave less behind.
+                await _destroy_rc(directory, dir_name, runtime, style="dim red")
                 end_time = monotonic()
                 test_statuses[dir_name].update(
                     text="FAIL",
