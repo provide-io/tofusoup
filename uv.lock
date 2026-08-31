@@ -2583,7 +2583,7 @@ wheels = [
 
 [[package]]
 name = "plating"
-version = "0.6.0"
+version = "0.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jinja2" },
@@ -2593,9 +2593,9 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/35/db/72ad6f87268dc8918508071faaa4c2b4760b70c9c3f37fd0762d194c9a37/plating-0.6.0.tar.gz", hash = "sha256:8a56ce4835df2f0dd04548a2df82d0039706f2594dca5da4f51c8a30c386f3d4", size = 127126, upload-time = "2026-08-24T17:32:56.62Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f0/bf/b407c6760f3fbf2692cf30f861a868249fbf70a3cfc03b3a2ee6f31b389e/plating-0.6.1.tar.gz", hash = "sha256:0c83e26131d3bca54c8bdb8941c1f8787e6e9f08c7e924d42c12b936779fafd2", size = 128622, upload-time = "2026-08-31T02:37:51.389Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/f8/05514b9fad5b3209182f8e1fc5ea20b0ed9ff15a77e690ab1bcd64ab6052/plating-0.6.0-py3-none-any.whl", hash = "sha256:cd85b1c9f3253ba85170654c5d1e31ca7260e1ce0f981eae4185a92097b9b055", size = 114742, upload-time = "2026-08-24T17:32:55.193Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/e8/903674418e57a45bd6bd70d1309fd1bb3e8c716cbd761deb6d94f978feb7/plating-0.6.1-py3-none-any.whl", hash = "sha256:6a9244758bc5b07d28d2035a5b8dd7d02c9e82211003bdb2e583b3a9f456e585", size = 115320, upload-time = "2026-08-31T02:37:50.157Z" },
 ]
 
 [[package]]
@@ -3210,7 +3210,7 @@ wheels = [
 
 [[package]]
 name = "pyvider"
-version = "0.6.0"
+version = "0.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -3224,28 +3224,28 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "pyvider-rpcplugin" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/f4/d6351db85660a288cf6ce3ad7fbd72fa4d420ee3c4391042239e335c7e3a/pyvider-0.6.0.tar.gz", hash = "sha256:b710ee93365dacfc62e57669c47237f6059681ae3f5fe5f1d48624df0231c1c4", size = 206285, upload-time = "2026-08-30T07:10:03.275Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2e/60/ce9c4074452f39ab59bae1491a70b4b94c73ea4de1a9679ff279b764de3a/pyvider-0.6.2.tar.gz", hash = "sha256:a9cf80b5664b04f6c057ecd5bbf408662b0e6ad8ef6cfd982865a038d7e52c39", size = 207731, upload-time = "2026-08-31T03:33:39.876Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/1c/816b5f7f296f37ed3614419b765869b10d312d2ec239ac83a16285383ba7/pyvider-0.6.0-py3-none-any.whl", hash = "sha256:7bbdfe22074d215236691b37a2661352bf90f70d0891c9a5d6db89d8a99a7e43", size = 273948, upload-time = "2026-08-30T07:10:01.732Z" },
+    { url = "https://files.pythonhosted.org/packages/90/31/5407345b20f30bc3067bf3cba044c9afc6eb04df3d807eaf0e5a69aee31c/pyvider-0.6.2-py3-none-any.whl", hash = "sha256:245c2d6f18c3037a912de4cb5e4fe1a9d7e648fd5c4f5826049af48e69187e1b", size = 275518, upload-time = "2026-08-31T03:33:38.5Z" },
 ]
 
 [[package]]
 name = "pyvider-cty"
-version = "0.5.2"
+version = "0.5.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "msgpack" },
     { name = "provide-foundation" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/4f/e5a6a0303481fe1b5c1de22ad928a5982d918368fc7a6da9d3bf7eb2b826/pyvider_cty-0.5.2.tar.gz", hash = "sha256:25eac04c4b27def301ac6df05e44ec521c71c125b16714e686db900d631de1ca", size = 253785, upload-time = "2026-08-29T22:49:45.837Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/9b/58939a10d157e9f5d5a9bebc01e9a3270b90d9ca90e73392f1937d26c7ec/pyvider_cty-0.5.3.tar.gz", hash = "sha256:ffb66f2ca5d4b42d1a7385e4b359c69cba6013d0ee1b52059ff0b0bf4284131a", size = 253994, upload-time = "2026-08-31T01:18:33.364Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e7/0f/0c4e72bbeb56ea0ad95a6692fe72fd8f120467e546a8a9d17194429c7f53/pyvider_cty-0.5.2-py3-none-any.whl", hash = "sha256:755443f33b0c2ddd273bab993931d3be584bcdbb4f1c7334166671ebca64f63a", size = 296857, upload-time = "2026-08-29T22:49:44.084Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/80/108b953cc47c91039fe33e4e3ca9cfa7524faeae49fb9a90b6e4101f9bbf/pyvider_cty-0.5.3-py3-none-any.whl", hash = "sha256:065166f9429fb3be4e5c461fd3cd0a93c5bf1a91753355b2f79e50e1057c987e", size = 297028, upload-time = "2026-08-31T01:18:31.695Z" },
 ]
 
 [[package]]
 name = "pyvider-hcl"
-version = "0.5.0"
+version = "0.6.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -3254,9 +3254,9 @@ dependencies = [
     { name = "pyvider-cty" },
     { name = "regex" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b8/a8/4a3f6e385b67c41902df64c67748ddeb19587797d1cd7f58e2a84cd97ca3/pyvider_hcl-0.5.0.tar.gz", hash = "sha256:e00233e50ac20e2cd70aa49ef099aad2088a1590321f6a2e74c12122184893a3", size = 35815, upload-time = "2026-08-20T22:28:28.042Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/58/fa/c9140d54aac580cd4cde000c1c02977810c14aac78404970f5768f460c2f/pyvider_hcl-0.6.3.tar.gz", hash = "sha256:d82c5e583e79198573e1da05f98d2970db3f22019ef5c0509e085d121c38e20a", size = 37793, upload-time = "2026-08-31T03:13:08.997Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/13/7a/ce408bdfa4eac4fe1c93d3ca997efc751adb2dea74422401990398f6c931/pyvider_hcl-0.5.0-py3-none-any.whl", hash = "sha256:9dc20c124fa6dbcecc0008fc029636e3884f397d3027e0bf396222b558456f04", size = 35624, upload-time = "2026-08-20T22:28:26.853Z" },
+    { url = "https://files.pythonhosted.org/packages/35/07/b212c46863a372a6631a7b8f6cefa19859c4d1fa06d4cc23424ae3c349f2/pyvider_hcl-0.6.3-py3-none-any.whl", hash = "sha256:777579a25c60b538b42dcefe80d49242dcdd65d38d968e9916f92a2ea94bdbb7", size = 36624, upload-time = "2026-08-31T03:13:07.583Z" },
 ]
 
 [[package]]
@@ -3878,30 +3878,30 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "msgpack", specifier = ">=1.0.0" },
-    { name = "plating", specifier = ">=0.4.0" },
-    { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.0" },
-    { name = "pyvider", specifier = ">=0.4.0" },
-    { name = "pyvider-cty", marker = "extra == 'cty'", specifier = ">=0.4.0" },
-    { name = "pyvider-hcl", marker = "extra == 'hcl'", specifier = ">=0.4.0" },
-    { name = "pyvider-rpcplugin", marker = "extra == 'rpc'", specifier = ">=0.4.0" },
-    { name = "pyvider-rpcplugin", extras = ["test"], marker = "extra == 'test-rpc'", specifier = ">=0.4.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "plating", specifier = ">=0.6.1" },
+    { name = "provide-foundation", extras = ["all"], specifier = ">=0.4.3" },
+    { name = "pyvider", specifier = ">=0.6.2" },
+    { name = "pyvider-cty", marker = "extra == 'cty'", specifier = ">=0.5.3" },
+    { name = "pyvider-hcl", marker = "extra == 'hcl'", specifier = ">=0.6.3" },
+    { name = "pyvider-rpcplugin", marker = "extra == 'rpc'", specifier = ">=0.4.2" },
+    { name = "pyvider-rpcplugin", extras = ["test"], marker = "extra == 'test-rpc'", specifier = ">=0.4.2" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "respx", specifier = ">=0.20.0" },
     { name = "semver", specifier = ">=3.0.0" },
     { name = "textual", specifier = ">=3.2.0" },
-    { name = "tofusoup", extras = ["cty", "hcl", "rpc"], marker = "extra == 'all'", specifier = ">=0.4.0" },
+    { name = "tofusoup", extras = ["cty", "hcl", "rpc"], marker = "extra == 'all'" },
 ]
 provides-extras = ["cty", "hcl", "rpc", "test-rpc", "all"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "provide-testkit", extras = ["standard", "advanced-testing", "build"], specifier = ">=0.4.0" },
+    { name = "provide-testkit", extras = ["standard", "advanced-testing", "build"], specifier = ">=0.4.3" },
     { name = "pytest-httpx", specifier = ">=0.35.0" },
-    { name = "tofusoup", extras = ["test-rpc"], specifier = ">=0.4.0" },
+    { name = "tofusoup", extras = ["test-rpc"] },
 ]
 docs = [
     { name = "mkdocs-material", specifier = ">=9.7.1" },
-    { name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.0" },
+    { name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.3" },
 ]
 
 [[package]]

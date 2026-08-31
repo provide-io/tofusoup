@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **Floors now name the versions this package is actually tested against**: `pyvider>=0.6.2`, `pyvider-cty>=0.5.3`, `pyvider-hcl>=0.6.3`, `pyvider-rpcplugin>=0.4.2`, `plating>=0.6.1`, `provide-foundation[all]>=0.4.3` and `provide-testkit>=0.4.3` — every one of them was pinned at `>=0.4.0` while the lock resolved something two minor series higher, so the published metadata described a combination nothing here had ever run.
+- **`pyyaml>=6.0.3`** (was `>=6.0`). 6.0 predates the Cython 3 fix and cannot build on current Python at all, so the declared floor was not merely untested, it was uninstallable: `uv sync` at that floor fails with `'build_ext' object has no attribute 'cython_sources'`.
+- **Self-referencing extras carry no version floor.** `tofusoup[cty,hcl,rpc]>=0.4.0` and `tofusoup[test-rpc]>=0.4.0` are now unversioned — a package always satisfies its own extras, and the number was one more thing to forget to raise.
+
 ## [0.6.1] - 2026-08-25
 
 ### Added
