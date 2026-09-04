@@ -129,6 +129,25 @@ def _truthy(value: str | None) -> bool:
     return (value or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
+#: Terraform 1.14 introduced list resources, `*.tfquery.hcl` and the `query`
+#: command that reads them. OpenTofu has no equivalent at any version.
+QUERY_MIN_TERRAFORM = "1.14.0"
+
+
+def supports_query(tf_command: str) -> bool:
+    """Whether this binary can run `terraform query`.
+
+    Unlike a floor check, an unreadable version is treated as "cannot" here.
+    Guessing wrong in the permissive direction costs a hard failure that reads
+    as the example's fault, where guessing wrong the other way costs a skip
+    that says exactly what it skipped and why.
+    """
+    if _is_opentofu(tf_command):
+        return False
+    found = binary_version(tf_command)
+    return bool(found) and _parse(found) >= _parse(QUERY_MIN_TERRAFORM)
+
+
 def _is_opentofu(tf_command: str) -> bool:
     """Whether the configured binary is OpenTofu rather than Terraform.
 
