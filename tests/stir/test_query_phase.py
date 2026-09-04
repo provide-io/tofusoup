@@ -27,7 +27,7 @@ import pytest
 from tofusoup.stir.config import _find_tf_command
 from tofusoup.stir.display import test_statuses
 from tofusoup.stir.executor import _query_rc
-from tofusoup.stir.requirements import supports_query
+from tofusoup.stir.requirements import Requirements, has_experiments, supports_query
 
 MODULE = "tofusoup.stir.executor"
 REQUIREMENTS = "tofusoup.stir.requirements"
@@ -71,6 +71,40 @@ class TestChoosingTheBinary:
         monkeypatch.delenv("TOFU_CLI_PATH", raising=False)
         with patch("tofusoup.stir.config.shutil.which", side_effect=["/usr/bin/tofu", None]):
             assert _find_tf_command() == "/usr/bin/tofu"
+
+
+@pytest.mark.unit
+class TestWhichBuildsHaveExperiments:
+    """Terraform compiles experiments into alpha and dev builds only.
+
+    A stable release refuses the opt-in flag rather than ignoring it, so an
+    example that needs one cannot run there at all:
+
+        Error: Cannot use -enable-pluggable-state-storage-experiment flag
+        without experiments enabled
+    """
+
+    def test_an_alpha_build_does(self) -> None:
+        with patch(f"{REQUIREMENTS}.binary_version", return_value="1.17.0-alpha20260827"):
+            assert has_experiments("terraform") is True
+
+    def test_a_stable_release_does_not(self) -> None:
+        with patch(f"{REQUIREMENTS}.binary_version", return_value="1.16.1"):
+            assert has_experiments("terraform") is False
+
+    def test_an_example_needing_one_is_skipped_with_its_reason(self) -> None:
+        requirements = Requirements(experiments=True, reason="state_store is experimental")
+        with patch(f"{REQUIREMENTS}.binary_version", return_value="1.16.1"):
+            reason = requirements.skip_reason("terraform")
+
+        assert reason is not None
+        assert "experiments" in reason
+        assert "state_store is experimental" in reason
+
+    def test_an_example_needing_one_runs_on_an_alpha(self) -> None:
+        requirements = Requirements(experiments=True)
+        with patch(f"{REQUIREMENTS}.binary_version", return_value="1.17.0-alpha20260827"):
+            assert requirements.skip_reason("terraform") is None
 
 
 @pytest.mark.unit
