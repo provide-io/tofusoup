@@ -24,6 +24,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from tofusoup.stir.config import _find_tf_command
 from tofusoup.stir.display import test_statuses
 from tofusoup.stir.executor import _query_rc
 from tofusoup.stir.requirements import supports_query
@@ -46,6 +47,30 @@ def _terraform_result(returncode: int) -> tuple[int, str, None, None, None, None
 def _with_query_file(directory: Path) -> Path:
     (directory / "list.tfquery.hcl").write_text('list "acme_widget" "all" {}\n')
     return directory
+
+
+@pytest.mark.unit
+class TestChoosingTheBinary:
+    """The search order prefers OpenTofu, which cannot query."""
+
+    def test_an_explicit_choice_wins(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv("TOFUSOUP_TF_COMMAND", "terraform")
+        with patch("tofusoup.stir.config.shutil.which", return_value="/usr/bin/terraform"):
+            assert _find_tf_command() == "/usr/bin/terraform"
+
+    def test_a_name_that_is_not_on_path_is_reported_as_asked_for(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Falling back to tofu here would run the opposite of what was asked."""
+        monkeypatch.setenv("TOFUSOUP_TF_COMMAND", "terraform")
+        with patch("tofusoup.stir.config.shutil.which", return_value=None):
+            assert _find_tf_command() == "terraform"
+
+    def test_without_a_choice_the_search_order_stands(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("TOFUSOUP_TF_COMMAND", raising=False)
+        monkeypatch.delenv("TOFU_CLI_PATH", raising=False)
+        with patch("tofusoup.stir.config.shutil.which", side_effect=["/usr/bin/tofu", None]):
+            assert _find_tf_command() == "/usr/bin/tofu"
 
 
 @pytest.mark.unit

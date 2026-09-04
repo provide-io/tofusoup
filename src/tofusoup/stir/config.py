@@ -13,12 +13,23 @@ from tofusoup.config.defaults import (
     ENV_PYVIDER_PRIVATE_STATE_SHARED_SECRET,
     ENV_TF_DATA_DIR,
     ENV_TF_LOG,
+    ENV_TOFUSOUP_TF_COMMAND,
 )
 
 
 # Configuration constants
 def _find_tf_command() -> str:
-    """Find the tofu/terraform binary, checking TOFU_CLI_PATH env var first."""
+    """Find the tofu/terraform binary to drive.
+
+    `TOFUSOUP_TF_COMMAND` is asked first and answers exactly: the search order
+    below prefers OpenTofu, so on a host that has both there is otherwise no
+    way to say "run this against Terraform" -- which is what exercising a list
+    resource takes, since `terraform query` has no OpenTofu equivalent.
+    """
+    chosen = os.environ.get(ENV_TOFUSOUP_TF_COMMAND)
+    if chosen:
+        return shutil.which(chosen) or chosen
+
     # Check TOFU_CLI_PATH (set by setup-opentofu GitHub Action)
     cli_path = os.environ.get("TOFU_CLI_PATH")
     if cli_path:
