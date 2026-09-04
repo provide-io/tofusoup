@@ -198,6 +198,7 @@ class _Merge:
     opentofu: bool = True
     opentofu_min: str = ""
     terraform_min: str = ""
+    experiments: bool = False
     converges: bool = True
     init_flags: list[str] = field(factory=list)
     env: list[str] = field(factory=list)
@@ -205,20 +206,37 @@ class _Merge:
     reasons: list[str] = field(factory=list)
 
     def absorb(self, block: dict[str, object]) -> None:
+        self._absorb_flags(block)
+        self._absorb_floors(block)
+        self._absorb_lists(block)
+        reason = block.get("reason")
+        if isinstance(reason, str) and reason and reason not in self.reasons:
+            self.reasons.append(reason)
+
+    def _absorb_flags(self, block: dict[str, object]) -> None:
+        """A directory is run as a unit, so the most restrictive answer wins.
+
+        One example that OpenTofu cannot parse, that cannot converge, or that
+        needs an experiment build decides for the directory.
+        """
         if block.get("opentofu") is False:
             self.opentofu = False
         if block.get("converges") is False:
-            # One example that cannot converge opts out the directory, which is
-            # what actually gets planned.
             self.converges = False
+        if block.get("experiments") is True:
+            self.experiments = True
+
+    def _absorb_floors(self, block: dict[str, object]) -> None:
+        """Highest floor wins: a directory runs only where every example can."""
         for key in ("opentofu_min", "terraform_min"):
             value = block.get(key)
             if isinstance(value, str) and value:
                 current = getattr(self, key)
-                # Highest floor wins: a directory runs only where every example in
-                # it can.
                 if not current or _parse(value) > _parse(current):
                     setattr(self, key, value)
+
+    def _absorb_lists(self, block: dict[str, object]) -> None:
+        """Every declared flag, variable and host is needed by the whole."""
         for key, target in (
             ("init_flags", self.init_flags),
             ("env", self.env),
@@ -227,9 +245,6 @@ class _Merge:
             for item in _as_tuple(block.get(key)):
                 if item not in target:
                     target.append(item)
-        reason = block.get("reason")
-        if isinstance(reason, str) and reason and reason not in self.reasons:
-            self.reasons.append(reason)
 
 
 def _read_block(sidecar: Path) -> dict[str, object] | None:
@@ -269,6 +284,7 @@ def load_requirements(directory: Path) -> Requirements:
         init_flags=tuple(merged.init_flags),
         env=tuple(merged.env),
         network=tuple(merged.network),
+        experiments=merged.experiments,
         converges=merged.converges,
         reason="; ".join(merged.reasons),
     )

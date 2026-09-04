@@ -27,7 +27,12 @@ import pytest
 from tofusoup.stir.config import _find_tf_command
 from tofusoup.stir.display import test_statuses
 from tofusoup.stir.executor import _query_rc
-from tofusoup.stir.requirements import Requirements, has_experiments, supports_query
+from tofusoup.stir.requirements import (
+    Requirements,
+    has_experiments,
+    load_requirements,
+    supports_query,
+)
 
 MODULE = "tofusoup.stir.executor"
 REQUIREMENTS = "tofusoup.stir.requirements"
@@ -100,6 +105,18 @@ class TestWhichBuildsHaveExperiments:
         assert reason is not None
         assert "experiments" in reason
         assert "state_store is experimental" in reason
+
+    def test_the_sidecar_key_survives_the_loader(self, tmp_path: Path) -> None:
+        """The merge reads a fixed set of keys, so a new one has to be added to it.
+
+        Constructing `Requirements` directly cannot show that: the field exists
+        either way. Only the path a real sidecar takes does.
+        """
+        (tmp_path / "example.meta.toml").write_text(
+            '[requirements]\nexperiments = true\nreason = "needs an alpha"\n'
+        )
+
+        assert load_requirements(tmp_path).experiments is True
 
     def test_an_example_needing_one_runs_on_an_alpha(self) -> None:
         requirements = Requirements(experiments=True)
