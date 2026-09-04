@@ -2,10 +2,30 @@
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-04
+
+### Added
+
+- **`stir` runs `terraform query`.** A list resource is reachable only through that command, which reads `*.tfquery.hcl`. No phase touched one before: `apply` does not evaluate a `list` block, so a provider could ship a list resource Terraform refuses on the first query -- for a missing identity schema, say -- and still pass init, apply, converge and destroy. The phase runs after the convergence check, because a query reads real infrastructure, and before the teardown that removes it. A directory with no query files is not queried.
+
+  `terraform query` arrived in Terraform 1.14, alongside list resources. OpenTofu has no such command at any version -- `tofu query` answers "OpenTofu has no command named "query"" -- so the phase stands aside there rather than failing a directory over a fact about the runner. A binary that will not report its version is also treated as unable: guessing permissively costs a hard error that reads as the example's fault, where guessing the other way costs a legible skip.
+
+- **`TOFUSOUP_TF_COMMAND` names the engine to drive.** The search order prefers OpenTofu and falls back to Terraform, so on a host with both installed there was no way to ask for Terraform -- which is now the difference between exercising a list resource and not. A name that is not on `PATH` is returned as given rather than falling back, so a run fails naming what was asked for instead of quietly driving the opposite engine. The version check is also what sees through `terraform` being an alias for `tofu`, which the name test cannot.
+
+- **An example can declare that it needs a build with experiments enabled.** `experiments = true` in a sidecar. Terraform compiles experiments into alpha and dev builds only, and a stable release refuses the opt-in flag rather than ignoring it: "Cannot use -enable-pluggable-state-storage-experiment flag without experiments enabled". `opentofu = false` kept such an example off OpenTofu and nothing expressed the other half, so against a stable Terraform it failed at `init` with a report reading "No specific error messages found in log. The failure may have been a crash."
+
 ### Changed
 
+- **A directory that never converges now fails.** `stir` re-plans after a successful apply and reports Terraform's own `-detailed-exitcode`. An apply proves the plan could be carried out, not that the provider planned everything it then wrote, and a value invented during apply leaves a diff that never empties -- which a practitioner sees as a resource perpetually about to change, and which `apply` alone reports as success. An example that legitimately cannot converge, such as one recording a remote's response times, declares `converges = false`.
+
+  This is the upgrade to look at first. 0.6.1 ran init, apply and destroy and never re-planned, so any corpus carrying a perpetual diff passed. Four examples in terraform-provider-pyvider were doing exactly that.
+
+- **A directory that will not tear down now fails.** `destroy`'s exit code was discarded, so a directory that could not be destroyed still reported PASS -- leaving infrastructure behind, and starting the next run from a state this one was supposed to have emptied.
+
 - **Floors now name the versions this package is actually tested against**: `pyvider>=0.6.2`, `pyvider-cty>=0.5.3`, `pyvider-hcl>=0.6.3`, `pyvider-rpcplugin>=0.4.2`, `plating>=0.6.1`, `provide-foundation[all]>=0.4.3` and `provide-testkit>=0.4.3` — every one of them was pinned at `>=0.4.0` while the lock resolved something two minor series higher, so the published metadata described a combination nothing here had ever run.
+
 - **`pyyaml>=6.0.3`** (was `>=6.0`). 6.0 predates the Cython 3 fix and cannot build on current Python at all, so the declared floor was not merely untested, it was uninstallable: `uv sync` at that floor fails with `'build_ext' object has no attribute 'cython_sources'`.
+
 - **Self-referencing extras carry no version floor.** `tofusoup[cty,hcl,rpc]>=0.4.0` and `tofusoup[test-rpc]>=0.4.0` are now unversioned — a package always satisfies its own extras, and the number was one more thing to forget to raise.
 
 ## [0.6.1] - 2026-08-25
