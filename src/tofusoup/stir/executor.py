@@ -44,7 +44,7 @@ from provide.foundation import logger
 from tofusoup.stir.config import LOGS_DIR, MAX_CONCURRENT_TESTS, TF_COMMAND
 from tofusoup.stir.display import console, test_statuses
 from tofusoup.stir.models import TestResult
-from tofusoup.stir.requirements import load_requirements
+from tofusoup.stir.requirements import load_requirements, supports_query
 from tofusoup.stir.runtime import StirRuntime
 from tofusoup.stir.terraform import run_terraform_command
 
@@ -105,6 +105,35 @@ async def _convergence_rc(directory: Path, dir_name: str, runtime: StirRuntime, 
         runtime=runtime,
     )
     return int(converge_rc)
+
+
+async def _query_rc(directory: Path, dir_name: str, runtime: StirRuntime) -> int:
+    """Run the directory's `*.tfquery.hcl` files, returning terraform's exit code.
+
+    A list resource is reachable only through `terraform query`. No other phase
+    here touches one -- `apply` does not evaluate a `list` block -- so a
+    provider can ship a list resource Terraform refuses on the first query, for
+    a missing identity schema say, and still pass init, apply, converge and
+    destroy. This runs after the convergence check because a query reads real
+    infrastructure, and before the teardown that removes it.
+
+    A directory with no query files, or a binary with no `query` command,
+    reports 0: the absence of the command is a fact about the runner, and
+    OpenTofu has none at any version.
+    """
+    if not any(directory.glob("*.tfquery.hcl")) or not supports_query(TF_COMMAND):
+        return 0
+
+    test_statuses[dir_name].update(text="QUERYING", style="cyan")
+    # `query` takes no `-input`; the flags it accepts are -var, -var-file,
+    # -generate-config-out, -json and -no-color.
+    query_rc, _, _, _, _, _ = await run_terraform_command(
+        directory,
+        ["query", "-no-color"],
+        runtime=runtime,
+        tail_log=True,
+    )
+    return int(query_rc)
 
 
 async def _destroy_rc(directory: Path, dir_name: str, runtime: StirRuntime, *, style: str) -> int:
@@ -197,6 +226,7 @@ async def run_test_lifecycle(
             lifecycle_rc = apply_rc or await _convergence_rc(
                 directory, dir_name, runtime, converges=requirements.converges
             )
+            lifecycle_rc = lifecycle_rc or await _query_rc(directory, dir_name, runtime)
 
             if lifecycle_rc == 0:
                 test_statuses[dir_name].update(text="ANALYZING", style="magenta")

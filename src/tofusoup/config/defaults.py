@@ -46,6 +46,7 @@ ENV_TOFUSOUP_TEST_TIMEOUT = "TOFUSOUP_TEST_TIMEOUT"
 # runner and is hostage to that service's uptime, so a failure there says
 # nothing about the provider.
 ENV_TOFUSOUP_OFFLINE = "TOFUSOUP_OFFLINE"
+ENV_TOFUSOUP_TF_COMMAND = "TOFUSOUP_TF_COMMAND"
 ENV_TF_LOG = "TF_LOG"
 ENV_TF_DATA_DIR = "TF_DATA_DIR"
 ENV_WORKENV_PROFILE = "WORKENV_PROFILE"
