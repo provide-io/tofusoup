@@ -54,6 +54,10 @@ class Requirements:
     env: tuple[str, ...] = ()
     #: Hosts the example reaches. Present so an air-gapped runner can opt out.
     network: tuple[str, ...] = ()
+    #: True when the configuration uses a feature Terraform gates behind an
+    #: experiment. The flag that opts in is refused by any build that does not
+    #: have experiments compiled in, which every stable release is.
+    experiments: bool = False
     #: False when re-planning after a successful apply legitimately shows changes,
     #: e.g. a remote that stamps a new value on every read.
     converges: bool = True
@@ -77,6 +81,11 @@ class Requirements:
             if found and _parse(found) < _parse(floor):
                 detail = self.reason or "unsupported by this version"
                 return f"needs {name} >= {floor}, found {found}: {detail}"
+
+        if self.experiments and not has_experiments(tf_command):
+            found = binary_version(tf_command) or "unknown"
+            detail = self.reason or "needs an experiment opt-in"
+            return f"needs a build with experiments enabled, found {found}: {detail}"
 
         missing = [name for name in self.env if not os.environ.get(name)]
         if missing:
@@ -129,6 +138,41 @@ def _truthy(value: str | None) -> bool:
     return (value or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
+#: Terraform 1.14 introduced list resources, `*.tfquery.hcl` and the `query`
+#: command that reads them. OpenTofu has no equivalent at any version.
+QUERY_MIN_TERRAFORM = "1.14.0"
+
+
+def has_experiments(tf_command: str) -> bool:
+    """Whether this binary will accept an experiment opt-in flag.
+
+    Terraform compiles experiments into alpha and dev builds only, and a stable
+    release refuses the flag outright rather than ignoring it:
+
+        Error: Cannot use -enable-pluggable-state-storage-experiment flag
+        without experiments enabled
+
+    A prerelease suffix on the reported version is what distinguishes the two,
+    so `1.17.0-alpha20260827` qualifies and `1.16.1` does not.
+    """
+    found = binary_version(tf_command)
+    return "-" in found
+
+
+def supports_query(tf_command: str) -> bool:
+    """Whether this binary can run `terraform query`.
+
+    Unlike a floor check, an unreadable version is treated as "cannot" here.
+    Guessing wrong in the permissive direction costs a hard failure that reads
+    as the example's fault, where guessing wrong the other way costs a skip
+    that says exactly what it skipped and why.
+    """
+    if _is_opentofu(tf_command):
+        return False
+    found = binary_version(tf_command)
+    return bool(found) and _parse(found) >= _parse(QUERY_MIN_TERRAFORM)
+
+
 def _is_opentofu(tf_command: str) -> bool:
     """Whether the configured binary is OpenTofu rather than Terraform.
 
@@ -154,6 +198,7 @@ class _Merge:
     opentofu: bool = True
     opentofu_min: str = ""
     terraform_min: str = ""
+    experiments: bool = False
     converges: bool = True
     init_flags: list[str] = field(factory=list)
     env: list[str] = field(factory=list)
@@ -161,20 +206,37 @@ class _Merge:
     reasons: list[str] = field(factory=list)
 
     def absorb(self, block: dict[str, object]) -> None:
+        self._absorb_flags(block)
+        self._absorb_floors(block)
+        self._absorb_lists(block)
+        reason = block.get("reason")
+        if isinstance(reason, str) and reason and reason not in self.reasons:
+            self.reasons.append(reason)
+
+    def _absorb_flags(self, block: dict[str, object]) -> None:
+        """A directory is run as a unit, so the most restrictive answer wins.
+
+        One example that OpenTofu cannot parse, that cannot converge, or that
+        needs an experiment build decides for the directory.
+        """
         if block.get("opentofu") is False:
             self.opentofu = False
         if block.get("converges") is False:
-            # One example that cannot converge opts out the directory, which is
-            # what actually gets planned.
             self.converges = False
+        if block.get("experiments") is True:
+            self.experiments = True
+
+    def _absorb_floors(self, block: dict[str, object]) -> None:
+        """Highest floor wins: a directory runs only where every example can."""
         for key in ("opentofu_min", "terraform_min"):
             value = block.get(key)
             if isinstance(value, str) and value:
                 current = getattr(self, key)
-                # Highest floor wins: a directory runs only where every example in
-                # it can.
                 if not current or _parse(value) > _parse(current):
                     setattr(self, key, value)
+
+    def _absorb_lists(self, block: dict[str, object]) -> None:
+        """Every declared flag, variable and host is needed by the whole."""
         for key, target in (
             ("init_flags", self.init_flags),
             ("env", self.env),
@@ -183,9 +245,6 @@ class _Merge:
             for item in _as_tuple(block.get(key)):
                 if item not in target:
                     target.append(item)
-        reason = block.get("reason")
-        if isinstance(reason, str) and reason and reason not in self.reasons:
-            self.reasons.append(reason)
 
 
 def _read_block(sidecar: Path) -> dict[str, object] | None:
@@ -225,6 +284,7 @@ def load_requirements(directory: Path) -> Requirements:
         init_flags=tuple(merged.init_flags),
         env=tuple(merged.env),
         network=tuple(merged.network),
+        experiments=merged.experiments,
         converges=merged.converges,
         reason="; ".join(merged.reasons),
     )
