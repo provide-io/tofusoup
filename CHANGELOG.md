@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-09-05
+
+### Fixed
+
+- **A log path is printed on one line.** Rich wrapped it to the console width and broke mid-filename -- `stderr.` / `log` -- which is unreadable, uncopyable, and exactly the thing someone is trying to paste when they read a failure report. `soft_wrap` keeps it intact.
+
+  0.7.1 carries the reporting work this fixes, and never reached PyPI: the test covering those paths asserted against wrapped output, passed at one terminal width and failed at the runner's, and the release gate refused to publish from a commit whose tests fail. The gate was right.
+
 ## [0.7.1] - 2026-09-05
 
 ### Fixed
