@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-09-05
+
 ### Fixed
 
 - **Each example gets its own plugin cache.** `MAX_CONCURRENT_TESTS` is `os.cpu_count()`, so on a 4-CPU runner four examples run `terraform init` at the same moment, and every one of them installed the provider under test into a single shared directory -- `~/.tofusoup/plugin-cache`.
