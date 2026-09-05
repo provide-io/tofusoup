@@ -303,8 +303,10 @@ async def run_terraform_command(
             env["TF_PLUGIN_CACHE_DIR"] = str(override_cache_dir)
             env["TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE"] = "1"
     elif runtime:
-        # Normal execution: use runtime-managed environment
-        env = runtime.get_terraform_env(env)
+        # Normal execution: use runtime-managed environment. Passing the example
+        # directory gives this run its own plugin cache, so concurrent inits do
+        # not install the provider under test into one shared directory.
+        env = runtime.get_terraform_env(env, example_dir=directory)
     else:
         # Neither runtime nor override provided
         raise RuntimeError(

@@ -308,23 +308,42 @@ class StirRuntime:
 
         return "\n".join(lines)
 
-    def get_terraform_env(self, base_env: dict[str, str]) -> dict[str, str]:
+    def get_terraform_env(self, base_env: dict[str, str], example_dir: Path | None = None) -> dict[str, str]:
         """
         Get the normalized Terraform environment for test execution.
 
         Args:
             base_env: Base environment to extend
+            example_dir: The example being run. Each one gets its own plugin
+                cache; omit only for the pre-download phase, which runs alone.
 
         Returns:
             Environment variables dict for terraform execution
         """
         env = base_env.copy()
 
-        # Always set plugin cache if directory exists
-        if self.plugin_cache_dir.exists():
-            env["TF_PLUGIN_CACHE_DIR"] = str(self.plugin_cache_dir)
-            # Enable potentially faster caching at the expense of lock file completeness
-            env["TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE"] = "1"
+        # One cache per example, not one for the suite.
+        #
+        # `MAX_CONCURRENT_TESTS` is os.cpu_count(), so several examples run
+        # `terraform init` simultaneously and each installs the provider under
+        # test. Sharing a cache directory means they all write the same path:
+        # survivable on POSIX, fatal on Windows, where a file cannot be replaced
+        # while another process holds it open. Three of four concurrent examples
+        # died inside providercache.Dir.InstallPackage that way.
+        #
+        # prepare_providers does not cover this -- it skips `local/` sources, and
+        # the provider under test is one.
+        if example_dir is not None:
+            cache_dir = example_dir / ".soup" / "plugin-cache"
+            cache_dir.mkdir(parents=True, exist_ok=True)
+        elif self.plugin_cache_dir.exists():
+            cache_dir = self.plugin_cache_dir
+        else:
+            return env
+
+        env["TF_PLUGIN_CACHE_DIR"] = str(cache_dir)
+        # Enable potentially faster caching at the expense of lock file completeness
+        env["TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE"] = "1"
 
         return env
 

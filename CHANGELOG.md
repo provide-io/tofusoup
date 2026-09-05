@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **Each example gets its own plugin cache.** `MAX_CONCURRENT_TESTS` is `os.cpu_count()`, so on a 4-CPU runner four examples run `terraform init` at the same moment, and every one of them installed the provider under test into a single shared directory -- `~/.tofusoup/plugin-cache`.
+
+  POSIX tolerates that: a file can be replaced while another process holds it open. Windows refuses, and the losers die inside `providercache.Dir.InstallPackage`. A conformance run on windows_amd64 showed the shape exactly -- four examples started within 3ms of each other, three were dead 84ms later having produced no output at all, and the following wave, running alone, passed.
+
+  `prepare_providers` exists to prevent this and could not: it skips any source beginning with `local/`, and the provider under test is `local/providers/<name>`. It pre-warmed every provider except the one every example installs. The cache now lives at `<example>/.soup/plugin-cache`, beside `tfdata` and `logs`, so there is no shared write left to lose. The pre-download phase still uses the shared cache -- it runs before any test starts, with nothing racing it.
+
 ## [0.7.2] - 2026-09-05
 
 ### Fixed
