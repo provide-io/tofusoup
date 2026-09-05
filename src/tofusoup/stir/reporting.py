@@ -140,7 +140,11 @@ def _print_log_paths(result: TestResult) -> None:
         return
     console.print(Text.from_markup("\n[bold]Logs:[/bold]"))
     for label, path in named:
-        console.print(Text.from_markup(f"  {label}: [yellow]{path}[/yellow]"))
+        # soft_wrap keeps the path on one line. Rich otherwise wraps to the
+        # console width and will break mid-filename -- "stderr.\nlog" -- which
+        # is unreadable, uncopyable, and was width-dependent enough to pass
+        # locally and fail on a runner.
+        console.print(Text.from_markup(f"  {label}: [yellow]{path}[/yellow]"), soft_wrap=True)
 
 
 # 🥣🔬🔚
