@@ -38,11 +38,12 @@ import json
 from pathlib import Path
 import shutil
 from time import monotonic
+import traceback
 
 from provide.foundation import logger
 
 from tofusoup.stir.config import LOGS_DIR, MAX_CONCURRENT_TESTS, TF_COMMAND
-from tofusoup.stir.display import console, test_statuses
+from tofusoup.stir.display import test_statuses
 from tofusoup.stir.models import TestResult
 from tofusoup.stir.requirements import load_requirements, supports_query
 from tofusoup.stir.runtime import StirRuntime
@@ -309,8 +310,15 @@ async def run_test_lifecycle(
                     ephemeral_functions=status.get("ephemeral_functions", 0),
                 )
 
-        except Exception:
-            console.print_exception()
+        except Exception as exc:
+            # Recorded, not printed. `console.print_exception()` wrote the
+            # traceback into the Live region the status table is repainting,
+            # where a terminal overwrites it and a CI log never shows it at
+            # all -- so a directory that crashed before running a single
+            # command reported 0.0s, no counts and no reason, and the failure
+            # report fell back to "the failure may have been a crash".
+            # `error_message` and `failed_stage` have been on TestResult since
+            # the beginning; nothing set them.
             end_time = monotonic()
             test_statuses[dir_name].update(
                 text="ERROR",
@@ -325,6 +333,8 @@ async def run_test_lifecycle(
                 skipped=False,
                 start_time=start_time,
                 end_time=end_time,
+                error_message="".join(traceback.format_exception(type(exc), exc, exc.__traceback__)).rstrip(),
+                failed_stage="harness",
             )
 
 

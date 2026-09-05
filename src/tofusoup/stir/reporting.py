@@ -23,7 +23,15 @@ def print_failure_report(result: TestResult) -> None:
 
     error_logs = [log for log in result.parsed_logs if log.get("@level") in ("error", "critical")]
 
-    if not error_logs:
+    # A crash in the harness leaves no Terraform log to parse -- it can happen
+    # before a single command runs -- so the recorded exception is the only
+    # thing that explains the row. Printed first, and instead of the generic
+    # line: "the failure may have been a crash" next to a traceback reads as
+    # though the two were unrelated.
+    if result.error_message:
+        console.print(Text.from_markup(f"\n[bold]Harness error ({result.failed_stage or 'unknown'}):[/bold]"))
+        console.print(Text(result.error_message))
+    elif not error_logs:
         console.print(
             "[yellow]No specific error messages found in log. The failure may have been a crash.[/yellow]"
         )
