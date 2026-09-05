@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-09-05
+
+### Fixed
+
+- **A failed directory says what failed.** Two paths reached the same unhelpful line -- "No specific error messages found in log. The failure may have been a crash." -- and neither had to.
+
+  `run_test_lifecycle` catches every exception, printed it with `console.print_exception()`, and returned a result carrying nothing: no log paths, no counts, no message. The console is the wrong channel for it, since the traceback lands inside the Live region the status table is repainting, where a terminal overwrites it and a CI log never shows it at all. The handler now records the formatted traceback on `error_message` and stages itself as `harness` -- two fields `StirTestResult` has carried since it was written, which nothing had ever set or read.
+
+  Separately, the report read only `parsed_logs`, the TF_LOG JSON stream, filtered to entries at level error or critical. An engine that crashes, a plugin that dies or a diagnostic written to stderr as plain text produces no such entry -- while stir had already captured stdout and stderr per command and kept both paths on the result. Failure reports now show the tail of stderr, or of stdout when stderr is empty, and list every log they kept. The generic line survives only for the case it actually described: nothing parsed and nothing captured.
+
 ## [0.7.0] - 2026-09-04
 
 ### Added
