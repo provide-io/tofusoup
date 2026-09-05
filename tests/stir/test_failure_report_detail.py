@@ -92,7 +92,11 @@ def test_every_captured_log_path_is_named(tmp_path: Path, capsys: pytest.Capture
     print_failure_report(
         _result(stderr_log_path=stderr, stdout_log_path=stdout, tf_log_path=tf_log, parsed_logs=[])
     )
-    out = capsys.readouterr().out
+    # Normalised: a filename never contains whitespace, so collapsing it out
+    # makes the assertion independent of console width. The production code
+    # prints these unwrapped, but a test that only passes at one terminal size
+    # is a test that fails on somebody else's.
+    out = "".join(capsys.readouterr().out.split())
 
     for path in (stderr, stdout, tf_log):
         assert path.name in out
