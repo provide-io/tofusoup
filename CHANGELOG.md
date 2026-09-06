@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-09-06
+
+### Fixed
+
+- **A provider launched on Windows gets an environment the platform can start it in.** `base_env` scrubs the caller's environment so an active virtualenv on `PATH` cannot shadow the bundled runtime. The scrub also removed what Windows itself requires, and the provider exited about 300ms in, before writing its handshake line -- so every conformance test on `windows_amd64` failed on one cached `HandshakeError` in the session fixture.
+
+  A probe crossing the stdout kind against the environment separated the two: with the scrubbed environment the provider dies at 0.3s to a file and 0.2s to a pipe, and with the platform's variables restored it hands back a handshake in about a second either way. The stdout kind never mattered.
+
+  A leave-one-out bisect on the runner names the two variables that are required, each with its own failure. Without `SYSTEMROOT`: `OSError: [WinError 10106] The requested service provider could not be loaded or initialized` -- Winsock, which a gRPC server brings up before it prints anything. Without `USERPROFILE`: `RuntimeError: Could not determine home directory`, out of `pathlib`; `ntpath.expanduser` reads `USERPROFILE` and ignores `HOME`, so passing `HOME` alone does not answer it on Windows.
+
+  `PATH` stays scrubbed -- that is the function's purpose -- but now names the system directory the running platform actually has, built from `SYSTEMROOT` rather than a written-down drive letter. `HOME` falls back to `USERPROFILE`: an empty `HOME` is worse than an absent one, because flavor's launcher reads it before reaching its own Windows branch and joins the empty value into a relative cache directory (provide-io/flavorpack#81).
+
 ## [0.7.4] - 2026-09-06
 
 ### Fixed
