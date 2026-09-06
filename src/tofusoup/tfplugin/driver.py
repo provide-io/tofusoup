@@ -46,12 +46,20 @@ DEFAULT_PROTOCOL_VERSIONS = "6"
 #: working tree. Pass "PATH" in `extra` to opt back in.
 SYSTEM_PATH = "/usr/bin:/bin:/usr/sbin:/sbin"
 
-#: Variables a Windows process needs from its parent to run at all. `SystemRoot`
-#: is the load-bearing one: it locates the system DLLs, so a child without it
-#: cannot initialise Winsock and a gRPC server exits before writing its
-#: handshake line. The rest give the interpreter an executable suffix list, a
-#: writable scratch directory under the names Windows reads, and a profile.
-#: Scrubbing PATH is this function's purpose; scrubbing these is not.
+#: Variables a Windows process needs from its parent. A leave-one-out bisect on
+#: the runner proved two of these are required, each with its own failure:
+#:
+#:   SYSTEMROOT   OSError: [WinError 10106] The requested service provider could
+#:                not be loaded or initialized -- Winsock, so a gRPC server
+#:                exits before writing its handshake line.
+#:   USERPROFILE  RuntimeError: Could not determine home directory, out of
+#:                pathlib. `ntpath.expanduser` reads USERPROFILE and ignores
+#:                HOME, so passing HOME alone does not answer this on Windows.
+#:
+#: The rest are carried rather than proven necessary: they cost nothing, and
+#: TEMP in particular is the name Windows reads for a scratch directory where
+#: the TMPDIR set below is the POSIX one. Scrubbing PATH is this function's
+#: purpose; scrubbing these is not.
 WINDOWS_ESSENTIAL_VARS = (
     "SYSTEMROOT",
     "WINDIR",
