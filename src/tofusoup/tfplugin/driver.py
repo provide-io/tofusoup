@@ -15,6 +15,7 @@ binary and whatever environment it needs, and assert against the responses.
 
 from __future__ import annotations
 
+from contextlib import suppress
 import json
 import os
 from pathlib import Path
@@ -154,7 +155,17 @@ async def start_provider(
     rpcplugin_config.plugin_magic_cookie_value = magic_cookie_value
 
     client = RPCPluginClient(command=[str(binary)], config={"env": env or base_env()})
-    await client.start()
+    try:
+        await client.start()
+    except BaseException:
+        # The client is the only handle on a process that may already be
+        # running: a caller that never receives it cannot stop it. An orphan
+        # keeps its stderr pipe open, and the threads reading that pipe are
+        # not daemons, so the interpreter cannot finish shutting down while
+        # one of them is blocked on a read that will never return.
+        with suppress(Exception):
+            await client.close()
+        raise
     return TfPluginProvider(client=client, stub=pb_grpc.ProviderStub(client.grpc_channel))
 
 
