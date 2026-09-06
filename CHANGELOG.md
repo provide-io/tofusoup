@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-09-06
+
+### Fixed
+
+- **A failed launch no longer leaves the plugin process running.** `start_provider` spawns the plugin inside `client.start()`, which then completes the handshake. A handshake failure propagated before the client was returned, so the caller received nothing and had no handle on a process that was already running.
+
+  The orphan holds its stderr pipe open, and the threads reading that pipe come from an executor pool and are not daemons — so the interpreter could not finish shutting down while one was blocked on a read that would never return. On Windows the CI step also stayed open behind the console handles the orphan inherited.
+
+  terraform-provider-pyvider's `windows_amd64` protocol leg ran to its cap on this, producing no summary, no `pytest-timeout` banner and an empty faulthandler dump — all three because the process was no longer running Python. `close()` failures are suppressed so the launch failure is still what the caller sees.
+
 ## [0.7.3] - 2026-09-05
 
 ### Fixed
