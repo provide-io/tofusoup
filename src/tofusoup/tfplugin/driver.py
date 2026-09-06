@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 import json
+import ntpath
 import os
 from pathlib import Path
 import tempfile
@@ -45,6 +46,67 @@ DEFAULT_PROTOCOL_VERSIONS = "6"
 #: working tree. Pass "PATH" in `extra` to opt back in.
 SYSTEM_PATH = "/usr/bin:/bin:/usr/sbin:/sbin"
 
+#: Variables a Windows process needs from its parent. A leave-one-out bisect on
+#: the runner proved two of these are required, each with its own failure:
+#:
+#:   SYSTEMROOT   OSError: [WinError 10106] The requested service provider could
+#:                not be loaded or initialized -- Winsock, so a gRPC server
+#:                exits before writing its handshake line.
+#:   USERPROFILE  RuntimeError: Could not determine home directory, out of
+#:                pathlib. `ntpath.expanduser` reads USERPROFILE and ignores
+#:                HOME, so passing HOME alone does not answer this on Windows.
+#:
+#: The rest are carried rather than proven necessary: they cost nothing, and
+#: TEMP in particular is the name Windows reads for a scratch directory where
+#: the TMPDIR set below is the POSIX one. Scrubbing PATH is this function's
+#: purpose; scrubbing these is not.
+WINDOWS_ESSENTIAL_VARS = (
+    "SYSTEMROOT",
+    "WINDIR",
+    "COMSPEC",
+    "PATHEXT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "LOCALAPPDATA",
+    "APPDATA",
+    "NUMBER_OF_PROCESSORS",
+    "PROCESSOR_ARCHITECTURE",
+)
+
+
+def _system_path() -> str:
+    """The scrubbed PATH for the running platform.
+
+    A POSIX PATH resolves nothing on Windows, which leaves the launcher to find
+    its interpreter by absolute path and every other lookup to fail. Build the
+    Windows equivalent from `SystemRoot` rather than writing a drive letter down.
+    """
+    if os.name != "nt":
+        return SYSTEM_PATH
+    # Windows resolves environment names case-insensitively, so the canonical
+    # mixed-case spelling and this one name the same variable.
+    root = os.environ.get("SYSTEMROOT", "")
+    if not root:
+        return os.environ.get("PATH", "")
+    # ntpath rather than pathlib: this branch is exercised from every platform,
+    # and pathlib would build the host's flavour of path instead of Windows'.
+    system32 = ntpath.join(root, "System32")
+    return ntpath.pathsep.join([system32, root, ntpath.join(system32, "Wbem")])
+
+
+def _home() -> str:
+    """HOME for the child, falling back to the Windows profile when unset.
+
+    An empty HOME is worse than a missing one: flavor's launcher reads it before
+    it reaches its own Windows branch, and joins the empty value into a relative
+    cache directory that lands wherever the child happens to be running.
+    """
+    home = os.environ.get("HOME", "")
+    if home or os.name != "nt":
+        return home
+    return os.environ.get("USERPROFILE", "")
+
 
 def base_env(extra: dict[str, str] | None = None) -> dict[str, str]:
     """Build the environment a provider process is launched with.
@@ -54,8 +116,8 @@ def base_env(extra: dict[str, str] | None = None) -> dict[str, str]:
     drops one shows up as a failure here rather than as a mystery later.
     """
     env = {
-        "PATH": SYSTEM_PATH,
-        "HOME": os.environ.get("HOME", ""),
+        "PATH": _system_path(),
+        "HOME": _home(),
         # `gettempdir` rather than a literal: it already consults TMPDIR, and
         # falls back to the platform's own answer instead of assuming a POSIX
         # layout -- which is also what stops bandit reading this as a hardcoded
@@ -63,6 +125,8 @@ def base_env(extra: dict[str, str] | None = None) -> dict[str, str]:
         "TMPDIR": tempfile.gettempdir(),
         "PLUGIN_PROTOCOL_VERSIONS": DEFAULT_PROTOCOL_VERSIONS,
     }
+    if os.name == "nt":
+        env.update({name: os.environ[name] for name in WINDOWS_ESSENTIAL_VARS if name in os.environ})
     if extra:
         env.update(extra)
     return env
