@@ -72,3 +72,28 @@ def test_posix_environment_is_unchanged(monkeypatch: pytest.MonkeyPatch) -> None
 
 def test_explicit_extra_still_wins(windows: None) -> None:
     assert base_env({"PATH": "/opt/custom"})["PATH"] == "/opt/custom"
+
+
+def test_a_missing_systemroot_does_not_inherit_the_caller_path(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The scrub is the point of the function; it cannot lapse when a lookup fails.
+
+    Falling back to the caller's PATH on a runner without SYSTEMROOT hands the
+    child exactly what `base_env` exists to withhold: an active virtualenv or a
+    developer tool directory that can shadow the bundled runtime, turning a
+    conformance run into a test of the working environment.
+
+    An empty PATH is the honest scrubbed answer. It is also what Windows has
+    been given all along -- a POSIX PATH resolves nothing there -- and the
+    launcher finds its interpreter by absolute path regardless.
+    """
+    monkeypatch.setattr("tofusoup.tfplugin.driver.os.name", "nt")
+    monkeypatch.delenv("SYSTEMROOT", raising=False)
+    monkeypatch.setenv("PATH", r"C:\hostile\venv\Scripts;C:\Windows\System32")
+    monkeypatch.delenv("HOME", raising=False)
+    monkeypatch.setenv("USERPROFILE", r"C:\Users\runner")
+
+    path = base_env()["PATH"]
+    assert "hostile" not in path
+    assert path == ""

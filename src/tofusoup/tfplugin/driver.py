@@ -88,7 +88,13 @@ def _system_path() -> str:
     # mixed-case spelling and this one name the same variable.
     root = os.environ.get("SYSTEMROOT", "")
     if not root:
-        return os.environ.get("PATH", "")
+        # Not the caller's PATH. Handing that back is exactly what this function
+        # exists to withhold -- an active virtualenv on it can shadow the bundled
+        # runtime -- and a lookup failing is no reason to abandon the scrub. An
+        # empty PATH is the honest scrubbed answer, and it is what Windows has
+        # been given all along, since a POSIX PATH resolves nothing there; the
+        # launcher finds its interpreter by absolute path regardless.
+        return ""
     # ntpath rather than pathlib: this branch is exercised from every platform,
     # and pathlib would build the host's flavour of path instead of Windows'.
     system32 = ntpath.join(root, "System32")
