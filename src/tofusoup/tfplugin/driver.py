@@ -46,20 +46,24 @@ DEFAULT_PROTOCOL_VERSIONS = "6"
 #: working tree. Pass "PATH" in `extra` to opt back in.
 SYSTEM_PATH = "/usr/bin:/bin:/usr/sbin:/sbin"
 
-#: Variables a Windows process needs from its parent. A leave-one-out bisect on
-#: the runner proved two of these are required, each with its own failure:
+#: Variables a Windows process needs from its parent, forwarded so this
+#: function's scrub cannot remove them.
 #:
-#:   SYSTEMROOT   OSError: [WinError 10106] The requested service provider could
-#:                not be loaded or initialized -- Winsock, so a gRPC server
-#:                exits before writing its handshake line.
-#:   USERPROFILE  RuntimeError: Could not determine home directory, out of
-#:                pathlib. `ntpath.expanduser` reads USERPROFILE and ignores
-#:                HOME, so passing HOME alone does not answer this on Windows.
+#: In practice the launch path also inherits them: `ManagedProcess` starts from
+#: `os.environ.copy()` and merges what it is given, so a child of the current
+#: driver already sees the parent's environment. Forwarding them explicitly
+#: keeps that from being load-bearing -- a caller that builds a child
+#: environment from this dict alone gets one Windows can start a process in.
 #:
-#: The rest are carried rather than proven necessary: they cost nothing, and
-#: TEMP in particular is the name Windows reads for a scratch directory where
-#: the TMPDIR set below is the POSIX one. Scrubbing PATH is this function's
-#: purpose; scrubbing these is not.
+#: SYSTEMROOT is the one to keep if any are ever dropped: without it a process
+#: cannot locate the system DLLs and so cannot initialise Winsock, which a gRPC
+#: server does before it prints anything. USERPROFILE is next, because
+#: `ntpath.expanduser` reads it and ignores HOME entirely, so forwarding HOME
+#: alone never answers a home-directory lookup on Windows.
+#:
+#: TEMP is the name Windows reads for a scratch directory, where the TMPDIR set
+#: below is the POSIX one. Scrubbing PATH is this function's purpose; scrubbing
+#: these is not.
 WINDOWS_ESSENTIAL_VARS = (
     "SYSTEMROOT",
     "WINDIR",

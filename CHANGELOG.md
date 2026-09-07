@@ -4,15 +4,21 @@
 
 ## [0.7.5] - 2026-09-06
 
+### Correction
+
+This release was published as the fix for the `windows_amd64` conformance failure. **It was not.** That failure was a client that skipped the TLS target name override on TCP, so gRPC could not verify a `DNS:localhost` certificate against the literal `127.0.0.1` it dialled; the channel never became ready and the exhausted retry budget was reported as a `HandshakeError` for a handshake that had already succeeded on the first attempt. Fixed in `pyvider-rpcplugin` 0.5.3.
+
+The evidence originally cited here -- a probe showing the provider dying at 0.3s, and a leave-one-out bisect naming `SYSTEMROOT` and `USERPROFILE` as required -- was measuring an environment no real launch produces. The probe passed `base_env` alone to `subprocess.Popen`. The actual launch path goes through `ManagedProcess`, which starts from `os.environ.copy()` and merges the caller's dict as overrides: 73 variables, not 5. `SYSTEMROOT` and `USERPROFILE` were present in the suite the entire time, and the bisect faithfully described the probe's own environment rather than the system's.
+
+The tell was available and missed: this release landed and the leg failed identically -- same 87 errors, same shape. A correct root cause does not produce an unchanged failure.
+
 ### Fixed
 
-- **A provider launched on Windows gets an environment the platform can start it in.** `base_env` scrubs the caller's environment so an active virtualenv on `PATH` cannot shadow the bundled runtime. The scrub also removed what Windows itself requires, and the provider exited about 300ms in, before writing its handshake line -- so every conformance test on `windows_amd64` failed on one cached `HandshakeError` in the session fixture.
+- **A provider launched on Windows gets an environment the platform can start it in.** `base_env` scrubs the caller's environment so an active virtualenv on `PATH` cannot shadow the bundled runtime. That scrub was POSIX-shaped: `PATH` was set to `/usr/bin:/bin:/usr/sbin:/sbin`, which on Windows is not a restrictive path but an absent one, and it participates in the DLL search order. `PATH` stays scrubbed -- that is the function's purpose -- but now names the system directory the running platform actually has, built from `SYSTEMROOT` rather than a written-down drive letter.
 
-  A probe crossing the stdout kind against the environment separated the two: with the scrubbed environment the provider dies at 0.3s to a file and 0.2s to a pipe, and with the platform's variables restored it hands back a handshake in about a second either way. The stdout kind never mattered.
+  `HOME` falls back to `USERPROFILE`. An empty `HOME` is worse than an absent one: flavor's launcher reads it before reaching its own Windows branch and joins the empty value into a relative cache directory (provide-io/flavorpack#81, fixed in flavorpack 0.5.4). Note that `ntpath.expanduser` reads `USERPROFILE` and ignores `HOME` entirely, so forwarding `HOME` alone never answered a home-directory lookup on Windows.
 
-  A leave-one-out bisect on the runner names the two variables that are required, each with its own failure. Without `SYSTEMROOT`: `OSError: [WinError 10106] The requested service provider could not be loaded or initialized` -- Winsock, which a gRPC server brings up before it prints anything. Without `USERPROFILE`: `RuntimeError: Could not determine home directory`, out of `pathlib`; `ntpath.expanduser` reads `USERPROFILE` and ignores `HOME`, so passing `HOME` alone does not answer it on Windows.
-
-  `PATH` stays scrubbed -- that is the function's purpose -- but now names the system directory the running platform actually has, built from `SYSTEMROOT` rather than a written-down drive letter. `HOME` falls back to `USERPROFILE`: an empty `HOME` is worse than an absent one, because flavor's launcher reads it before reaching its own Windows branch and joins the empty value into a relative cache directory (provide-io/flavorpack#81).
+  These are real defects and the change stands on its own terms. None of them was the cause of the conformance failure.
 
 ## [0.7.4] - 2026-09-06
 
