@@ -24,6 +24,12 @@ jobs:
       # packages, no advisories.
       fail-on-vulnerability: true
       run-secret-scan: true
+      # The child-environment tests launch a process with exactly `base_env()`,
+      # and the variables that scrub must forward are Windows' own. Running them
+      # anywhere else exercises the POSIX branch and proves nothing about the
+      # platform the scrub broke. amd64 only: windows-11-arm cannot install
+      # grpcio or cryptography, so `include-windows-arm` would be red always.
+      include-windows: true
       matrix-testing: false
       parallel-testing: false
       # This repository points its siblings at ../<repo> as editable path
