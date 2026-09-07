@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+## [0.7.6] - 2026-09-07
+
+### Fixed
+
+- **The PATH scrub holds when `SYSTEMROOT` is missing.** `_system_path` fell back to the caller's `PATH`, which hands the child exactly what `base_env` exists to withhold: an active virtualenv or a developer tool directory that can shadow the bundled runtime, turning a conformance run into a test of the working environment rather than of the artifact. The branch is reachable on a sanitized runner or an embedding application, and nothing covered it -- the Windows fixture always set `SYSTEMROOT`.
+
+  An empty `PATH` is the honest scrubbed answer. It is also what Windows has been given all along, since a POSIX `PATH` resolves nothing there, and the launcher finds its interpreter by absolute path regardless.
+
+  Found by an adversarial review of the 0.7.5 changes.
+
+### Changed
+
+- **The `verify-pypi` comment says what the gate actually buys.** It claimed to keep a propagation failure in this repository instead of someone else's CI. It does not: the workflow is triggered by `release: published`, so the release is public before the job starts, and a consumer reacting to that event can still beat the index. What the job buys is a red run here rather than a green one.
+
+### Documentation
+
+- **The root cause claimed for 0.7.5 is retracted.** That release was published as the fix for the `windows_amd64` conformance failure and was not; the cause was a client skipping the TLS target name override on TCP, fixed in `pyvider-rpcplugin` 0.5.3. The probe and bisect cited as evidence were measuring an environment no real launch produces. See the correction under 0.7.5.
+
 ## [0.7.5] - 2026-09-06
 
 ### Correction
