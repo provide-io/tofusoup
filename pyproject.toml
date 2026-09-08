@@ -38,7 +38,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "provide-foundation[all]>=0.4.3",
+    "provide-foundation[all]>=0.4.10",
     "click>=8.3.1",
     "msgpack>=1.0.0",
     # 6.0 predates the Cython 3 fix and cannot build on current Python at all
@@ -74,12 +74,12 @@ all = [
 
 [dependency-groups]
 dev = [
-    "provide-testkit[standard,advanced-testing,build]>=0.4.3",
+    "provide-testkit[standard,advanced-testing,build]>=0.5.1",
     "pytest-httpx>=0.35.0",
     "tofusoup[test-rpc]",
 ]
 docs = [
-    "provide-testkit[docs]>=0.4.3",
+    "provide-testkit[docs]>=0.5.1",
     "mkdocs-material>=9.7.1",
 ]
 
