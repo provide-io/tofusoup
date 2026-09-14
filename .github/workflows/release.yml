@@ -22,7 +22,7 @@ jobs:
   # Delegate tests + build + (optional) GH release to the ci-tooling reusable.
   # GH release creation is suppressed because `release: published` means one already exists.
   release:
-    uses: provide-io/ci-tooling/.github/workflows/python-release.yml@v0.8.4
+    uses: provide-io/ci-tooling/.github/workflows/python-release.yml@v0.8.8
     # Skipped for a repair dispatch: that path attaches the artifacts PyPI
     # already holds, so building a fresh set here would only be discarded.
     if: github.event_name == 'release' || inputs.release_tag == ''
@@ -71,7 +71,7 @@ jobs:
           ref: v0.8.7
           path: .ci-tooling
       - name: 🐍 Setup Python
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4  # v10.1.0
         with:
           python-version: "3.11"
           enable-cache: false
@@ -135,7 +135,7 @@ jobs:
 
       # pip is what reads the index the gate polls.
       - name: 🐍 Setup Python
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4  # v10.1.0
         with:
           python-version: "3.11"
           enable-cache: false
@@ -170,7 +170,7 @@ jobs:
         with:
           persist-credentials: false
       - name: 🐍 Setup uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4  # v10.1.0
         with:
           python-version: "3.11"
       - name: 📦 Download artifacts
