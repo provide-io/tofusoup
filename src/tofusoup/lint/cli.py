@@ -7,6 +7,9 @@ from pathlib import Path
 
 import click
 
+from tofusoup.lint.direct import DirectLintError
+from tofusoup.lint.opentofu import OpenTofuError
+from tofusoup.lint.quiet import silence_stderr
 from tofusoup.lint.render import render_json, render_terminal
 from tofusoup.lint.runner import LintRunError, run_suite
 from tofusoup.lint.suite import SuiteError, load_suite
@@ -36,8 +39,9 @@ from tofusoup.lint.suite import SuiteError, load_suite
 def lint_cli(suite: Path, provider: Path, opentofu: Path | None, lane: str, as_json: bool) -> None:
     """Run Direct provider validation and optional OpenTofu native linting."""
     try:
-        result = run_suite(load_suite(suite), provider, opentofu, lane=lane)
-    except (LintRunError, SuiteError) as error:
+        with silence_stderr():
+            result = run_suite(load_suite(suite), provider, opentofu, lane=lane)
+    except (DirectLintError, LintRunError, OpenTofuError, SuiteError) as error:
         raise click.ClickException(str(error)) from error
     click.echo(render_json(result) if as_json else render_terminal(result))
     if result.failure_messages:

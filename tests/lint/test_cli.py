@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+from contextlib import contextmanager
 import importlib
 import json
 from types import SimpleNamespace
@@ -8,6 +9,7 @@ from types import SimpleNamespace
 from click.testing import CliRunner
 
 from tofusoup.cli import main_cli
+from tofusoup.lint.opentofu import OpenTofuError
 
 
 def test_lint_command_is_listed_and_describes_both_lanes() -> None:
@@ -18,6 +20,24 @@ def test_lint_command_is_listed_and_describes_both_lanes() -> None:
     assert "OpenTofu native linting" in result.output
     assert "--provider" in result.output
     assert "--opentofu" in result.output
+
+
+def test_lint_group_silences_configuration_logs(monkeypatch) -> None:
+    import tofusoup.cli as root_cli
+
+    events: list[str] = []
+
+    @contextmanager
+    def silence_stderr():
+        events.append("entered")
+        yield
+        events.append("exited")
+
+    monkeypatch.setattr(root_cli, "silence_stderr", silence_stderr)
+    result = CliRunner().invoke(root_cli.main_cli, ["lint", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert events == ["entered", "exited"]
 
 
 def test_lint_command_renders_separate_direct_and_opentofu_results(monkeypatch, tmp_path) -> None:
@@ -114,3 +134,65 @@ version = "1.2.3"
 
     assert result.exit_code == 1
     assert "resource example_thing returned an error diagnostic" in result.output
+
+
+def test_lint_command_silences_provider_client_output_while_the_suite_runs(monkeypatch, tmp_path) -> None:
+    cli = importlib.import_module("tofusoup.lint.cli")
+    suite = tmp_path / "lint.soup.toml"
+    suite.write_text(
+        """version = 1
+
+[provider]
+source = "registry.opentofu.org/example/demo"
+version = "1.2.3"
+""",
+        encoding="utf-8",
+    )
+    provider = tmp_path / "terraform-provider-demo"
+    provider.write_text("provider", encoding="utf-8")
+    events: list[str] = []
+
+    @contextmanager
+    def silence_stderr():
+        events.append("entered")
+        yield
+        events.append("exited")
+
+    expected = SimpleNamespace(direct=None, opentofu=None, failure_messages=())
+
+    def run_suite(*args, **kwargs):
+        assert events == ["entered"]
+        return expected
+
+    monkeypatch.setattr(cli, "silence_stderr", silence_stderr)
+    monkeypatch.setattr(cli, "run_suite", run_suite)
+    result = CliRunner().invoke(cli.lint_cli, [str(suite), "--provider", str(provider)])
+
+    assert result.exit_code == 0, result.output
+    assert events == ["entered", "exited"]
+
+
+def test_lint_command_renders_native_execution_errors_without_a_traceback(monkeypatch, tmp_path) -> None:
+    cli = importlib.import_module("tofusoup.lint.cli")
+    suite = tmp_path / "lint.soup.toml"
+    suite.write_text(
+        """version = 1
+
+[provider]
+source = "registry.opentofu.org/example/demo"
+version = "1.2.3"
+""",
+        encoding="utf-8",
+    )
+    provider = tmp_path / "terraform-provider-demo"
+    provider.write_text("provider", encoding="utf-8")
+
+    def run_suite(*args, **kwargs):
+        raise OpenTofuError("native fixture could not be initialized")
+
+    monkeypatch.setattr(cli, "run_suite", run_suite)
+    result = CliRunner().invoke(cli.lint_cli, [str(suite), "--provider", str(provider)])
+
+    assert result.exit_code == 1
+    assert "native fixture could not be initialized" in result.output
+    assert "Traceback" not in result.output

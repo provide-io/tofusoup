@@ -53,6 +53,15 @@ DIRECT_METHODS: Mapping[ComponentKind, tuple[str, type[Any]]] = {
     ComponentKind.STATE_STORE: ("ValidateStateStoreConfig", pb.ValidateStateStore.Request),
 }
 
+SCHEMA_COLLECTIONS: Mapping[ComponentKind, tuple[str, str | None]] = {
+    ComponentKind.RESOURCE: ("resource_schemas", None),
+    ComponentKind.DATA_SOURCE: ("data_source_schemas", None),
+    ComponentKind.EPHEMERAL: ("ephemeral_resource_schemas", None),
+    ComponentKind.LIST: ("list_resource_schemas", None),
+    ComponentKind.ACTION: ("action_schemas", "schema"),
+    ComponentKind.STATE_STORE: ("state_store_schemas", None),
+}
+
 
 def _severity(diagnostic: pb.Diagnostic) -> str:
     if diagnostic.severity == pb.Diagnostic.ERROR:
@@ -62,9 +71,35 @@ def _severity(diagnostic: pb.Diagnostic) -> str:
     return "invalid"
 
 
-def _request(case: ValidationCase) -> tuple[str, Any]:
+def _case_schema(provider: Any, case: ValidationCase) -> Any | None:
+    schema = getattr(provider, "schema", None)
+    if schema is None:
+        return None
+    if case.kind is ComponentKind.PROVIDER:
+        return schema.provider
+    if case.type_name is None:
+        raise DirectLintError(f"{case.kind.value} requires a type name")
+    try:
+        collection_name, nested_schema_name = SCHEMA_COLLECTIONS[case.kind]
+        component_schema = getattr(schema, collection_name)[case.type_name]
+        return (
+            component_schema if nested_schema_name is None else getattr(component_schema, nested_schema_name)
+        )
+    except KeyError as error:
+        raise DirectLintError(f"provider schema has no {case.kind.value} named {case.type_name}") from error
+    raise DirectLintError(f"unsupported validation kind: {case.kind.value}")
+
+
+def _config(provider: Any, case: ValidationCase) -> dict[str, Any]:
+    schema = _case_schema(provider, case)
+    values = {} if schema is None else {attribute.name: None for attribute in schema.block.attributes}
+    values.update(case.config)
+    return values
+
+
+def _request(provider: Any, case: ValidationCase) -> tuple[str, Any]:
     method_name, request_type = DIRECT_METHODS[case.kind]
-    fields: dict[str, Any] = {"config": pack(dict(case.config))}
+    fields: dict[str, Any] = {"config": pack(_config(provider, case))}
     if case.type_name is not None:
         fields["type_name"] = case.type_name
     return method_name, request_type(**fields)
@@ -72,7 +107,7 @@ def _request(case: ValidationCase) -> tuple[str, Any]:
 
 async def run_direct_case(provider: Any, case: ValidationCase) -> DirectCaseResult:
     """Invoke exactly one validation RPC declared by ``case``."""
-    method_name, request = _request(case)
+    method_name, request = _request(provider, case)
     response = await getattr(provider.stub, method_name)(request)
     diagnostics = tuple(
         DiagnosticFinding(
@@ -120,7 +155,10 @@ async def run_direct_suite(suite: Any, binary: Any) -> DirectSuiteResult:
         _raise_for_errors("schema lookup", schema.diagnostics)
         provider.schema = schema
         provider_case = next((case for case in suite.cases if case.kind is ComponentKind.PROVIDER), None)
-        configuration = {} if provider_case is None else dict(provider_case.config)
+        configuration = _config(
+            provider,
+            provider_case if provider_case is not None else ValidationCase(kind=ComponentKind.PROVIDER),
+        )
         configured = await provider.stub.ConfigureProvider(
             pb.ConfigureProvider.Request(terraform_version="tofusoup", config=pack(configuration))
         )

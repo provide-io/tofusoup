@@ -14,6 +14,7 @@ from tofusoup.lint.models import (
     ProviderSpec,
     ValidationCase,
 )
+from tofusoup.tfplugin.driver import unpack
 
 
 class RecordingStub:
@@ -84,6 +85,25 @@ async def test_direct_runner_dispatches_declared_validation_rpc(kind, method, re
 
 
 @pytest.mark.asyncio
+async def test_direct_runner_sends_null_for_schema_attributes_omitted_by_case() -> None:
+    direct = importlib.import_module("tofusoup.lint.direct")
+    stub = RecordingStub()
+    schema = pb.GetProviderSchema.Response()
+    schema.resource_schemas["example_type"].block.attributes.add(name="enabled")
+    schema.resource_schemas["example_type"].block.attributes.add(name="optional")
+    provider = SimpleNamespace(stub=stub, schema=schema)
+    case = ValidationCase(
+        kind=ComponentKind.RESOURCE,
+        type_name="example_type",
+        config={"enabled": True},
+    )
+
+    await direct.run_direct_case(provider, case)
+
+    assert unpack(stub.calls[0][1].config) == {"enabled": True, "optional": None}
+
+
+@pytest.mark.asyncio
 async def test_direct_suite_configures_provider_and_stops_it(monkeypatch, tmp_path) -> None:
     direct = importlib.import_module("tofusoup.lint.direct")
     stub = RecordingStub()
@@ -135,6 +155,49 @@ async def test_direct_suite_configures_provider_and_stops_it(monkeypatch, tmp_pa
     assert stub.calls[0][0] == "ValidateProviderConfig"
     assert len(result.cases) == 1
     assert provider.stopped is True
+
+
+@pytest.mark.asyncio
+async def test_direct_suite_configures_provider_with_declared_null_attributes(monkeypatch, tmp_path) -> None:
+    direct = importlib.import_module("tofusoup.lint.direct")
+    stub = RecordingStub()
+    schema = pb.GetProviderSchema.Response()
+    schema.provider.block.attributes.add(name="configured")
+    schema.provider.block.attributes.add(name="optional")
+
+    async def get_schema(request):
+        return schema
+
+    configured_values: dict[str, object] = {}
+
+    async def configure_provider(request):
+        configured_values.update(unpack(request.config))
+        return pb.ConfigureProvider.Response()
+
+    stub.GetProviderSchema = get_schema
+    stub.ConfigureProvider = configure_provider
+
+    class Provider:
+        def __init__(self):
+            self.stub = stub
+            self.stopped = False
+
+        async def stop(self) -> None:
+            self.stopped = True
+
+    async def start_provider(binary, env):
+        return Provider()
+
+    suite = LintSuite(
+        version=1,
+        provider=ProviderSpec(source="registry.opentofu.org/example/demo", version="1.2.3"),
+        cases=(ValidationCase(kind=ComponentKind.PROVIDER, config={"configured": True}),),
+    )
+    monkeypatch.setattr(direct, "start_provider", start_provider)
+
+    await direct.run_direct_suite(suite, tmp_path / "provider")
+
+    assert configured_values == {"configured": True, "optional": None}
 
 
 def test_direct_case_evaluation_rejects_error_and_missing_expected_finding() -> None:
