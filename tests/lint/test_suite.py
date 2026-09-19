@@ -27,6 +27,7 @@ def test_load_suite_parses_direct_and_native_lanes(tmp_path: Path) -> None:
 
 [provider]
 source = "registry.opentofu.org/example/demo"
+version = "1.2.3"
 
 [provider.environment]
 EXAMPLE_LINT = "example:all"
@@ -47,6 +48,7 @@ lint = "all"
 
     assert suite.version == 1
     assert suite.provider.source == "registry.opentofu.org/example/demo"
+    assert getattr(suite.provider, "version", None) == "1.2.3"
     assert suite.provider.environment == {"EXAMPLE_LINT": "example:all"}
     assert suite.cases[0].kind is models.ComponentKind.RESOURCE
     assert suite.cases[0].type_name == "example_thing"
@@ -66,6 +68,7 @@ def test_load_suite_rejects_type_name_for_provider_case(tmp_path: Path) -> None:
 
 [provider]
 source = "registry.opentofu.org/example/demo"
+version = "1.2.3"
 
 [[case]]
 kind = "provider"

@@ -126,6 +126,7 @@ def load_suite(path: Path) -> LintSuite:
         version=1,
         provider=ProviderSpec(
             source=_string(provider.get("source"), "provider.source"),
+            version=_string(provider.get("version"), "provider.version"),
             environment=_environment(provider),
         ),
         cases=_cases(raw.get("case")),

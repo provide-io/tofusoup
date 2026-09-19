@@ -41,6 +41,7 @@ class ProviderSpec:
     """Provider identity and explicitly declared child environment."""
 
     source: str
+    version: str
     environment: Mapping[str, str] = field(factory=dict)
 
 
