@@ -16,7 +16,8 @@ The lanes share the same provider artifact and optional provider-process environ
 ```console
 $ soup lint tests/lint/lint.soup.toml \\
     --provider ./dist/terraform-provider-example \\
-    --opentofu tofu
+    --opentofu tofu \\
+    --lane all
 ```
 
 `--provider` selects the executable under test. `--opentofu` is optional: if omitted, only the direct lane runs. A suite that requests an OpenTofu lane fails with a useful error when the option is omitted. The command returns non-zero for malformed suites, process/protocol failures, error diagnostics, or failed expected-findings checks. Warning diagnostics are successful lint findings unless the suite's expectations say otherwise.
@@ -25,7 +26,7 @@ $ soup lint tests/lint/lint.soup.toml \\
 
 The versioned TOML suite describes only portable provider-test data:
 
-- provider source address and optional environment variables;
+- provider source address, provider version, and optional environment variables;
 - zero or more typed direct validation cases, each with a component kind, optional type name, configuration, and expected diagnostic identity;
 - an optional native OpenTofu fixture directory and lint selector.
 
@@ -33,13 +34,13 @@ TofuSoup gets each provider schema before encoding a direct case. It rejects unk
 
 ## Native OpenTofu isolation
 
-The native lane builds a temporary filesystem mirror and `TF_CLI_CONFIG_FILE` for the suite's provider source address. It uses a separate `TF_DATA_DIR`, preserves the caller environment except for its controlled Terraform/OpenTofu variables, and reports the exact `init` and `validate` failures without printing secret environment values.
+The native lane builds a temporary filesystem mirror using the suite's provider version and `TF_CLI_CONFIG_FILE` for the provider source address. It uses a separate `TF_DATA_DIR`, preserves the caller environment except for its controlled Terraform/OpenTofu variables, and reports the exact `init` and `validate` failures without printing secret environment values.
 
 OpenTofu's current linting beta provides core lint selection; it does not define a provider-lint selection protocol. Therefore TofuSoup reports the native lane as OpenTofu coverage and does not label provider warnings as an upstream-native provider lint interface.
 
 ## Result model
 
-Human output has one heading per lane and names each exercised component. JSON output contains a stable `direct` and `opentofu` result object, including the OpenTofu version, invoked validation kinds, diagnostics, and any declared coverage expectation. This allows CI proof tooling to verify a recording without parsing terminal escape sequences.
+Human output has one heading per lane and names each exercised component. JSON output contains a stable `direct` and `opentofu` result object, including invoked validation kinds and diagnostics. This allows CI proof tooling to verify a recording without parsing terminal escape sequences.
 
 ## Test and proof contract
 
