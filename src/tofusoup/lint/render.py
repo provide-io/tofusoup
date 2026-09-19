@@ -21,7 +21,9 @@ def result_json(result: LintRunResult) -> dict[str, Any]:
     """Convert a lint result to the public machine-readable schema."""
     return {
         "version": 1,
-        "direct": {
+        "direct": None
+        if result.direct is None
+        else {
             "cases": [
                 {
                     "kind": _kind(case.kind),
@@ -47,13 +49,19 @@ def render_json(result: LintRunResult) -> str:
 
 def render_terminal(result: LintRunResult) -> str:
     """Render direct and native findings without conflating their coverage."""
-    lines = [f"Direct provider validation: {len(result.direct.cases)}/{len(result.direct.cases)} cases"]
-    for case in result.direct.cases:
-        label = _kind(case.kind) if case.type_name is None else f"{_kind(case.kind)} {case.type_name}"
-        if not case.diagnostics:
-            lines.append(f"  ✓ {label}: no diagnostics")
-        for diagnostic in case.diagnostics:
-            lines.append(f"  {diagnostic.severity}: {label}: {diagnostic.summary}")
+    lines = []
+    if result.direct is None:
+        lines.append("Direct provider validation: not requested")
+    else:
+        lines.append(
+            f"Direct provider validation: {len(result.direct.cases)}/{len(result.direct.cases)} cases"
+        )
+        for case in result.direct.cases:
+            label = _kind(case.kind) if case.type_name is None else f"{_kind(case.kind)} {case.type_name}"
+            if not case.diagnostics:
+                lines.append(f"  ✓ {label}: no diagnostics")
+            for diagnostic in case.diagnostics:
+                lines.append(f"  {diagnostic.severity}: {label}: {diagnostic.summary}")
     if result.opentofu is None:
         lines.append("OpenTofu native linting: not requested")
     else:

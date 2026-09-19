@@ -52,7 +52,7 @@ version = "1.2.3"
     )
 
     assert getattr(cli, "run_suite", None) is not None
-    monkeypatch.setattr(cli, "run_suite", lambda *args: expected)
+    monkeypatch.setattr(cli, "run_suite", lambda *args, **kwargs: expected)
     result = CliRunner().invoke(
         cli.lint_cli,
         [str(suite), "--provider", str(provider), "--opentofu", str(tofu)],
@@ -81,7 +81,7 @@ version = "1.2.3"
     expected = SimpleNamespace(direct=SimpleNamespace(cases=()), opentofu=None)
 
     assert getattr(cli, "run_suite", None) is not None
-    monkeypatch.setattr(cli, "run_suite", lambda *args: expected)
+    monkeypatch.setattr(cli, "run_suite", lambda *args, **kwargs: expected)
     result = CliRunner().invoke(cli.lint_cli, [str(suite), "--provider", str(provider), "--json"])
 
     assert result.exit_code == 0, result.output

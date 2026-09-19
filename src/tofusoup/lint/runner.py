@@ -21,15 +21,19 @@ class LintRunError(RuntimeError):
 class LintRunResult:
     """The independently reported direct and native lint results."""
 
-    direct: DirectSuiteResult
+    direct: DirectSuiteResult | None
     opentofu: OpenTofuResult | None
 
 
-def run_suite(suite: LintSuite, provider: Path, tofu: Path | None) -> LintRunResult:
+def run_suite(suite: LintSuite, provider: Path, tofu: Path | None, lane: str = "all") -> LintRunResult:
     """Run every lane declared by a lint suite."""
-    if suite.opentofu is not None and tofu is None:
+    if lane not in {"all", "direct", "opentofu"}:
+        raise LintRunError(f"unknown lint lane: {lane}")
+    if lane == "opentofu" and suite.opentofu is None:
+        raise LintRunError("this suite does not declare an OpenTofu lane")
+    wants_opentofu = lane in {"all", "opentofu"} and suite.opentofu is not None
+    if wants_opentofu and tofu is None:
         raise LintRunError("this suite declares an OpenTofu lane; pass --opentofu PATH")
-    direct = asyncio.run(run_direct_suite(suite, provider))
-    if suite.opentofu is None:
-        return LintRunResult(direct=direct, opentofu=None)
-    return LintRunResult(direct=direct, opentofu=run_opentofu(suite, provider, tofu))
+    direct = asyncio.run(run_direct_suite(suite, provider)) if lane in {"all", "direct"} else None
+    opentofu = run_opentofu(suite, provider, tofu) if wants_opentofu else None
+    return LintRunResult(direct=direct, opentofu=opentofu)
