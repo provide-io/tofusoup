@@ -24,7 +24,7 @@ import tempfile
 from typing import Any
 
 from attrs import define, field
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 
 from pyvider.protocols.tfprotov6.protobuf import tfplugin6_pb2 as pb, tfplugin6_pb2_grpc as pb_grpc
 
@@ -240,7 +240,10 @@ async def start_provider(
         with suppress(Exception):
             await client.close()
         raise
-    return TfPluginProvider(client=client, stub=pb_grpc.ProviderStub(client.grpc_channel))
+    return TfPluginProvider(
+        client=client,
+        stub=pb_grpc.ProviderStub(client.grpc_channel),  # type: ignore[no-untyped-call]
+    )
 
 
 # 🥣🔬🔚

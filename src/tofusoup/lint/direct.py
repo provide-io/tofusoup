@@ -157,7 +157,9 @@ async def run_direct_suite(suite: Any, binary: Any) -> DirectSuiteResult:
         provider_case = next((case for case in suite.cases if case.kind is ComponentKind.PROVIDER), None)
         configuration = _config(
             provider,
-            provider_case if provider_case is not None else ValidationCase(kind=ComponentKind.PROVIDER),
+            provider_case
+            if provider_case is not None
+            else ValidationCase(kind=ComponentKind.PROVIDER, config={}),
         )
         configured = await provider.stub.ConfigureProvider(
             pb.ConfigureProvider.Request(terraform_version="tofusoup", config=pack(configuration))

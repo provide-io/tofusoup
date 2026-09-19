@@ -43,5 +43,5 @@ def run_suite(suite: LintSuite, provider: Path, tofu: Path | None, lane: str = "
     if wants_opentofu and tofu is None:
         raise LintRunError("this suite declares an OpenTofu lane; pass --opentofu PATH")
     direct = asyncio.run(run_direct_suite(suite, provider)) if lane in {"all", "direct"} else None
-    opentofu = run_opentofu(suite, provider, tofu) if wants_opentofu else None
+    opentofu = run_opentofu(suite, provider, tofu) if tofu is not None and wants_opentofu else None
     return LintRunResult(direct=direct, opentofu=opentofu)
