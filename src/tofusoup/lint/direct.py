@@ -10,7 +10,11 @@ from attrs import define
 
 from pyvider.protocols.tfprotov6.protobuf import tfplugin6_pb2 as pb
 from tofusoup.lint.models import ComponentKind, ValidationCase
-from tofusoup.tfplugin.driver import pack
+from tofusoup.tfplugin.driver import base_env, pack, start_provider
+
+
+class DirectLintError(RuntimeError):
+    """The provider could not prepare or complete a direct lint suite lane."""
 
 
 @define(frozen=True)
@@ -29,6 +33,13 @@ class DirectCaseResult:
     kind: ComponentKind
     type_name: str | None
     diagnostics: tuple[DiagnosticFinding, ...]
+
+
+@define(frozen=True)
+class DirectSuiteResult:
+    """All direct validation cases from one suite run."""
+
+    cases: tuple[DirectCaseResult, ...]
 
 
 DIRECT_METHODS: Mapping[ComponentKind, tuple[str, type[Any]]] = {
@@ -71,3 +82,28 @@ async def run_direct_case(provider: Any, case: ValidationCase) -> DirectCaseResu
         for diagnostic in response.diagnostics
     )
     return DirectCaseResult(kind=case.kind, type_name=case.type_name, diagnostics=diagnostics)
+
+
+def _raise_for_errors(phase: str, diagnostics: Any) -> None:
+    messages = [diagnostic.summary for diagnostic in diagnostics if diagnostic.severity == pb.Diagnostic.ERROR]
+    if messages:
+        raise DirectLintError(f"provider {phase} failed: {'; '.join(messages)}")
+
+
+async def run_direct_suite(suite: Any, binary: Any) -> DirectSuiteResult:
+    """Launch one provider and execute every validation case in ``suite``."""
+    provider = await start_provider(binary, env=base_env(dict(suite.provider.environment)))
+    try:
+        schema = await provider.stub.GetProviderSchema(pb.GetProviderSchema.Request())
+        _raise_for_errors("schema lookup", schema.diagnostics)
+        provider.schema = schema
+        provider_case = next((case for case in suite.cases if case.kind is ComponentKind.PROVIDER), None)
+        configuration = {} if provider_case is None else dict(provider_case.config)
+        configured = await provider.stub.ConfigureProvider(
+            pb.ConfigureProvider.Request(terraform_version="tofusoup", config=pack(configuration))
+        )
+        _raise_for_errors("configuration", configured.diagnostics)
+        cases = tuple([await run_direct_case(provider, case) for case in suite.cases])
+        return DirectSuiteResult(cases=cases)
+    finally:
+        await provider.stop()

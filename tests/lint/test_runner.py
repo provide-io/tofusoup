@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+from pathlib import Path
+
+import pytest
+
+from tofusoup.lint.models import LintSuite, OpenTofuSpec, ProviderSpec
+from tofusoup.lint.runner import LintRunError, run_suite
+
+
+def test_native_suite_requires_opentofu_before_starting_provider(monkeypatch, tmp_path: Path) -> None:
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    suite = LintSuite(
+        version=1,
+        provider=ProviderSpec(source="registry.opentofu.org/example/demo", version="1.2.3"),
+        cases=(),
+        opentofu=OpenTofuSpec(fixture=fixture, lint="all"),
+    )
+    called = False
+
+    async def direct_lane(*args):
+        nonlocal called
+        called = True
+
+    monkeypatch.setattr("tofusoup.lint.runner.run_direct_suite", direct_lane)
+
+    with pytest.raises(LintRunError, match="pass --opentofu PATH"):
+        run_suite(suite, tmp_path / "provider", None)
+
+    assert called is False

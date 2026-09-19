@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from pyvider.protocols.tfprotov6.protobuf import tfplugin6_pb2 as pb
-from tofusoup.lint.models import ComponentKind, ValidationCase
+from tofusoup.lint.models import ComponentKind, LintSuite, ProviderSpec, ValidationCase
 
 
 class RecordingStub:
@@ -75,3 +75,57 @@ async def test_direct_runner_dispatches_declared_validation_rpc(kind, method, re
     assert isinstance(stub.calls[0][1], request_type)
     assert result.kind is kind
     assert result.diagnostics[0].summary == "Example lint finding"
+
+
+@pytest.mark.asyncio
+async def test_direct_suite_configures_provider_and_stops_it(monkeypatch, tmp_path) -> None:
+    direct = importlib.import_module("tofusoup.lint.direct")
+    stub = RecordingStub()
+    calls: list[str] = []
+
+    async def get_schema(request):
+        calls.append("GetProviderSchema")
+        return pb.GetProviderSchema.Response()
+
+    async def configure_provider(request):
+        calls.append("ConfigureProvider")
+        return pb.ConfigureProvider.Response()
+
+    stub.GetProviderSchema = get_schema
+    stub.ConfigureProvider = configure_provider
+
+    class Provider:
+        schema = None
+
+        def __init__(self):
+            self.stub = stub
+            self.stopped = False
+
+        async def stop(self) -> None:
+            self.stopped = True
+
+    provider = Provider()
+
+    async def start_provider(binary, env):
+        assert binary == tmp_path / "provider"
+        assert env["EXAMPLE_LINT"] == "example:all"
+        return provider
+
+    suite = LintSuite(
+        version=1,
+        provider=ProviderSpec(
+            source="registry.opentofu.org/example/demo",
+            version="1.2.3",
+            environment={"EXAMPLE_LINT": "example:all"},
+        ),
+        cases=(ValidationCase(kind=ComponentKind.PROVIDER, config={}),),
+    )
+
+    assert getattr(direct, "run_direct_suite", None) is not None
+    monkeypatch.setattr(direct, "start_provider", start_provider)
+    result = await direct.run_direct_suite(suite, tmp_path / "provider")
+
+    assert calls == ["GetProviderSchema", "ConfigureProvider"]
+    assert stub.calls[0][0] == "ValidateProviderConfig"
+    assert len(result.cases) == 1
+    assert provider.stopped is True
