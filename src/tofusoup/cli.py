@@ -32,6 +32,7 @@ LAZY_COMMANDS = {
     "cty": ("tofusoup.cty.cli", "cty_cli"),
     "hcl": ("tofusoup.hcl.cli", "hcl_cli"),
     "harness": ("tofusoup.harness.cli", "harness_cli"),
+    "lint": ("tofusoup.lint.cli", "lint_cli"),
     "rpc": ("tofusoup.rpc.cli", "rpc_cli"),
     "state": ("tofusoup.state", "state_cli"),
     "stir": ("tofusoup.stir", "stir_cli"),
