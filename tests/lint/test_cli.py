@@ -49,6 +49,7 @@ version = "1.2.3"
             )
         ),
         opentofu=SimpleNamespace(valid=True, diagnostics=()),
+        failure_messages=(),
     )
 
     assert getattr(cli, "run_suite", None) is not None
@@ -78,7 +79,7 @@ version = "1.2.3"
     )
     provider = tmp_path / "terraform-provider-demo"
     provider.write_text("provider", encoding="utf-8")
-    expected = SimpleNamespace(direct=SimpleNamespace(cases=()), opentofu=None)
+    expected = SimpleNamespace(direct=SimpleNamespace(cases=()), opentofu=None, failure_messages=())
 
     assert getattr(cli, "run_suite", None) is not None
     monkeypatch.setattr(cli, "run_suite", lambda *args, **kwargs: expected)
@@ -86,3 +87,30 @@ version = "1.2.3"
 
     assert result.exit_code == 0, result.output
     assert set(json.loads(result.output)) == {"direct", "opentofu", "version"}
+
+
+def test_lint_command_fails_when_direct_contract_has_failures(monkeypatch, tmp_path) -> None:
+    cli = importlib.import_module("tofusoup.lint.cli")
+    suite = tmp_path / "lint.soup.toml"
+    suite.write_text(
+        """version = 1
+
+[provider]
+source = "registry.opentofu.org/example/demo"
+version = "1.2.3"
+""",
+        encoding="utf-8",
+    )
+    provider = tmp_path / "terraform-provider-demo"
+    provider.write_text("provider", encoding="utf-8")
+    expected = SimpleNamespace(
+        direct=SimpleNamespace(cases=(), failures=("resource example_thing returned an error diagnostic",)),
+        opentofu=None,
+        failure_messages=("resource example_thing returned an error diagnostic",),
+    )
+
+    monkeypatch.setattr(cli, "run_suite", lambda *args, **kwargs: expected)
+    result = CliRunner().invoke(cli.lint_cli, [str(suite), "--provider", str(provider)])
+
+    assert result.exit_code == 1
+    assert "resource example_thing returned an error diagnostic" in result.output

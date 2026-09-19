@@ -24,6 +24,14 @@ class LintRunResult:
     direct: DirectSuiteResult | None
     opentofu: OpenTofuResult | None
 
+    @property
+    def failure_messages(self) -> tuple[str, ...]:
+        """Contract failures that require a non-zero command exit."""
+        failures = [] if self.direct is None else list(self.direct.failures)
+        if self.opentofu is not None and not self.opentofu.valid:
+            failures.append("OpenTofu validate reported an invalid configuration")
+        return tuple(failures)
+
 
 def run_suite(suite: LintSuite, provider: Path, tofu: Path | None, lane: str = "all") -> LintRunResult:
     """Run every lane declared by a lint suite."""

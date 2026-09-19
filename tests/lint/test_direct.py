@@ -7,7 +7,13 @@ from types import SimpleNamespace
 import pytest
 
 from pyvider.protocols.tfprotov6.protobuf import tfplugin6_pb2 as pb
-from tofusoup.lint.models import ComponentKind, LintSuite, ProviderSpec, ValidationCase
+from tofusoup.lint.models import (
+    ComponentKind,
+    DiagnosticExpectation,
+    LintSuite,
+    ProviderSpec,
+    ValidationCase,
+)
 
 
 class RecordingStub:
@@ -129,3 +135,23 @@ async def test_direct_suite_configures_provider_and_stops_it(monkeypatch, tmp_pa
     assert stub.calls[0][0] == "ValidateProviderConfig"
     assert len(result.cases) == 1
     assert provider.stopped is True
+
+
+def test_direct_case_evaluation_rejects_error_and_missing_expected_finding() -> None:
+    direct = importlib.import_module("tofusoup.lint.direct")
+    case = ValidationCase(
+        kind=ComponentKind.RESOURCE,
+        type_name="example_thing",
+        config={},
+        expect=(DiagnosticExpectation(severity="warning", summary="Required warning"),),
+    )
+    result = SimpleNamespace(
+        diagnostics=(SimpleNamespace(severity="error", summary="Provider error", detail="detail"),)
+    )
+
+    failures = direct.case_failures(case, result)
+
+    assert failures == (
+        "resource example_thing returned an error diagnostic: Provider error",
+        "resource example_thing did not return expected warning: Required warning",
+    )

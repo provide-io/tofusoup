@@ -40,3 +40,5 @@ def lint_cli(suite: Path, provider: Path, opentofu: Path | None, lane: str, as_j
     except (LintRunError, SuiteError) as error:
         raise click.ClickException(str(error)) from error
     click.echo(render_json(result) if as_json else render_terminal(result))
+    if result.failure_messages:
+        raise click.ClickException("\n".join(result.failure_messages))

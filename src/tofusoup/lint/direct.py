@@ -40,6 +40,7 @@ class DirectSuiteResult:
     """All direct validation cases from one suite run."""
 
     cases: tuple[DirectCaseResult, ...]
+    failures: tuple[str, ...]
 
 
 DIRECT_METHODS: Mapping[ComponentKind, tuple[str, type[Any]]] = {
@@ -84,6 +85,27 @@ async def run_direct_case(provider: Any, case: ValidationCase) -> DirectCaseResu
     return DirectCaseResult(kind=case.kind, type_name=case.type_name, diagnostics=diagnostics)
 
 
+def _label(case: ValidationCase) -> str:
+    return case.kind.value if case.type_name is None else f"{case.kind.value} {case.type_name}"
+
+
+def case_failures(case: ValidationCase, result: DirectCaseResult) -> tuple[str, ...]:
+    """Return the failed lint contract assertions for one direct case."""
+    label = _label(case)
+    failures = [
+        f"{label} returned an error diagnostic: {diagnostic.summary}"
+        for diagnostic in result.diagnostics
+        if diagnostic.severity == "error"
+    ]
+    for expectation in case.expect:
+        if not any(
+            diagnostic.severity == expectation.severity and diagnostic.summary == expectation.summary
+            for diagnostic in result.diagnostics
+        ):
+            failures.append(f"{label} did not return expected {expectation.severity}: {expectation.summary}")
+    return tuple(failures)
+
+
 def _raise_for_errors(phase: str, diagnostics: Any) -> None:
     messages = [diagnostic.summary for diagnostic in diagnostics if diagnostic.severity == pb.Diagnostic.ERROR]
     if messages:
@@ -104,6 +126,11 @@ async def run_direct_suite(suite: Any, binary: Any) -> DirectSuiteResult:
         )
         _raise_for_errors("configuration", configured.diagnostics)
         cases = tuple([await run_direct_case(provider, case) for case in suite.cases])
-        return DirectSuiteResult(cases=cases)
+        failures = tuple(
+            failure
+            for case, result in zip(suite.cases, cases, strict=True)
+            for failure in case_failures(case, result)
+        )
+        return DirectSuiteResult(cases=cases, failures=failures)
     finally:
         await provider.stop()
