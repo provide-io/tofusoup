@@ -22,9 +22,13 @@ def test_provider_linting_docs_show_only_public_commands() -> None:
 def test_provider_linting_docs_explain_direct_only_invocation() -> None:
     guide = (ROOT / "docs/guides/provider-linting.md").read_text(encoding="utf-8")
     architecture = (ROOT / "docs/architecture/08-provider-linting.md").read_text(encoding="utf-8")
+    reference = (ROOT / "docs/reference/cli.md").read_text(encoding="utf-8")
 
     assert "omit `--opentofu`, select `--lane direct`" in guide
     assert "omit `--opentofu`, select `--lane direct`" in architecture
+    lint_commands = [line for line in reference.splitlines() if line.startswith("$ soup lint ")]
+    assert lint_commands
+    assert all("--opentofu" in command or "--lane direct" in command for command in lint_commands)
 
 
 def test_architecture_diagram_has_direct_and_native_lanes() -> None:
