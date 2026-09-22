@@ -40,5 +40,6 @@ nav:
 - Overview: index.md
 - Guides:
   - Migration: guides/migration.md
+  - Provider linting: guides/provider-linting.md
 - Data Sources:
   - Provider Info: data-sources/provider_info.md

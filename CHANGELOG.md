@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-09-22
+
+### Fixed
+
+- **`soup lint --opentofu` now survives the native lane's isolated working directory.** The 0.8.0 CLI accepted an explicit relative executable, then changed into a temporary fixture before launching it, so the documented command could fail with a raw `FileNotFoundError`. TofuSoup now resolves explicit paths and commands found on `PATH` before entering the fixture. Process-start failures are reported as ordinary `OpenTofuError` CLI failures instead of tracebacks.
+
+### Documentation
+
+- **Direct-only invocation is explicit.** Because `--lane all` is the default, a suite with an `[opentofu]` fixture must use `--lane direct` when `--opentofu` is omitted. The guide and architecture reference now state that contract consistently.
+
+## [0.8.0] - 2026-09-19
+
+### Added
+
+- **`soup lint` runs a portable provider lint suite.** A checked-in `lint.soup.toml` declares a provider package, direct validation cases, expected diagnostics, and an optional native OpenTofu fixture. `--lane direct`, `--lane opentofu`, and `--lane all` make the two paths independently runnable and report them separately.
+
+  The direct lane invokes each declared tfprotov6 validation RPC through the package under test, including provider, resource, data source, ephemeral, list, action, and state-store validation. The native lane installs that same package into an isolated OpenTofu filesystem mirror, then runs `tofu init` and `tofu validate -lint` against the suite fixture. Neither lane writes into the checked-in fixture tree.
+
+  Normal output contains only suite results. Provider launcher and RPC lifecycle logs stay out of the report, while launch, schema, configuration, and OpenTofu failures remain clear CLI errors.
+
+### Documentation
+
+- **Provider lint suites are documented with their execution boundary.** The guide, CLI reference, and architecture diagram distinguish direct provider validation from OpenTofu's native linting path, so a successful direct result is never mistaken for upstream engine coverage.
+
 ## [0.7.6] - 2026-09-07
 
 ### Fixed

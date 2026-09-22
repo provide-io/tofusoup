@@ -356,6 +356,19 @@ $ soup harness clean --cache
 
 ## Configuration
 
+### soup lint
+
+Run a checked-in provider lint suite through direct tfprotov6 validation and, when declared, an isolated OpenTofu native-lint fixture:
+
+```console
+$ soup lint tests/lint/lint.soup.toml --provider ./dist/terraform-provider-demo --lane direct
+$ soup lint tests/lint/lint.soup.toml --provider ./dist/terraform-provider-demo --opentofu tofu
+$ soup lint tests/lint/lint.soup.toml --provider ./dist/terraform-provider-demo --opentofu tofu --lane opentofu
+$ soup lint tests/lint/lint.soup.toml --provider ./dist/terraform-provider-demo --lane direct --json
+```
+
+See [Provider lint suites](../guides/provider-linting.md) for the version-one suite format and the distinction between direct and OpenTofu-native coverage.
+
 ### soup config show
 
 Display current configuration:
@@ -388,20 +401,24 @@ $ soup config validate --file custom.toml
 TofuSoup recognizes these environment variables:
 
 ### Logging
+
 - `LOG_LEVEL` - Set log level (DEBUG, INFO, WARNING, ERROR)
 - `PROVIDE_LOG_LEVEL` - Foundation logging level
 
 ### RPC
+
 - `KV_STORAGE_DIR` - Storage directory for KV server
 - `PLUGIN_AUTO_MTLS` - Enable automatic mTLS (true/false)
 - `PLUGIN_MAGIC_COOKIE_KEY` - Magic cookie key for servers
 - `BASIC_PLUGIN` - Magic cookie value
 
 ### Testing
+
 - `PYTEST_CURRENT_TEST` - Automatically set by pytest
 - `SOUP_TEST_PARALLEL` - Enable parallel test execution
 
 ### Configuration
+
 - `SOUP_CONFIG_FILE` - Path to soup.toml
 - `SOUP_CACHE_DIR` - Cache directory location
 

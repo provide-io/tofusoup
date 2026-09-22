@@ -20,6 +20,7 @@ from tofusoup.common.lazy_group import LazyGroup
 from tofusoup.common.rich_utils import build_rich_tree_from_dict
 from tofusoup.common.utils import get_cache_dir
 from tofusoup.config.defaults import LOG_LEVELS
+from tofusoup.lint.quiet import silence_stderr
 
 # CRITICAL: Foundation logger uses stderr by default (good for go-plugin compatibility)
 # stdout is reserved for the plugin handshake protocol
@@ -32,6 +33,7 @@ LAZY_COMMANDS = {
     "cty": ("tofusoup.cty.cli", "cty_cli"),
     "hcl": ("tofusoup.hcl.cli", "hcl_cli"),
     "harness": ("tofusoup.harness.cli", "harness_cli"),
+    "lint": ("tofusoup.lint.cli", "lint_cli"),
     "rpc": ("tofusoup.rpc.cli", "rpc_cli"),
     "state": ("tofusoup.state", "state_cli"),
     "stir": ("tofusoup.stir", "stir_cli"),
@@ -85,7 +87,11 @@ def main_cli(ctx: click.Context, verbose: bool, log_level: str | None, config_fi
         logger.debug("No pyproject.toml found in tree, using current directory as project root")
 
     try:
-        loaded_config = load_tofusoup_config(project_root_path, explicit_config_file=config_file)
+        if ctx.invoked_subcommand == "lint" and not verbose:
+            with silence_stderr():
+                loaded_config = load_tofusoup_config(project_root_path, explicit_config_file=config_file)
+        else:
+            loaded_config = load_tofusoup_config(project_root_path, explicit_config_file=config_file)
     except TofuSoupConfigError as e:
         # Config errors are not fatal - some commands don't need config
         logger.debug(f"Configuration not loaded: {e}")
