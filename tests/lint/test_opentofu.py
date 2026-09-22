@@ -3,8 +3,11 @@
 
 import importlib
 import json
+import os
 from pathlib import Path
 import stat
+import subprocess
+import sys
 
 import pytest
 
@@ -18,10 +21,7 @@ def executable(path: Path, content: str) -> Path:
 
 
 def fake_tofu(path: Path, log_path: Path) -> Path:
-    return executable(
-        path,
-        f"""#!/usr/bin/env python3
-import json
+    script = f"""import json
 import os
 from pathlib import Path
 import sys
@@ -39,8 +39,14 @@ entries.append({{
 log.write_text(json.dumps(entries))
 if sys.argv[1] == "validate":
     print(json.dumps({{"valid": True, "diagnostics": []}}))
-""",
-    )
+"""
+    if os.name != "nt":
+        return executable(path, f"#!{sys.executable}\n{script}")
+    python_script = path.with_suffix(".py")
+    python_script.write_text(script, encoding="utf-8")
+    launcher = path.with_suffix(".cmd")
+    launcher.write_text(f'@"{sys.executable}" "{python_script}" %*\n', encoding="utf-8")
+    return launcher
 
 
 def test_native_runner_installs_binary_and_invokes_lint(tmp_path: Path) -> None:
@@ -79,3 +85,74 @@ def test_native_runner_installs_binary_and_invokes_lint(tmp_path: Path) -> None:
     assert all(entry["data_dir_exists"] for entry in entries)
     assert all("registry.opentofu.org/example/demo" in entry["cli_config"] for entry in entries)
     assert not (fixture / ".terraform").exists()
+
+
+def test_native_runner_resolves_relative_executable_before_changing_cwd(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    opentofu = importlib.import_module("tofusoup.lint.opentofu")
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    (fixture / "main.tf").write_text("terraform {}\n", encoding="utf-8")
+    provider = executable(tmp_path / "terraform-provider-demo", "#!/bin/sh\n")
+    log_path = tmp_path / "tofu-log.json"
+    tools_dir = tmp_path / "tools"
+    tools_dir.mkdir()
+    tofu = fake_tofu(tools_dir / "tofu", log_path)
+    suite = LintSuite(
+        version=1,
+        provider=ProviderSpec(
+            source="registry.opentofu.org/example/demo",
+            version="1.2.3",
+            environment={"EXAMPLE_LINT": "example:all", "PATH": ""},
+        ),
+        cases=(),
+        opentofu=OpenTofuSpec(fixture=fixture, lint="all"),
+    )
+    monkeypatch.chdir(tmp_path)
+
+    result = opentofu.run_opentofu(suite, provider, Path("tools") / tofu.name)
+
+    assert result.valid is True
+    assert len(json.loads(log_path.read_text(encoding="utf-8"))) == 2
+
+
+def test_native_runner_resolves_executable_from_path(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    opentofu = importlib.import_module("tofusoup.lint.opentofu")
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    (fixture / "main.tf").write_text("terraform {}\n", encoding="utf-8")
+    provider = executable(tmp_path / "terraform-provider-demo", "#!/bin/sh\n")
+    log_path = tmp_path / "tofu-log.json"
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake_tofu(bin_dir / "tofu", log_path)
+    suite = LintSuite(
+        version=1,
+        provider=ProviderSpec(
+            source="registry.opentofu.org/example/demo",
+            version="1.2.3",
+            environment={"EXAMPLE_LINT": "example:all", "PATH": ""},
+        ),
+        cases=(),
+        opentofu=OpenTofuSpec(fixture=fixture, lint="all"),
+    )
+    monkeypatch.chdir(tmp_path / "fixture")
+    monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ['PATH']}")
+
+    result = opentofu.run_opentofu(suite, provider, Path("tofu"))
+
+    assert result.valid is True
+    assert len(json.loads(log_path.read_text(encoding="utf-8"))) == 2
+
+
+def test_native_runner_wraps_process_start_errors(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    opentofu = importlib.import_module("tofusoup.lint.opentofu")
+
+    def fail_to_start(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        raise PermissionError("permission denied")
+
+    monkeypatch.setattr(opentofu.subprocess, "run", fail_to_start)
+
+    with pytest.raises(opentofu.OpenTofuError, match="OpenTofu init could not start: permission denied"):
+        opentofu._run(["tofu", "init"], tmp_path, {}, "init")

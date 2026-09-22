@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-09-22
+
+### Fixed
+
+- **`soup lint --opentofu` now survives the native lane's isolated working directory.** The 0.8.0 CLI accepted an explicit relative executable, then changed into a temporary fixture before launching it, so the documented command could fail with a raw `FileNotFoundError`. TofuSoup now resolves explicit paths and commands found on `PATH` before entering the fixture. Process-start failures are reported as ordinary `OpenTofuError` CLI failures instead of tracebacks.
+
+### Documentation
+
+- **Direct-only invocation is explicit.** Because `--lane all` is the default, a suite with an `[opentofu]` fixture must use `--lane direct` when `--opentofu` is omitted. The guide and architecture reference now state that contract consistently.
+
 ## [0.8.0] - 2026-09-19
 
 ### Added

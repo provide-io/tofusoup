@@ -87,11 +87,28 @@ def _environment(root: Path, suite: LintSuite, cli_config: Path) -> dict[str, st
 def _run(
     command: list[str], cwd: Path, environment: dict[str, str], phase: str
 ) -> subprocess.CompletedProcess[str]:
-    completed = subprocess.run(command, cwd=cwd, env=environment, capture_output=True, text=True, check=False)
+    try:
+        completed = subprocess.run(
+            command, cwd=cwd, env=environment, capture_output=True, text=True, check=False
+        )
+    except OSError as error:
+        raise OpenTofuError(f"OpenTofu {phase} could not start: {error}") from error
     if completed.returncode != 0:
         output = f"{completed.stdout}{completed.stderr}".strip()
         raise OpenTofuError(f"OpenTofu {phase} failed: {output}")
     return completed
+
+
+def _resolve_executable(executable: Path) -> Path:
+    """Resolve a path or PATH command before entering the temporary fixture."""
+    if executable.exists():
+        if not executable.is_file():
+            raise OpenTofuError(f"OpenTofu executable is not a file: {executable}")
+        return executable.resolve()
+    resolved = shutil.which(str(executable))
+    if resolved is None:
+        raise OpenTofuError(f"OpenTofu executable was not found: {executable}")
+    return Path(resolved).resolve()
 
 
 def _diagnostics(raw: Any) -> tuple[DiagnosticFinding, ...]:
@@ -115,6 +132,7 @@ def run_opentofu(suite: LintSuite, provider: Path, tofu: Path) -> OpenTofuResult
     """Run the suite's declared native lane without changing its fixture tree."""
     if suite.opentofu is None:
         raise OpenTofuError("the suite does not declare an OpenTofu lint lane")
+    tofu = _resolve_executable(tofu)
     with tempfile.TemporaryDirectory(prefix="tofusoup-lint-") as temporary:
         root = Path(temporary)
         mirror = _mirror_destination(root, suite, provider)

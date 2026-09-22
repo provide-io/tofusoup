@@ -65,7 +65,7 @@ $ soup lint tests/lint/lint.soup.toml \
     --lane opentofu
 ```
 
-`--lane all` is the default. The native lane requires both an `[opentofu]` suite table and `--opentofu`. TofuSoup copies the fixture, provider binary, installation configuration, and Terraform data directory into a temporary workspace; the checked-in HCL directory is not modified.
+`--lane all` is the default. The native lane requires both an `[opentofu]` suite table and `--opentofu`; to omit `--opentofu`, select `--lane direct`. `--opentofu` accepts either a path or an executable name available on `PATH`. TofuSoup resolves it before entering the isolated fixture, then copies the fixture, provider binary, installation configuration, and Terraform data directory into a temporary workspace. The checked-in HCL directory is not modified.
 
 ## Read the output
 

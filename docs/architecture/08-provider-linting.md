@@ -20,7 +20,7 @@ $ soup lint tests/lint/lint.soup.toml \\
     --lane all
 ```
 
-`--provider` selects the executable under test. `--opentofu` is optional: if omitted, only the direct lane runs. A suite that requests an OpenTofu lane fails with a useful error when the option is omitted. The command returns non-zero for malformed suites, process/protocol failures, error diagnostics, or failed expected-findings checks. Warning diagnostics are successful lint findings unless the suite's expectations say otherwise.
+`--provider` selects the executable under test. `--lane all` is the default, so a suite with an OpenTofu fixture requires `--opentofu`; to omit `--opentofu`, select `--lane direct`. The OpenTofu executable may be an explicit path or a command available on `PATH`, and is resolved before execution moves into the isolated fixture. The command returns non-zero for malformed suites, process/protocol failures, error diagnostics, or failed expected-findings checks. Warning diagnostics are successful lint findings unless the suite's expectations say otherwise.
 
 ## Suite model
 

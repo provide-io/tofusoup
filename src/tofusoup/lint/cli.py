@@ -25,7 +25,7 @@ from tofusoup.lint.suite import SuiteError, load_suite
 )
 @click.option(
     "--opentofu",
-    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    type=click.Path(dir_okay=False, path_type=Path),
     help="OpenTofu executable for the native linting lane.",
 )
 @click.option(

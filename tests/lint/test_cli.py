@@ -4,6 +4,7 @@
 from contextlib import contextmanager
 import importlib
 import json
+import os
 from types import SimpleNamespace
 
 from click.testing import CliRunner
@@ -196,3 +197,33 @@ version = "1.2.3"
     assert result.exit_code == 1
     assert "native fixture could not be initialized" in result.output
     assert "Traceback" not in result.output
+
+
+def test_lint_command_accepts_opentofu_executable_from_path(monkeypatch, tmp_path) -> None:
+    cli = importlib.import_module("tofusoup.lint.cli")
+    suite = tmp_path / "lint.soup.toml"
+    suite.write_text(
+        """version = 1
+
+[provider]
+source = "registry.opentofu.org/example/demo"
+version = "1.2.3"
+""",
+        encoding="utf-8",
+    )
+    provider = tmp_path / "terraform-provider-demo"
+    provider.write_text("provider", encoding="utf-8")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    tofu = bin_dir / "tofu"
+    tofu.write_text("tofu", encoding="utf-8")
+    monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ['PATH']}")
+    expected = SimpleNamespace(direct=None, opentofu=None, failure_messages=())
+    monkeypatch.setattr(cli, "run_suite", lambda *args, **kwargs: expected)
+
+    result = CliRunner().invoke(
+        cli.lint_cli,
+        [str(suite), "--provider", str(provider), "--opentofu", "tofu", "--lane", "opentofu"],
+    )
+
+    assert result.exit_code == 0, result.output
