@@ -19,7 +19,7 @@ class LintRunError(RuntimeError):
 
 @define(frozen=True)
 class LintRunResult:
-    """The independently reported direct and native lint results."""
+    """The independently reported direct and OpenTofu lint results."""
 
     direct: DirectSuiteResult | None
     opentofu: OpenTofuResult | None

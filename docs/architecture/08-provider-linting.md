@@ -7,7 +7,7 @@
 The command has two deliberately separate lanes:
 
 1. **Direct provider validation** launches the provider through the tfprotov6 protocol and invokes each validation RPC declared in the suite. This can cover provider, resource, data source, ephemeral resource, list, action, and state-store validation.
-1. **OpenTofu native linting** creates an isolated provider installation, runs `tofu init -backend=false`, and runs `tofu validate -json -lint=...` for the suite's ordinary HCL fixture.
+1. **OpenTofu experimental lint validation** creates an isolated provider installation, runs `tofu init -backend=false`, and runs `tofu validate -json -lint=...` for the suite's ordinary HCL fixture.
 
 The lanes share the same provider artifact and optional provider-process environment, but their findings and coverage are rendered independently. A successful direct run never implies that OpenTofu reached the same hooks.
 
@@ -28,15 +28,15 @@ The versioned TOML suite describes only portable provider-test data:
 
 - provider source address, provider version, and optional environment variables;
 - zero or more typed direct validation cases, each with a component kind, optional type name, configuration, and expected diagnostic identity;
-- an optional native OpenTofu fixture directory and lint selector.
+- an optional OpenTofu experimental lint validation fixture directory and selector.
 
 TofuSoup gets each provider schema before encoding a direct case. It rejects unknown kinds, invalid type-name combinations, and invalid configurations before calling the provider. The suite never embeds a provider-specific protocol implementation. Provider-specific settings, such as a transitional environment selector, remain explicit data in the provider's suite.
 
-## Native OpenTofu isolation
+## OpenTofu experimental lint validation isolation
 
-The native lane builds a temporary filesystem mirror using the suite's provider version and `TF_CLI_CONFIG_FILE` for the provider source address. It uses a separate `TF_DATA_DIR`, preserves the caller environment except for its controlled Terraform/OpenTofu variables, and reports the exact `init` and `validate` failures without printing secret environment values.
+The OpenTofu experimental lint validation lane builds a temporary filesystem mirror using the suite's provider version and `TF_CLI_CONFIG_FILE` for the provider source address. It uses a separate `TF_DATA_DIR`, preserves the caller environment except for its controlled Terraform/OpenTofu variables, and reports the exact `init` and `validate` failures without printing secret environment values.
 
-OpenTofu's current linting beta provides core lint selection; it does not define a provider-lint selection protocol. Therefore TofuSoup reports the native lane as OpenTofu coverage and does not label provider warnings as an upstream-native provider lint interface.
+OpenTofu documents its current linting work as experimental. It provides core lint selection, but does not define a provider-lint selection protocol. Therefore TofuSoup reports the experimental validation lane as OpenTofu coverage and does not label provider warnings as an upstream provider lint interface.
 
 ## Result model
 
@@ -48,7 +48,7 @@ The feature is developed test-first. The test layers are:
 
 1. Suite parsing and validation tests.
 1. Direct-dispatch tests using a fake tfprotov6 provider, including every validation kind and error paths.
-1. Native-runner tests using a fake `tofu` executable to assert isolated installation, `init`, and `validate -lint` invocation.
+1. OpenTofu-runner tests using a fake `tofu` executable to assert isolated installation, `init`, and `validate -lint` invocation.
 1. A real packaged Pyvider end-to-end suite: all seven direct validation hooks and the OpenTofu-reachable fixture are verified independently.
 1. Documentation, CLI-help, and diagram contract tests.
 
@@ -62,7 +62,7 @@ flowchart LR
     P[provider executable] --> C
     C --> D[Direct tfprotov6 lane]
     D --> V[Declared validation RPCs]
-    C --> N[OpenTofu native lane]
+    C --> N[OpenTofu experimental lint validation lane]
     H[HCL fixture] --> N
     N --> I[tofu init]
     I --> T[tofu validate -lint]

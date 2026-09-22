@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-09-22
+
+### Fixed
+
+- **The OpenTofu lane now says exactly what it proves.** TofuSoup 0.8.0 and 0.8.1 described `tofu validate -lint` as "OpenTofu native linting." OpenTofu documents linting as experimental: it validates the fixture and exercises the paths it currently reaches, but provider-defined lint integration is still in progress. The CLI, guide, reference, and architecture diagram now call this the **OpenTofu experimental lint validation lane**, keeping its result clearly separate from TofuSoup's direct provider-validation coverage.
+
 ## [0.8.1] - 2026-09-22
 
 ### Fixed
