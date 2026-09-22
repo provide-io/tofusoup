@@ -15,12 +15,14 @@ from tofusoup.lint.opentofu import OpenTofuError
 
 def test_lint_command_is_listed_and_describes_both_lanes() -> None:
     result = CliRunner().invoke(main_cli, ["lint", "--help"])
+    help_text = " ".join(result.output.split())
 
     assert result.exit_code == 0, result.output
-    assert "Direct provider validation" in result.output
-    assert "OpenTofu native linting" in result.output
-    assert "--provider" in result.output
-    assert "--opentofu" in result.output
+    assert "Direct provider validation" in help_text
+    assert "OpenTofu experimental lint validation" in help_text
+    assert "native linting" not in help_text
+    assert "--provider" in help_text
+    assert "--opentofu" in help_text
 
 
 def test_lint_group_silences_configuration_logs(monkeypatch) -> None:
@@ -82,7 +84,8 @@ version = "1.2.3"
 
     assert result.exit_code == 0, result.output
     assert "Direct provider validation: 1/1 cases" in result.output
-    assert "OpenTofu native linting: valid" in result.output
+    assert "OpenTofu experimental lint validation: valid" in result.output
+    assert "native linting" not in result.output
     assert "OpenTofu coverage is separate from direct provider coverage" in result.output
 
 

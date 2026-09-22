@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Isolated execution of an OpenTofu native lint suite lane."""
+"""Isolated execution of an OpenTofu experimental lint validation lane."""
 
 import json
 import os
@@ -20,7 +20,7 @@ from tofusoup.lint.models import LintSuite
 
 
 class OpenTofuError(RuntimeError):
-    """OpenTofu could not prepare or validate a native lint fixture."""
+    """OpenTofu could not prepare or validate an experimental lint fixture."""
 
 
 @define(frozen=True)
@@ -129,7 +129,7 @@ def _diagnostics(raw: Any) -> tuple[DiagnosticFinding, ...]:
 
 
 def run_opentofu(suite: LintSuite, provider: Path, tofu: Path) -> OpenTofuResult:
-    """Run the suite's declared native lane without changing its fixture tree."""
+    """Run the suite's OpenTofu lane without changing its fixture tree."""
     if suite.opentofu is None:
         raise OpenTofuError("the suite does not declare an OpenTofu lint lane")
     tofu = _resolve_executable(tofu)

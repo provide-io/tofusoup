@@ -43,12 +43,12 @@ def result_json(result: LintRunResult) -> dict[str, Any]:
 
 
 def render_json(result: LintRunResult) -> str:
-    """Render a stable JSON document with direct and native lane keys."""
+    """Render a stable JSON document with direct and OpenTofu lane keys."""
     return json.dumps(result_json(result), sort_keys=True)
 
 
 def render_terminal(result: LintRunResult) -> str:
-    """Render direct and native findings without conflating their coverage."""
+    """Render direct and OpenTofu findings without conflating their coverage."""
     lines = []
     if result.direct is None:
         lines.append("Direct provider validation: not requested")
@@ -63,10 +63,10 @@ def render_terminal(result: LintRunResult) -> str:
             for diagnostic in case.diagnostics:
                 lines.append(f"  {diagnostic.severity}: {label}: {diagnostic.summary}")
     if result.opentofu is None:
-        lines.append("OpenTofu native linting: not requested")
+        lines.append("OpenTofu experimental lint validation: not requested")
     else:
         state = "valid" if result.opentofu.valid else "invalid"
-        lines.append(f"OpenTofu native linting: {state}")
+        lines.append(f"OpenTofu experimental lint validation: {state}")
         for diagnostic in result.opentofu.diagnostics:
             lines.append(f"  {diagnostic.severity}: {diagnostic.summary}")
     lines.append("OpenTofu coverage is separate from direct provider coverage.")

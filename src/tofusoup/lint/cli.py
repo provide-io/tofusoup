@@ -26,7 +26,7 @@ from tofusoup.lint.suite import SuiteError, load_suite
 @click.option(
     "--opentofu",
     type=click.Path(dir_okay=False, path_type=Path),
-    help="OpenTofu executable for the native linting lane.",
+    help="OpenTofu executable for the experimental lint validation lane.",
 )
 @click.option(
     "--lane",
@@ -37,7 +37,7 @@ from tofusoup.lint.suite import SuiteError, load_suite
 )
 @click.option("--json", "as_json", is_flag=True, help="Emit stable machine-readable results.")
 def lint_cli(suite: Path, provider: Path, opentofu: Path | None, lane: str, as_json: bool) -> None:
-    """Run Direct provider validation and optional OpenTofu native linting."""
+    """Run Direct provider validation and optional OpenTofu experimental lint validation."""
     try:
         with silence_stderr():
             result = run_suite(load_suite(suite), provider, opentofu, lane=lane)

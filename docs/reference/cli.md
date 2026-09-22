@@ -358,7 +358,7 @@ $ soup harness clean --cache
 
 ### soup lint
 
-Run a checked-in provider lint suite through direct tfprotov6 validation and, when declared, an isolated OpenTofu native-lint fixture:
+Run a checked-in provider lint suite through direct tfprotov6 validation and, when declared, an isolated OpenTofu experimental lint validation fixture:
 
 ```console
 $ soup lint tests/lint/lint.soup.toml --provider ./dist/terraform-provider-demo --lane direct
@@ -367,7 +367,7 @@ $ soup lint tests/lint/lint.soup.toml --provider ./dist/terraform-provider-demo 
 $ soup lint tests/lint/lint.soup.toml --provider ./dist/terraform-provider-demo --lane direct --json
 ```
 
-See [Provider lint suites](../guides/provider-linting.md) for the version-one suite format and the distinction between direct and OpenTofu-native coverage.
+See [Provider lint suites](../guides/provider-linting.md) for the version-one suite format and the distinction between direct provider coverage and OpenTofu experimental lint validation coverage.
 
 ### soup config show
 

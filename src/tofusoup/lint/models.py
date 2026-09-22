@@ -57,7 +57,7 @@ class ValidationCase:
 
 @define(frozen=True)
 class OpenTofuSpec:
-    """Native OpenTofu lint fixture and requested lint selector."""
+    """OpenTofu experimental lint validation fixture and selector."""
 
     fixture: Path
     lint: str
